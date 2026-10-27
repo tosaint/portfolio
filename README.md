@@ -4,7 +4,7 @@ A personal portfolio and website CV for Xian Yu (余致賢), architectural desig
 
 The site is designed like a small gallery at night. Each project is a "room" with a large catalogue number, a framed image and a wall label (year, medium, role, description). The CV sits in the About section at the end.
 
-**Live site:** `https://[your-username].github.io/[repository-name]/`
+**Live site:** https://tosaint.github.io/portfolio/
 
 ## How it works
 
