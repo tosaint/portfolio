@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Folding Patterns",
+    "title_zh": "摺紙圖樣產生器",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "three.js",
+      "jsPDF",
+      "FOLD format"
+    ],
+    "role": "Design, development, with two engineers",
+    "summary": "A browser tool that generates accordion, pleated and Kresling folding patterns and previews them in 3D. A lampshade version exports the flat pattern as a 1:1 PDF ready to print and cut.",
+    "image": "",
+    "link": ""
+  },
+  {
+    "title": "Seen Through",
+    "title_zh": "透明公廁的環境知覺調查",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "three.js",
+      "Google Apps Script",
+      "Google Sheets"
+    ],
+    "role": "Research, 3D modelling, development",
+    "summary": "A phone-based study of Shigeru Ban's transparent public toilet in Haru-no-Ogawa Community Park, Tokyo. Participants choose a booth and walk through the whole use sequence, by day or by night, then rate how willing they are to use it and what worries them. Answers go straight to Google Sheets. Next step: four glass conditions, from always opaque to always clear, to ask whether opaque really means safe.",
+    "image": "",
+    "link": ""
+  }
+]

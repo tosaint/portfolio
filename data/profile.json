@@ -1,0 +1,61 @@
+{
+  "name": "Xian Yu",
+  "name_zh": "余致賢",
+  "role": "Architectural designer and researcher",
+  "statement": "I trained in architecture, and I build small digital tools that make space easier to see, test and understand.",
+  "location": "Taoyuan, Taiwan",
+  "email": "[your email]",
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/[your-username]"
+    }
+  ],
+  "about": [
+    "I studied architecture, and my work now sits between design and computation: 3D models, browser-based tools and data that help people read a space before they stand in it.",
+    "My current research is a phone-based study of how people feel about privacy and safety in a transparent public toilet in Tokyo. Participants walk through a 3D model built from the plan and site photos, and their answers go straight into a dataset."
+  ],
+  "education": [
+    {
+      "period": "[20XX] – present",
+      "title": "Master of Architecture (in progress)",
+      "org": "National Taiwan University of Science and Technology (NTUST)",
+      "detail": "Research on environmental perception: how a building's transparency changes people's sense of privacy and safety."
+    },
+    {
+      "period": "[20XX] – [20XX]",
+      "title": "[Bachelor's degree in Architecture]",
+      "org": "[University]",
+      "detail": ""
+    }
+  ],
+  "experience": [],
+  "skills": [
+    {
+      "group": "Design",
+      "items": [
+        "Architectural design",
+        "3D modelling",
+        "Onshape"
+      ]
+    },
+    {
+      "group": "Code",
+      "items": [
+        "JavaScript",
+        "three.js",
+        "p5.js",
+        "Google Apps Script"
+      ]
+    },
+    {
+      "group": "Physical computing",
+      "items": [
+        "Arduino",
+        "Wokwi",
+        "Web Serial"
+      ]
+    }
+  ],
+  "updated": "2026-10-24"
+}
