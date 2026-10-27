@@ -128,7 +128,7 @@ async function main() {
     ]);
     document.title = `${profile.name} · ${profile.name_zh}`;
     renderEntrance(profile);
-    renderWorks(projects);
+    renderWorks(projects.filter((w) => !w.hidden));
     renderAbout(profile);
   } catch (err) {
     document.getElementById("works-list").innerHTML =

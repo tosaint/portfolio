@@ -41,6 +41,7 @@ No framework, build step or template is used. The site is plain HTML, CSS and Ja
 
 - The entry gets the next catalogue number automatically (001, 002, …) and appears first on the page.
 - `status` is one of `completed`, `in-progress` or `concept`.
+- Add `"hidden": true` to keep an entry in the file but leave it off the page.
 - `image` and `link` can be left empty (`""`). Without an image, an empty frame is shown.
 - Put image files in the `images/` folder. A 4:3 landscape image fits the frame best.
 
