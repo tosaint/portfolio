@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Xian Yu · 余致賢</title>
+<meta name="description" content="Portfolio and CV of Xian Yu (余致賢), architectural designer and researcher in Taiwan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&family=Noto+Serif+TC:wght@300;400&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" id="mark" href="#top">Xian Yu<span>余致賢</span></a>
+    <nav aria-label="Sections">
+      <a href="#works">Works</a>
+      <a href="#index">Index</a>
+      <a href="#about">About</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Switch colour theme">Light</button>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <section class="entrance" id="entrance" aria-label="Introduction"></section>
+
+  <section id="works-room" aria-labelledby="works-h">
+    <div class="room-head" id="works"><h2 id="works-h">Works</h2><p id="count"></p></div>
+    <div class="works" id="works-list"></div>
+  </section>
+
+  <section aria-labelledby="index-h">
+    <div class="room-head" id="index"><h2 id="index-h">Index of works</h2><p>Select a title to jump to it</p></div>
+    <div class="checklist-wrap">
+      <table class="checklist">
+        <thead><tr><th>No.</th><th>Title</th><th>Year</th><th>Status</th></tr></thead>
+        <tbody id="checklist"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="about-h">
+    <div class="room-head" id="about"><h2 id="about-h">About</h2><p>CV</p></div>
+    <div class="about" id="about-body"></div>
+  </section>
+
+  <footer>
+    <span>Built by hand from profile.json and projects.json. No template.</span>
+    <span id="updated"></span>
+  </footer>
+</main>
+<script src="main.js"></script>
+</body>
+</html>
