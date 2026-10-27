@@ -47,15 +47,7 @@
         "p5.js",
         "Google Apps Script"
       ]
-    },
-    {
-      "group": "Physical computing",
-      "items": [
-        "Arduino",
-        "Wokwi",
-        "Web Serial"
-      ]
     }
   ],
-  "updated": "2026-10-24"
+  "updated": "2026-10-28"
 }
