@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>高音譜椅 · Gchair</title>
+<meta name="description" content="高音譜椅 Gchair: a stool whose back is a treble clef, in stainless steel and rosewood, 60 × 60 × 150 cm. Honorable Mention, 2007 National Creative Furniture Design Competition.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+/* Same paper, ink and type as the portfolio. The line drawing follows the theme;
+   the photographs stay in colour, so this is the one place the wood shows. */
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --line-filter: none; --line-blend: multiply;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+} }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans);
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px));
+}
+a { color: inherit; }
+a:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top a:hover { color: var(--ink); }
+
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(56px, 10vw, 120px) clamp(40px, 6vw, 64px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacing: .3em; }
+.en-title { margin: 14px 0 0; font: 300 clamp(18px, 2vw, 24px)/1.4 var(--serif); color: var(--ink-2); letter-spacing: .02em; }
+.award { margin: 26px 0 0; font-size: 14px; color: var(--ink-2); }
+.award span { display: block; color: var(--ink-3); font-size: 13px; }
+
+.plan { margin: 0; justify-self: end; width: min(100%, 260px); }
+.plan img { width: 100%; height: auto; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
+
+.photo { margin: 0 0 clamp(28px, 4vw, 48px); }
+.photo img { width: 100%; height: auto; display: block; }
+.pair { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1fr); gap: clamp(16px, 3vw, 32px); align-items: end; }
+.photo.tall { max-width: 520px; margin-inline: auto; }
+.photo figcaption { margin-top: 10px; font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+
+.text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.poem { margin: 0; font: 300 clamp(18px, 1.8vw, 21px)/2.1 var(--serif); letter-spacing: .12em; }
+.poem.en { font: 300 clamp(16px, 1.5vw, 18px)/1.9 var(--serif); letter-spacing: .01em; color: var(--ink-2); }
+
+/* 作品概要: a plain data table, as on a drawing sheet */
+.data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; padding-top: clamp(24px, 4vw, 40px); border-top: 1px solid var(--rule); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+.data dd span { color: var(--ink-2); margin-left: .6em; }
+.data dd + dt { }
+.data .list { display: grid; gap: 6px; }
+.data .list span { display: block; margin: 0; }
+.photo.last { margin-top: clamp(48px, 7vw, 88px); }
+
+@media (max-width: 760px) {
+  .head, .text { grid-template-columns: 1fr; }
+  .plan { justify-self: start; width: min(42%, 180px); order: -1; }
+  .pair { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <span>Work 000 · 2007</span>
+</div></header>
+
+<main class="wrap">
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 000 · Stainless steel, rosewood · 2007</p>
+      <h1>高音譜椅</h1>
+      <p class="en-title">Gchair</p>
+      <p class="award">2007 全國創意家具設計競賽 佳作<span>Honorable Mention, 2007 National Creative Furniture Design Competition</span></p>
+    </div>
+    <figure class="plan"><img src="img/line.svg" alt="Line drawing of the stool: the back rises from one leg and loops into a treble clef that also forms the seat ring"></figure>
+  </section>
+
+  <figure class="photo tall">
+    <img src="img/chair.jpg" width="540" height="720" alt="The full stool on white: black steel tube bent into a treble clef above a small rosewood seat, three thin legs and a curved footrest, standing on a round white rug">
+    <figcaption>全景 · The chair</figcaption>
+  </figure>
+
+  <section class="text">
+    <p class="poem" lang="zh-Hant">以高音譜記號為靈感，探索音樂律動轉化的可能，也讓家具成為空間中的一段旋律。</p>
+    <p class="poem en" lang="en">Inspired by the treble clef, this design translates musical rhythm into form, making furniture a melody within a space.</p>
+  </section>
+
+  <div class="pair">
+    <figure class="photo">
+      <img src="img/back.jpg" width="562" height="720" alt="Close view of the back: the steel line rises, loops at the top and sweeps down around the rosewood seat" loading="lazy">
+      <figcaption>椅背 · The clef</figcaption>
+    </figure>
+    <figure class="photo">
+      <img src="img/seat.jpg" width="960" height="720" alt="From below: the rosewood seat and the steel rods that hold it" loading="lazy">
+      <figcaption>座面下方 · Under the seat</figcaption>
+    </figure>
+  </div>
+
+  <dl class="data">
+    <dt>Year</dt><dd>2007</dd>
+    <dt>Material</dt><dd>不鏽鋼、花梨木<span>Stainless steel, rosewood</span></dd>
+    <dt>Dimensions</dt><dd>60 × 60 × 150 cm</dd>
+    <dt>Recognition</dt><dd class="list">
+      <span>2008 台灣工藝競賽　【協奏曲】初審<span>2008 Taiwan Craft Competition — Concerto G Chair · Preliminary review</span></span>
+      <span>2007 全國創意家具設計競賽　【ClefChair】佳作<span>2007 National Creative Furniture Design Competition — ClefChair · Honorable Mention</span></span>
+    </dd>
+  </dl>
+</main>
+</body>
+</html>

@@ -27,7 +27,7 @@ function renderEntrance(p) {
 }
 
 function renderWorks(projects) {
-  const numbered = projects.map((w, i) => ({ ...w, no: pad(i + 1) })).reverse();
+  const numbered = projects.map((w, i) => ({ ...w, no: pad(i) })).reverse();  // numbering starts at 000
   document.getElementById("count").textContent =
     `${numbered.length} ${numbered.length === 1 ? "work" : "works"}, newest first`;
 
@@ -49,7 +49,7 @@ function renderWorks(projects) {
           <dt>Medium</dt><dd>${esc((w.medium || []).join(", "))}</dd>
           ${w.size ? `<dt>Size</dt><dd>${esc(w.size)}</dd>` : ""}
           ${w.role ? `<dt>Role</dt><dd>${esc(w.role)}</dd>` : ""}
-          ${w.award ? `<dt>Award</dt><dd>${esc(w.award)}</dd>` : ""}
+          ${w.award ? `<dt>Award</dt><dd>${[].concat(w.award).map(esc).join("<br>")}</dd>` : ""}
         </dl>
         <p class="desc">${esc(w.summary)}</p>
         ${w.link ? `<a class="go" href="${esc(w.link)}" target="_blank" rel="noopener">View project →</a>` : ""}

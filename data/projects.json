@@ -1,5 +1,24 @@
 [
   {
+    "title": "Gchair",
+    "title_zh": "高音譜椅",
+    "year": "2007",
+    "status": "completed",
+    "medium": [
+      "Stainless steel",
+      "rosewood"
+    ],
+    "size": "60 × 60 × 150 cm",
+    "award": [
+      "Honorable Mention, 2007 National Creative Furniture Design Competition",
+      "Preliminary review, 2008 Taiwan Craft Competition"
+    ],
+    "summary": "Inspired by the treble clef, this design translates musical rhythm into form, making furniture a melody within a space.",
+    "image": "projects/gchair/img/line.svg",
+    "image_style": "line",
+    "link": "projects/gchair/"
+  },
+  {
     "title": "Water’s Echo in Wood",
     "title_zh": "水聲木",
     "year": "2008",
