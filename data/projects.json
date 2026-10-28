@@ -48,5 +48,20 @@
     "image": "projects/seen-through/img/axon.png",
     "link": "projects/seen-through/",
     "image_style": "line"
+  },
+  {
+    "title": "Architecture App",
+    "title_zh": "與 AI 協作的網站與專題導覽",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "Website",
+      "AI-assisted design"
+    ],
+    "role": "Planning, design direction, AI supervision",
+    "summary": "How this website and the Seen Through final project were made with AI: full scripts in Chinese and English, before-and-after comparisons, diagrams and a one-page A4 handout.",
+    "image": "projects/architecture-app/img/line.svg",
+    "image_style": "line",
+    "link": "projects/architecture-app/"
   }
 ]

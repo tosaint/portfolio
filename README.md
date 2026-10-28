@@ -28,6 +28,8 @@ data/projects.json     one entry per work
 projects/gchair/       work page: 高音譜椅 Gchair (photos + line drawing)
 projects/water-echo/   work page: 水聲木 Water's Echo in Wood
 projects/seen-through/ research page: Seen Through, with the 3D study in model/
+projects/architecture-app/ work page: how the site and the final project were made with AI;
+                       handout.html is the one-page A4 handout with QR codes
 images/                other images
 ```
 

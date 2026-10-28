@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Architecture App · 與 AI 協作的網站與專題導覽</title>
+<meta name="description" content="Architecture App: how tosaint 余致賢 planned this website and the Seen Through final project with AI. Full scripts in Chinese and English, before-and-after comparisons and diagrams.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+/* Same paper, ink and type as the portfolio. Line drawings follow the theme; screenshots and photos stay as they are. */
+:root {
+  --paper: #f3f1ec; --paper-2: #ebe8e1; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --line-filter: none; --line-blend: multiply;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #141412; --paper-2: #1b1a18; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --paper-2: #1b1a18; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+} }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans);
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); }
+a { color: inherit; text-underline-offset: 3px; text-decoration-color: var(--ink-3); }
+a:hover { text-decoration-color: var(--ink); }
+a:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+img { display: block; max-width: 100%; height: auto; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; gap: 8px 20px; flex-wrap: wrap; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top nav { display: flex; gap: 18px; flex-wrap: wrap; }
+.top a:hover { color: var(--ink); }
+
+.head { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(56px, 10vw, 112px) clamp(40px, 6vw, 64px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacing: .01em; }
+.sub { margin: 16px 0 0; font: 300 clamp(18px, 2vw, 24px)/1.5 var(--serif); color: var(--ink-2); letter-spacing: .06em; }
+.lead { margin: 24px 0 0; max-width: 34em; color: var(--ink-2); }
+.btns { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+.btn { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; border: 1px solid var(--ink); padding: 8px 14px; }
+.btn:hover { background: var(--ink); color: var(--paper); }
+.plan { margin: 0; justify-self: end; width: min(100%, 440px); }
+.plan img, .line img { filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
+
+.part { border-top: 1px solid var(--ink); padding-top: 18px; margin-top: clamp(48px, 8vw, 96px); }
+.part-h { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.part-h h2 { margin: 0; font: 500 clamp(26px, 3vw, 34px)/1.3 var(--serif); }
+.part-h p { margin: 0; font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+
+h3 { margin: clamp(40px, 6vw, 64px) 0 18px; font: 400 12px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+
+/* script: Chinese and English side by side, paragraph by paragraph */
+.script { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 clamp(24px, 4vw, 56px); }
+.script .k { grid-column: 1 / -1; margin: 22px 0 6px; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.script p { margin: 0 0 10px; }
+.script .zh { font: 400 16.5px/1.95 var(--sans); }
+.script .en { font: 300 16.5px/1.8 var(--serif); color: var(--ink-2); }
+
+/* before / after */
+.ba { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px clamp(16px, 3vw, 32px); margin-bottom: 36px; }
+.ba figure { margin: 0; }
+.ba img { width: 100%; border: 1px solid var(--rule); }
+.ba .tag { display: block; margin: 0 0 8px; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.ba .tag.after { color: var(--ink); }
+.ba figcaption { margin-top: 8px; font-size: 14px; color: var(--ink-2); }
+.ba .note { grid-column: 1 / -1; margin: 0; font-size: 15px; border-left: 2px solid var(--ink); padding-left: 14px; }
+.ba.narrow { grid-template-columns: repeat(2, minmax(0, 260px)); }
+.ba.three { grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(0, 1fr)); }
+
+/* content flow as a small diagram */
+.pipe { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font: 400 13px var(--mono); }
+.pipe span { border: 1px solid var(--ink); padding: 8px 12px; background: var(--paper); }
+.pipe i { font-style: normal; color: var(--ink-3); }
+.pipe-note { margin: 12px 0 0; font-size: 15px; color: var(--ink-2); }
+
+.toilets { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 6px; }
+.toilets img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+.toilets img.ban { outline: 2px solid var(--ink); outline-offset: 2px; }
+.cap { margin: 10px 0 0; font: 400 12px var(--mono); color: var(--ink-3); }
+
+.diagram { margin: 0 0 24px; background: #ffffff; border: 1px solid var(--rule); padding: 12px; }
+.diagram img { width: 100%; }
+
+.data { margin: clamp(48px, 8vw, 96px) 0 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; padding-top: 24px; border-top: 1px solid var(--ink); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+
+@media (max-width: 760px) {
+  .head { grid-template-columns: 1fr; }
+  .plan { justify-self: start; width: min(80%, 320px); order: -1; }
+  .script, .ba, .ba.three { grid-template-columns: 1fr; }
+  .script .en { margin-bottom: 18px; }
+  .ba.narrow { grid-template-columns: 1fr 1fr; }
+  .toilets { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .data { grid-template-columns: 1fr; gap: 2px; }
+  .data dd { margin-bottom: 12px; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <nav><a href="#website">Website</a><a href="#project">Final project</a><a href="handout.html">A4 handout</a></nav>
+</div></header>
+
+<main class="wrap">
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 003 · 2026 · AI-assisted design</p>
+      <h1>Architecture App</h1>
+      <p class="sub">與 AI 協作的網站與專題導覽</p>
+      <p class="lead">這一頁記錄兩件事是怎麼和 AI 一起做出來的：這個個人網站，以及期末專題「透明，就安心嗎？」。以下是完整的中英對照講稿，以及過程中的前後比對。</p>
+      <div class="btns">
+        <a class="btn" href="handout.html">A4 講稿 Handout</a>
+        <a class="btn" href="../seen-through/">研究說明 002</a>
+        <a class="btn" href="../seen-through/model/?study=1">參加調查 Survey</a>
+      </div>
+    </div>
+    <figure class="plan"><img src="img/line.svg" alt="網站結構線稿：首頁 tosaint.com 通往作品集，作品集通往四件作品；profile.json 與 projects.json 由 main.js 讀入作品集"></figure>
+  </section>
+
+  <!-- ================= Part 1 ================= -->
+  <section class="part" id="website">
+    <div class="part-h"><h2>個人網站規劃 · Website</h2><p>Assignment 1 · Portfolio / Website CV</p></div>
+
+    <h3>講稿 Script</h3>
+    <div class="script">
+      <p class="k">01 · 概念 Idea</p>
+      <p class="zh">大家好，我是 tosaint，中文名字是余致賢。個人網站的設計靈感來自《莊子・人間世》的「虛室生白，吉祥止止」：當空間澄澈，美好便有停留的餘地。因此，整個網站以「留白」為設計核心。</p>
+      <p class="en">Hello everyone, I’m tosaint. My Chinese name is Yu Zhi-xian. The design of my personal website was inspired by a line from Zhuangzi, in the chapter “In the Human World”: “An empty room fills with light, and good things come to stay.” To me, this means that when a space is clear, there is room for good things to stay. So, the main idea of my website is to leave space open.</p>
+
+      <p class="k">02 · 首頁與作品 Home and works</p>
+      <p class="zh">首頁意象取自我的作品《水聲木》，以溫潤的米白紙色為底。當指尖觸碰或滑鼠滑過，畫面便會漾開層層漣漪，緩緩浮現又散去。網站精簡個人資訊，讓焦點回歸創作。作品先以黑白線稿呈現，進入內頁後，才展開實物的色彩與材質細節。</p>
+      <p class="en">The home page is based on my work, Water’s Echo in Wood. It has a warm, off-white background, like paper. When you touch the screen or move your mouse across it, rings spread out like ripples on water. They slowly appear and fade away. I keep personal information brief so visitors can focus on my work. Each work first appears as a black-and-white line drawing. When visitors open its page, they can see photos showing its real colors and materials.</p>
+
+      <p class="k">03 · 與 AI 協作 Working with AI</p>
+      <p class="zh">網站由我與 AI 協作完成。我主導版面架構、敘事順序與互動邏輯，並提供作品照片與網頁截圖作為參考，在過程中不斷審視、修正。例如最初曾嘗試以「建築製圖圖框」作為版型，卻發現過於拘束，最後決定捨去外框，回到純粹的留白與線稿，讓視覺與理念一致。</p>
+      <p class="en">I built this website with AI. I led the page design, the order of the content, and how the site responds to visitors. I also gave the AI photos of my works and screenshots of the site. I kept checking the results and making changes. For example, I first tried a frame like those used in building drawings, but it felt too limiting. I later removed the frame and returned to open space and simple lines, so the design would match my main idea.</p>
+
+      <p class="k">04 · 技術 How it works</p>
+      <p class="zh">技術上，網站將資料與版面分離，以 profile.json 與 projects.json 管理內容，由 JavaScript 自動產生作品列表、目錄與履歷。新增作品時，只要編輯 JSON 檔，不需要修改 HTML；作品內頁則依創作特性個別設計。全站以 Git 管理版本，透過 GitHub Pages 發布，並連結自訂網域 tosaint.com，網站結構與維護方式記錄在英文 README 中。</p>
+      <p class="en">The website keeps its content separate from its page design. I use profile.json and projects.json to manage the content. JavaScript reads these files and builds the work list, the index, and my CV. To add a new work, I only edit the JSON file. I don’t need to change the HTML. Each work page is designed by hand, because every work is different. I use Git to save and track different versions, and GitHub Pages to put the site online at my own web address, tosaint.com. An English README explains how the site is organized and how to update it.</p>
+    </div>
+
+    <h3>前後比對 Before and after</h3>
+    <div class="ba">
+      <figure><span class="tag">Before · 夜晚展間</span><img src="img/site-before.jpg" width="1200" height="750" alt="第一版作品集：深色背景、大字英文名的夜晚展間風格" loading="lazy"><figcaption>第一版：深色「夜晚展間」，大字與銅色點綴</figcaption></figure>
+      <figure><span class="tag after">After · 紙本留白</span><img src="img/site-after.jpg" width="1200" height="750" alt="現在的作品集：米白紙色、明體中文名、線稿作品" loading="lazy"><figcaption>現在：米白紙色、明體、作品以線稿呈現</figcaption></figure>
+    </div>
+    <div class="ba">
+      <figure><span class="tag">Before · 建築圖框</span><img src="img/home-before.jpg" width="1200" height="750" alt="首頁有圖框與標題欄的版本" loading="lazy"><figcaption>首頁曾用建築製圖的圖框與標題欄</figcaption></figure>
+      <figure><span class="tag after">After · 無框留白</span><img src="img/home-after.jpg" width="1200" height="750" alt="現在的首頁：無框，直書落款與漣漪" loading="lazy"><figcaption>捨去外框：直書落款、漣漪與留白</figcaption></figure>
+      <p class="note">圖框讓畫面顯得拘束；拿掉之後，留白本身成為版面。</p>
+    </div>
+    <div class="ba narrow line">
+      <figure><span class="tag">Before</span><img src="img/chair-before.jpg" width="500" height="900" alt="第一版高音譜椅線稿：單線，像兒童畫" loading="lazy"><figcaption>第一版：單線描繪</figcaption></figure>
+      <figure><span class="tag after">After</span><img src="img/chair-after.jpg" width="500" height="900" alt="重畫後的高音譜椅線稿：雙線表現鋼管粗細與前後" loading="lazy"><figcaption>重畫：鋼管粗細與前後關係</figcaption></figure>
+      <p class="note">AI 第一版線稿像兒童畫。我要求依照片重描，畫出鋼管的粗細與交疊。</p>
+    </div>
+
+    <h3>內容更新流程 Content workflow</h3>
+    <div class="pipe"><span>profile.json</span><span>projects.json</span><i>→</i><span>main.js</span><i>→</i><span>作品卡片 · 目錄 · 履歷</span><i>→</i><span>GitHub Pages · tosaint.com</span></div>
+    <p class="pipe-note">新增作品只要在 projects.json 加一筆；HTML 是骨架，CSS 負責樣式，JavaScript 把 JSON 的內容填進頁面。每次修改都以 Git 提交。</p>
+  </section>
+
+  <!-- ================= Part 2 ================= -->
+  <section class="part" id="project">
+    <div class="part-h"><h2>期末專題提案 · Final project</h2><p>Stage 1 · Concept proposal</p></div>
+
+    <h3>走遍 17 間 · 17 toilets visited</h3>
+    <div class="toilets">
+      <img class="ban" src="img/toilets/t01.jpg" alt="坂茂透明公廁（春之小川）" loading="lazy">
+      <img class="ban" src="img/toilets/t07.jpg" alt="坂茂透明公廁（代代木深町）" loading="lazy">
+      <img src="img/toilets/t02.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t03.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t04.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t05.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t06.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t08.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t09.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t10.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t11.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t12.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t13.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t14.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t15.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t16.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+      <img src="img/toilets/t17.jpg" alt="THE TOKYO TOILET 公廁" loading="lazy">
+    </div>
+    <p class="cap">框線：坂茂的兩座透明公廁 · 照片：作者攝於澀谷，2026 年夏</p>
+
+    <h3>講稿 Script</h3>
+    <div class="script">
+      <p class="k">01 · 情境 Context</p>
+      <p class="zh">我的期末專題靈感，來自東京的公共廁所。今年暑假，我特地跑去澀谷，把「THE TOKYO TOILET」計畫的 17 間公廁全部走遍了。其中最讓我好奇的，是建築大師坂茂設計的透明公廁。它的概念很妙：沒人用的時候，從外面可以看光光，確認裡面乾不乾淨、有沒有躲人；等你進去一上鎖，玻璃才會通電變成霧面。坂茂認為，「進去前看得見、進去後看不見」，就能同時給你安全感與隱私。</p>
+      <p class="en">My final project started with public toilets in Tokyo. This summer, I went to Shibuya and visited all 17 toilets of THE TOKYO TOILET project. The one I was most curious about was the transparent toilet by the architect Shigeru Ban. The idea is clever. When no one is inside, you can see through the colored glass, so you can check if it is clean and if anyone is hiding. When you go in and lock the door, the glass turns cloudy. Ban believes that “see in before, not seen after” gives people both safety and privacy.</p>
+
+      <p class="k">02 · 問題與證據 Problem and evidence</p>
+      <p class="zh">聽起來很完美對吧？但說實話，我站在現場，還是不太敢進去用。後來我發現不只我這麼膽小，2026 年一項平面分析研究也指出，坂茂這兩座透明廁所的隱私指數，在所有案例裡是墊底的。不過那只是幾何計算，不能代表人的真實感受。所以我很想知道：進去前看得見，真的比較安心嗎？</p>
+      <p class="en">It sounds perfect, right? But to be honest, when I stood there, I was still afraid to use it. And I’m not the only one. A 2026 study of floor plans found that these two transparent toilets have the lowest privacy score of all the cases. But that is only a calculation from the plan. It cannot tell us how people really feel. So I want to know: if you can see in before you enter, do you really feel safer?</p>
+
+      <p class="k">03 · 使用者與現行做法 Users and current workflow</p>
+      <p class="zh">對想在蓋出來之前先測試設計的建築師與研究者來說，現在常用的做法不外乎發照片問卷，或是去現場攔人訪問。但照片看不到玻璃「由透變霧」的那個瞬間，去現場又沒辦法控制觀看角度和路人干擾。</p>
+      <p class="en">Architects and researchers who want to test a design before it is built usually use photo surveys or talk to people on site. But a photo cannot show the moment when the glass changes from clear to cloudy. And on site, you cannot control where people look or who walks by.</p>
+
+      <p class="k">04 · 導入模擬 The intervention</p>
+      <p class="zh">既然現場太難控制，我就決定把廁所搬進手機裡。我根據公開的平面圖和自己拍的照片，與 AI 協作，用 three.js 做出其中一座、春之小川社區公園公廁的手機版 3D 調查工具。過程中由我主導研究問題和實驗流程，並一路檢查、修正 AI 的成果。</p>
+      <p class="en">Because the real place is hard to control, I decided to put the toilet into a phone. Using the public floor plan and my own photos, I worked with AI and used three.js to build a 3D survey tool of one of them, the toilet in Haru-no-Ogawa Community Park. I led the research question and the test process, and I kept checking and fixing what the AI made.</p>
+
+      <p class="k">05 · 流程 How it works</p>
+      <p class="zh">整個流程是這樣的：受試者先同意參加、練習操作，再選一間廁所，接著輪流體驗四種情境：不透明、霧面、上鎖才變霧，還有透明。每個人的體驗順序都不一樣，由系統自動分派；系統也會規定最少要看幾秒，外面的路人則照固定腳本走過去。受試者進去前，先評估「我覺得會怎麼樣」；坐下觀察後，再憑記憶評一次。如果真的判斷不了，可以選「說不上來」，這個答案會另外記錄，不會混進分數裡。</p>
+      <p class="en">Here is how it works. First, people agree to join, practice looking around, and choose a toilet. Then they try four kinds of walls: opaque, frosted, frosted only after locking, and clear. The system gives each person a different order. It also sets a shortest viewing time, and the people outside always walk past in the same way. Before going in, people rate what they expect. After sitting and looking around, they rate again from memory. If they really cannot decide, they can choose “I can’t say.” This answer is saved separately and is never counted as a middle score.</p>
+
+      <p class="k">06 · 一句話定義 Given → performs → produces</p>
+      <p class="zh">簡單來說：輸入情境設定和受試者的評分，系統負責控制流程、把每個人前後的答案對應整理好，再透過 Google Apps Script 以 JSON 存進 Google Sheets，最後產出一份可以比較隱私感與安全感的資料集。</p>
+      <p class="en">In short: given the test settings and people’s ratings, the system controls the process, matches each person’s answers from before and after, and saves them as JSON in Google Sheets through Google Apps Script. It produces a dataset that compares feelings of privacy and safety.</p>
+
+      <p class="k">07 · MVP 與待確認的問題 MVP and open questions</p>
+      <p class="zh">目前這個前測原型已經可以運作了。MVP 先鎖定一座公廁、四種情境，加上完整的資料保存。接下來，我會先確認操作、題目和收件流程順不順，再評估手機和現場的感受差多少，以及正式研究需要多少受試者。</p>
+      <p class="en">The pretest version already works. The MVP is one toilet, four kinds of walls, and complete data saving. Next, I will check that the controls, the questions, and the data saving all work well. Then I will look at how close the phone is to the real place, and how many people the real study needs.</p>
+    </div>
+
+    <h3>AI 協作前後比對 Before and after</h3>
+    <div class="ba three">
+      <figure><span class="tag">Before · 白天與晚上</span><img src="img/v1-day.jpg" alt="第一版模型：比較白天與晚上" loading="lazy"><figcaption>光線和可見度一起變</figcaption></figure>
+      <figure><span class="tag after">After · 不透明</span><img src="img/v2-ext-O.jpg" alt="第二版：不透明牆面" loading="lazy"></figure>
+      <figure><span class="tag after">霧面</span><img src="img/v2-ext-F.jpg" alt="第二版：霧面玻璃" loading="lazy"></figure>
+      <figure><span class="tag after">透明</span><img src="img/v2-ext-D.jpg" alt="第二版：透明玻璃" loading="lazy"></figure>
+      <p class="note">同一間廁所、同一時間、同樣的路人，只改「看不看得到」這一件事。</p>
+    </div>
+    <div class="ba three">
+      <figure><span class="tag">Before · 霧面</span><img src="img/v1-seat.jpg" alt="第一版坐姿視角：霧面是一片均勻色塊" loading="lazy"><figcaption>一片均勻色塊</figcaption></figure>
+      <figure><span class="tag after">After · 霧面</span><img src="img/v2-seat-F.jpg" alt="第二版霧面：貼近玻璃的路人只剩輪廓" loading="lazy"><figcaption>越近越看得出形狀</figcaption></figure>
+      <figure><span class="tag">同一刻 · 透明</span><img src="img/v2-seat-D.jpg" alt="同一時刻的透明玻璃：兩位路人清楚可見" loading="lazy"><figcaption>對照：路人的位置</figcaption></figure>
+      <p class="note">改為依「霧度 × 物體離玻璃的距離」套用三級模糊。坐姿視角，眼高 1.17 m。</p>
+    </div>
+
+    <h3>工作流程圖 Workflow</h3>
+    <figure class="diagram"><img src="img/workflow.png" alt="工作流程圖：開始（同意、練習、理解題、選廁間、分派順序）→ 四種牆面各一次（步道觀察至少 8 秒、進入前評分、上鎖坐下、觀察後回想評分）→ 完成（背景題、送出 JSON、失敗則備份重送）" loading="lazy"></figure>
+    <h3>資料流 Data flow</h3>
+    <figure class="diagram"><img src="img/dataflow.png" alt="資料流：study.json → 手機瀏覽器（study.js、three.js、localStorage）→ POST JSON → Google Apps Script → Google Sheets 五張表 → 研究者匯出 CSV" loading="lazy"></figure>
+    <p class="pipe-note">研究方法、四種牆面與參考文獻，見作品 <a href="../seen-through/">002 Seen Through</a>。</p>
+  </section>
+
+  <dl class="data">
+    <dt>Year</dt><dd>2026</dd>
+    <dt>Course</dt><dd>EMI course on computational tools for AEC · Assignment 1 and Final Project Stage 1</dd>
+    <dt>Tools</dt><dd>HTML, CSS, JavaScript, three.js, Google Apps Script, Git, GitHub Pages, Cloudflare, Claude (AI assistant)</dd>
+    <dt>Links</dt><dd><a href="https://tosaint.com/">tosaint.com</a> · <a href="https://github.com/tosaint/portfolio">github.com/tosaint/portfolio</a> · <a href="handout.html">A4 handout</a></dd>
+  </dl>
+</main>
+</body>
+</html>

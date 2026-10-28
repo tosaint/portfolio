@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none" stroke="#2b2a27" stroke-width="1.6" font-family="IBM Plex Mono, Menlo, monospace" font-size="15">
+<!-- Architecture App: the site drawn as a plan. Home → portfolio → work pages; JSON → main.js fills the portfolio. -->
+<g fill="#ffffff">
+  <rect x="40" y="90" width="150" height="190"/>
+  <rect x="290" y="70" width="190" height="230"/>
+  <rect x="580" y="40" width="170" height="56"/>
+  <rect x="580" y="116" width="170" height="56"/>
+  <rect x="580" y="192" width="170" height="56"/>
+  <rect x="580" y="268" width="170" height="56"/>
+  <rect x="270" y="420" width="110" height="66"/>
+  <rect x="400" y="420" width="110" height="66"/>
+  <rect x="330" y="530" width="120" height="44"/>
+</g>
+<g stroke-width=".8" opacity=".55">
+  <circle cx="115" cy="170" r="38"/><circle cx="115" cy="170" r="22"/><circle cx="96" cy="216" r="16"/><circle cx="142" cy="206" r="12"/>
+  <path d="M310 110 H460 M310 150 H400 M310 190 H460 M310 230 H420 M310 262 H460"/>
+</g>
+<path d="M190 185 H290" />
+<path d="M282 179 L290 185 L282 191" />
+<path d="M480 185 H530 V68 H580 M530 144 H580 M530 220 H580 M530 296 H580"/>
+<path d="M572 62 L580 68 L572 74 M572 138 L580 144 L572 150 M572 214 L580 220 L572 226 M572 290 L580 296 L572 302"/>
+<path d="M325 486 V530 M455 486 V530" stroke-dasharray="4 4"/>
+<path d="M390 530 V300" />
+<path d="M384 308 L390 300 L396 308" />
+<g fill="#2b2a27" stroke="none">
+  <text x="40" y="78">tosaint.com</text>
+  <text x="290" y="58">/portfolio/</text>
+  <text x="596" y="74">000 Gchair</text>
+  <text x="596" y="150">001 Water</text>
+  <text x="596" y="226">002 Seen</text>
+  <text x="596" y="302">003 This</text>
+  <text x="284" y="458">profile</text>
+  <text x="418" y="458">projects</text>
+  <text x="346" y="557">main.js</text>
+  <text x="270" y="410" font-size="13" opacity=".7">.json</text>
+</g>
+</svg>
