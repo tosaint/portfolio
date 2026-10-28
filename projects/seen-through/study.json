@@ -2,7 +2,7 @@
   "id": "haru-boundary",
   "protocolVersion": "2.0",
   "configVersion": "2.0-pretest",
-  "endpoint": "https://script.google.com/macros/s/AKfycbwRiilfml_QlV4fr0JIRk0GC21sP2vQ3Rq5Q50gqG6c3SN7zj6ufZwf3TSyYFxjmDI/exec",
+  "endpoint": "https://script.google.com/macros/s/AKfycbwcszat4SmRTbvZ7yoTHSJMj1Z4-joTifZKQIF2CFSoboDQRqWn_ynI7_PcrnoeVYI/exec",
   "pretest": true,
   "minViewSeconds": 8,
   "insideViewSeconds": 15,
