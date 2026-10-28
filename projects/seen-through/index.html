@@ -77,6 +77,9 @@ button:disabled{opacity:.45;cursor:default}
 .ret{position:fixed;top:50%;width:0;height:0;pointer-events:none}
 .ret i{position:absolute;left:-11px;top:-11px;width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.35);background:conic-gradient(rgba(255,255,255,.95) var(--p,0%),transparent 0)}
 .ret span{position:absolute;left:-80px;width:160px;top:18px;text-align:center;font-size:12px;color:#fff;text-shadow:0 1px 3px #000}
+#join{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 0;padding:10px 12px;border-radius:12px;background:var(--chip-on,#16222a);color:#fff;text-decoration:none;font:600 14px/1.4 var(--font-ui,sans-serif)}
+#join small{display:block;font-weight:400;font-size:11.5px;opacity:.8}
+#join:focus-visible{outline:2px solid var(--accent,#0f8f86);outline-offset:2px}
 @media (max-width:640px){#hint{display:none}#info{max-width:calc(100vw - 20px)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -86,6 +89,7 @@ button:disabled{opacity:.45;cursor:default}
 <section id="info" class="panel" aria-label="狀態與調查資料">
   <h1 id="ttl">はるのおがわコミュニティパーク　透明トイレ</h1>
   <div class="sub">坂茂 Shigeru Ban · 大和ハウス工業 設計施工 · 鉄骨造 · 2020.3–7<br>渋谷区代々木5-68-1 · 建築面積 14.16 m² · 外形 5.94 × 2.39 m</div>
+  <a id="join" href="?study=1"><span>參加調查<small>選一間廁所，依序體驗四種情境並作答，約 10–15 分鐘</small></span><span aria-hidden="true">→</span></a>
   <div id="status"></div>
   <div id="vpread" hidden></div>
   <details>
