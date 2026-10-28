@@ -26,7 +26,8 @@
     ],
     "role": "Research, 3D modelling, development",
     "summary": "A phone-based study of Shigeru Ban's transparent public toilet in Haru-no-Ogawa Community Park, Tokyo. Participants pick a booth and live through four visual boundaries in it: always opaque, always frosted, frosted on locking (the real design) and always clear. They rate privacy and safety before entering and after locking, and answers go straight to Google Sheets. The project page explains the method and lists its references.",
-    "image": "images/seen-through.jpg",
-    "link": "projects/seen-through/"
+    "image": "projects/seen-through/img/axon.png",
+    "link": "projects/seen-through/",
+    "image_style": "line"
   }
 ]

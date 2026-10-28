@@ -36,7 +36,7 @@ function renderWorks(projects) {
 
   document.getElementById("works-list").innerHTML = numbered.map((w) => {
     const plate = w.image
-      ? `<figure class="plate"><img src="${esc(w.image)}" alt="${esc(w.title)}" loading="lazy"></figure>`
+      ? `<figure class="plate${w.image_style === "line" ? " line" : ""}"><img src="${esc(w.image)}" alt="${esc(w.title)}" loading="lazy"></figure>`
       : `<figure class="plate empty"><figcaption>Plate ${w.no} · image to come</figcaption></figure>`;
     const status = STATUS[w.status] ? w.status : "concept";
     return `
