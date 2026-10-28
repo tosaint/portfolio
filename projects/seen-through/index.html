@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Seen Through · 不透明，就等於安心嗎？</title>
+<meta name="description" content="A phone-based 3D study of how the visual boundary of Shigeru Ban's transparent public toilet in Tokyo shapes privacy and safety. 以手機 3D 模型調查公廁視覺邊界與隱私、安全感。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* Layout: a single drawing sheet. Black line on paper, a title block at the foot,
+   each section a numbered sheet. Chinese leads, English follows in a lighter tone. */
+:root {
+  --paper: #fafaf8;
+  --ink: #111111;
+  --ink-2: #555555;
+  --ink-3: #8a8a8a;
+  --rule: #c8c8c8;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 64px; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 16px/1.75 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+a { color: inherit; }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.wrap { max-width: 1120px; margin: 0 auto; }
+.en { color: var(--ink-2); font-size: 0.94em; }
+.mono { font-family: var(--mono); }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--ink); }
+.top .wrap { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; padding-block: 12px; }
+.top a { font: 400 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; }
+.top nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.top nav a { color: var(--ink-2); }
+.top nav a:hover { color: var(--ink); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 40px 56px; align-items: end; padding-block: 72px 56px; border-bottom: 1px solid var(--ink); }
+.eyebrow { margin: 0 0 20px; font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.15 var(--serif); text-wrap: balance; }
+h1 .en { display: block; margin-top: 12px; font: 300 clamp(22px, 2.6vw, 30px)/1.3 var(--serif); color: var(--ink-2); }
+.lead { margin: 28px 0 0; max-width: 34em; }
+.lead .en { display: block; margin-top: 6px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.btn { display: inline-flex; flex-direction: column; gap: 2px; padding: 12px 18px; border: 1px solid var(--ink); text-decoration: none; font-size: 15px; line-height: 1.3; }
+.btn small { font: 400 11.5px var(--mono); letter-spacing: .06em; color: var(--ink-2); }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.primary small { color: #bdbdbd; }
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn:hover small { color: #bdbdbd; }
+figure { margin: 0; }
+.hero figure img { width: 100%; height: auto; display: block; border: 1px solid var(--ink); background: #fff; }
+figcaption { margin-top: 8px; font: 400 12px/1.5 var(--mono); color: var(--ink-3); }
+
+/* sheets */
+.sheet { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px 48px; padding-block: 56px; border-bottom: 1px solid var(--rule); }
+.sheet-no { font: 400 12px var(--mono); letter-spacing: .1em; color: var(--ink-2); }
+.sheet-no b { display: block; font: 300 44px/1 var(--serif); color: var(--ink); margin-bottom: 8px; }
+.sheet h2 { margin: 0 0 20px; font: 500 26px/1.35 var(--serif); text-wrap: balance; }
+.sheet h2 .en { display: block; font: 300 18px/1.4 var(--serif); margin-top: 4px; }
+.body { min-width: 0; display: grid; gap: 20px; }
+.body p { margin: 0; max-width: 40em; }
+.body p .en { display: block; margin-top: 4px; }
+
+dl.facts { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); border-top: 1px solid var(--ink); }
+dl.facts dt, dl.facts dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+dl.facts dt { padding-right: 24px; font: 400 13px/1.7 var(--mono); color: var(--ink-2); }
+dl.facts dd .en { margin-left: 8px; }
+
+.compare { display: grid; gap: 0; border-top: 1px solid var(--ink); }
+.compare > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.compare .code { font: 400 14px var(--mono); }
+.compare .code small { display: block; color: var(--ink-3); font-size: 11.5px; }
+.compare p .en { display: block; }
+
+.drawings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 28px; }
+.drawings img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; display: block; border: 1px solid var(--ink); background: #fff; }
+.drawings figcaption { color: var(--ink); font-family: var(--sans); font-size: 14px; }
+.drawings figcaption .en { font-size: 13px; }
+
+.states { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.state .pane { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border: 1px solid var(--ink); background: #fff; }
+.state .pane img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
+.state .veil { position: absolute; inset: 0; }
+.state.o .veil { background: #c4c4c4; }
+.state.f img { filter: blur(6px); }
+.state.f .veil { background: rgba(240,240,238,.55); }
+.state.a .veil { left: 50%; background: rgba(240,240,238,.92); border-left: 2px solid var(--ink); }
+.state.a .pane { border-width: 2px; }
+.state h3 { margin: 12px 0 2px; font: 500 17px/1.4 var(--sans); }
+.state h3 .mono { margin-right: 8px; }
+.state p { margin: 0; font-size: 14px; line-height: 1.6; }
+.state p .en { display: block; font-size: 13px; }
+
+ol.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; border-top: 1px solid var(--ink); }
+ol.steps li { counter-increment: s; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+ol.steps li::before { content: counter(s, decimal-leading-zero); font: 400 13px/1.9 var(--mono); color: var(--ink-2); }
+ol.steps .en { display: block; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 14.5px; }
+th { text-align: left; font: 400 11.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); padding: 8px 12px 8px 0; border-bottom: 1px solid var(--ink); }
+td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+td .en { display: block; font-size: 13px; }
+td.code { font-family: var(--mono); white-space: nowrap; }
+
+ol.refs { margin: 0; padding: 0 0 0 1.6em; display: grid; gap: 12px; font-size: 14.5px; line-height: 1.65; }
+ol.refs li::marker { font-family: var(--mono); color: var(--ink-2); }
+ol.refs a { overflow-wrap: anywhere; }
+.refnote { font-size: 14px; color: var(--ink-2); }
+
+.titleblock { margin-top: 56px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border: 1px solid var(--ink); font: 400 12px/1.5 var(--mono); }
+.titleblock div { padding: 10px 12px; border-right: 1px solid var(--ink); min-width: 0; }
+.titleblock div:last-child { border-right: 0; }
+.titleblock span { display: block; color: var(--ink-3); }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: minmax(0, 1fr); padding-block: 48px 40px; }
+  .sheet { grid-template-columns: minmax(0, 1fr); gap: 12px; padding-block: 40px; }
+  .sheet-no b { display: inline; font-size: 28px; margin-right: 10px; }
+  .states { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .titleblock { grid-template-columns: 1fr 1fr; }
+  .titleblock div:nth-child(2) { border-right: 0; }
+  .titleblock div:nth-child(-n+2) { border-bottom: 1px solid var(--ink); }
+}
+@media (max-width: 520px) {
+  .drawings { grid-template-columns: minmax(0, 1fr); }
+  .compare > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  dl.facts { grid-template-columns: minmax(0, 1fr); }
+  dl.facts dt { border-bottom: 0; padding-bottom: 0; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="../../">← tosaint 余致賢</a>
+    <nav aria-label="Sections">
+      <a href="#case">案例 Case</a>
+      <a href="#method">方法 Method</a>
+      <a href="#states">情境 States</a>
+      <a href="#measures">測量 Measures</a>
+      <a href="#refs">文獻 References</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero" aria-labelledby="title">
+    <div>
+      <p class="eyebrow">Work 002 · Seen Through · 2026 · Pretest v2.0</p>
+      <h1 id="title">不透明，就等於安心嗎？<span class="en">Is opaque the same as safe?</span></h1>
+      <p class="lead">一個用手機 3D 模型進行的公廁知覺調查：同一間廁所，只改變外牆「看不看得到」，看人們的隱私感與安全感怎麼變化。
+        <span class="en">A phone-based 3D study. One toilet, one change: whether its walls can be seen through, and how that shifts people’s sense of privacy and safety.</span></p>
+      <div class="actions">
+        <a class="btn primary" href="model/">進入模型<small>OPEN THE MODEL</small></a>
+        <a class="btn" href="model/?study=1">參加調查（約 10–15 分鐘）<small>TAKE PART · 10–15 MIN</small></a>
+      </div>
+    </div>
+    <figure>
+      <img src="img/axon.png" alt="三間玻璃廁所的軸測線稿，屋頂、門、把手、洗手台與馬桶都以黑線描繪" width="1600" height="850">
+      <figcaption>軸測 Axonometric · 由研究用 3D 模型輸出 Exported from the study model</figcaption>
+    </figure>
+  </section>
+
+  <section class="sheet" id="case" aria-labelledby="case-h">
+    <div class="sheet-no"><b>01</b>案例 Case</div>
+    <div class="body">
+      <h2 id="case-h">進去前看得見，上鎖後看不見<span class="en">See in before you enter; unseen once you lock</span></h2>
+      <p>坂茂設計的春之小川社區公園公廁，外牆是彩色玻璃。沒人使用時可以從外面看進去，確認裡面乾不乾淨、有沒有人；進去上鎖，玻璃就變成不透明。
+        <span class="en">Shigeru Ban’s toilet in Haru-no-Ogawa Community Park has coloured glass walls. When empty you can look in to check that it is clean and that no one is inside; once you lock the door, the glass turns opaque.</span></p>
+      <dl class="facts">
+        <dt>設計 Design</dt><dd>坂茂<span class="en">Shigeru Ban</span></dd>
+        <dt>地點 Site</dt><dd>東京都澀谷區代代木 5-68-1，はるのおがわコミュニティパーク<span class="en">Yoyogi, Shibuya, Tokyo</span></dd>
+        <dt>計畫 Program</dt><dd>THE TOKYO TOILET</dd>
+        <dt>施工 Built</dt><dd class="mono">2020.03–2020.07 · 大和ハウス工業 · 鋼骨造 steel frame</dd>
+        <dt>面積 Area</dt><dd class="mono">14.16 m²</dd>
+        <dt>配置 Booths</dt><dd>多功能廁所、女廁、男廁<span class="en">All-gender accessible, women’s, men’s</span></dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="sheet" id="question" aria-labelledby="q-h">
+    <div class="sheet-no"><b>02</b>問題 Questions</div>
+    <div class="body">
+      <h2 id="q-h">設計者的兩個主張，各自成立嗎？<span class="en">Do the designer’s two claims hold?</span></h2>
+      <p>坂茂的想法是：進去前看得見，比較安心；上鎖後看不見，保有隱私。Akdağ（2026）用平面計算比較東京 17 間公廁，坂茂設計的兩座透明公廁隱私指數最低，但作者也指出，平面分析看不到玻璃材質帶來的感受，需要使用者驗證。本研究用三組比較來回答：
+        <span class="en">Ban’s reasoning: seeing in first feels safer, and turning opaque keeps you private. In a plan-based analysis of all 17 Tokyo toilets, Akdağ (2026) found Ban’s two transparent toilets had the lowest privacy index, and noted that plan geometry cannot capture what the glass feels like, so users need to be asked. Three comparisons:</span></p>
+      <div class="compare">
+        <div><span class="code">A vs D<small>室內 Inside · 主要 Primary</small></span><p>上鎖後變霧，真的保護了隱私嗎？<span class="en">Does turning opaque on locking protect privacy?</span></p></div>
+        <div><span class="code">A vs F<small>外部 Outside</small></span><p>進去前看得見裡面，會比較安心嗎？<span class="en">Does seeing in before entering make people feel safer?</span></p></div>
+        <div><span class="code">O vs F / A<small>室內 Inside</small></span><p>「看不見」就等於「安心」嗎？<span class="en">Is “cannot see” the same as “feel safe”?</span></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="method" aria-labelledby="m-h">
+    <div class="sheet-no"><b>03</b>方法 Method</div>
+    <div class="body">
+      <h2 id="m-h">從平面到空間<span class="en">From plan to space</span></h2>
+      <p>模型依公開平面圖與現場照片建立：平面給隔間、門寬與設備位置，照片補上高度、玻璃分割與細部。座標以公尺為單位，站姿眼高 1.55 m、坐姿 1.17 m，所以受試者在手機上看到的距離與角度，對應到現場。下面四張線稿都由同一個模型直接輸出。
+        <span class="en">The model is rebuilt from the published plan and site photos: the plan gives partitions, door widths and fixtures; photos add heights, glazing and details. Units are metres, with eye heights of 1.55 m standing and 1.17 m seated, so distances and angles on the phone match the site. All four drawings below are exported from that one model.</span></p>
+      <div class="drawings">
+        <figure><img src="img/plan.png" alt="平面線稿，在 1.2 公尺高度剖切，可見三間廁所的馬桶、洗手台與門" width="1600" height="730" loading="lazy"><figcaption>平面，剖切高度 1.2 m<span class="en"> · Plan, cut at 1.2 m</span></figcaption></figure>
+        <figure><img src="img/elev.png" alt="面向公園步道的正立面線稿" width="1400" height="600" loading="lazy"><figcaption>正立面<span class="en"> · Front elevation, facing the park path</span></figcaption></figure>
+        <figure><img src="img/axon.png" alt="軸測線稿" width="1600" height="850" loading="lazy"><figcaption>軸測<span class="en"> · Axonometric</span></figcaption></figure>
+        <figure><img src="img/eye.png" alt="從公園步道看向三間廁所的人眼視點線稿" width="1600" height="750" loading="lazy"><figcaption>人眼視點，受試者看到的畫面<span class="en"> · Eye level, as participants see it</span></figcaption></figure>
+      </div>
+      <p>幾何依平面與照片重建，未經現場實測；女廁兩側鏡面依 K2・PLAN 見學紀錄（2020）。
+        <span class="en">Geometry is reconstructed, not measured on site. The mirrors in the women’s booth follow the K2・PLAN site-visit record (2020).</span></p>
+    </div>
+  </section>
+
+  <section class="sheet" id="states" aria-labelledby="s-h">
+    <div class="sheet-no"><b>04</b>情境 States</div>
+    <div class="body">
+      <h2 id="s-h">四種視覺邊界<span class="en">Four visual boundaries</span></h2>
+      <p>受試者選一間廁所，在同一間依平衡順序體驗四種狀態。只有外玻璃牆與門扇改變，幾何、設備、門鎖都相同；不比較材質，不透明狀態是素面淺灰牆。
+        <span class="en">Each participant picks a booth and experiences four states there in a balanced order. Only the outer glass and door leaf change; geometry, fixtures and the lock stay the same. No material comparison: the opaque state is a plain light-grey wall.</span></p>
+      <div class="states">
+        <div class="state o"><div class="pane"><img src="img/eye.png" alt="" loading="lazy"><div class="veil"></div></div><h3><span class="mono">O</span>一直不透明</h3><p>進去前、上鎖後都看不見<span class="en">Always opaque</span></p></div>
+        <div class="state f"><div class="pane"><img src="img/eye.png" alt="" loading="lazy"><div class="veil"></div></div><h3><span class="mono">F</span>一直霧面</h3><p>透光但看不清楚<span class="en">Always frosted</span></p></div>
+        <div class="state a"><div class="pane"><img src="img/eye.png" alt="" loading="lazy"><div class="veil"></div></div><h3><span class="mono">A</span>上鎖才變霧</h3><p>真實設計<span class="en">Clear, then frosted on locking · the real design</span></p></div>
+        <div class="state d"><div class="pane"><img src="img/eye.png" alt="" loading="lazy"><div class="veil"></div></div><h3><span class="mono">D</span>一直透明</h3><p>假設方案，完全暴露<span class="en">Always clear · hypothetical</span></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet" id="procedure" aria-labelledby="p-h">
+    <div class="sheet-no"><b>05</b>流程 Procedure</div>
+    <div class="body">
+      <h2 id="p-h">受試者的 10–15 分鐘<span class="en">10–15 minutes per participant</span></h2>
+      <ol class="steps">
+        <li><div>同意與練習：在公園裡練習轉頭與作答，確認理解門鎖。<span class="en">Consent, then practice looking around and answering; a check on how the lock works.</span></div></li>
+        <li><div>自己選一間廁所，四種情境都在這一間進行。<span class="en">Choose a booth; all four states happen there.</span></div></li>
+        <li><div>在步道上觀察至少 8 秒，路人依固定腳本經過，回答對使用的「預期」。<span class="en">Watch from the path for at least 8 s while scripted passers-by walk past; rate what you expect.</span></div></li>
+        <li><div>走到門前、開門、進去、關門、上鎖、坐下，觀察 15 秒，這段不作答。<span class="en">Walk in, close and lock, sit and look around for 15 s, with no questions.</span></div></li>
+        <li><div>解鎖前畫面轉暗，回想坐在裡面的感受作答，並標出「何時覺得進入私人範圍」。<span class="en">The screen fades before unlocking; rate the seated moment from memory and mark where privacy began.</span></div></li>
+        <li><div>四種情境都完成後，回答整體問題與背景資料；結束時才說明哪一個是真實設計。<span class="en">After all four, a few overall and background questions; the debrief explains which state is the real design.</span></div></li>
+      </ol>
+      <p>作答以隨機代碼匿名保存，經 Google Apps Script 寫入 Google Sheets。
+        <span class="en">Answers are stored anonymously under a random code and written to Google Sheets through Google Apps Script.</span></p>
+    </div>
+  </section>
+
+  <section class="sheet" id="measures" aria-labelledby="me-h">
+    <div class="sheet-no"><b>06</b>測量 Measures</div>
+    <div class="body">
+      <h2 id="me-h">問了什麼，出處在哪<span class="en">What is asked, and where it comes from</span></h2>
+      <p>外部與室內問同一組構念：視覺隱私、安全、受保護與使用意願。外部問「預期」，室內問「當下」，前後可以配對比較。每位受試者共 48 次評分、4 次標記。
+        <span class="en">Outside and inside use the same constructs: visual privacy, safety, feeling protected and willingness to use. Outside asks what you expect; inside asks how it felt, so the two can be paired. 48 ratings and 4 marks per participant.</span></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>題目 Items</th><th>內容 Content</th><th>形式 Format</th><th>依據 Basis</th></tr></thead>
+          <tbody>
+            <tr><td class="code">O1–O4</td><td>外部預期：隱私、安全、受保護、使用意願<span class="en">Outside, expected: privacy, safety, protection, willingness</span></td><td>7 段同意；使用意願 6 段<span class="en">7-point agreement; 6-point willingness</span></td><td>6 段選項譯自藤山・長澤（2025）表 6；隱私與安全分開測量，參考 Stamps（2005）<span class="en">6-point options from Fujiyama &amp; Nagasawa (2025), Table 6; privacy and safety measured apart following Stamps (2005)</span></td></tr>
+            <tr><td class="code">O5</td><td>從外面能確認裡面的狀況<span class="en">From here I can check what is inside</span></td><td>7 段同意<span class="en">7-point</span></td><td>本研究自訂<span class="en">Study-defined</span></td></tr>
+            <tr><td class="code">R1–R7</td><td>室內回想：隱私、安全、受保護、使用意願，以及能否掌握外面、身體會不會被看清<span class="en">Inside, recalled: the same four, plus awareness of outside and being seen</span></td><td>7 段；使用意願 6 段<span class="en">7-point; 6-point</span></td><td>「看得出去」與「被看得進來」分開問，參考 Asakura et al.（2026）<span class="en">Seeing out vs being seen asked apart, after Asakura et al. (2026)</span></td></tr>
+            <tr><td class="code">M1–M2</td><td>何時覺得進入私人範圍：點選路線位置或事件<span class="en">Where privacy began: a point on the route or an event</span></td><td>點選與選填理由<span class="en">Mark, optional reason</span></td><td>邊界標記方法參考 Wänström Lindh et al.（2020）<span class="en">Boundary marking after Wänström Lindh et al. (2020)</span></td></tr>
+            <tr><td class="code">P, L</td><td>整體問題與對門鎖的信任<span class="en">Overall questions and trust in the lock</span></td><td>單選、複選<span class="en">Single and multiple choice</span></td><td>本研究自訂<span class="en">Study-defined</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>每一題都有「無法判斷／不願回答」，不計為中間值。這是前測版，題量與時間仍在確認。
+        <span class="en">Every item offers “can’t judge / prefer not to say”, which is not coded as a midpoint. This is the pretest version; length and timing are still being checked.</span></p>
+    </div>
+  </section>
+
+  <section class="sheet" id="refs" aria-labelledby="r-h">
+    <div class="sheet-no"><b>07</b>文獻 References</div>
+    <div class="body">
+      <h2 id="r-h">參考文獻<span class="en">References</span></h2>
+      <ol class="refs">
+        <li>藤山真美子、長澤夏子（2025）。公共トイレの「共用」に対するユーザの意識と利用に関する研究：性別を問わずに利用できるトイレ整備における空間や設備の共用に関する考察。<i>日本建築学会計画系論文集</i>，90(830)，670–678。<a href="https://www.jstage.jst.go.jp/article/aija/90/830/90_670/_article/-char/ja/" target="_blank" rel="noopener">https://doi.org/10.3130/aija.90.670</a></li>
+        <li>Akdağ, F. (2026). Computational morphometric and spatial analysis of micro-public architecture: The Tokyo Toilet Project. <i>Journal of Asian Architecture and Building Engineering</i>. <a href="https://doi.org/10.1080/13467581.2026.2700873" target="_blank" rel="noopener">https://doi.org/10.1080/13467581.2026.2700873</a></li>
+        <li>渋谷区。THE TOKYO TOILET 調査結果：はるのおがわコミュニティーパークトイレ［PDF］。<a href="https://files.city.shibuya.tokyo.jp/assets/12995aba8b194961be709ba879857f70/59782bd19d7c47069f85486ecc608ea2/thetokyotoilet_list_harunoogawa.pdf" target="_blank" rel="noopener">渋谷区ポータル</a></li>
+        <li>渋谷区。THE TOKYO TOILET 調査結果：代々木深町小公園トイレ［PDF］。<a href="https://files.city.shibuya.tokyo.jp/assets/12995aba8b194961be709ba879857f70/340f486eb4b24e36bb131f496eba77fc/thetokyotoilet_list_yoyogihukamachisyo.pdf" target="_blank" rel="noopener">渋谷区ポータル</a></li>
+        <li>Stamps, A. E. (2005). Visual permeability, locomotive permeability, safety, and enclosure. <i>Environment and Behavior</i>, 37(5), 587–619. <a href="https://journals.sagepub.com/doi/10.1177/0013916505276741" target="_blank" rel="noopener">https://doi.org/10.1177/0013916505276741</a></li>
+        <li>Fisher, B. S., &amp; Nasar, J. L. (1992). Fear of crime in relation to three exterior site features: Prospect, refuge, and escape. <i>Environment and Behavior</i>, 24(1), 35–65. <a href="https://ojp.gov/ncjrs/virtual-library/abstracts/fear-crime-relation-three-exterior-site-features-prospect-refuge" target="_blank" rel="noopener">NCJRS abstract</a></li>
+        <li>Asakura et al. (2026). The role of visual and auditory factors in privacy perception through building openings. <i>Virtual Reality</i>. <a href="https://link.springer.com/article/10.1007/s10055-026-01379-2" target="_blank" rel="noopener">https://doi.org/10.1007/s10055-026-01379-2</a></li>
+        <li>Wänström Lindh, U., Billger, M., &amp; Aries, M. (2020). Experience of spaciousness and enclosure: Distribution of light in spatial complexity. <i>SDAR* Journal of Sustainable Design &amp; Applied Research</i>, 8(1). <a href="https://arrow.tudublin.ie/sdar/vol8/iss1/5/" target="_blank" rel="noopener">arrow.tudublin.ie/sdar/vol8/iss1/5</a></li>
+        <li>Higuera-Trujillo, J. L., López-Tarruella Maldonado, J., &amp; Llinares Millán, C. (2017). Psychological and physiological human responses to simulated and real environments: A comparison between photographs, 360° panoramas, and virtual reality. <i>Applied Ergonomics</i>, 65, 398–409. <a href="https://riunet.upv.es/handle/10251/105467" target="_blank" rel="noopener">RiuNet</a></li>
+        <li>Kuliga, S. F., Thrash, T., Dalton, R. C., &amp; Hölscher, C. (2015). Virtual reality as an empirical research tool: Exploring user experience in a real building and a corresponding virtual model. <i>Computers, Environment and Urban Systems</i>, 54, 363–375. <a href="https://researchportal.northumbria.ac.uk/en/publications/virtual-reality-as-an-empirical-research-tool-exploring-user-expe/" target="_blank" rel="noopener">Northumbria Research Portal</a></li>
+        <li>K2・PLAN（2020 年 10 月 12 日）。THE TOKYO TOILET 現場見學紀錄（部落格）。<a href="https://k2plan.exblog.jp/240643187/" target="_blank" rel="noopener">k2plan.exblog.jp/240643187</a></li>
+        <li>TOTO。納入事例 No. 2131［PDF］。<a href="https://www-s.jp.toto.com/com-et/jirei/2131/pdf/2131.pdf" target="_blank" rel="noopener">TOTO</a></li>
+      </ol>
+      <p class="refnote">理論背景另參考 Appleton（1975）眺望－庇護理論、Altman（1975）隱私調節理論。論文全文請由上方連結取得，本頁不提供 PDF。
+        <span class="en">Theory also draws on Appleton (1975) prospect–refuge and Altman (1975) privacy regulation. Full texts are available through the links above; this page does not host PDFs.</span></p>
+    </div>
+  </section>
+
+  <div class="titleblock" aria-label="Title block">
+    <div><span>作品 Work</span>Seen Through · 透明公廁的視覺邊界調查</div>
+    <div><span>作者 Author</span>余致賢 tosaint</div>
+    <div><span>版本 Version</span>Pretest v2.0</div>
+    <div><span>更新 Updated</span>2026-10-28</div>
+  </div>
+</main>
+</body>
+</html>

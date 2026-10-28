@@ -25,7 +25,7 @@
       "Google Sheets"
     ],
     "role": "Research, 3D modelling, development",
-    "summary": "A phone-based study of Shigeru Ban's transparent public toilet in Haru-no-Ogawa Community Park, Tokyo. Participants choose a booth and use it under four visual boundaries, from a solid wall to frosted glass, glass that frosts when locked, and glass that stays clear, while people walk past outside. They rate privacy and safety and mark where their private space begins, asking whether opaque really means safe. Answers go straight to Google Sheets.",
+    "summary": "A phone-based study of Shigeru Ban's transparent public toilet in Haru-no-Ogawa Community Park, Tokyo. Participants pick a booth and live through four visual boundaries in it: always opaque, always frosted, frosted on locking (the real design) and always clear. They rate privacy and safety before entering and after locking, and answers go straight to Google Sheets. The project page explains the method and lists its references.",
     "image": "images/seen-through.jpg",
     "link": "projects/seen-through/"
   }
