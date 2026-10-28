@@ -1,18 +1,18 @@
 [
   {
-    "title": "Folding Patterns",
-    "title_zh": "摺紙圖樣產生器",
-    "year": "2026",
-    "status": "in-progress",
+    "title": "Water’s Echo in Wood",
+    "title_zh": "水聲木",
+    "year": "2008",
+    "status": "completed",
     "medium": [
-      "three.js",
-      "jsPDF",
-      "FOLD format"
+      "Plywood"
     ],
-    "role": "Design, development, with two engineers",
-    "summary": "A browser tool that generates accordion, pleated and Kresling folding patterns and previews them in 3D. A lampshade version exports the flat pattern as a 1:1 PDF ready to print and cut.",
-    "image": "",
-    "link": ""
+    "size": "180 × 180 × 18 cm",
+    "award": "Selected, 2008 Taiwan International Wood Sculpture Competition",
+    "summary": "A sound of water, ripples unfolding — seeking a fleeting stir within, holding, for a moment, its resonance.",
+    "image": "projects/water-echo/img/plan.svg",
+    "image_style": "line",
+    "link": "projects/water-echo/"
   },
   {
     "title": "Seen Through",

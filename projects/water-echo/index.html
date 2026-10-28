@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>水聲木 · Water’s Echo in Wood</title>
+<meta name="description" content="水聲木 Water’s Echo in Wood (2008): turned plywood on white sand, 180 × 180 × 18 cm. Selected, 2008 Taiwan International Wood Sculpture Competition.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+/* Same paper, ink and type as the portfolio. The line drawing follows the theme;
+   the photographs stay in colour, so this is the one place the wood shows. */
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --line-filter: none; --line-blend: multiply;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+} }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans);
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px));
+}
+a { color: inherit; }
+a:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top a:hover { color: var(--ink); }
+
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(56px, 10vw, 120px) clamp(40px, 6vw, 64px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacing: .3em; }
+.en-title { margin: 14px 0 0; font: 300 clamp(18px, 2vw, 24px)/1.4 var(--serif); color: var(--ink-2); letter-spacing: .02em; }
+.award { margin: 26px 0 0; font-size: 14px; color: var(--ink-2); }
+.award span { display: block; color: var(--ink-3); font-size: 13px; }
+
+.plan { margin: 0; justify-self: end; width: min(100%, 420px); }
+.plan img { width: 100%; height: auto; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
+
+.photo { margin: 0 0 clamp(28px, 4vw, 48px); }
+.photo img { width: 100%; height: auto; display: block; }
+.photo figcaption { margin-top: 10px; font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+
+.text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.poem { margin: 0; font: 300 clamp(18px, 1.8vw, 21px)/2.1 var(--serif); letter-spacing: .12em; }
+.poem.en { font: 300 clamp(16px, 1.5vw, 18px)/1.9 var(--serif); letter-spacing: .01em; color: var(--ink-2); }
+
+/* 作品概要: a plain data table, as on a drawing sheet */
+.data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; padding-top: clamp(24px, 4vw, 40px); border-top: 1px solid var(--rule); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+.data dd span { color: var(--ink-2); margin-left: .6em; }
+
+@media (max-width: 760px) {
+  .head, .text { grid-template-columns: 1fr; }
+  .plan { justify-self: start; width: min(78%, 320px); order: -1; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <span>Work 001 · 2008</span>
+</div></header>
+
+<main class="wrap">
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 001 · Plywood · 2008</p>
+      <h1>水聲木</h1>
+      <p class="en-title">Water’s Echo in Wood</p>
+      <p class="award">2008 臺灣國際木雕競賽 入選<span>Selected, 2008 Taiwan International Wood Sculpture Competition</span></p>
+    </div>
+    <figure class="plan"><img src="img/plan.svg" alt="Plan line drawing: the turned pieces as concentric rings on a field of sand"></figure>
+  </section>
+
+  <figure class="photo">
+    <img src="img/overview.jpg" width="960" height="720" alt="Turned plywood discs and bowls of different sizes lying on a pool of white sand on a dark slate floor, seen from above">
+    <figcaption>全景 · Overview</figcaption>
+  </figure>
+
+  <section class="text">
+    <p class="poem" lang="zh-Hant">水聲落下，漣漪漾開，<br>尋找心中剎那的感動，<br>暫存當下的共鳴。</p>
+    <p class="poem en" lang="en">A sound of water, ripples unfolding —<br>seeking a fleeting stir within,<br>holding, for a moment, its resonance.</p>
+  </section>
+
+  <figure class="photo">
+    <img src="img/detail.jpg" width="960" height="720" alt="Close view of the turned pieces: layered plywood shows as rings of light and dark wood, with small turned knobs on the larger discs" loading="lazy">
+    <figcaption>近景 · Detail</figcaption>
+  </figure>
+
+  <dl class="data">
+    <dt>Year</dt><dd>2008</dd>
+    <dt>Material</dt><dd>木夾板<span>Plywood</span></dd>
+    <dt>Dimensions</dt><dd>180 × 180 × 18 cm</dd>
+    <dt>Award</dt><dd>2008 臺灣國際木雕競賽 入選<span>Selected, Taiwan International Wood Sculpture Competition</span></dd>
+  </dl>
+</main>
+</body>
+</html>

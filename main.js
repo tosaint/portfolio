@@ -47,7 +47,9 @@ function renderWorks(projects) {
         <dl class="meta">
           <dt>Year</dt><dd>${esc(w.year)}</dd>
           <dt>Medium</dt><dd>${esc((w.medium || []).join(", "))}</dd>
+          ${w.size ? `<dt>Size</dt><dd>${esc(w.size)}</dd>` : ""}
           ${w.role ? `<dt>Role</dt><dd>${esc(w.role)}</dd>` : ""}
+          ${w.award ? `<dt>Award</dt><dd>${esc(w.award)}</dd>` : ""}
         </dl>
         <p class="desc">${esc(w.summary)}</p>
         ${w.link ? `<a class="go" href="${esc(w.link)}" target="_blank" rel="noopener">View project →</a>` : ""}
