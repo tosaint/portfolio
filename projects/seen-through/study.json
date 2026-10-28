@@ -1,7 +1,7 @@
 {
   "id": "haru-pilot",
   "version": "0.8",
-  "endpoint": "",
+  "endpoint": "https://script.google.com/macros/s/AKfycbwcszat4SmRTbvZ7yoTHSJMj1Z4-joTifZKQIF2CFSoboDQRqWn_ynI7_PcrnoeVYI/exec",
   "minViewSeconds": 8,
   "view": {
     "note": "直拿為主：固定水平視角 hfov（度），垂直視角隨手機長寬比變化，上限 maxVfov。網址加 &fov=60 可臨時覆蓋 hfov 做比較。gyro=false 可關閉「轉動手機來看」。",
