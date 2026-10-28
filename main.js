@@ -22,14 +22,8 @@ async function getJSON(path) {
 function renderEntrance(p) {
   document.getElementById("mark").innerHTML = `${esc(p.name)}<span>${esc(p.name_zh)}</span>`;
   document.getElementById("entrance").innerHTML = `
-    <h1>${esc(p.name)}<span class="zh">${esc(p.name_zh)}</span></h1>
-    ${p.quote ? `<figure class="quote">
-      <blockquote>
-        <p class="q-zh" lang="zh-Hant">${esc(p.quote.zh)}</p>
-        <p class="q-en">“${esc(p.quote.en)}”</p>
-      </blockquote>
-      <figcaption>— ${esc(p.quote.source)} <span lang="zh-Hant">${esc(p.quote.source_zh || "")}</span></figcaption>
-    </figure>` : ""}`;
+    <h1>${esc(p.name)} <span class="zh">${esc(p.name_zh)}</span></h1>
+    ${p.quote ? `<p class="quote" lang="zh-Hant">${esc(p.quote.zh)}<cite>${esc(p.quote.source_zh || "")}</cite></p>` : ""}`;
 }
 
 function renderWorks(projects) {
@@ -90,7 +84,6 @@ function renderAbout(p) {
   document.getElementById("about-body").innerHTML = `
     <div class="about-text">
       ${(p.about || []).map((t) => `<p>${esc(t)}</p>`).join("")}
-      <p class="place">${esc(p.location)}</p>
       <div class="contact">
         <p>Email: <a href="mailto:${esc(p.email)}">${esc(p.email)}</a></p>
         ${links}
