@@ -13,8 +13,8 @@
 @page { size: A4; margin: 0; }
 * { box-sizing: border-box; }
 html { background: #d9d5cc; }
-body { margin: 0; color: #2b2a27; font: 400 10.2pt/1.6 "Noto Serif TC", Georgia, serif; }
-.sheet { width: 210mm; height: 297mm; margin: 12mm auto; background: #fbfaf7; padding: 16mm 16mm 13mm; display: grid; grid-template-rows: auto auto 1fr auto; box-shadow: 0 2px 14px rgba(0,0,0,.12); overflow: hidden; }
+body { margin: 0; color: #2b2a27; font: 400 10.5pt/1.6 "Noto Serif TC", Georgia, serif; }
+.sheet { width: 210mm; height: 296mm; margin: 12mm auto; background: #fbfaf7; padding: 16mm 16mm 13mm; display: grid; grid-template-rows: auto auto 1fr auto; box-shadow: 0 2px 14px rgba(0,0,0,.12); overflow: hidden; }
 @media print {
   html, body { background: #ffffff; }
   .sheet { margin: 0; box-shadow: none; background: #ffffff; }
@@ -25,19 +25,19 @@ body { margin: 0; color: #2b2a27; font: 400 10.2pt/1.6 "Noto Serif TC", Georgia,
 header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 5mm; border-bottom: .35mm solid #2b2a27; }
 header h1 { margin: 0; font: 300 22pt/1 "Noto Serif TC", Georgia, serif; letter-spacing: .01em; }
 header h1 span { font-size: 13pt; letter-spacing: .25em; color: #5f5b54; margin-left: 2.5mm; }
-header p { margin: 0; text-align: right; font: 400 7pt/1.6 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: #5f5b54; }
+header p { margin: 0; max-width: 95mm; text-align: right; font: 400 7pt/1.6 "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: #5f5b54; }
 
 .quote { margin: 4mm 0 5mm; font: 300 9pt/1.5 "Noto Serif TC", serif; color: #5f5b54; letter-spacing: .04em; }
 
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8mm; }
 .col h2 { margin: 0 0 1mm; font: 500 12pt/1.3 "Noto Serif TC", Georgia, serif; }
 .col .tag { margin: 0 0 3mm; font: 400 6.6pt/1.4 "IBM Plex Mono", monospace; letter-spacing: .14em; text-transform: uppercase; color: #8b877e; }
-.col p { margin: 0 0 2.4mm; text-align: left; hyphens: none; }
+.col p { margin: 0 0 1.6mm; overflow-wrap: anywhere; text-align: left; hyphens: none; }
 .col .k { display: block; margin: 3.6mm 0 .8mm; font: 400 6.6pt/1.3 "IBM Plex Mono", monospace; letter-spacing: .14em; text-transform: uppercase; color: #8b877e; }
 .col + .col { border-left: .2mm solid #d9d5cc; padding-left: 8mm; }
 .flow { margin: 2.5mm 0 0; padding: 2mm 2.5mm; border: .2mm solid #2b2a27; font: 400 7pt/1.5 "IBM Plex Mono", monospace; }
 
-footer { display: grid; grid-template-columns: 26mm 1fr 26mm 1fr; gap: 0 4mm; align-items: center; padding-top: 5mm; border-top: .35mm solid #2b2a27; }
+footer { display: grid; grid-template-columns: 26mm minmax(0,1fr) 26mm minmax(0,1fr); gap: 0 4mm; align-items: center; padding-top: 5mm; border-top: .35mm solid #2b2a27; }
 footer img { width: 26mm; height: 26mm; }
 footer b { display: block; font: 500 9pt/1.3 "Noto Serif TC", serif; }
 footer span { display: block; font: 400 6.8pt/1.5 "IBM Plex Mono", monospace; color: #5f5b54; word-break: break-all; }
@@ -50,7 +50,7 @@ footer span { display: block; font: 400 6.8pt/1.5 "IBM Plex Mono", monospace; co
 <article class="sheet">
   <header>
     <h1>tosaint<span>余致賢</span></h1>
-    <p>Master’s student in Architecture · NTUST<br>Assignment 1 · Final Project Stage 1 · 2026</p>
+    <p>NTUST Graduate Institute of Architecture<br>115-1 Architecture App · Advisor 林裕傑</p>
   </header>
   <p class="quote">“An empty room fills with light, and good things come to stay.” — Zhuangzi　虛室生白，吉祥止止。</p>
 
@@ -59,31 +59,27 @@ footer span { display: block; font: 400 6.8pt/1.5 "IBM Plex Mono", monospace; co
       <h2>My Website</h2>
       <p class="tag">Portfolio / Website CV · tosaint.com</p>
       <span class="k">Idea</span>
-      <p>My website is built on one line from Zhuangzi: when a space is clear, there is room for good things to stay. So the main idea is to leave space open.</p>
+      <p>From Zhuangzi: when a space is clear, good things come to stay. The main idea is open space.</p>
       <span class="k">Home and works</span>
-      <p>The home page comes from my wood work, <i>Water’s Echo in Wood</i>. On a paper-white background, soft rings spread like ripples when you touch the screen or move your mouse. Each work first appears as a black-and-white line drawing; its own page shows the real colors and materials.</p>
+      <p>Ripples from my wood work <i>Water’s Echo in Wood</i> appear when you touch the screen or move the mouse. Works show as line drawings; each work page shows the real colors.</p>
       <span class="k">Working with AI</span>
-      <p>I built the site with AI. I led the layout, the order of the content and the interactions, and gave the AI photos and screenshots. I kept checking and changing the results. A frame like a building drawing felt too limiting, so I removed it and kept open space and simple lines.</p>
+      <p>I led the layout and checked every result. A drawing-sheet frame felt too limiting, so I removed it.</p>
       <span class="k">How it works</span>
-      <p>Content is separate from design. profile.json and projects.json hold the content, and JavaScript builds the work cards, the index and my CV. To add a work, I only edit JSON, not HTML. Git saves every version, and GitHub Pages puts the site online at tosaint.com.</p>
-      <p class="flow">projects.json → main.js → work cards → GitHub Pages</p>
+      <p>To add a work, I edit JSON, not HTML. Git saves every version; GitHub Pages puts it online.</p>
+      <p class="flow">projects.json → main.js → work cards</p>
     </section>
 
     <section class="col">
       <h2>Is Clear Glass Safe?</h2>
-      <p class="tag">Final project · Stage 1 concept proposal</p>
+      <p class="tag">Final project · Stage 1 proposal</p>
       <span class="k">Context</span>
-      <p>This summer I visited all 17 toilets of THE TOKYO TOILET in Shibuya. Shigeru Ban’s transparent toilet was the most interesting: you can see in when it is empty, and the glass turns cloudy when you lock the door.</p>
-      <span class="k">Problem</span>
-      <p>I was still afraid to use it. A 2026 floor-plan study also found these toilets have the lowest privacy score, but a plan cannot show how people feel. Do people really feel safer if they can see in first?</p>
-      <span class="k">Users and current workflow</span>
-      <p>Architects and researchers test designs with photo surveys or site interviews. Photos cannot show the glass changing, and on site you cannot control the view or the people walking by.</p>
-      <span class="k">Intervention</span>
-      <p>So I built a phone 3D survey with three.js and AI. People choose a toilet and try four walls: opaque, frosted, frosted after locking, and clear, in a balanced order with the same passers-by. They rate before entering and again from memory after locking. “I can’t say” is saved separately.</p>
-      <span class="k">Given → performs → produces</span>
-      <p>Given ratings for four wall types, the system controls the order, matches each person’s answers and saves them as JSON in Google Sheets, producing a dataset that compares privacy and safety.</p>
-      <span class="k">MVP and questions</span>
-      <p>One toilet, four walls, complete data saving. Next: is the phone close to the real place, and how many people does the study need?</p>
+      <p>I visited all 17 toilets of THE TOKYO TOILET. Shigeru Ban’s glass toilets are clear when empty and turn frosted when locked.</p>
+      <span class="k">Question</span>
+      <p>Does seeing inside first really make people feel safer?</p>
+      <span class="k">Method</span>
+      <p>A phone 3D survey with three.js. Four walls: solid, frosted, frosted after locking, clear. People rate before entering and after sitting down.</p>
+      <span class="k">Output</span>
+      <p>Google Apps Script saves the answers as JSON to Google Sheets: a dataset comparing privacy and safety.</p>
     </section>
   </div>
 
