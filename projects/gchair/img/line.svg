@@ -1,11 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="540 90 520 1075" fill="none" stroke="#2b2a27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-<!-- 高音譜椅 Gchair (2007), traced from a photograph of the piece: one line per steel tube -->
-<path d="M852 980 C 858 700, 866 420, 870 300 C 872 240, 868 180, 880 145 C 892 115, 945 112, 972 140 C 995 165, 975 200, 935 215 C 860 245, 760 300, 700 375 C 650 435, 655 505, 712 545"/>
-<path d="M878 355 C 940 355, 995 380, 996 430 C 997 480, 960 525, 930 538"/>
-<path d="M712 545 C 760 568, 880 560, 930 538"/>
-<path d="M708 522 L 930 528"/>
-<path d="M706 548 L 580 1052"/>
-<path d="M880 562 L 937 1140"/>
-<path d="M640 852 C 650 900, 760 905, 930 888"/>
-<path d="M745 892 L 848 822"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="112 40 320 635" fill="none" stroke="#2b2a27" stroke-linecap="round" stroke-linejoin="round">
+<!-- 高音譜椅 Gchair (2007), traced from a photograph: each steel tube drawn with its thickness,
+     the clef passing in front of the upright, the rosewood seat inside the ring -->
+<ellipse cx="262" cy="612" rx="146" ry="54" stroke-dasharray="1.2 4" stroke-width=".9" opacity=".45"/>
+<path d="M311 562 C 313 450, 316 330, 319 200 C 320 150, 318 110, 322 84" stroke-width="5.4"/><path d="M311 562 C 313 450, 316 330, 319 200 C 320 150, 318 110, 322 84" stroke="#fff" stroke-width="3.5"/>
+<path d="M247 513 L 312 471" stroke-width="5.4"/><path d="M247 513 L 312 471" stroke="#fff" stroke-width="3.5"/>
+<path d="M187 487 C 197 512, 262 518, 357 510" stroke-width="5.4"/><path d="M187 487 C 197 512, 262 518, 357 510" stroke="#fff" stroke-width="3.5"/>
+<path d="M153 606 L 229 304" stroke-width="5.4"/><path d="M153 606 L 229 304" stroke="#fff" stroke-width="3.5"/>
+<path d="M328 310 L 363 657" stroke-width="5.4"/><path d="M328 310 L 363 657" stroke="#fff" stroke-width="3.5"/>
+<path d="M320 192 C 360 192, 396 208, 399 240 C 401 270, 380 290, 356 297" stroke-width="5.4"/><path d="M320 192 C 360 192, 396 208, 399 240 C 401 270, 380 290, 356 297" stroke="#fff" stroke-width="3.5"/>
+<path d="M228 291 C 262 287, 330 288, 361 293 C 352 300, 300 304, 262 302 C 244 301, 232 297, 228 291 Z" fill="#fff" stroke-width="1"/><path d="M244 294 C 280 292, 318 293, 344 296 M258 299 C 290 298, 322 298, 336 299" stroke-width=".5" opacity=".55"/>
+<path d="M319 128 C 319 108, 319 96, 322 86 C 326 62, 350 52, 372 58 C 395 66, 396 90, 375 100 C 330 122, 268 160, 232 206 C 192 254, 202 292, 232 301 C 272 316, 340 312, 384 294" stroke-width="5.4"/><path d="M319 128 C 319 108, 319 96, 322 86 C 326 62, 350 52, 372 58 C 395 66, 396 90, 375 100 C 330 122, 268 160, 232 206 C 192 254, 202 292, 232 301 C 272 316, 340 312, 384 294" stroke="#fff" stroke-width="3.5"/>
 </svg>
