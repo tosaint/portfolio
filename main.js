@@ -126,7 +126,7 @@ async function main() {
       getJSON("data/profile.json"),
       getJSON("data/projects.json")
     ]);
-    document.title = `${profile.name} · ${profile.name_zh}`;
+    document.title = `${profile.name} ${profile.name_zh}`;
     renderEntrance(profile);
     renderWorks(projects.filter((w) => !w.hidden));
     renderAbout(profile);
