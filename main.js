@@ -22,13 +22,14 @@ async function getJSON(path) {
 function renderEntrance(p) {
   document.getElementById("mark").innerHTML = `${esc(p.name)}<span>${esc(p.name_zh)}</span>`;
   document.getElementById("entrance").innerHTML = `
-    <p class="eyebrow">${esc(p.role)}</p>
     <h1>${esc(p.name)}<span class="zh">${esc(p.name_zh)}</span></h1>
-    <p class="statement">${esc(p.statement)}</p>
-    <div class="coords">
-      <p>${esc(p.location)}</p>
-      ${(p.education || []).slice(0, 1).map((e) => `<p class="degree">${esc(e.title)}<br>${esc(e.org)}</p>`).join("")}
-    </div>`;
+    ${p.quote ? `<figure class="quote">
+      <blockquote>
+        <p class="q-zh" lang="zh-Hant">${esc(p.quote.zh)}</p>
+        <p class="q-en">“${esc(p.quote.en)}”</p>
+      </blockquote>
+      <figcaption>— ${esc(p.quote.source)} <span lang="zh-Hant">${esc(p.quote.source_zh || "")}</span></figcaption>
+    </figure>` : ""}`;
 }
 
 function renderWorks(projects) {
@@ -75,7 +76,7 @@ function cvGroup(title, items) {
     <details class="${e.detail ? "has-detail" : ""}">
       <summary${e.detail ? "" : ' tabindex="-1" onclick="return false"'}>
         <span class="p">${esc(e.period)}</span>
-        <span class="t"><strong>${esc(e.title)}</strong><span>${esc(e.org)}</span></span>
+        <span class="t"><strong>${esc(e.title)}</strong><span>${esc(e.org)}</span>${e.org_zh ? `<span lang="zh-Hant">${esc(e.org_zh)}</span>` : ""}${e.note ? `<em>${esc(e.note)}</em>` : ""}</span>
       </summary>
       ${e.detail ? `<p class="d">${esc(e.detail)}</p>` : ""}
     </details>`).join("")}</section>`;
@@ -88,16 +89,16 @@ function renderAbout(p) {
   document.getElementById("about-body").innerHTML = `
     <div class="about-text">
       ${(p.about || []).map((t) => `<p>${esc(t)}</p>`).join("")}
+      <p class="place">${esc(p.location)}</p>
       <div class="contact">
-        <p>Email: ${esc(p.email)}</p>
+        <p>Email: <a href="mailto:${esc(p.email)}">${esc(p.email)}</a></p>
         ${links}
       </div>
     </div>
     <div class="cv">
       ${cvGroup("Experience", p.experience)}
       ${cvGroup("Education", p.education)}
-      ${p.skills && p.skills.length ? `<section><h3>Skills</h3><dl class="skills">${p.skills.map((s) =>
-        `<div><dt>${esc(s.group)}</dt><dd>${esc(s.items.join(", "))}</dd></div>`).join("")}</dl></section>` : ""}
+      ${p.interests && p.interests.length ? `<section><h3>Interests</h3><ul class="interests">${p.interests.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></section>` : ""}
     </div>`;
   document.getElementById("updated").textContent = `Last updated ${p.updated || ""}`;
 }

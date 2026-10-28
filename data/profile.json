@@ -1,9 +1,14 @@
 {
   "name": "tosaint",
   "name_zh": "余致賢",
-  "role": "Student of architecture",
-  "statement": "Drawn to old architecture and new technology, I wander between tradition and innovation, discovering stories hidden in everyday life.",
-  "email": "[your email]",
+  "quote": {
+    "zh": "瞻彼闋者，虛室生白，吉祥止止。",
+    "en": "Look into the empty space: an empty room fills with light, and blessings find their place to dwell.",
+    "source": "Zhuangzi, In the Human World",
+    "source_zh": "《莊子・人間世》"
+  },
+  "location": "📍 Laojie River 老街溪, Taiwan",
+  "email": "yu@tosaint.com",
   "links": [
     {
       "label": "GitHub",
@@ -11,42 +16,28 @@
     }
   ],
   "about": [
-    "I studied architecture, and my work now sits between design and computation: 3D models, browser-based tools and data that help people read a space before they stand in it.",
-    "My current research is a phone-based study of how people feel about privacy and safety in a transparent public toilet in Tokyo. Participants walk through a 3D model built from the plan and site photos, and their answers go straight into a dataset."
+    "Life passes in the blink of an eye.",
+    "If there is anything I truly seek, it is simply a little warmth, and the quiet grace of remembering and being remembered."
   ],
   "education": [
     {
-      "period": "[20XX] – present",
+      "period": "Current",
       "title": "Master’s Student in Architecture",
       "org": "National Taiwan University of Science and Technology (NTUST)",
-      "detail": "Research on environmental perception: how a building's transparency changes people's sense of privacy and safety."
+      "org_zh": "國立臺灣科技大學",
+      "note": "Research interests: environmental perception in architecture, artificial intelligence"
     },
     {
-      "period": "[20XX] – [20XX]",
-      "title": "[Bachelor's degree in Architecture]",
-      "org": "[University]",
-      "detail": ""
+      "period": "",
+      "title": "Bachelor’s Degree, Industrial Technology Education",
+      "org": "National Kaohsiung Normal University (NKNU)",
+      "org_zh": "國立高雄師範大學"
     }
   ],
   "experience": [],
-  "skills": [
-    {
-      "group": "Design",
-      "items": [
-        "Architectural design",
-        "3D modelling",
-        "Onshape"
-      ]
-    },
-    {
-      "group": "Code",
-      "items": [
-        "JavaScript",
-        "three.js",
-        "p5.js",
-        "Google Apps Script"
-      ]
-    }
+  "interests": [
+    "I love traveling in Japan and have climbed Mount Fuji twice.",
+    "I play the huqin 胡琴, suona 嗩吶 and shakuhachi 尺八."
   ],
   "updated": "2026-10-28"
 }

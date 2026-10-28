@@ -14,7 +14,7 @@ The page layout and the content are kept apart. The HTML only contains empty sec
 index.html          page structure (empty sections)
 style.css           all styling, dark and light themes
 main.js             reads the JSON files and renders the page
-data/profile.json   name, statement, about text, education, experience, skills
+data/profile.json   name, quote, about text, location, education, interests
 data/projects.json  one entry per project
 images/             project images
 ```
