@@ -97,6 +97,17 @@ h3 { margin: clamp(40px, 6vw, 64px) 0 18px; font: 400 12px var(--mono); letter-s
 .data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
 .data dd { margin: 0; }
 
+.en-lead { display: block; margin-top: 8px; font: 300 15px/1.7 var(--serif); }
+.process h3 { margin-top: 0; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+.steps li { padding: 16px 14px 4px 0; border-right: 1px solid var(--rule); }
+.steps li + li { padding-left: 14px; }
+.steps li:last-child { border-right: 0; }
+.steps b { display: block; font: 500 17px/1.3 var(--serif); }
+.steps b span { display: block; margin-top: 4px; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.steps p { margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: var(--ink-2); }
+.loop { margin: 14px 0 0; font: 400 12.5px/1.6 var(--mono); color: var(--ink-2); }
+@media (max-width: 860px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } .steps li, .steps li + li { padding: 14px 12px 6px 0; border-right: 0; border-bottom: 1px solid var(--rule); } }
 @media (max-width: 760px) {
   .head { grid-template-columns: 1fr; }
   .plan { justify-self: start; width: min(80%, 320px); order: -1; }
@@ -121,7 +132,7 @@ h3 { margin: clamp(40px, 6vw, 64px) 0 18px; font: 400 12px var(--mono); letter-s
       <p class="eyebrow">Work 003 · 2026 · AI-assisted design</p>
       <h1>Architecture App</h1>
       <p class="sub">與 AI 協作的網站與專題導覽</p>
-      <p class="lead">國立臺灣科技大學建築研究所　115-1　建築 App<br>指導　林裕傑教授<br>學生　余致賢</p>
+      <p class="lead">這個網站與期末專題，都是用「描述 → 參考 → 生成 → 檢視 → 修正 → 提交」的循環和 AI 一起完成的。AI 負責產出版本，方向、取捨與檢查由我決定。<br><span class="en-lead">Made with AI in a loop: describe, show references, generate, review, correct, commit. The AI made versions; I set the direction and checked every result.</span></p>
       <div class="btns">
         <a class="btn" href="handout.html">A4 講稿 Handout</a>
         <a class="btn" href="../seen-through/">研究說明 002</a>
@@ -129,6 +140,20 @@ h3 { margin: clamp(40px, 6vw, 64px) 0 18px; font: 400 12px var(--mono); letter-s
       </div>
     </div>
     <figure class="plan"><img src="img/line.svg" alt="網站結構線稿：首頁 tosaint.com 通往作品集，作品集通往四件作品；profile.json 與 projects.json 由 main.js 讀入作品集"></figure>
+  </section>
+
+
+  <section class="process" id="process" aria-labelledby="process-h">
+    <h3 id="process-h">與 AI 協作的設計流程 · Design process with AI</h3>
+    <ol class="steps">
+      <li><b>01 描述<span>Describe</span></b><p>用文字說明版面、層級、互動與限制，而不是只說「做漂亮一點」。</p></li>
+      <li><b>02 參考<span>Reference</span></b><p>提供作品照片、網頁截圖，以及想要的風格方向。</p></li>
+      <li><b>03 生成<span>Generate</span></b><p>AI 產出可以比較的版本，例如首頁的 A、B、C 三個方向。</p></li>
+      <li><b>04 檢視<span>Review</span></b><p>在手機與桌機上看截圖，找出不對的地方。</p></li>
+      <li><b>05 修正<span>Correct</span></b><p>指出問題、要求重做：圖框太拘束、線稿像兒童畫、漣漪太多太深。</p></li>
+      <li><b>06 提交<span>Commit</span></b><p>確認後以 Git 提交，GitHub Pages 自動上線；每一步都留在版本紀錄裡。</p></li>
+    </ol>
+    <p class="loop">↺ 04–05 反覆進行，直到視覺與理念一致 · Steps 4–5 repeat until the design matches the idea.</p>
   </section>
 
   <!-- ================= Part 1 ================= -->
