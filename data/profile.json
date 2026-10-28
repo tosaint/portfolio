@@ -2,9 +2,7 @@
   "name": "tosaint",
   "name_zh": "余致賢",
   "quote": {
-    "en": "An empty room fills with light, and blessings find their place to dwell.",
-    "zh": "瞻彼闋者，虛室生白，吉祥止止。",
-    "source_zh": "《莊子・人間世》"
+    "zh": "虛室生白，吉祥止止。"
   },
   "email": "yu@tosaint.com",
   "links": [
@@ -25,14 +23,10 @@
     },
     {
       "title": "Bachelor’s Degree, Industrial Technology Education",
-      "org": "National Kaohsiung Normal University (NKNU)"
+      "org": "National Kaohsiung Normal University (NKNU)",
+      "note": "Other learning: huqin and shakuhachi; taijiquan; fine woodworking; Japan."
     }
   ],
   "experience": [],
-  "interests": [
-    "Travelling Japan alone; Mount Fuji, twice.",
-    "The huqin, the suona, the shakuhachi — since a high-school Chinese orchestra.",
-    "Fine woodworking, apprenticed to a master in Daxi."
-  ],
   "updated": "2026-10-28"
 }

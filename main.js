@@ -22,11 +22,8 @@ async function getJSON(path) {
 function renderEntrance(p) {
   document.getElementById("mark").innerHTML = `${esc(p.name)}<span>${esc(p.name_zh)}</span>`;
   document.getElementById("entrance").innerHTML = `
-    <h1>${esc(p.name)} <span class="zh">${esc(p.name_zh)}</span></h1>
-    ${p.quote ? `<figure class="quote">
-      <blockquote><p>${esc(p.quote.en)}</p></blockquote>
-      <figcaption lang="zh-Hant">— ${esc(p.quote.zh)}<cite>${esc(p.quote.source_zh || "")}</cite></figcaption>
-    </figure>` : ""}`;
+    <h1 lang="zh-Hant">${esc(p.name_zh)}</h1>
+    ${p.quote ? `<p class="quote" lang="zh-Hant">${esc(p.quote.zh)}</p>` : ""}`;
 }
 
 function renderWorks(projects) {

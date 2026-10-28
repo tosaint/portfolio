@@ -57,14 +57,10 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 /* ---------- entrance ---------- */
 .entrance { padding-block: clamp(64px, 14vw, 160px) clamp(56px, 10vw, 120px); display: grid; gap: 28px; }
 .eyebrow { font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0; }
-.entrance h1 { margin: 0; font: 300 clamp(36px, 5.6vw, 72px)/1.05 var(--serif); letter-spacing: .02em; text-wrap: balance; }
+.entrance h1 { margin: 0; font: 300 clamp(36px, 5vw, 64px)/1.1 var(--zh); letter-spacing: .32em; }
 .entrance h1 .zh { display: inline-block; font: 300 clamp(18px, 2.4vw, 30px)/1 var(--zh); letter-spacing: .3em; color: var(--ink-2); margin-left: .2em; vertical-align: baseline; }
 .statement { max-width: 34em; font-size: clamp(17px, 1.6vw, 20px); color: var(--ink); margin: 0; text-wrap: pretty; }
-.quote { margin: 0; display: grid; gap: 12px; max-width: 40em; }
-.quote blockquote, .quote p { margin: 0; }
-.quote blockquote p { font-size: clamp(18px, 1.9vw, 23px); line-height: 1.5; color: var(--ink); text-wrap: pretty; }
-.quote figcaption { font: 400 14px/1.8 var(--zh); letter-spacing: .08em; color: var(--ink-2); }
-.quote cite { font-style: normal; margin-left: .3em; white-space: nowrap; }
+.quote { margin: 0; font: 300 15px/1.8 var(--zh); letter-spacing: .3em; color: var(--ink-2); opacity: .75; }
 .cv summary .t span, .cv summary .t em { display: block; }
 .cv summary .t em { font-style: normal; font-size: 14px; color: var(--ink); margin-top: 6px; }
 .cv .no-period summary { grid-template-columns: minmax(0, 1fr) 16px; }
