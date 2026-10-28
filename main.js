@@ -72,10 +72,11 @@ function renderWorks(projects) {
 
 function cvGroup(title, items) {
   if (!items || !items.length) return "";
-  return `<section><h3>${esc(title)}</h3>${items.map((e) => `
+  const noPeriod = items.every((e) => !e.period);
+  return `<section${noPeriod ? ' class="no-period"' : ""}><h3>${esc(title)}</h3>${items.map((e) => `
     <details class="${e.detail ? "has-detail" : ""}">
       <summary${e.detail ? "" : ' tabindex="-1" onclick="return false"'}>
-        <span class="p">${esc(e.period)}</span>
+        ${noPeriod ? "" : `<span class="p">${esc(e.period)}</span>`}
         <span class="t"><strong>${esc(e.title)}</strong><span>${esc(e.org)}</span>${e.org_zh ? `<span lang="zh-Hant">${esc(e.org_zh)}</span>` : ""}${e.note ? `<em>${esc(e.note)}</em>` : ""}</span>
       </summary>
       ${e.detail ? `<p class="d">${esc(e.detail)}</p>` : ""}

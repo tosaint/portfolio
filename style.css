@@ -68,6 +68,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .place { font: 400 13px/1.7 var(--mono); color: var(--ink-2); }
 .cv summary .t span, .cv summary .t em { display: block; }
 .cv summary .t em { font-style: normal; font-size: 14px; color: var(--ink); margin-top: 6px; }
+.cv .no-period summary { grid-template-columns: minmax(0, 1fr) 16px; }
+.cv .no-period .d { padding-left: 0; }
 .interests { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
 .interests li { padding-block: 12px; font-size: 15px; }
 .interests li + li { border-top: 1px solid var(--hair); }

@@ -21,17 +21,15 @@
   ],
   "education": [
     {
-      "period": "Current",
       "title": "Master’s Student in Architecture",
       "org": "National Taiwan University of Science and Technology (NTUST)",
       "org_zh": "國立臺灣科技大學",
       "note": "Research interests: environmental perception in architecture, artificial intelligence"
     },
     {
-      "period": "",
       "title": "Bachelor’s Degree, Industrial Technology Education",
-      "org": "National Kaohsiung Normal University (NKNU)",
-      "org_zh": "國立高雄師範大學"
+      "org": "NKNU",
+      "org_zh": "國立高雄師範大學工業科技教育學系"
     }
   ],
   "experience": [],
