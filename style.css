@@ -59,7 +59,8 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .entrance h1 { margin: 0; font: 400 clamp(44px, 9vw, 120px)/.95 var(--serif); letter-spacing: -.01em; text-wrap: balance; }
 .entrance h1 .zh { display: block; font: 300 clamp(20px, 3vw, 32px)/1.4 var(--zh); letter-spacing: .3em; color: var(--ink-2); margin-top: 18px; }
 .statement { max-width: 34em; font-size: clamp(17px, 1.6vw, 20px); color: var(--ink); margin: 0; text-wrap: pretty; }
-.coords { display: flex; flex-wrap: wrap; gap: 6px 28px; font: 400 12.5px var(--mono); color: var(--ink-2); margin: 0; padding: 0; list-style: none; }
+.coords { display: grid; gap: 20px; font: 400 13px/1.7 var(--mono); color: var(--ink-2); }
+.coords p { margin: 0; }
 
 /* ---------- section heads ---------- */
 .room-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; border-top: 1px solid var(--ink); padding-top: 12px; margin-top: 24px; }

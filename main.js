@@ -25,10 +25,10 @@ function renderEntrance(p) {
     <p class="eyebrow">${esc(p.role)}</p>
     <h1>${esc(p.name)}<span class="zh">${esc(p.name_zh)}</span></h1>
     <p class="statement">${esc(p.statement)}</p>
-    <ul class="coords">
-      <li>${esc(p.location)}</li>
-      ${(p.education || []).slice(0, 1).map((e) => `<li>${esc(e.title)}, ${esc(e.org)}</li>`).join("")}
-    </ul>`;
+    <div class="coords">
+      <p>${esc(p.location)}</p>
+      ${(p.education || []).slice(0, 1).map((e) => `<p class="degree">${esc(e.title)}<br>${esc(e.org)}</p>`).join("")}
+    </div>`;
 }
 
 function renderWorks(projects) {

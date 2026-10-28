@@ -2,8 +2,7 @@
   "name": "tosaint",
   "name_zh": "余致賢",
   "role": "Student of architecture",
-  "statement": "I trained in architecture, and I build small digital tools that make space easier to see, test and understand.",
-  "location": "Taoyuan, Taiwan",
+  "statement": "Drawn to old architecture and new technology, I wander between tradition and innovation, discovering stories hidden in everyday life.",
   "email": "[your email]",
   "links": [
     {
@@ -18,7 +17,7 @@
   "education": [
     {
       "period": "[20XX] – present",
-      "title": "Master of Architecture (in progress)",
+      "title": "Master’s Student in Architecture",
       "org": "National Taiwan University of Science and Technology (NTUST)",
       "detail": "Research on environmental perception: how a building's transparency changes people's sense of privacy and safety."
     },
