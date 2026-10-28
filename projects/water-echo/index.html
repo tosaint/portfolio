@@ -65,6 +65,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 .data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
 .data dd { margin: 0; }
 .data dd span { color: var(--ink-2); margin-left: .6em; }
+.photo.last { margin-top: clamp(48px, 7vw, 88px); }
 
 @media (max-width: 760px) {
   .head, .text { grid-template-columns: 1fr; }
@@ -104,12 +105,22 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <figcaption>近景 · Detail</figcaption>
   </figure>
 
+  <figure class="photo">
+    <img src="img/close.jpg" width="960" height="720" alt="Low view across the sand: a large turned disc with a teardrop knob, a small spiral piece and a striped wooden ball resting in the white grains" loading="lazy">
+    <figcaption>細部 · Close-up</figcaption>
+  </figure>
+
   <dl class="data">
     <dt>Year</dt><dd>2008</dd>
     <dt>Material</dt><dd>木夾板<span>Plywood</span></dd>
     <dt>Dimensions</dt><dd>180 × 180 × 18 cm</dd>
     <dt>Award</dt><dd>2008 臺灣國際木雕競賽 入選<span>Selected, Taiwan International Wood Sculpture Competition</span></dd>
   </dl>
+
+  <figure class="photo last">
+    <img src="img/maker.jpg" width="960" height="720" alt="The maker sitting cross-legged on the largest disc on a lawn, the other unfinished pale pieces around him" loading="lazy">
+    <figcaption>作者與作品 · With the maker</figcaption>
+  </figure>
 </main>
 </body>
 </html>
