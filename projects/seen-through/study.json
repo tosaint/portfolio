@@ -1,181 +1,90 @@
 {
-  "id": "haru-pilot",
-  "version": "0.8",
+  "id": "haru-boundary",
+  "protocolVersion": "2.0",
+  "configVersion": "2.0-pretest",
   "endpoint": "https://script.google.com/macros/s/AKfycbwcszat4SmRTbvZ7yoTHSJMj1Z4-joTifZKQIF2CFSoboDQRqWn_ynI7_PcrnoeVYI/exec",
+  "pretest": true,
   "minViewSeconds": 8,
+  "insideViewSeconds": 15,
+  "lockWaitMs": 2500,
+  "hazeRate": 2.2,
+  "hazeOkThreshold": 0.95,
+  "expectedRatingsPerTrial": 12,
+  "note": "視覺邊界四方案（O 完全不透明、F 永遠霧面、A 上鎖變霧、D 永遠透明）。白天、受試者自選廁間、廁所外有固定腳本的路人（只路過、不看廁所）。室內觀察不作答，在解鎖前淡出到中性畫面後回想作答。insideViewSeconds、lockWaitMs 與照明於前測後凍結。",
   "view": {
-    "note": "直拿為主：固定水平視角 hfov（度），垂直視角隨手機長寬比變化，上限 maxVfov。網址加 &fov=60 可臨時覆蓋 hfov 做比較。gyro=false 可關閉「轉動手機來看」。",
+    "note": "直拿為主：固定水平視角 hfov（度），垂直視角隨手機長寬比變化，上限 maxVfov。網址加 &fov=60 可臨時覆蓋。gyro=false 可關閉「轉動手機來看」。",
     "hfov": 65,
     "maxVfov": 125,
     "gyro": true
   },
-  "intro": {
-    "title": "透明廁所知覺調查（前導）",
-    "body": [
-      "你將在手機上看到東京澀谷「はるのおがわコミュニティパーク」公廁（坂茂設計）的 3D 模型。",
-      "先自由繞看外觀，再選一間你會使用的廁所，照畫面上的按鈕走近、開門、上鎖、坐下、沖水、洗手、離開。途中會在「進去之前」和「坐在馬桶上」各回答 2 題，全程約 5 分鐘。建議開啟聲音（iPhone 請關閉側邊的靜音開關）。",
-      "作答匿名，不收集姓名或聯絡方式，可隨時關閉頁面退出。"
-    ],
-    "consent": "我已滿 18 歲，並同意參加本調查",
-    "start": "開始"
+  "scenarios": {
+    "O": {
+      "skin": "opaque",
+      "hazeBefore": 0,
+      "hazeAfterLock": 0,
+      "label": "完全不透明（素面實牆，不指涉材料）"
+    },
+    "F": {
+      "skin": "glass",
+      "hazeBefore": 1,
+      "hazeAfterLock": 1,
+      "label": "永遠霧面玻璃"
+    },
+    "A": {
+      "skin": "glass",
+      "hazeBefore": 0,
+      "hazeAfterLock": 1,
+      "label": "上鎖後變霧（真實設計）"
+    },
+    "D": {
+      "skin": "glass",
+      "hazeBefore": 0,
+      "hazeAfterLock": 0,
+      "label": "永遠透明（假設方案）"
+    }
   },
-  "explore": {
-    "title": "自由觀看",
-    "say": "先繞著廁所外觀看看：單指拖曳旋轉、雙指縮放或移動。看夠了就按「開始作答」。",
-    "button": "開始作答"
+  "orders": {
+    "1": "OFDA",
+    "2": "FAOD",
+    "3": "ADFO",
+    "4": "DOAF"
+  },
+  "lighting": {
+    "note": "室內點光源強度；前測確認不透明方案沒有變成暗室。若需方案專屬補光，在此修改並記錄。",
+    "dayInterior": {
+      "glass": 0.35,
+      "opaque": 0.35
+    }
   },
   "boothQuestion": {
     "title": "選擇廁所",
     "text": "如果你在這座公園需要上廁所，你會使用哪一間？",
-    "options": [
-      {
-        "value": "accessible",
-        "label": "多功能廁所",
-        "ja": "だれでもトイレ",
-        "icon": "a",
-        "walk": "booth1"
-      },
-      {
-        "value": "female",
-        "label": "女廁",
-        "ja": "女子トイレ",
-        "icon": "f",
-        "walk": "booth2"
-      },
-      {
-        "value": "male",
-        "label": "男廁",
-        "ja": "男子トイレ",
-        "icon": "m",
-        "walk": "booth3"
-      }
-    ]
+    "note": "接下來的四個方案都會在你選的這一間進行。"
   },
-  "times": [
+  "boothChoice": [
     {
-      "id": "day",
-      "label": "白天",
-      "night": false
+      "booth": "booth1",
+      "label": "共用／無障礙廁所",
+      "ja": "だれでもトイレ",
+      "icon": "a"
     },
     {
-      "id": "night",
-      "label": "晚上",
-      "night": true
+      "booth": "booth2",
+      "label": "女廁",
+      "ja": "女子トイレ",
+      "icon": "f"
+    },
+    {
+      "booth": "booth3",
+      "label": "男廁",
+      "ja": "男子トイレ",
+      "icon": "m"
     }
   ],
-  "replay": {
-    "enabled": true,
-    "title": "看看另一個時段",
-    "ask": "剛才是{time}。想看看{other}的同一間廁所嗎？會帶你到三個地方各看一下，約 30 秒，看完只需回答一次。",
-    "yes": "好，看看{other}",
-    "no": "不用了",
-    "playing": "{other}・同一間廁所",
-    "stops": [
-      {
-        "pose": "start",
-        "say": "{other}的公園步道上。請轉頭看看，再按「下一個」。"
-      },
-      {
-        "pose": "closeView",
-        "doorClosed": true,
-        "action": "lock",
-        "delay": 700,
-        "wait": 600,
-        "say": "你在廁所裡，剛上鎖。注意看玻璃的變化。"
-      },
-      {
-        "pose": "seat",
-        "ask": true,
-        "say": "你坐在馬桶上。請轉頭看看四周，看完後按「開始作答」，回想這三個地方的感受作答。"
-      }
-    ]
-  },
-  "steps": [
-    {
-      "id": "outside",
-      "checkpoint": true,
-      "say": "你在公園步道上想上廁所，眼前就是你選的那間。請轉頭看看四周，看完後按「開始作答」。"
-    },
-    {
-      "id": "door",
-      "say": "決定使用這間廁所。",
-      "label": "走到門前",
-      "pose": "door"
-    },
-    {
-      "id": "open",
-      "label": "開門",
-      "action": "open",
-      "wait": 300
-    },
-    {
-      "id": "enter",
-      "label": "進去",
-      "pose": "inside"
-    },
-    {
-      "id": "close",
-      "label": "關門",
-      "pose": "closeView",
-      "action": "close",
-      "wait": 300
-    },
-    {
-      "id": "lock",
-      "say": "注意看玻璃的變化。",
-      "label": "上鎖",
-      "action": "lock",
-      "wait": 800
-    },
-    {
-      "id": "sit",
-      "label": "坐下",
-      "pose": "seat"
-    },
-    {
-      "id": "seated",
-      "checkpoint": true,
-      "say": "你坐在馬桶上。請轉頭看看四周，看完後按「開始作答」。"
-    },
-    {
-      "id": "flush",
-      "label": "按沖水鈕",
-      "pose": "flushView",
-      "action": "flush",
-      "wait": 2600
-    },
-    {
-      "id": "wash",
-      "label": "起身洗手",
-      "pose": "basin",
-      "action": "wash",
-      "wait": 1800
-    },
-    {
-      "id": "unlock",
-      "say": "準備離開。",
-      "label": "解鎖",
-      "pose": "unlockView",
-      "action": "unlock",
-      "wait": 600
-    },
-    {
-      "id": "open2",
-      "label": "開門",
-      "action": "open",
-      "wait": 300
-    },
-    {
-      "id": "exit",
-      "label": "走出去",
-      "pose": "exit",
-      "wait": 400
-    }
-  ],
-  "walkthroughs": {
+  "booths": {
     "booth1": {
-      "note": "① だれでもトイレ。座標單位公尺，x 向右、z 向公園步道（前玻璃 z=1.193），眼高站姿 1.55、坐姿 1.17。",
-      "booth": 0,
+      "index": 0,
+      "note": "① だれでもトイレ。坐姿面向端部外牆（x=-2.968）。",
       "poses": {
         "start": {
           "pos": [
@@ -236,60 +145,46 @@
             1.05,
             -0.59
           ]
-        },
-        "flushView": {
-          "pos": [
-            -1.08,
-            1.17,
-            -0.59
-          ],
-          "look": [
-            -1.33,
-            1.15,
-            -1.19
-          ]
-        },
-        "basin": {
-          "pos": [
-            -1.42,
-            1.55,
-            0.29
-          ],
-          "look": [
-            -0.835,
-            0.95,
-            0.29
-          ]
-        },
-        "unlockView": {
-          "pos": [
-            -2.2,
-            1.55,
-            0.55
-          ],
-          "look": [
-            -2.36,
-            1.3,
-            1.193
-          ]
-        },
-        "exit": {
-          "pos": [
-            -2.36,
-            1.55,
-            3.2
-          ],
-          "look": [
-            -1.9,
-            1.2,
-            1.193
-          ]
         }
+      },
+      "passersby": {
+        "inside": [
+          {
+            "kind": "dogwalker",
+            "path": [
+              [
+                -4.1,
+                4.0
+              ],
+              [
+                -4.1,
+                -4.5
+              ]
+            ],
+            "speed": 1.1,
+            "crossAt": 4
+          },
+          {
+            "kind": "runner",
+            "path": [
+              [
+                -4.5,
+                -4.5
+              ],
+              [
+                -4.5,
+                4.0
+              ]
+            ],
+            "speed": 3.0,
+            "crossAt": 11
+          }
+        ]
       }
     },
     "booth2": {
-      "note": "② 女子トイレ。內開推門，鉸鏈在 x=-0.50。",
-      "booth": 1,
+      "index": 1,
+      "note": "② 女子トイレ。兩側隔間牆皆為鏡面，坐姿改為面向門口前牆，才看得到被操弄的玻璃。",
       "poses": {
         "start": {
           "pos": [
@@ -346,64 +241,50 @@
             0.14
           ],
           "look": [
-            -1.0,
-            1.05,
-            0.14
-          ]
-        },
-        "flushView": {
-          "pos": [
-            0.854,
-            1.17,
-            0.14
-          ],
-          "look": [
-            1.05,
-            1.18,
-            -0.3
-          ]
-        },
-        "basin": {
-          "pos": [
-            0.51,
-            1.55,
-            0.81
-          ],
-          "look": [
-            1.099,
-            0.95,
-            0.81
-          ]
-        },
-        "unlockView": {
-          "pos": [
             0.0,
-            1.55,
-            0.35
-          ],
-          "look": [
-            -0.11,
-            1.3,
-            1.193
-          ]
-        },
-        "exit": {
-          "pos": [
-            -0.11,
-            1.55,
-            3.2
-          ],
-          "look": [
-            0.27,
-            1.2,
+            1.05,
             1.193
           ]
         }
+      },
+      "passersby": {
+        "inside": [
+          {
+            "kind": "dogwalker",
+            "path": [
+              [
+                6.0,
+                2.6
+              ],
+              [
+                -8.0,
+                2.6
+              ]
+            ],
+            "speed": 1.1,
+            "crossAt": 4
+          },
+          {
+            "kind": "runner",
+            "path": [
+              [
+                -8.0,
+                3.0
+              ],
+              [
+                6.0,
+                3.0
+              ]
+            ],
+            "speed": 3.0,
+            "crossAt": 11
+          }
+        ]
       }
     },
     "booth3": {
-      "note": "③④ 男子トイレ。內開推門，鉸鏈在 x=2.83。統一使用大便器，不使用小便斗。",
-      "booth": 2,
+      "index": 2,
+      "note": "③④ 男子トイレ。坐姿面向端部外牆（x=2.968）。統一使用大便器。",
       "poses": {
         "start": {
           "pos": [
@@ -464,228 +345,657 @@
             1.05,
             -0.55
           ]
-        },
-        "flushView": {
-          "pos": [
-            1.615,
-            1.17,
-            -0.55
-          ],
-          "look": [
-            1.9,
-            1.18,
-            -1.15
-          ]
-        },
-        "basin": {
-          "pos": [
-            1.96,
-            1.55,
-            0.81
-          ],
-          "look": [
-            1.37,
-            0.95,
-            0.81
-          ]
-        },
-        "unlockView": {
-          "pos": [
-            2.3,
-            1.55,
-            0.35
-          ],
-          "look": [
-            2.455,
-            1.3,
-            1.193
-          ]
-        },
-        "exit": {
-          "pos": [
-            2.455,
-            1.55,
-            3.2
-          ],
-          "look": [
-            2.17,
-            1.2,
-            1.193
-          ]
         }
+      },
+      "passersby": {
+        "inside": [
+          {
+            "kind": "dogwalker",
+            "path": [
+              [
+                4.1,
+                4.0
+              ],
+              [
+                4.1,
+                -4.5
+              ]
+            ],
+            "speed": 1.1,
+            "crossAt": 4
+          },
+          {
+            "kind": "runner",
+            "path": [
+              [
+                4.5,
+                -4.5
+              ],
+              [
+                4.5,
+                4.0
+              ]
+            ],
+            "speed": 3.0,
+            "crossAt": 11
+          }
+        ]
       }
     }
   },
-  "sceneQuestions": [
+  "passersby": {
+    "note": "crossAt：觀察開始後第幾秒經過焦點（外部＝門前；室內＝坐姿視線與路線交點）。路人只路過、不轉頭看廁所，四方案相同。",
+    "outside": [
+      {
+        "kind": "walker",
+        "path": [
+          [
+            6.0,
+            2.9
+          ],
+          [
+            -8.0,
+            2.9
+          ]
+        ],
+        "speed": 1.3,
+        "crossAt": 3
+      },
+      {
+        "kind": "runner",
+        "path": [
+          [
+            -8.0,
+            3.4
+          ],
+          [
+            6.0,
+            3.4
+          ]
+        ],
+        "speed": 3.0,
+        "crossAt": 6.5
+      }
+    ]
+  },
+  "naLabel": "無法判斷／不願回答",
+  "scales": {
+    "agree7": {
+      "min": 1,
+      "max": 7,
+      "labels": [
+        "非常不同意",
+        "不同意",
+        "有點不同意",
+        "中立",
+        "有點同意",
+        "同意",
+        "非常同意"
+      ]
+    },
+    "use6": {
+      "min": 1,
+      "max": 6,
+      "labels": [
+        "絕對不想使用",
+        "很不想使用",
+        "有點不想使用",
+        "有點想使用",
+        "很想使用",
+        "非常想使用"
+      ],
+      "source": "藤山・長澤（2025，p.675，表6）六段反應選項；1–6 為本研究編碼"
+    },
+    "bright7": {
+      "min": 1,
+      "max": 7,
+      "labels": [
+        "非常暗",
+        "暗",
+        "有點暗",
+        "普通",
+        "有點亮",
+        "亮",
+        "非常亮"
+      ]
+    }
+  },
+  "intro": {
+    "title": "公廁空間感受調查（前測）",
+    "body": [
+      "本研究以虛擬公廁空間了解不同方案帶來的使用感受。你會先選一間想使用的廁所，再依序體驗四個方案：從外面觀看、進入並在裡面待一會兒，之後回答感受與空間判斷問題。研究不要求真實如廁。",
+      "部分場景可能讓你感到暴露、緊張或不適（包括畫面移動造成的頭暈），你可以隨時停止，直接關閉頁面即可；沒有標準答案，請依自己的感受回答。",
+      "全程約 10–15 分鐘（前測中，時間仍在確認）。建議開啟聲音，iPhone 請關閉側邊的靜音開關。作答以隨機代碼保存，不收集姓名或聯絡方式；研究者聯絡方式在結束頁。"
+    ],
+    "consent": "我已滿 18 歲，並同意參加本調查",
+    "start": "開始"
+  },
+  "commonInstruction": "各方案的門鎖都正常運作：門鎖上後，外面的人不能自行開門進入；你可以從裡面開門離開。每個方案的設計不同，請依當下看到與感受到的空間回答。",
+  "practice": {
+    "title": "練習",
+    "pose": {
+      "pos": [
+        1.0,
+        1.55,
+        6.0
+      ],
+      "look": [
+        7.0,
+        1.3,
+        4.5
+      ]
+    },
+    "minViewSeconds": 4,
+    "say": [
+      "先練習怎麼看：用手指在畫面上拖曳就能轉頭；也可以按右上角「轉動手機來看」，直接轉動手機。",
+      "下方的白色卡片可以按「收起」，讓畫面看得更清楚。看幾秒後按「下一步」。"
+    ],
+    "sampleLead": "練習作答：點選一個數字。如果無法判斷，可以勾選下方的「無法判斷／不願回答」。這題不計入研究結果。",
+    "sampleQuestion": {
+      "id": "PRAC1",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "這座公園看起來很整潔。"
+    },
+    "lockTitle": "門鎖說明",
+    "comprehension": [
+      {
+        "id": "PC1",
+        "type": "single",
+        "text": "門鎖上後，外面的人能不能自行開門進來？",
+        "correct": "cannot",
+        "options": [
+          {
+            "value": "can",
+            "label": "能"
+          },
+          {
+            "value": "cannot",
+            "label": "不能"
+          }
+        ]
+      },
+      {
+        "id": "PC2",
+        "type": "single",
+        "text": "門鎖上後，你需要時能不能從裡面開門離開？",
+        "correct": "can",
+        "options": [
+          {
+            "value": "can",
+            "label": "能"
+          },
+          {
+            "value": "cannot",
+            "label": "不能"
+          }
+        ]
+      }
+    ],
+    "wrongText": "有一題和說明不同。請再看一次下面的說明，然後再確認一次。"
+  },
+  "text": {
+    "trialTitle": "方案 {n}／{total}",
+    "trialCover": "第 {n} 個方案（共 {total} 個）",
+    "outsideSay": "你在公園步道上想上廁所，眼前就是你選的那間廁所，現在沒有人使用。請轉頭看看四周，看完後按「開始作答」。",
+    "outsideExpectLead": "請依目前看到的外觀，想像接下來由你進入、關門並上鎖後使用這間廁所，回答對即將使用的預期。",
+    "outsideNowLead": "接下來這一題，請依你此刻站在外面看到的情況回答。",
+    "insideSay": "你坐在馬桶上，門已上鎖。請轉頭看看四周、感受這個空間；這段不用作答，時間到了再按「結束觀察」。",
+    "insideDone": "結束觀察",
+    "recallLead": "回想剛才上鎖後、坐在廁所內觀察的那段時間，依當時的感受回答。",
+    "pretestLead": "前測加問（不計入正式題目）：",
+    "steps": {
+      "door": "走到門前",
+      "open": "開門",
+      "enter": "進去",
+      "close": "關門",
+      "lock": "上鎖",
+      "sit": "坐下"
+    },
+    "postTitle": "四個方案都看完了",
+    "postLead": "以下題目請回想剛才的四個方案。",
+    "pretestEndLead": "前測加問（不計入正式題目），請用自己的話回答：",
+    "backgroundTitle": "最後幾題，關於你自己",
+    "backgroundLead": "每題都可以選「不願回答」。"
+  },
+  "outsideExpect": [
     {
-      "id": "use",
+      "id": "O1",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "我預期在這間廁所內使用時，自己的視覺隱私能受到保護。"
+    },
+    {
+      "id": "O2",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "我預期在這間廁所內使用時，會感到安全。"
+    },
+    {
+      "id": "O3",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "我預期在這間廁所內使用時，會有受到這個空間保護的感覺。"
+    },
+    {
+      "id": "O4",
+      "type": "scale",
+      "scale": "use6",
+      "na": true,
+      "text": "如果你現在需要上廁所，根據目前的觀察，你會想使用這間廁所嗎？"
+    }
+  ],
+  "outsideNow": [
+    {
+      "id": "O5",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "從這裡看，我能確認廁所裡面的狀況。"
+    }
+  ],
+  "recall": [
+    {
+      "id": "R1",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "回想剛才上鎖後坐在裡面的那段時間，我覺得自己的視覺隱私受到保護。"
+    },
+    {
+      "id": "R2",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "回想剛才上鎖後坐在裡面的那段時間，我在那間廁所內感到安全。"
+    },
+    {
+      "id": "R3",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "回想剛才上鎖後坐在裡面的那段時間，我有受到那個空間保護的感覺。"
+    },
+    {
+      "id": "R4",
+      "type": "scale",
+      "scale": "use6",
+      "na": true,
+      "text": "經過剛才的體驗，如果你需要上廁所，你會想使用那間廁所嗎？"
+    },
+    {
+      "id": "R5",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "回想剛才上鎖後坐在裡面的那段時間，我能掌握廁所外正在發生的事情。"
+    },
+    {
+      "id": "R6",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "回想剛才上鎖後坐在裡面的那段時間，我覺得廁所外的人可能看清我的身體。"
+    },
+    {
+      "id": "R7",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "回想剛才上鎖後坐在裡面的那段時間，那個空間讓我感到侷促。"
+    }
+  ],
+  "pretestScene": [
+    {
+      "id": "T1",
+      "type": "scale",
+      "scale": "bright7",
+      "na": true,
+      "text": "剛才廁所內看起來有多明亮？"
+    },
+    {
+      "id": "T2",
       "type": "single",
-      "text": "如果你現在需要上廁所，你會想使用這間廁所嗎？",
-      "source": "選項譯自 藤山・長澤 (2025) 表6 利用選好之六段尺度；題幹為本研究改寫",
+      "text": "剛才是否有看不清楚門、出入口或牆面的地方？",
       "options": [
         {
-          "value": 6,
-          "label": "非常想使用",
-          "ja": "非常に利用したい"
+          "value": "yes",
+          "label": "有"
         },
         {
-          "value": 5,
-          "label": "很想使用",
-          "ja": "とても利用したい"
-        },
-        {
-          "value": 4,
-          "label": "有點想使用",
-          "ja": "やや利用したい"
-        },
-        {
-          "value": 3,
-          "label": "有點不想使用",
-          "ja": "やや利用したくない"
-        },
-        {
-          "value": 2,
-          "label": "很不想使用",
-          "ja": "とても利用したくない"
-        },
-        {
-          "value": 1,
-          "label": "絕對不想使用",
-          "ja": "絶対に利用したくない"
+          "value": "no",
+          "label": "沒有"
         }
       ]
     },
     {
-      "id": "concern",
-      "type": "multi",
-      "text": "使用這間廁所時，你會有哪些擔心？（可複選）",
-      "source": "第1–6項與「特別沒有」取自 藤山・長澤 (2025) 表10（第7–17項為共用空間之異性相關項目，單人廁所不適用故排除）；「glass」一項為本研究自訂（custom: true）",
-      "exclusive": "none",
+      "id": "T2a",
+      "type": "text",
+      "optional": true,
+      "showIf": {
+        "q": "T2",
+        "in": [
+          "yes"
+        ]
+      },
+      "text": "請指出是哪裡。"
+    },
+    {
+      "id": "T2b",
+      "type": "single",
+      "text": "剛才坐在裡面時，你有注意到外面有人經過嗎？",
       "options": [
         {
-          "value": "hygiene",
-          "label": "衛生（清潔狀況、氣味）上的不安",
-          "ja": "衛生上（清掃状況・ニオイ等）の不安"
+          "value": "saw_clear",
+          "label": "有，看得清楚"
         },
         {
-          "value": "privacy",
-          "label": "隱私（聲音、視線）上的不安",
-          "ja": "プライバシー上（音・視線等）の不安"
+          "value": "saw_blur",
+          "label": "有，但只看到模糊的影子"
         },
         {
-          "value": "unease",
-          "label": "心理上似乎無法放鬆",
-          "ja": "心理的に落ち着かなさそうであること"
-        },
-        {
-          "value": "security",
-          "label": "防犯上的不安",
-          "ja": "防犯上の不安"
-        },
-        {
-          "value": "entry",
-          "label": "不清楚怎麼進入廁所",
-          "ja": "トイレ空間への入り方がよく分からないこと"
-        },
-        {
-          "value": "layout",
-          "label": "不清楚廁所整體的配置",
-          "ja": "トイレ空間全体がどうなっているのかよく分からないこと"
-        },
-        {
-          "value": "glass",
-          "label": "擔心玻璃故障或沒有變成不透明",
-          "custom": true
-        },
-        {
-          "value": "none",
-          "label": "特別沒有",
-          "ja": "特にない"
+          "value": "no",
+          "label": "沒有注意到"
         }
       ]
     }
   ],
-  "finalQuestions": [
-    {
-      "id": "priorKnow",
-      "type": "single",
-      "text": "在走進廁所之前，你知道這間廁所上鎖後玻璃會變成不透明嗎？",
-      "source": "本研究自訂；取代原操弄檢核，用來區分進入前是否已知變霧機制",
-      "options": [
+  "mark": {
+    "text": "回想剛才完整的體驗，你第一次覺得自己進入私人範圍，是在哪個位置，或哪個事件之後？",
+    "reasonText": "你為什麼把這個位置或事件當成開始？",
+    "mapPrompt": "請在路線上點選位置。",
+    "otherPlaceholder": "例如：坐下之後、觀察一會兒之後",
+    "options": [
+      {
+        "value": "location",
+        "label": "在剛才走過的路線上的某個位置（請在下圖點選）"
+      },
+      {
+        "value": "threshold",
+        "label": "跨過門檻的那一刻"
+      },
+      {
+        "value": "close",
+        "label": "門關上之後"
+      },
+      {
+        "value": "lock",
+        "label": "上鎖之後"
+      },
+      {
+        "value": "haze",
+        "label": "玻璃變成不透明之後"
+      },
+      {
+        "value": "other_event",
+        "label": "其他時刻（請簡短說明）"
+      },
+      {
+        "value": "start_already",
+        "label": "一開始在外面觀察時，就已經有私人感"
+      },
+      {
+        "value": "none",
+        "label": "這個方案一直沒有讓我感到進入私人範圍"
+      },
+      {
+        "value": "unclear",
+        "label": "有私人感的變化，但說不出明確的界線"
+      },
+      {
+        "value": "no_answer",
+        "label": "想不起來／不願回答"
+      }
+    ],
+    "route": {
+      "version": "route-booth1-v1",
+      "note": "剛才實際走過的路線（模型座標，公尺）。距離 = 沿路線位置 − 門檻位置；門外為負、門內為正。",
+      "bounds": [
+        -3.45,
+        -1.45,
+        -0.15,
+        4.55
+      ],
+      "booth": {
+        "x0": -2.968,
+        "z0": -1.193,
+        "x1": -0.835,
+        "z1": 1.193
+      },
+      "neighbor": {
+        "x0": -0.835,
+        "z0": -1.193,
+        "x1": -0.2,
+        "z1": 1.193
+      },
+      "door": {
+        "x0": -2.968,
+        "x1": -1.76,
+        "z": 1.193
+      },
+      "points": [
         {
-          "value": "sign",
-          "label": "知道，看了旁邊的告示牌"
+          "x": -2.36,
+          "z": 4.2,
+          "label": "起點"
         },
         {
-          "value": "before",
-          "label": "知道，參加之前就知道"
+          "x": -2.36,
+          "z": 2.1,
+          "label": "門前"
         },
         {
-          "value": "guess",
-          "label": "有猜到，但不確定"
+          "x": -2.36,
+          "z": 1.193,
+          "threshold": true,
+          "label": "門檻",
+          "ly": 34
         },
         {
-          "value": "no",
-          "label": "不知道，進去上鎖後才發現"
+          "x": -2.3,
+          "z": 0.55
+        },
+        {
+          "x": -1.08,
+          "z": -0.59,
+          "label": "馬桶",
+          "ly": 34
+        }
+      ],
+      "labels": [
+        {
+          "text": "門外（公園步道）",
+          "x": -1.15,
+          "z": 3.3
+        },
+        {
+          "text": "廁所內",
+          "x": -2.62,
+          "z": -0.55
         }
       ]
-    },
+    }
+  },
+  "post": [
     {
-      "id": "neighborhood",
+      "id": "P1",
       "type": "single",
-      "text": "你希望自己居住的地區也有這樣的廁所嗎？",
-      "source": "渋谷区 THE TOKYO TOILET 利用調查 Q10（居住地域にこういったトイレがあるとよいと思いますか）",
+      "text": "回想上鎖後仍保持透明的方案，你當時如何理解它？",
       "options": [
         {
-          "value": 5,
-          "label": "是",
-          "ja": "そう思う"
+          "value": "designed",
+          "label": "本來就這樣設計"
         },
         {
-          "value": 4,
-          "label": "有點是",
-          "ja": "ややそう思う"
+          "value": "malfunction",
+          "label": "以為設備沒有正常運作"
         },
         {
-          "value": 3,
-          "label": "都不是",
-          "ja": "どちらでもない"
-        },
-        {
-          "value": 2,
-          "label": "不太是",
-          "ja": "あまりそう思わない"
-        },
-        {
-          "value": 1,
-          "label": "不是",
-          "ja": "そう思わない"
-        }
-      ]
-    },
-    {
-      "id": "gender",
-      "type": "single",
-      "text": "你的性別",
-      "options": [
-        {
-          "value": "m",
-          "label": "男性"
-        },
-        {
-          "value": "f",
-          "label": "女性"
+          "value": "unsure",
+          "label": "不確定"
         },
         {
           "value": "other",
           "label": "其他"
-        },
-        {
-          "value": "na",
-          "label": "不想回答"
         }
       ]
     },
+    {
+      "id": "P1o",
+      "type": "text",
+      "optional": true,
+      "showIf": {
+        "q": "P1",
+        "in": [
+          "other"
+        ]
+      },
+      "text": "請簡短說明。"
+    },
+    {
+      "id": "P2",
+      "type": "single",
+      "text": "回想剛才的玻璃方案，你是否曾擔心玻璃沒有依你預期的方式呈現（例如該霧沒霧）？",
+      "options": [
+        {
+          "value": "yes",
+          "label": "有"
+        },
+        {
+          "value": "no",
+          "label": "沒有"
+        },
+        {
+          "value": "unsure",
+          "label": "不確定"
+        },
+        {
+          "value": "refuse",
+          "label": "不願回答"
+        }
+      ]
+    },
+    {
+      "id": "P2a",
+      "type": "multi",
+      "showIf": {
+        "q": "P2",
+        "in": [
+          "yes"
+        ]
+      },
+      "text": "是哪一個方案？（可複選）",
+      "options": [
+        {
+          "value": "F",
+          "label": "一直是霧面的玻璃"
+        },
+        {
+          "value": "A",
+          "label": "上鎖後變成不透明的玻璃"
+        },
+        {
+          "value": "D",
+          "label": "上鎖後仍保持透明的玻璃"
+        }
+      ]
+    },
+    {
+      "id": "P2b",
+      "type": "text",
+      "optional": true,
+      "showIf": {
+        "q": "P2",
+        "in": [
+          "yes"
+        ]
+      },
+      "text": "當時想到什麼？"
+    },
+    {
+      "id": "P3",
+      "type": "single",
+      "text": "哪個方案最讓你有私人空間的感覺？",
+      "options": [
+        {
+          "value": "O",
+          "label": "完全看不見的實牆"
+        },
+        {
+          "value": "F",
+          "label": "一直是霧面的玻璃"
+        },
+        {
+          "value": "A",
+          "label": "上鎖後變成不透明的玻璃"
+        },
+        {
+          "value": "D",
+          "label": "上鎖後仍保持透明的玻璃"
+        },
+        {
+          "value": "same",
+          "label": "沒有差別"
+        },
+        {
+          "value": "none",
+          "label": "都沒有"
+        },
+        {
+          "value": "cannot",
+          "label": "無法判斷"
+        }
+      ]
+    },
+    {
+      "id": "P3r",
+      "type": "text",
+      "optional": true,
+      "text": "主要原因是什麼？"
+    },
+    {
+      "id": "P4",
+      "type": "text",
+      "optional": true,
+      "long": true,
+      "text": "有沒有某個方案讓你覺得「隱私較好，但比較不安心」，或「較能掌握外面，但較有暴露感」？請描述。"
+    },
+    {
+      "id": "L1",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "整體來說，在剛才的方案中，我相信外面的人無法自行開門進入。"
+    },
+    {
+      "id": "L2",
+      "type": "scale",
+      "scale": "agree7",
+      "na": true,
+      "text": "整體來說，在剛才的方案中，我相信自己需要時能從裡面開門離開。"
+    }
+  ],
+  "pretestEnd": [
+    {
+      "id": "T3",
+      "type": "text",
+      "optional": true,
+      "long": true,
+      "text": "請用自己的話說明「安全」「受到保護」「私人範圍」「侷促」分別代表什麼；在外面時那題「裡面的狀況」讓你想到什麼？"
+    },
+    {
+      "id": "T4",
+      "type": "text",
+      "optional": true,
+      "long": true,
+      "text": "哪個步驟最難操作、最難理解，或讓你想停止？"
+    }
+  ],
+  "background": [
     {
       "id": "age",
       "type": "single",
@@ -712,38 +1022,123 @@
           "label": "50–59 歲"
         },
         {
-          "value": "60s",
-          "label": "60–69 歲"
+          "value": "60+",
+          "label": "60 歲以上"
         },
         {
-          "value": "70+",
-          "label": "70 歲以上"
+          "value": "refuse",
+          "label": "不願回答"
         }
       ]
     },
     {
-      "id": "visited",
+      "id": "archBg",
       "type": "single",
-      "text": "你實地去過東京的透明廁所嗎？",
+      "text": "你是否有建築、室內或景觀設計相關的學習或工作背景？",
       "options": [
         {
-          "value": "used",
-          "label": "去過，也使用過"
-        },
-        {
-          "value": "seen",
-          "label": "去過，但沒有使用"
+          "value": "yes",
+          "label": "有"
         },
         {
           "value": "no",
-          "label": "沒去過"
+          "label": "沒有"
+        },
+        {
+          "value": "refuse",
+          "label": "不願回答"
         }
       ]
     },
     {
-      "id": "known",
+      "id": "vrExp",
       "type": "single",
-      "text": "參加這份調查之前，你知道這間廁所嗎？",
+      "text": "你使用 VR 或 3D 虛擬環境（含遊戲）的經驗？",
+      "options": [
+        {
+          "value": "never",
+          "label": "幾乎沒有"
+        },
+        {
+          "value": "some",
+          "label": "偶爾"
+        },
+        {
+          "value": "often",
+          "label": "經常"
+        },
+        {
+          "value": "refuse",
+          "label": "不願回答"
+        }
+      ]
+    },
+    {
+      "id": "gender",
+      "type": "single",
+      "text": "你的性別（自願填答）",
+      "options": [
+        {
+          "value": "m",
+          "label": "男性"
+        },
+        {
+          "value": "f",
+          "label": "女性"
+        },
+        {
+          "value": "other",
+          "label": "其他"
+        },
+        {
+          "value": "refuse",
+          "label": "不想回答"
+        }
+      ]
+    },
+    {
+      "id": "F1",
+      "type": "single",
+      "text": "在參加本研究之前，你是否曾看過、聽過或使用過東京澀谷春之小川公園的透明廁所？",
+      "options": [
+        {
+          "value": "never",
+          "label": "從未聽過或看過"
+        },
+        {
+          "value": "seen_intro",
+          "label": "看過介紹，但沒有到訪"
+        },
+        {
+          "value": "visited",
+          "label": "曾到訪，但未使用"
+        },
+        {
+          "value": "used",
+          "label": "曾使用"
+        },
+        {
+          "value": "unsure",
+          "label": "不確定"
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "type": "text",
+      "optional": true,
+      "showIf": {
+        "q": "F1",
+        "notIn": [
+          "never"
+        ]
+      },
+      "text": "你記得這座廁所有哪些設計特色？"
+    },
+    {
+      "id": "K1",
+      "type": "single",
+      "text": "在參加本研究之前，你是否知道這座廁所上鎖後玻璃會變成不透明？",
       "options": [
         {
           "value": "yes",
@@ -752,6 +1147,10 @@
         {
           "value": "no",
           "label": "不知道"
+        },
+        {
+          "value": "unsure",
+          "label": "不確定"
         }
       ]
     },
@@ -767,32 +1166,34 @@
         {
           "value": "no",
           "label": "沒看過"
+        },
+        {
+          "value": "refuse",
+          "label": "不願回答"
         }
       ]
     }
   ],
-  "finalIntro": "最後幾題，關於你自己。",
-  "thanks": "謝謝你的參與",
   "ending": {
     "cameraMs": 22000,
     "skyMs": 7000,
     "skip": "略過",
     "captions": [
-      "剛才你在裡面時，外面看起來是這樣。",
+      "剛才的方案裡，只有上鎖後變霧的玻璃，是真實的設計。",
       "透明，讓人在走進去之前，先看見裡面。",
       "門打開，它又回到透明，等下一個人。"
     ],
     "toNight": "天色暗下來，它像一盞燈籠。",
-    "toDay": "天亮了，公園又醒過來。",
     "title": "はるのおがわコミュニティパーク　透明トイレ",
     "subtitle": "設計 坂茂 ・ 2020 ・ 澀谷",
     "thanks": "謝謝你的參與",
     "debrief": {
       "title": "關於這個研究",
       "body": [
-        "這是一份建築碩士論文的前導調查。",
-        "東京的透明廁所主張：透明讓人在進去之前放心，上鎖變霧後保護隱私。研究想了解這兩件事在使用者的感受裡是否都成立，以及白天和晚上是否不同。",
-        "你的作答以匿名代碼保存，只用於學術研究。如果你想退出、刪除資料或有任何問題，請附上下方的受試者代碼來信。"
+        "這是一份建築碩士論文的前測調查。",
+        "你看到的四個方案中，只有「上鎖後玻璃變成不透明」是東京春之小川公園透明廁所的真實設計。完全看不見的實牆、一直是霧面的玻璃，以及「上鎖後仍保持透明」都是為了研究而做的假想方案，不是真實建築，也不是設備故障。",
+        "研究想了解：在有人經過的公園裡，看得見、看不清與看不見的邊界，如何影響人對視覺隱私、安全與私人範圍的感受，以及「不透明是否就等於安心」。",
+        "你的作答以隨機代碼保存，只用於學術研究。如有問題，請附上下方的受試者代碼來信。"
       ],
       "contactLabel": "研究者信箱",
       "contact": "yu@tosaint.com",
