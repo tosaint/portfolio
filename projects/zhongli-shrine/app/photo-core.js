@@ -59,7 +59,7 @@ function hall(){const g=new THREE.Group();g.name='P-photo-hall';box(g,'hall-plin
  for(let x=-3.65;x<3.7;x+=.24)box(g,'eave-rafter',.07,.10,.55,x,3.82,2.7,M.trim);
  // Low side eaves reflect the layered roof silhouette seen in the photograph.
  for(const x of [-4.1,4.1]){const wing=new THREE.Group();wing.position.set(x,0,0);roof(wing,{width:3.0,depth:6.7,eave:3.25,rise:.48,up:.15,name:'lower-side-roof'});g.add(wing)}
- roof(g,{width:10.6,depth:7.6,eave:3.9,rise:2.18,up:.22,name:'main-sweeping-roof'});return g;}
+ roof(g,{width:7.3,depth:7.6,eave:3.9,rise:2.18,up:.22,name:'main-sweeping-roof'})/* 寬度依 2026-11 老照片對位修正（原 10.6）*/;return g;}
 function sanctuary(){const g=new THREE.Group();g.name='Q-photo-partial-study';box(g,'sanctuary-base',4.15,.65,4.6,0,.325,0,M.stone);box(g,'raised-floor',3.55,.24,4.0,0,.83,0,M.wood);
  for(const x of [-1.55,1.55])for(const z of [-1.7,1.7])box(g,'sanctuary-post',.16,2.65,.16,x,2.25,z,M.wood);
  box(g,'sanctuary-body',3.08,2.45,3.4,0,2.23,0,M.wood);lattice(g,1.2,1.85,0,2.15,1.73);
