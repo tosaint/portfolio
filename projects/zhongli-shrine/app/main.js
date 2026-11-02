@@ -10,7 +10,8 @@ import { createGround, GROUND_LAYERS } from './ground.js';
    ========================================================= */
 const HIST_PHOTO = {                 // 老照片的拍攝視角（沿用 photo-study 的對位參數）
   src: './assets/photo-study/historical.jpg',
-  eye: [26.45, 9, 10.14], target: [9.6, 6.92, -4], fov: 40, aspect: 1.5   // 已用疊圖重新對位
+  eye: [22.97, 6.50, 11.13], target: [10.61, 5.33, -4.55], fov: 35.7, aspect: 1.5,
+  axes: {"x": [0.78031, 0.07959, -0.62031], "y": [-0.09874, 0.99511, 0.00347], "z": [0.61755, 0.05855, 0.78435]},   // 2026-11-02 以對位工具反求（與模型修正一起解）
 };
 
 const STOPS = [
@@ -349,7 +350,12 @@ function go(i) {
   photoMarker.visible = !s.photo;
   controls.enabled = !s.photo;
   flyTo(new THREE.Vector3(...s.eye), new THREE.Vector3(...s.target), s.photo ? photoFov() : baseFov, () => {
-    if (s.photo) { $('#fade').value = 0; showPhoto(true); applyFade(); }
+    if (s.photo) {
+      // 用反求出的相機軸向（含些微傾斜），而不是單純 lookAt
+      const A = HIST_PHOTO.axes;
+      if (A) camera.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(...A.x), new THREE.Vector3(...A.y), new THREE.Vector3(...A.z)));
+      camera.fov = photoFov(); camera.updateProjectionMatrix();   // 面板高度可能在飛行途中改變，最後再算一次
+      dirty = true; $('#fade').value = 0; showPhoto(true); applyFade(); }
   });
   showStopPins(s);
   history.replaceState(null, '', '#stop-' + (stopIndex + 1));
