@@ -26,6 +26,10 @@
   .era button { border:0; background:none; font:inherit; font-size:15px; font-weight:700; padding:7px 14px; border-radius:999px; color:#7a7262; }
   .era button.on { background:var(--ink); color:var(--paper); }
 
+  .rightTools { display:flex; flex-direction:column; align-items:flex-end; gap:8px; pointer-events:auto; }
+  .groundBtn { border:0; background:rgba(246,242,232,.92); border-radius:999px; padding:6px 12px; font:inherit; font-size:13px; font-weight:700;
+    color:var(--ink); box-shadow:0 2px 10px rgba(0,0,0,.08); }
+  .groundBtn[hidden] { display:none; }
   /* 地圖上的標籤 */
   #pins { position:fixed; inset:0; pointer-events:none; z-index:3; }
   .pin { position:absolute; transform:translate(-50%,-100%); background:var(--ink); color:var(--paper); font-size:12px;
@@ -88,8 +92,11 @@
 
 <div class="top">
   <a class="brand" href="./index.html" style="text-decoration:none;color:inherit"><b>‹ 古今地圖</b><small>中壢神社 3D 復原</small></a>
-  <div class="era" role="group" aria-label="切換年代">
-    <button id="eraPast" class="on">古</button><button id="eraNow">今</button>
+  <div class="rightTools">
+    <div class="era" role="group" aria-label="切換年代">
+      <button id="eraPast" class="on">古</button><button id="eraNow">今</button>
+    </div>
+    <button id="groundBtn" class="groundBtn" hidden>地面：航照</button>
   </div>
 </div>
 
