@@ -24,14 +24,14 @@ const STOPS = [
   },
   {
     title: '鳥居與參道',
-    text: '第一鳥居後來成了學校的校門，1951 年掛上校名與校訓。中壢神社的特色之一是燈籠很少：石燈籠只有三對。',
+    text: '第一鳥居後來成了學校的校門，1951 年掛上校名與校訓。當年報紙特別提到中壢神社「沒有燈籠」（除了必要的之外），石燈籠只有三對。',
     now: '1965 年中央西路開通，正門遷走，這座鳥居改稱南大門，約 1988–89 年拆除。',
     eye: [-122, 10, 4], target: [-62, 3, -6],
     pins: [['B1', '第一鳥居'], ['D3', '石燈籠'], ['D1', '石燈籠']]
   },
   {
     title: '老照片的那一刻',
-    text: '你現在站在當年攝影師的位置。拖曳滑桿讓老照片和 3D 模型疊合：前方是樓門與狛犬，後方是拜殿。中壢神社是第一座採用檜皮葺屋頂的神社。',
+    text: '你現在站在當年攝影師的位置。拖曳滑桿讓老照片和 3D 模型疊合：前方是樓門與狛犬，後方是拜殿。當年報紙說，中壢神社的檜皮葺屋頂是「臺灣唯一」。',
     now: '樓門大約在今天熱食部門口附近；狛犬 1950 年移到了忠義祠。',
     eye: HIST_PHOTO.eye, target: HIST_PHOTO.target,
     photo: true
@@ -128,7 +128,7 @@ const photoMarker = new THREE.Group();
   scene.add(photoMarker);
 }
 
-let shrine, ground, places = [], groundH = 0;
+let shrine, ground, places = [], groundH = 0, history = null;
 
 /* ---------- 古 ↔ 今：神社模型的透明度 ---------- */
 // 效能關鍵：Tinkercad 模型與照片參照構件原本有上萬個小物件（6 萬次以上繪製呼叫）。
@@ -288,12 +288,37 @@ function openCard(p) {
       <button id="flyBtn">移到這裡</button>
       ${p.stop ? `<button class="main" id="stopBtn">導覽這一站 ›</button>` : ''}
     </div>
-    <div class="imgs">${imgs}</div>`;
+    <div class="imgs">${imgs}</div>
+    ${srcList(p.src)}`;
   $('#flyBtn').onclick = () => { closeCard(); const w = worldOf(p); w.y = groundH + 2; flyTo(w.clone().add(new THREE.Vector3(14, 16, 18)), w, baseFov); };
   if (p.stop) $('#stopBtn').onclick = () => { closeCard(); startTour(p.stop - 1); };
   $('#cardBody').querySelectorAll('.imgs img').forEach(im => im.onclick = () => { $('#lightImg').src = im.src; $('#lightbox').classList.add('show'); });
   $('#card').scrollTop = 0;
   $('#card').classList.add('open');
+}
+// 出處清單（對應 history.json 的 sources）
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function srcList(ids) {
+  if (!ids || !history) return '';
+  const items = ids.map(id => history.sources.find(s => s.id === id)).filter(Boolean)
+    .map(s => `<li>${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)}</a>` : esc(s.title)}</li>`).join('');
+  return items ? `<div class="srcs"><b>出處</b><ul>${items}</ul></div>` : '';
+}
+function openHistory() {
+  if (!history) return;
+  const tl = history.timeline.map(t => `<div class="ev"><time>${esc(t.date)}</time><p>${esc(t.text)}</p>${srcTags(t.src)}</div>`).join('');
+  const ppl = history.people.map(p => `<div class="ev"><time>${esc(p.name)}</time><p><b>${esc(p.role)}</b>　${esc(p.text)}</p>${srcTags(p.src)}</div>`).join('');
+  const all = history.sources.map((s, i) => `<li id="src-${s.id}">${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)}</a>` : esc(s.title)}</li>`).join('');
+  $('#cardBody').innerHTML = `<span class="tag" style="background:#8a6b45">史料</span><h2>中壢神社年表</h2>
+    <div class="timeline">${tl}</div><h3>相關人物</h3><div class="timeline">${ppl}</div>
+    <h3>參考資料</h3><ol class="srcAll">${all}</ol>
+    <p class="caveat">年表依現有史料整理，部分日期與說法仍待考證；如有更正請告知。</p>`;
+  $('#card').scrollTop = 0;
+  $('#card').classList.add('open');
+}
+function srcTags(ids) {
+  if (!ids || !history) return '';
+  return `<div class="stag">${ids.map(id => { const k = history.sources.findIndex(s => s.id === id); return k < 0 ? '' : `<span>[${k + 1}]</span>`; }).join('')}</div>`;
 }
 function closeCard() { $('#card').classList.remove('open'); }
 $('#cardX').onclick = closeCard;
@@ -308,6 +333,7 @@ function topView() {
   flyTo(t.clone().add(new THREE.Vector3(-n[0] * 2, 300, n[1] * 2)), t, baseFov);
 }
 $('#viewTop').onclick = topView;
+$('#histBtn').onclick = () => { closeCard(); openHistory(); };
 $('#view3d').onclick = () => flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov);
 
 /* ---------- 導覽模式 ---------- */
@@ -416,7 +442,8 @@ function flyTo(eye, target, fov, done) {
 }
 /* ---------- 載入 ---------- */
 try {
-  const [config, md] = await Promise.all([fetch('./buildings.json').then(r => r.json()), fetch('./map-data.json').then(r => r.json())]);
+  const [config, md, hist] = await Promise.all([fetch('./buildings.json').then(r => r.json()), fetch('./map-data.json').then(r => r.json()), fetch('./history.json').then(r => r.json()).catch(() => null)]);
+  history = hist;
   shrine = await loadShrine(config);
   scene.add(shrine.integrated);
   prepareFade();
