@@ -30,7 +30,7 @@ projects/water-echo/   work page: 水聲木 Water's Echo in Wood
 projects/seen-through/ research page: Seen Through, with the 3D study in model/
 projects/architecture-app/ work page: how the site and the final project were made with AI;
                        handout.html is the one-page A4 handout with QR codes
-projects/zhongli-shrine/ work page: 中壢神社 古今對照; the map and 3D tour are in app/
+projects/zhongli-shrine/ work page: 中壢神社 古今對照; the 3D view on today's aerial photo is in app/
 images/                other images
 ```
 
