@@ -3,9 +3,13 @@
 import * as THREE from 'three';
 
 const NLSC = id => (z, x, y) => `https://wmts.nlsc.gov.tw/wmts/${id}/default/GoogleMapsCompatible/${z}/${y}/${x}`;
+const SINICA = id => (z, x, y) => `https://gis.sinica.edu.tw/tileserver/file-exists.php?img=${id}-jpg-${z}-${x}-${y}`;
+// zoom：用哪一層圖磚（18 約 0.5 公尺／像素）。舊地圖解析度較低，用 16。
 export const GROUND_LAYERS = {
-  photo: { label: '航照', url: NLSC('PHOTO2') },
-  emap:  { label: '地圖', url: NLSC('EMAP') }
+  photo: { label: '今日航照', url: NLSC('PHOTO2'), zoom: 18 },
+  emap:  { label: '今日地圖', url: NLSC('EMAP'),   zoom: 18 },
+  jm25k: { label: '1921 日治地形圖', url: SINICA('JM25K_1921'), zoom: 16 },
+  am50k: { label: '1944 美軍地圖',   url: SINICA('AM50K_1944'), zoom: 16 }
 };
 
 /* ---- 座標轉換 ---- */
@@ -53,60 +57,61 @@ function loadImg(src) {
 }
 
 /**
- * 建立地面。回傳 { mesh, setLayer(id), ok }。
- * bounds：要鋪多大（模型平面座標），zoom：圖磚層級（18 約 0.5 公尺／像素）
+ * 建立地面。回傳 { mesh, setLayer(id), planToLL, llToPlan, north }。
+ * bounds：要鋪多大（模型平面座標）。每個圖層用自己的 zoom 重新拼圖。
  */
-export async function createGround(scene, control, { bounds, height = 0, zoom = 18, layer = 'photo' } = {}) {
+export function createGround(scene, control, { bounds, height = 0 } = {}) {
   const { planToLL, llToPlan } = fit(control);
-
-  // 模型範圍四角 → 經緯度 → 圖磚範圍
   const corners = [[bounds.x0, bounds.y0], [bounds.x1, bounds.y0], [bounds.x1, bounds.y1], [bounds.x0, bounds.y1]].map(planToLL);
   const lats = corners.map(c => c[0]), lngs = corners.map(c => c[1]);
-  const tx0 = Math.floor(lng2x(Math.min(...lngs), zoom)), tx1 = Math.floor(lng2x(Math.max(...lngs), zoom));
-  const ty0 = Math.floor(lat2y(Math.max(...lats), zoom)), ty1 = Math.floor(lat2y(Math.min(...lats), zoom));
-  const nx = tx1 - tx0 + 1, ny = ty1 - ty0 + 1;
 
   const canvas = document.createElement('canvas');
-  canvas.width = nx * 256; canvas.height = ny * 256;
   const ctx = canvas.getContext('2d');
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
-
-  // 地面平面：四角就是圖磚拼圖的四角（換算回模型座標），UV 直接對應整張拼圖
-  const tl = llToPlan(y2lat(ty0, zoom), x2lng(tx0, zoom));
-  const tr = llToPlan(y2lat(ty0, zoom), x2lng(tx1 + 1, zoom));
-  const br = llToPlan(y2lat(ty1 + 1, zoom), x2lng(tx1 + 1, zoom));
-  const bl = llToPlan(y2lat(ty1 + 1, zoom), x2lng(tx0, zoom));
-  const P = ([x, y]) => [x, height, -y];         // 模型平面 → three.js 世界座標
   const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.Float32BufferAttribute([...P(tl), ...P(tr), ...P(br), ...P(bl)], 3));
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(new Array(12).fill(0), 3));
   geo.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 1, 1, 1, 0, 0, 0], 2));
   geo.setIndex([0, 3, 1, 1, 3, 2]);
-  geo.computeVertexNormals();
-  const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0, depthWrite: true });
+  const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0 });
   const mesh = new THREE.Mesh(geo, mat);
   mesh.renderOrder = -1;
-  mesh.name = 'today-ground';
+  mesh.name = 'ground';
+  mesh.visible = false;
   scene.add(mesh);
+  const P = ([x, y]) => [x, height, -y];         // 模型平面 → three.js 世界座標
 
-  let loadedOk = false;
+  let token = 0;
   async function setLayer(id) {
+    const my = ++token;
     if (id === 'off') { mesh.visible = false; return true; }
-    mesh.visible = true;
-    const L = GROUND_LAYERS[id];
+    const L = GROUND_LAYERS[id], z = L.zoom;
+    const tx0 = Math.floor(lng2x(Math.min(...lngs), z)), tx1 = Math.floor(lng2x(Math.max(...lngs), z));
+    const ty0 = Math.floor(lat2y(Math.max(...lats), z)), ty1 = Math.floor(lat2y(Math.min(...lats), z));
+    const off = document.createElement('canvas');
+    off.width = (tx1 - tx0 + 1) * 256; off.height = (ty1 - ty0 + 1) * 256;
+    const octx = off.getContext('2d');
     const jobs = [];
-    for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++) {
-      jobs.push(loadImg(L.url(zoom, tx, ty)).then(im => { if (im) ctx.drawImage(im, (tx - tx0) * 256, (ty - ty0) * 256); return !!im; }));
-    }
-    const results = await Promise.all(jobs);
-    loadedOk = results.some(Boolean);
-    try {
-      tex.needsUpdate = true;
-      mat.opacity = loadedOk ? 1 : 0;
-    } catch (e) { loadedOk = false; }
-    return loadedOk;
+    for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++)
+      jobs.push(loadImg(L.url(z, tx, ty)).then(im => { if (im) octx.drawImage(im, (tx - tx0) * 256, (ty - ty0) * 256); return !!im; }));
+    const ok = (await Promise.all(jobs)).some(Boolean);
+    if (my !== token) return ok;                 // 使用者已經切到別的圖層
+    if (!ok) return false;
+    canvas.width = off.width; canvas.height = off.height;
+    ctx.drawImage(off, 0, 0);
+    const tl = llToPlan(y2lat(ty0, z), x2lng(tx0, z)), tr = llToPlan(y2lat(ty0, z), x2lng(tx1 + 1, z));
+    const br = llToPlan(y2lat(ty1 + 1, z), x2lng(tx1 + 1, z)), bl = llToPlan(y2lat(ty1 + 1, z), x2lng(tx0, z));
+    geo.attributes.position.array.set([...P(tl), ...P(tr), ...P(br), ...P(bl)]);
+    geo.attributes.position.needsUpdate = true;
+    geo.computeBoundingSphere();
+    tex.dispose(); tex.needsUpdate = true;
+    mat.opacity = 1; mesh.visible = true;
+    return true;
   }
-  const ok = await setLayer(layer);
-  return { mesh, setLayer, ok, llToPlan, planToLL };
+  // 正北方向（模型平面座標的單位向量），俯視時讓北方朝上
+  const a = llToPlan(24.962, 121.2095), b = llToPlan(24.963, 121.2095);
+  const nl = Math.hypot(b[0] - a[0], b[1] - a[1]);
+  const north = [(b[0] - a[0]) / nl, (b[1] - a[1]) / nl];
+  return { mesh, setLayer, planToLL, llToPlan, north, height };
 }

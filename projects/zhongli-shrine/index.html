@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>中壢神社 古今對照 · Zhongli Shrine, Then and Now</title>
-<meta name="description" content="A phone-based map and 3D reconstruction of the Zhongli Shrine (1939), whose site became Zhongli Senior High School. 以手機地圖與 3D 復原，對照中壢神社與今日中壢高中。">
+<meta name="description" content="A phone-based 3D reconstruction, set on today's aerial photo, of the Zhongli Shrine (1939), whose site became Zhongli Senior High School. 以手機地圖與 3D 復原，對照中壢神社與今日中壢高中。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
@@ -77,6 +77,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 .data dd { margin: 0; }
 .data dd span { color: var(--ink-2); margin-left: .6em; }
 
+.enter.one { grid-template-columns: 1fr; }
 @media (max-width: 760px) {
   .head, .text { grid-template-columns: 1fr; }
   .plan { justify-self: start; order: -1; }
@@ -101,9 +102,8 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <figure class="plan"><img src="img/axon.png" alt="Axonometric line drawing of the reconstructed shrine: the tower gate with its stone lions and bronze horse in front, the worship hall with a sweeping roof, the main sanctuary behind, all inside a roofed wooden fence"></figure>
   </section>
 
-  <nav class="enter" aria-label="Open the work">
-    <a href="app/"><b>古今地圖 <i>→</i></b><small>Then-and-now map</small><p>在今天的航照上疊回 1939 年的配置，點每個地點看它後來變成什麼。在校園裡打開，還能顯示你站在哪裡。</p></a>
-    <a href="app/3d.html"><b>3D 復原導覽 <i>→</i></b><small>3D reconstruction tour</small><p>五站導覽，走到當年攝影師的位置，讓老照片和 3D 模型疊在一起。</p></a>
+  <nav class="enter one" aria-label="Open the work">
+    <a href="app/"><b>開啟古今對照 <i>→</i></b><small>Open the then-and-now view</small><p>3D 神社立在今天的航照上。拖動「古 ↔ 今」滑桿讓神社淡出，看它落在今天校園的哪裡；點地點看後來的變化，或跟著五站導覽，走到老照片的拍攝位置。在校園裡按「我在哪」，可以看到自己站在哪座殿上。</p></a>
   </nav>
 
   <figure class="photo">
@@ -128,18 +128,20 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <div lang="zh-Hant">
       <h2>怎麼看</h2>
       <ol>
-        <li>打開<a href="app/">古今地圖</a>，拖動底部的「古 ↔ 今」滑桿。</li>
-        <li>紅點是已消失的建築，黃點是被搬走的文物，綠點是還找得到的遺構。</li>
-        <li>在地點卡片上按「在 3D 中看當年」，就會跳到 3D 導覽的那一站。</li>
+        <li>打開<a href="app/">古今對照</a>，拖動底部的「古 ↔ 今」滑桿，神社會逐漸淡出，露出今天的校園。</li>
+        <li>紅點是已消失的建築，黃點是被搬走的文物，綠點是還找得到的遺構。點一下看它後來變成什麼。</li>
+        <li>底圖可以換成今日地圖、1921 日治地形圖或 1944 美軍地圖。</li>
+        <li>按「五站導覽」，第三站會帶你到老照片的拍攝位置，讓照片和模型疊在一起。</li>
         <li>在中壢高中校園裡按「我在哪」，走近遺址時畫面會提示。</li>
       </ol>
     </div>
     <div lang="en">
       <h2>How to use</h2>
       <ol class="en">
-        <li>Open the <a href="app/">map</a> and drag the “then ↔ now” slider.</li>
+        <li>Open the <a href="app/">then-and-now view</a> and drag the slider: the shrine fades and today’s campus shows through.</li>
         <li>Red marks buildings that are gone, yellow marks objects that were moved, green marks remains you can still find.</li>
-        <li>On a place card, “see it in 3D” opens the matching stop of the 3D tour.</li>
+        <li>The ground can be today’s aerial photo, today’s map, the 1921 Japanese-era map or the 1944 US Army map.</li>
+        <li>The five-stop tour takes you to where the old photograph was taken and lines it up with the model.</li>
         <li>On the campus, “where am I” shows your position and tells you when you are near a site.</li>
       </ol>
     </div>
@@ -152,7 +154,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 
   <dl class="data">
     <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
-    <dt>Medium</dt><dd>Tinkercad, three.js, MapLibre</dd>
+    <dt>Medium</dt><dd>Tinkercad, three.js</dd>
     <dt>Base maps</dt><dd>內政部國土測繪中心 航照與電子地圖<span>NLSC aerial photo and e-map</span></dd>
     <dt>Old maps</dt><dd>中央研究院 臺灣百年歷史地圖<span>Academia Sinica, Taiwan historical maps</span></dd>
     <dt>Sources</dt><dd>簡報《壢中簡史與中壢神社》<span>Slides on the history of the school and the shrine</span></dd>

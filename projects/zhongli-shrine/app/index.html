@@ -4,43 +4,88 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#1d1b17">
-<title>中壢神社｜古今地圖</title>
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<title>中壢神社｜古今對照</title>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 <style>
-  :root { --ink:#1d1b17; --paper:#f6f2e8; --sepia:#8a6b45; --accent:#b23a2a; --gone:#b23a2a; --remain:#2f6f4f; --moved:#c48a1c; }
+  :root { --ink:#1d1b17; --paper:#f6f2e8; --sepia:#8a6b45; --accent:#b23a2a; --gone:#b23a2a; --moved:#c48a1c; --remain:#2f6f4f; }
   * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
-  html,body { height:100%; overflow:hidden; background:#ddd; color:var(--ink);
+  html,body { height:100%; overflow:hidden; background:#e9e6dc; color:var(--ink);
     font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif; }
-  #map { position:fixed; inset:0; }
+  #view { position:fixed; top:0; left:0; right:0; height:100%; touch-action:none; }
+  #view canvas { display:block; }
+  button { font:inherit; color:inherit; }
 
-  .top { position:fixed; top:0; left:0; right:0; z-index:5; display:flex; justify-content:space-between; align-items:flex-start;
+  /* 頂部 */
+  .top { position:fixed; top:0; left:0; right:0; z-index:5; display:flex; align-items:flex-start; justify-content:space-between;
     padding:calc(env(safe-area-inset-top) + 10px) 12px 0; pointer-events:none; gap:8px; }
   .top > * { pointer-events:auto; }
-  .brand { background:rgba(246,242,232,.94); border-radius:12px; padding:7px 12px; box-shadow:0 2px 10px rgba(0,0,0,.15); line-height:1.15; }
+  .brand { background:rgba(246,242,232,.94); border-radius:12px; padding:7px 12px; line-height:1.15; text-decoration:none; color:inherit;
+    box-shadow:0 2px 10px rgba(0,0,0,.12); }
   .brand b { font-size:16px; letter-spacing:.08em; }
   .brand small { display:block; font-size:11px; color:#7a7262; }
   .tools { display:flex; flex-direction:column; gap:8px; align-items:flex-end; }
-  .btn { border:0; background:rgba(246,242,232,.94); border-radius:12px; padding:8px 12px; font:inherit; font-size:14px; font-weight:700;
-    box-shadow:0 2px 10px rgba(0,0,0,.15); color:var(--ink); text-decoration:none; }
-  .btn.dark { background:var(--ink); color:var(--paper); }
+  .pill { border:0; background:rgba(246,242,232,.94); border-radius:999px; padding:7px 13px; font-size:14px; font-weight:700;
+    box-shadow:0 2px 10px rgba(0,0,0,.12); }
+  .pill.on { background:var(--ink); color:var(--paper); }
 
-  /* 底部控制列 */
-  #panel { position:fixed; left:0; right:0; bottom:0; z-index:6; background:var(--paper); border-radius:18px 18px 0 0;
-    box-shadow:0 -6px 24px rgba(0,0,0,.18); padding:12px 16px calc(env(safe-area-inset-bottom) + 12px); }
-  .seg { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin-bottom:8px; }
-  .seg::-webkit-scrollbar { display:none; }
-  .seg button { flex:0 0 auto; border:1px solid #d8cfba; background:#fff; border-radius:999px; padding:6px 12px; font:inherit; font-size:13px; color:#4a463d; }
-  .seg button.on { background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  /* 3D 上的標籤 */
+  #pins { position:fixed; inset:0; pointer-events:none; z-index:3; }
+  .pin { position:absolute; transform:translate(-50%,-100%); pointer-events:auto; display:flex; flex-direction:column; align-items:center; cursor:pointer; }
+  .pin span { background:rgba(29,27,23,.85); color:#fff; font-size:12px; font-weight:700; padding:2px 7px; border-radius:7px; white-space:nowrap; }
+  .pin i { width:13px; height:13px; border-radius:50%; border:2.5px solid #fff; box-shadow:0 1px 5px rgba(0,0,0,.4); margin-top:3px; }
+  .pin.cam span { background:var(--accent); }
+  .pin.me i { background:#1a73e8; box-shadow:0 0 0 6px rgba(26,115,232,.25); }
+  body.far .pin:not(.cam):not(.me) span { display:none; }
+
+  /* 老照片疊合 */
+  #photoLayer { position:fixed; left:0; right:0; top:0; z-index:2; pointer-events:none; opacity:0; transition:opacity .4s; }
+  #photoLayer.show { opacity:1; }
+  #photoLayer .frame { position:relative; width:100%; aspect-ratio:3/2; outline:2px solid rgba(255,255,255,.85); }
+  #photoLayer img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  #photoLayer .tag { position:absolute; top:6px; left:8px; font-size:11px; color:#fff; background:rgba(0,0,0,.45); padding:2px 7px; border-radius:6px; }
+  #photoLayer .tag.r { left:auto; right:8px; }
+  .shade { position:fixed; left:0; right:0; z-index:1; background:rgba(29,27,23,.55); pointer-events:none; opacity:0; transition:opacity .4s; }
+  .shade.show { opacity:1; }
+
+  /* 底部：探索面板與導覽卡共用 */
+  .sheet { position:fixed; left:0; right:0; bottom:0; z-index:6; background:var(--paper); border-radius:18px 18px 0 0;
+    box-shadow:0 -6px 24px rgba(0,0,0,.15); padding:12px 16px calc(env(safe-area-inset-bottom) + 12px); }
+  .sheet[hidden] { display:none; }
   .eraRow { display:flex; align-items:center; gap:10px; }
   .eraRow b { font-size:18px; width:22px; text-align:center; }
   .eraRow input { flex:1; accent-color:var(--accent); height:30px; }
-  .legend { display:flex; gap:12px; font-size:12px; color:#6b6454; margin-top:4px; flex-wrap:wrap; }
+  .chips { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin:6px 0 8px; }
+  .chips::-webkit-scrollbar { display:none; }
+  .chips button { flex:0 0 auto; border:1px solid #d8cfba; background:#fff; border-radius:999px; padding:6px 11px; font-size:13px; color:#4a463d; }
+  .chips button.on { background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .chips button.fail { opacity:.4; text-decoration:line-through; }
+  .row { display:flex; gap:8px; }
+  .row button { flex:1; border:0; border-radius:12px; padding:11px 0; font-size:14px; font-weight:700; background:#e4ddcc; }
+  .row button.main { background:var(--ink); color:var(--paper); flex:1.4; }
+  .legend { display:flex; gap:12px; font-size:12px; color:#6b6454; margin-top:8px; flex-wrap:wrap; }
   .legend i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:4px; vertical-align:-1px; }
-  .hint { font-size:11px; color:#9a917d; margin-top:4px; }
+
+  .dots { display:flex; gap:6px; justify-content:center; margin-bottom:8px; }
+  .dots i { width:7px; height:7px; border-radius:50%; background:#d3cbb8; }
+  .dots i.on { background:var(--ink); width:20px; border-radius:4px; }
+  .eyebrow { font-size:11px; letter-spacing:.14em; color:var(--sepia); display:flex; justify-content:space-between; }
+  .eyebrow button { border:0; background:none; font-size:12px; color:#7a7262; }
+  #tour h2 { font-size:20px; margin:2px 0 6px; letter-spacing:.04em; }
+  #tour p { font-size:14px; line-height:1.65; color:#4a463d; min-height:44px; }
+  .slider2 { margin-top:10px; display:none; }
+  .slider2.show { display:block; }
+  .slider2 .lab { display:flex; justify-content:space-between; font-size:12px; color:#7a7262; margin-bottom:2px; }
+  .slider2 input { width:100%; accent-color:var(--accent); height:28px; }
+  .thumb { display:none; margin-top:10px; gap:10px; align-items:center; }
+  .thumb.show { display:flex; }
+  .thumb img { width:84px; height:63px; object-fit:cover; border-radius:8px; }
+  .thumb span { font-size:13px; color:#4a463d; }
+  #tour .row { margin-top:12px; }
+  .note { font-size:11px; color:#9a917d; margin-top:8px; text-align:center; }
 
   /* 地點卡片 */
   #card { position:fixed; left:0; right:0; bottom:0; z-index:8; background:var(--paper); border-radius:18px 18px 0 0;
-    box-shadow:0 -6px 24px rgba(0,0,0,.25); max-height:78vh; overflow-y:auto; transform:translateY(105%); transition:transform .3s ease;
+    box-shadow:0 -6px 24px rgba(0,0,0,.25); max-height:75vh; overflow-y:auto; transform:translateY(105%); transition:transform .3s ease;
     padding:16px 18px calc(env(safe-area-inset-bottom) + 16px); }
   #card.open { transform:translateY(0); }
   #card .x { position:sticky; top:0; float:right; border:0; width:34px; height:34px; border-radius:50%; background:#e4ddcc; font-size:17px; }
@@ -51,229 +96,71 @@
   .tl b { display:block; font-size:11px; letter-spacing:.12em; color:var(--sepia); }
   .tl .now b { color:var(--remain); }
   .imgs img { width:100%; border-radius:10px; margin-bottom:8px; display:block; }
-  .cardBtns { display:flex; gap:8px; margin:6px 0 10px; }
-  .cardBtns a, .cardBtns button { flex:1; text-align:center; }
+  #card .row { margin:6px 0 10px; }
 
   #lightbox { position:fixed; inset:0; z-index:20; background:rgba(0,0,0,.94); display:none; overflow:auto; }
   #lightbox.show { display:block; }
   #lightbox img { width:100%; display:block; margin-top:calc(env(safe-area-inset-top) + 50px); }
   #lightbox span { position:fixed; top:calc(env(safe-area-inset-top) + 10px); right:12px; color:#fff; font-size:15px; background:rgba(255,255,255,.15); padding:6px 12px; border-radius:10px; }
-
-  #toast { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:30; background:rgba(29,27,23,.9); color:#fff;
+  #toast { position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); z-index:30; background:rgba(29,27,23,.9); color:#fff;
     padding:10px 16px; border-radius:12px; font-size:14px; display:none; max-width:80vw; text-align:center; }
-  .maplibregl-ctrl-attrib { font-size:10px; }
-  .pin { width:18px; height:18px; border-radius:50%; border:3px solid #fff; box-shadow:0 1px 6px rgba(0,0,0,.4); cursor:pointer; }
-  .pinLabel { position:absolute; left:50%; top:-24px; transform:translateX(-50%); white-space:nowrap; font-size:12px; font-weight:700;
-    background:rgba(29,27,23,.85); color:#fff; padding:2px 7px; border-radius:7px; pointer-events:none; }
-  body.far .pinLabel { display:none; }
-  .me { width:16px; height:16px; border-radius:50%; background:#1a73e8; border:3px solid #fff; box-shadow:0 0 0 6px rgba(26,115,232,.25); }
+  #credit { position:fixed; right:6px; z-index:4; font-size:10px; color:#6b6454; background:rgba(246,242,232,.75); padding:1px 6px; border-radius:6px; pointer-events:none; }
+  #loading { position:fixed; inset:0; z-index:40; background:var(--ink); color:var(--paper); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:14px; transition:opacity .5s; }
+  #loading b { font-size:24px; letter-spacing:.3em; }
+  #loading small { color:#b8ae98; }
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="view"></div>
+<div class="shade" id="shadeTop"></div><div class="shade" id="shadeBot"></div>
+<div id="photoLayer"><div class="frame"><img id="photoImg" src="./assets/photo-study/historical.jpg" alt="中壢神社老照片"><span class="tag">老照片</span><span class="tag r">3D 模型</span></div></div>
+<div id="pins"></div>
+<div id="credit"></div>
 
 <div class="top">
-  <a class="brand" href="../" style="text-decoration:none;color:inherit"><b>中壢神社 · 古今地圖</b><small>‹ 作品說明 ／ 1939 → 今</small></a>
+  <a class="brand" href="../"><b>中壢神社 · 古今對照</b><small>‹ 作品說明 ／ 1939 → 今</small></a>
   <div class="tools">
-    <a class="btn dark" href="./3d.html">看 3D 復原 ›</a>
-    <button class="btn" id="baseBtn">底圖：航照</button>
-    <button class="btn" id="locBtn">◎ 我在哪</button>
+    <button class="pill" id="locBtn">◎ 我在哪</button>
   </div>
 </div>
 
-<div id="panel">
-  <div class="seg" id="oldSeg"></div>
-  <div class="eraRow"><b>古</b><input id="era" type="range" min="0" max="100" value="35" aria-label="古今透明度"><b>今</b></div>
+<!-- 探索面板 -->
+<div class="sheet" id="explore">
+  <div class="eraRow"><b>古</b><input id="era" type="range" min="0" max="100" value="0" aria-label="古今：神社模型的透明度"><b>今</b></div>
+  <div class="chips" id="groundChips"></div>
+  <div class="row">
+    <button id="viewTop">俯視</button>
+    <button id="view3d">立體</button>
+    <button class="main" id="startTour">▶ 五站導覽</button>
+  </div>
   <div class="legend">
     <span><i style="background:var(--gone)"></i>已消失</span>
     <span><i style="background:var(--moved)"></i>被搬走</span>
     <span><i style="background:var(--remain)"></i>還找得到</span>
   </div>
-  <div class="hint" id="hint">點地圖上的圓點，看那裡當年是什麼、今天變成什麼</div>
+</div>
+
+<!-- 導覽卡 -->
+<div class="sheet" id="tour" hidden>
+  <div class="dots" id="dots"></div>
+  <div class="eyebrow"><span id="stopNo"></span><button id="endTour">✕ 結束導覽</button></div>
+  <h2 id="stopTitle"></h2>
+  <p id="stopText"></p>
+  <div class="slider2" id="slider2">
+    <div class="lab"><span>◀ 老照片</span><span>3D 模型 ▶</span></div>
+    <input id="fade" type="range" min="0" max="100" value="0" aria-label="老照片與模型的透明度">
+  </div>
+  <div class="thumb" id="thumb"><img id="thumbImg" alt="現況照片"><span>點照片放大看現況</span></div>
+  <div class="row"><button id="prev" style="flex:0 0 30%">上一站</button><button class="main" id="next">下一站</button></div>
+  <div class="note">模型依配置圖與老照片推估，非測繪復原</div>
 </div>
 
 <div id="card"><button class="x" id="cardX">✕</button><div id="cardBody"></div></div>
 <div id="lightbox"><span>✕ 關閉</span><img id="lightImg" alt=""></div>
 <div id="toast"></div>
+<div id="loading"><b>中壢神社</b><small id="loadMsg">模型載入中…</small></div>
 
-<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script>
-(async () => {
-const $ = s => document.querySelector(s);
-const data = await (await fetch('./map-data.json')).json();
-
-/* ---------- 模型平面座標 → 經緯度（用校準點做最小平方相似轉換）---------- */
-const lat0 = 24.962, lng0 = 121.2095;
-const mx = 111320 * Math.cos(lat0 * Math.PI / 180), my = 110574;
-const toENU = (lat, lng) => [(lng - lng0) * mx, (lat - lat0) * my];
-const toLL = ([e, n]) => [lng0 + e / mx, lat0 + n / my];          // 回傳 [lng, lat]
-// 複數形式：w = a·m + b
-function fit(cps) {
-  const n = cps.length, m = cps.map(c => c.plan), w = cps.map(c => toENU(c.lat, c.lng));
-  const mc = [m.reduce((s, p) => s + p[0], 0) / n, m.reduce((s, p) => s + p[1], 0) / n];
-  const wc = [w.reduce((s, p) => s + p[0], 0) / n, w.reduce((s, p) => s + p[1], 0) / n];
-  let num = [0, 0], den = 0;
-  for (let i = 0; i < n; i++) {
-    const p = [m[i][0] - mc[0], m[i][1] - mc[1]], q = [w[i][0] - wc[0], w[i][1] - wc[1]];
-    num[0] += q[0] * p[0] + q[1] * p[1];  num[1] += q[1] * p[0] - q[0] * p[1];
-    den += p[0] * p[0] + p[1] * p[1];
-  }
-  const a = [num[0] / den, num[1] / den];
-  const b = [wc[0] - (a[0] * mc[0] - a[1] * mc[1]), wc[1] - (a[0] * mc[1] + a[1] * mc[0])];
-  return ([x, y]) => toLL([a[0] * x - a[1] * y + b[0], a[0] * y + a[1] * x + b[1]]);
-}
-const planToLL = fit(data.control);
-const placeLL = p => p.plan ? planToLL(p.plan) : [p.lng, p.lat];
-
-/* ---------- 底圖（國土測繪中心，政府開放資料）---------- */
-const NLSC = id => `https://wmts.nlsc.gov.tw/wmts/${id}/default/GoogleMapsCompatible/{z}/{y}/{x}`;
-const SINICA = id => `https://gis.sinica.edu.tw/tileserver/file-exists.php?img=${id}-jpg-{z}-{x}-{y}`;
-
-const o = data.overlay;
-const corners = [[o.x0, o.y1], [o.x1, o.y1], [o.x1, o.y0], [o.x0, o.y0]].map(planToLL);
-
-// 「古」圖層清單：model = 神社配置復原；其餘為中研院百年歷史地圖
-const OLD = [
-  { id: 'model',  label: '神社配置（1939 復原）' },
-  { id: 'jm25k',  label: '日治地形圖 1921', tiles: SINICA('JM25K_1921'), max: 16, credit: '中央研究院 臺灣百年歷史地圖' },
-  { id: 'am50k',  label: '美軍地圖 1944',   tiles: SINICA('AM50K_1944'), max: 15, credit: '中央研究院 臺灣百年歷史地圖' }
-];
-
-const style = {
-  version: 8,
-  sources: {
-    photo: { type: 'raster', tiles: [NLSC('PHOTO2')], tileSize: 256, maxzoom: 19, attribution: '© 內政部國土測繪中心' },
-    emap:  { type: 'raster', tiles: [NLSC('EMAP')],   tileSize: 256, maxzoom: 19, attribution: '© 內政部國土測繪中心' },
-    model: { type: 'image', url: o.src, coordinates: corners }
-  },
-  layers: [
-    { id: 'photo', type: 'raster', source: 'photo' },
-    { id: 'emap',  type: 'raster', source: 'emap', layout: { visibility: 'none' } },
-    { id: 'model', type: 'raster', source: 'model', paint: { 'raster-opacity': 0.8, 'raster-fade-duration': 0 } }
-  ]
-};
-OLD.filter(l => l.tiles).forEach(l => {
-  style.sources[l.id] = { type: 'raster', tiles: [l.tiles], tileSize: 256, maxzoom: l.max, attribution: l.credit };
-  style.layers.push({ id: l.id, type: 'raster', source: l.id, layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.8 } });
-});
-
-const center = planToLL([-20, 0]);
-const map = new maplibregl.Map({
-  container: 'map', style, center, zoom: 16.6, bearing: 0, maxZoom: 20, minZoom: 13,
-  attributionControl: { compact: true }, dragRotate: false, pitchWithRotate: false
-});
-map.touchZoomRotate.disableRotation();
-const farCheck = () => document.body.classList.toggle('far', map.getZoom() < 17.3);
-map.on('zoom', farCheck);
-
-/* ---------- 神馬的遷移線 ---------- */
-map.on('load', () => {
-  const ho = placeLL(data.places.find(p => p.id === 'horse-old'));
-  const hn = placeLL(data.places.find(p => p.id === 'horse-now'));
-  map.addSource('horseLine', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [ho, hn] } } });
-  map.addLayer({ id: 'horseLine', type: 'line', source: 'horseLine',
-    paint: { 'line-color': '#c48a1c', 'line-width': 3, 'line-dasharray': [2, 1.5] } });
-  // 一開始框住整個神社範圍
-  const b = new maplibregl.LngLatBounds();
-  corners.forEach(c => b.extend(c)); b.extend(hn);
-  map.fitBounds(b, { padding: { top: 90, bottom: 190, left: 20, right: 20 }, duration: 0 });
-  setOld('model');
-});
-
-/* ---------- 標記 ---------- */
-const kindColor = { gone: 'var(--gone)', moved: 'var(--moved)', remain: 'var(--remain)' };
-const kindText = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
-data.places.forEach(p => {
-  const el = document.createElement('div');
-  el.innerHTML = `<div class="pin" style="background:${kindColor[p.kind]}"></div><div class="pinLabel">${p.short}</div>`;
-  el.addEventListener('click', e => { e.stopPropagation(); openCard(p); });
-  new maplibregl.Marker({ element: el }).setLngLat(placeLL(p)).addTo(map);
-});
-
-function openCard(p) {
-  const imgs = (p.photo ? [`<img src="${p.photo}" alt="今日照片">`] : [])
-    .concat(p.slides.map(s => `<img src="slides/${s}.jpg" alt="簡報：${p.title}">`)).join('');
-  $('#cardBody').innerHTML = `
-    <span class="tag" style="background:${kindColor[p.kind]}">${kindText[p.kind]}</span>
-    <h2>${p.title}</h2>
-    <div class="tl">
-      <div><b>1939 當年</b>${p.past}</div>
-      <div><b>之後</b>${p.change}</div>
-      <div class="now"><b>今天</b>${p.now}</div>
-    </div>
-    <div class="cardBtns">
-      ${p.stop ? `<a class="btn dark" href="./3d.html#stop-${p.stop}">在 3D 中看當年 ›</a>` : ''}
-      <button class="btn" id="flyBtn">移到這裡</button>
-    </div>
-    <div class="imgs">${imgs}</div>`;
-  $('#flyBtn').onclick = () => { closeCard(); map.flyTo({ center: placeLL(p), zoom: 19, duration: 1200 }); };
-  $('#cardBody').querySelectorAll('.imgs img').forEach(im => im.onclick = () => { $('#lightImg').src = im.src; $('#lightbox').classList.add('show'); });
-  $('#card').scrollTop = 0;
-  $('#card').classList.add('open');
-}
-function closeCard() { $('#card').classList.remove('open'); }
-$('#cardX').onclick = closeCard;
-map.on('click', closeCard);
-$('#lightbox').onclick = () => $('#lightbox').classList.remove('show');
-
-/* ---------- 古圖層切換 + 古今滑桿 ---------- */
-let current = 'model';
-OLD.forEach(l => {
-  const b = document.createElement('button');
-  b.textContent = l.label; b.dataset.id = l.id;
-  b.onclick = () => setOld(l.id);
-  $('#oldSeg').append(b);
-});
-function setOld(id) {
-  current = id;
-  OLD.forEach(l => map.setLayoutProperty(l.id, 'visibility', l.id === id ? 'visible' : 'none'));
-  [...$('#oldSeg').children].forEach(b => b.classList.toggle('on', b.dataset.id === id));
-  applyEra();
-}
-function applyEra() {
-  const v = 1 - $('#era').value / 100;           // 0 = 全今，1 = 全古
-  map.setPaintProperty(current, 'raster-opacity', Math.min(1, v * 1.05));
-}
-$('#era').oninput = applyEra;
-
-/* ---------- 底圖切換 ---------- */
-let base = 'photo';
-$('#baseBtn').onclick = () => {
-  base = base === 'photo' ? 'emap' : 'photo';
-  map.setLayoutProperty('photo', 'visibility', base === 'photo' ? 'visible' : 'none');
-  map.setLayoutProperty('emap', 'visibility', base === 'emap' ? 'visible' : 'none');
-  $('#baseBtn').textContent = base === 'photo' ? '底圖：航照' : '底圖：地圖';
-};
-
-/* ---------- 我在哪（需要 https）---------- */
-let meMarker = null, watching = null;
-function toast(t, ms = 2600) { const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(e._t); e._t = setTimeout(() => e.style.display = 'none', ms); }
-$('#locBtn').onclick = () => {
-  if (!navigator.geolocation) return toast('這個瀏覽器無法定位');
-  if (watching !== null) { map.flyTo({ center: meMarker.getLngLat(), zoom: 18.5 }); return; }
-  toast('定位中…');
-  watching = navigator.geolocation.watchPosition(pos => {
-    const ll = [pos.coords.longitude, pos.coords.latitude];
-    if (!meMarker) {
-      const el = document.createElement('div'); el.className = 'me';
-      meMarker = new maplibregl.Marker({ element: el }).setLngLat(ll).addTo(map);
-      map.flyTo({ center: ll, zoom: 18.5 });
-      nearest(ll);
-    } else meMarker.setLngLat(ll);
-  }, () => { watching = null; toast('無法取得位置（需允許定位，且網頁要用 https 開啟）'); }, { enableHighAccuracy: true });
-};
-// 走到遺址附近（25 公尺內）就自動提示
-let lastNear = null;
-function nearest(ll) {
-  const [e0, n0] = toENU(ll[1], ll[0]);
-  let best = null, bd = 1e9;
-  data.places.forEach(p => { const [lng, lat] = placeLL(p); const [e, n] = toENU(lat, lng); const d = Math.hypot(e - e0, n - n0); if (d < bd) { bd = d; best = p; } });
-  if (best && bd < 25 && best.id !== lastNear) { lastNear = best.id; toast(`你正站在：${best.title}`); }
-}
-setInterval(() => meMarker && nearest([meMarker.getLngLat().lng, meMarker.getLngLat().lat]), 4000);
-
-window.__map = { map, planToLL, data };
-})();
-</script>
+<script type="module" src="./main.js"></script>
 </body>
 </html>
