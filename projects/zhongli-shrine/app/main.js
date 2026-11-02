@@ -63,7 +63,7 @@ const toast = (t, ms = 2600) => { const e = $('#toast'); e.textContent = t; e.st
 
 /* ---------- 場景 ---------- */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
 renderer.setClearColor(0xe9e6dc);
 host.append(renderer.domElement);
 const scene = new THREE.Scene();
@@ -78,6 +78,7 @@ controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI / 2 - 0.03;
 controls.minDistance = 3;
 controls.maxDistance = 420;
+controls.addEventListener('change', () => { dirty = true; });
 
 /* ---------- 版面：3D 高度 = 螢幕 − 目前的底部面板 ---------- */
 let viewH = innerHeight, baseFov = 50;
@@ -95,6 +96,7 @@ function resize() {
   baseFov = innerWidth < viewH ? 55 : 42;
   if (inPhoto && !fly) camera.fov = photoFov();
   camera.updateProjectionMatrix();
+  dirty = true;
   const { h, top } = photoRect();
   Object.assign($('#shadeTop').style, { top: 0, height: top + 'px' });
   Object.assign($('#shadeBot').style, { top: (top + h) + 'px', height: Math.max(0, viewH - top - h) + 'px' });
@@ -109,7 +111,7 @@ ro.observe($('#explore')); ro.observe($('#tour'));
 const photoMarker = new THREE.Group();
 {
   const eye = new THREE.Vector3(...HIST_PHOTO.eye), tgt = new THREE.Vector3(...HIST_PHOTO.target);
-  const tex = new THREE.TextureLoader().load(HIST_PHOTO.src);
+  const tex = new THREE.TextureLoader().load(HIST_PHOTO.src, () => { dirty = true; });
   tex.colorSpace = THREE.SRGBColorSpace;
   const dist = 7, hgt = 2 * dist * Math.tan(THREE.MathUtils.degToRad(HIST_PHOTO.fov / 2)), wid = hgt * HIST_PHOTO.aspect;
   const card = new THREE.Mesh(new THREE.PlaneGeometry(wid, hgt), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
@@ -126,28 +128,58 @@ const photoMarker = new THREE.Group();
 }
 
 let shrine, ground, places = [], groundH = 0;
-const fadeMeshes = [];
 
 /* ---------- 古 ↔ 今：神社模型的透明度 ---------- */
+// 效能關鍵：Tinkercad 模型與照片參照構件原本有上萬個小物件（6 萬次以上繪製呼叫）。
+// 載入後把每個構件合併成「一個網格＋頂點顏色」，繪製呼叫降到幾十次，手機才會順。
+const fadeMats = [];
 function prepareFade() {
+  const n3 = new THREE.Matrix3();
+  shrine.integrated.updateMatrixWorld(true);
   shrine.objects.forEach((o, id) => {
-    o.root.userData.id = id;
+    const pos = [], nor = [], col = [];
     o.root.traverse(m => {
-      if (!m.isMesh) return;
-      const mats = (Array.isArray(m.material) ? m.material : [m.material]).map(x => { const c = x.clone(); c.transparent = true; return c; });
-      m.material = Array.isArray(m.material) ? mats : mats[0];
-      fadeMeshes.push({ m, mats });
+      if (!m.isMesh || !m.geometry.attributes.position) return;
+      let g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry;
+      if (!g.attributes.normal) { g = g.clone(); g.computeVertexNormals(); }
+      const P = g.attributes.position, N = g.attributes.normal;
+      const mats = Array.isArray(m.material) ? m.material : [m.material];
+      const groups = g.groups.length ? g.groups : [{ start: 0, count: P.count, materialIndex: 0 }];
+      n3.getNormalMatrix(m.matrixWorld);
+      const v = new THREE.Vector3(), nn = new THREE.Vector3();
+      for (const gr of groups) {
+        const c = (mats[gr.materialIndex] || mats[0]).color || new THREE.Color(0x888888);
+        const end = Math.min(gr.start + gr.count, P.count);
+        for (let i = gr.start; i < end; i++) {
+          v.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld); pos.push(v.x, v.y, v.z);
+          nn.fromBufferAttribute(N, i).applyMatrix3(n3).normalize(); nor.push(nn.x, nn.y, nn.z);
+          col.push(c.r, c.g, c.b);
+        }
+      }
     });
+    if (!pos.length) return;
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(g, mat);
+    mesh.name = 'merged-' + id;
+    scene.add(mesh);
+    o.merged = mesh;
+    fadeMats.push(mat);
+    o.root.visible = false;            // 原始物件只留著算標籤位置，不再繪製
   });
 }
 let eraT = 0;                                       // 0 = 古，1 = 今
 function applyEra() {
   eraT = $('#era').value / 100;
-  const op = 1 - 0.93 * eraT;
-  fadeMeshes.forEach(({ m, mats }) => {
-    mats.forEach(x => { x.opacity = op; x.depthWrite = op > 0.6; });
-    m.castShadow = op > 0.6;
+  const op = 1 - 0.93 * eraT, tr = op < 0.999;
+  fadeMats.forEach(x => {
+    if (x.transparent !== tr) { x.transparent = tr; x.needsUpdate = true; }
+    x.opacity = op; x.depthWrite = op > 0.6;
   });
+  dirty = true;
   horseLine && (horseLine.material.opacity = 0.35 + 0.65 * eraT);
   if (!$('#tour').hidden) renderStopText();
 }
@@ -172,7 +204,8 @@ async function setGround(id) {
   const btn = $(`#groundChips [data-id="${id}"]`);
   if (!ok) { btn.classList.add('fail'); toast('這個底圖目前載不到'); }
   const on = ok && id !== 'off';
-  HIDE_WHEN_GROUND.forEach(k => { const o = shrine.objects.get(k); if (o) o.root.visible = !on; });
+  HIDE_WHEN_GROUND.forEach(k => { const o = shrine.objects.get(k); if (o && o.merged) o.merged.visible = !on; });
+  dirty = true;
   $('#credit').textContent = !on ? '' : id.startsWith('jm') || id.startsWith('am') ? '中央研究院 臺灣百年歷史地圖' : '© 內政部國土測繪中心';
 }
 
@@ -354,7 +387,7 @@ $('#locBtn').onclick = () => {
   watching = navigator.geolocation.watchPosition(pos => {
     const first = !me;
     me = ground.llToPlan(pos.coords.latitude, pos.coords.longitude);
-    meDot.position.set(me[0], groundH + 0.2, -me[1]); meDot.visible = true;
+    meDot.position.set(me[0], groundH + 0.2, -me[1]); meDot.visible = true; dirty = true;
     if (first) { $('#tour').hidden ? showPlacePins() : showStopPins(STOPS[stopIndex]); flyMe(); }
     nearest();
   }, () => { watching = null; toast('無法取得位置（請允許定位）'); }, { enableHighAccuracy: true });
@@ -371,7 +404,7 @@ function nearest() {
 }
 
 /* ---------- 相機飛行與主迴圈 ---------- */
-let fly = null;
+let fly = null, dirty = true;
 function flyTo(eye, target, fov, done) {
   fly = { p0: camera.position.clone(), t0: controls.target.clone(), f0: camera.fov, p1: eye, t1: target, f1: fov, start: performance.now(), ms: 1300, done };
 }
@@ -413,9 +446,12 @@ renderer.setAnimationLoop(() => {
     camera.updateProjectionMatrix();
     camera.lookAt(controls.target);
     if (k === 1) { const d = fly.done; fly = null; d && d(); }
-  } else if (controls.enabled) controls.update();
+    dirty = true;
+  } else if (controls.enabled && controls.update()) dirty = true;
+  if (!dirty) return;                  // 畫面沒變就不重畫：省電、不發燙
+  dirty = false;
   renderer.render(scene, camera);
   updatePins();
 });
 
-window.__app = { startTour, endTour, go, setGround, camera, controls, get shrine() { return shrine; }, get ground() { return ground; } };
+window.__app = { renderer, scene, startTour, endTour, go, setGround, camera, controls, get shrine() { return shrine; }, get ground() { return ground; } };
