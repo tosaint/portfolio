@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>中壢神社 古今對照 · Zhongli Shrine, Then and Now</title>
+<meta name="description" content="A phone-based map and 3D reconstruction of the Zhongli Shrine (1939), whose site became Zhongli Senior High School. 以手機地圖與 3D 復原，對照中壢神社與今日中壢高中。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+/* Same paper, ink and type as the portfolio. The line drawing follows the theme;
+   the old photograph stays as it is. */
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --line-filter: none; --line-blend: multiply;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+} }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans);
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px));
+}
+a { color: inherit; }
+a:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top a:hover { color: var(--ink); }
+
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(56px, 10vw, 120px) clamp(40px, 6vw, 64px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacing: .3em; }
+.en-title { margin: 14px 0 0; font: 300 clamp(18px, 2vw, 24px)/1.4 var(--serif); color: var(--ink-2); letter-spacing: .02em; }
+.lede { margin: 26px 0 0; font-size: 14px; color: var(--ink-2); }
+.lede span { display: block; color: var(--ink-3); font-size: 13px; }
+
+.plan { margin: 0; justify-self: end; width: 100%; }
+.plan img { width: 100%; height: auto; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
+
+/* Two doors into the work */
+.enter { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--ink); border: 1px solid var(--ink); margin-bottom: clamp(40px, 6vw, 72px); }
+.enter a { display: block; background: var(--paper); padding: clamp(18px, 3vw, 28px); text-decoration: none; transition: background .2s; }
+.enter a:hover { background: var(--rule); }
+.enter b { display: block; font: 500 clamp(18px, 2vw, 22px)/1.4 var(--serif); letter-spacing: .1em; }
+.enter small { display: block; margin-top: 6px; font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.enter p { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); }
+.enter i { font-style: normal; float: right; font-family: var(--mono); }
+
+.photo { margin: 0 0 clamp(28px, 4vw, 48px); }
+.photo img { width: 100%; height: auto; display: block; }
+.photo figcaption { margin-top: 10px; font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+
+.text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.text h2 { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.text p { margin: 0 0 1em; }
+.text .en { color: var(--ink-2); font-size: .95em; }
+.text ol { margin: 0; padding-left: 1.3em; }
+.text li { margin-bottom: .5em; }
+
+.data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; padding-top: clamp(24px, 4vw, 40px); border-top: 1px solid var(--rule); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+.data dd span { color: var(--ink-2); margin-left: .6em; }
+
+@media (max-width: 760px) {
+  .head, .text { grid-template-columns: 1fr; }
+  .plan { justify-self: start; order: -1; }
+  .enter { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <span>Work 004 · 2026</span>
+</div></header>
+
+<main class="wrap">
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 004 · Map + Web 3D · 2026</p>
+      <h1>中壢神社</h1>
+      <p class="en-title">Zhongli Shrine, Then and Now</p>
+      <p class="lede">1939 年的神社，今天的中壢高中。<span>A shrine of 1939, on the ground of today’s Zhongli Senior High School.</span></p>
+    </div>
+    <figure class="plan"><img src="img/axon.png" alt="Axonometric line drawing of the reconstructed shrine: the tower gate with its stone lions and bronze horse in front, the worship hall with a sweeping roof, the main sanctuary behind, all inside a roofed wooden fence"></figure>
+  </section>
+
+  <nav class="enter" aria-label="Open the work">
+    <a href="app/"><b>古今地圖 <i>→</i></b><small>Then-and-now map</small><p>在今天的航照上疊回 1939 年的配置，點每個地點看它後來變成什麼。在校園裡打開，還能顯示你站在哪裡。</p></a>
+    <a href="app/3d.html"><b>3D 復原導覽 <i>→</i></b><small>3D reconstruction tour</small><p>五站導覽，走到當年攝影師的位置，讓老照片和 3D 模型疊在一起。</p></a>
+  </nav>
+
+  <figure class="photo">
+    <img src="img/historical.jpg" width="1600" height="1067" alt="Sepia photograph of the shrine soon after completion: the tower gate with a curved roof and a stone lion in front, a wooden fence with a small roof, the large worship hall behind and young pine trees held up by poles" loading="lazy">
+    <figcaption>中壢神社落成後不久 · The shrine soon after completion</figcaption>
+  </figure>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>關於</h2>
+      <p>中壢神社於 1939 年 10 月 15 日鎮座，面朝中壢市區。1947 年這塊地撥給中壢中學，神社建築在之後幾十年間陸續被拆除或改建：鳥居成了校門，拜殿與本殿的基座上蓋了校舍和亭子，最後在 1991 年改建陶然亭時全部消失。今天還留在校園裡的，只有神馬、一座石燈籠，以及親師樓後方一小段參拜道和圍牆基座。</p>
+      <p>這個作品把散落的史料放回同一個空間：把「戲說壢中 CLHS+Minecraft 創世神」計畫中學生以 Tinkercad 建立的模型，整合成神社的配置，再對位到今天的地圖上，讓「當年在這裡的是什麼」可以直接在校園裡看見。</p>
+    </div>
+    <div lang="en">
+      <h2>About</h2>
+      <p class="en">The Zhongli Shrine was consecrated on 15 October 1939, facing the town. In 1947 the land was given to Zhongli Middle School, and over the next decades the shrine was taken apart: the torii became the school gate, classrooms and pavilions were built on the platforms of the halls, and the last remains went in 1991 when the Taoran Pavilion was built. Only the bronze horse, one stone lantern and a short piece of the approach path and fence base are still on the campus.</p>
+      <p class="en">This work puts the scattered records back into one space. Tinkercad models made by students in the school’s CLHS+Minecraft project are assembled into the shrine’s layout and placed on today’s map, so you can see, standing on the campus, what used to be there.</p>
+    </div>
+  </section>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>怎麼看</h2>
+      <ol>
+        <li>打開<a href="app/">古今地圖</a>，拖動底部的「古 ↔ 今」滑桿。</li>
+        <li>紅點是已消失的建築，黃點是被搬走的文物，綠點是還找得到的遺構。</li>
+        <li>在地點卡片上按「在 3D 中看當年」，就會跳到 3D 導覽的那一站。</li>
+        <li>在中壢高中校園裡按「我在哪」，走近遺址時畫面會提示。</li>
+      </ol>
+    </div>
+    <div lang="en">
+      <h2>How to use</h2>
+      <ol class="en">
+        <li>Open the <a href="app/">map</a> and drag the “then ↔ now” slider.</li>
+        <li>Red marks buildings that are gone, yellow marks objects that were moved, green marks remains you can still find.</li>
+        <li>On a place card, “see it in 3D” opens the matching stop of the 3D tour.</li>
+        <li>On the campus, “where am I” shows your position and tells you when you are near a site.</li>
+      </ol>
+    </div>
+  </section>
+
+  <figure class="photo">
+    <img src="app/assets/models/horse/current.jpg" width="966" height="724" alt="The bronze horse today, painted grey-brown on a white plinth in front of the school buildings" loading="lazy">
+    <figcaption>神馬今日 · The bronze horse today</figcaption>
+  </figure>
+
+  <dl class="data">
+    <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
+    <dt>Medium</dt><dd>Tinkercad, three.js, MapLibre</dd>
+    <dt>Base maps</dt><dd>內政部國土測繪中心 航照與電子地圖<span>NLSC aerial photo and e-map</span></dd>
+    <dt>Old maps</dt><dd>中央研究院 臺灣百年歷史地圖<span>Academia Sinica, Taiwan historical maps</span></dd>
+    <dt>Sources</dt><dd>簡報《壢中簡史與中壢神社》<span>Slides on the history of the school and the shrine</span></dd>
+    <dt>Models</dt><dd>「戲說壢中 CLHS+Minecraft 創世神」建築組學生<span>Student modellers, CLHS+Minecraft project</span></dd>
+    <dt>Main hall</dt><dd>神社主殿：莊○文、劉○輔、簡○揚、邱○毅</dd>
+    <dt>Front hall</dt><dd>神社前殿：羅○翎、鄭○軒、邱○捷</dd>
+    <dt>Torii, path</dt><dd>鳥居參道：周○航、張○丞、梁○安</dd>
+    <dt>Note</dt><dd>模型依配置圖與老照片推估，並非測繪復原；地圖對位誤差約 7 公尺。<span>The models are estimates from the plan and old photographs, not a survey. Map alignment is within about 7 m.</span></dd>
+  </dl>
+</main>
+</body>
+</html>

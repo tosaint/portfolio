@@ -1,0 +1,5 @@
+newmtl display_stone
+Kd 0.902 0.886 0.827
+
+newmtl display_gold
+Kd 0.537 0.482 0.486

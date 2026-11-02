@@ -1,0 +1,635 @@
+{
+  "schemaVersion": 2,
+  "revision": "2026-11-02-photo-core",
+  "units": "模型單位（尚未校準實際公尺）",
+  "basis": "中壢神社配置圖修改版.zip",
+  "materials": [
+    {
+      "name": "石／水泥／瓦屋頂",
+      "color": "#62686b"
+    },
+    {
+      "name": "木質",
+      "color": "#98704b"
+    },
+    {
+      "name": "銅質",
+      "color": "#b9d4b2"
+    },
+    {
+      "name": "神馬現況塗裝",
+      "color": "#897b7c"
+    }
+  ],
+  "items": [
+    {
+      "code": "A",
+      "name": "中正路",
+      "anchor": [
+        -90.95,
+        -5.35
+      ],
+      "originalObjects": [
+        42
+      ],
+      "status": "配置基準",
+      "note": "依原配置圖標示中正路。"
+    },
+    {
+      "code": "B",
+      "name": "鳥居",
+      "anchor": [
+        -80.05,
+        5.94
+      ],
+      "originalObjects": [],
+      "status": "細部模型／暫定比例",
+      "note": "第一鳥居取自參道組合；第二鳥居取自第二鳥居前組合。已拆出鳥居，避免重複地坪與燈籠。第一鳥居暫依原配置採石質色。"
+    },
+    {
+      "code": "C",
+      "name": "參道",
+      "anchor": [
+        -47,
+        -5
+      ],
+      "originalObjects": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        12,
+        13,
+        14,
+        15,
+        16,
+        20,
+        21,
+        22,
+        23,
+        27,
+        28,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        40,
+        41,
+        49,
+        50,
+        56,
+        76
+      ],
+      "status": "配置基準",
+      "note": "保留原配置圖的參道走向與高差；不以組合模型的矩形底座覆蓋。"
+    },
+    {
+      "code": "D",
+      "name": "石燈籠",
+      "anchor": [
+        -41.9,
+        -9.6
+      ],
+      "originalObjects": [],
+      "status": "細部模型／暫定比例",
+      "note": "全區暫使用同一款石燈籠，共六個原圖位置。"
+    },
+    {
+      "code": "E",
+      "name": "制札／揭示場",
+      "anchor": [
+        4.2,
+        -20.9
+      ],
+      "originalObjects": [],
+      "status": "細部模型／暫定比例",
+      "note": "制札／揭示場模型；朝向暫定朝向入口側，仍可調整。"
+    },
+    {
+      "code": "F",
+      "name": "下乘札",
+      "anchor": [
+        6.43,
+        -20.79
+      ],
+      "originalObjects": [],
+      "status": "細部模型／暫定比例",
+      "note": "牌面朝向入口來的人；需參照照片確認模型正面的旋轉角度。"
+    },
+    {
+      "code": "G",
+      "name": "社號標",
+      "anchor": [
+        13.2,
+        -20.7
+      ],
+      "originalObjects": [],
+      "status": "細部模型／暫定比例",
+      "note": "碑的正面朝外；需參照照片確認模型正面的旋轉角度。"
+    },
+    {
+      "code": "H",
+      "name": "社務所",
+      "anchor": [
+        23.1,
+        -14.8
+      ],
+      "originalObjects": [],
+      "status": "大略模型／暫定比例",
+      "note": "使用大略模型，外觀精緻度待補。重複檔不重複放置。"
+    },
+    {
+      "code": "I",
+      "name": "宿舍",
+      "anchor": [
+        31.37,
+        -15.66
+      ],
+      "originalObjects": [
+        54,
+        77
+      ],
+      "status": "原配置示意",
+      "note": "房屋樣貌不詳，此處僅示意。"
+    },
+    {
+      "code": "J",
+      "name": "不明疑似建物",
+      "anchor": [
+        36.73,
+        -17.4
+      ],
+      "originalObjects": [
+        78
+      ],
+      "status": "原配置示意",
+      "note": "不明疑似建物，身分與外觀未確認。"
+    },
+    {
+      "code": "K",
+      "name": "疑似附屬運動場",
+      "anchor": [
+        62.33,
+        6.97
+      ],
+      "originalObjects": [
+        39
+      ],
+      "status": "配置基準",
+      "note": "疑似附屬運動場，依原配置示意。"
+    },
+    {
+      "code": "L",
+      "name": "神馬",
+      "anchor": [
+        4.86,
+        -3.99
+      ],
+      "originalObjects": [],
+      "status": "現況照對應／方向已修正",
+      "note": "依使用者提供的現況照對應 L 神馬：在前版方向上水平旋轉 180 度，保留位置、比例與基底高度。馬身改為灰褐色、基座改為米白色，僅為照片參照的色彩示意；幾何仍使用原上傳模型，未視為現況測繪。"
+    },
+    {
+      "code": "M",
+      "name": "狛犬",
+      "anchor": [
+        7.35,
+        -2.87
+      ],
+      "originalObjects": [
+        57,
+        58
+      ],
+      "status": "原配置示意",
+      "note": "沿用原配置示意，待提供狛犬細部模型。"
+    },
+    {
+      "code": "N",
+      "name": "神門",
+      "anchor": [
+        9.66,
+        0.99
+      ],
+      "originalObjects": [],
+      "status": "照片參照／局部推估",
+      "note": "依新提供照片前方低矮入口的可見屋頂曲線、柱架與門扇修正，暫對應 N；名稱與位置沿用原配置。背面及尺寸為推估。"
+    },
+    {
+      "code": "O",
+      "name": "春日燈籠",
+      "anchor": [
+        7.3,
+        9.07
+      ],
+      "originalObjects": [
+        59,
+        60
+      ],
+      "status": "原配置示意",
+      "note": "春日燈籠與 D 石燈籠分列，暫保留原配置示意。"
+    },
+    {
+      "code": "P",
+      "name": "拜殿",
+      "anchor": [
+        9.55,
+        13.08
+      ],
+      "originalObjects": [],
+      "status": "照片參照／局部推估",
+      "note": "依照片中央大屋頂建築修正曲面屋簷、層疊側屋頂、柱列、格子窗與石基階梯，暫對應 P 拜殿；配置關係依原圖，尺寸非實測。"
+    },
+    {
+      "code": "Q",
+      "name": "本殿",
+      "anchor": [
+        9.5,
+        21.69
+      ],
+      "originalObjects": [],
+      "status": "照片參照／局部推估",
+      "note": "照片後方僅局部屋頂與頂部構件可見，依原配置暫對應 Q 本殿。屋面輪廓參考照片；完整體量、背面、隱蔽構造與尺寸仍為推估，並非測繪復原。"
+    },
+    {
+      "code": "R",
+      "name": "屋根付玉垣",
+      "anchor": [
+        4.12,
+        7.83
+      ],
+      "originalObjects": [],
+      "status": "照片參照／局部推估",
+      "note": "參照照片前景木柱列及短檐蓋板修正圍欄外觀。走向、範圍沿用原配置，未量測的模數與尺寸為推估。"
+    },
+    {
+      "code": "S",
+      "name": "透塀",
+      "anchor": [
+        5.95,
+        20.8
+      ],
+      "originalObjects": [],
+      "status": "原圖定位／外觀推估",
+      "note": "保留原配置後側圍護位置，以細木柱列示意。照片對此區遮擋較多，形制與背面仍待其他史料確認。"
+    }
+  ],
+  "instances": [
+    {
+      "id": "B1",
+      "code": "B",
+      "name": "第一鳥居",
+      "asset": "first",
+      "x": -80.05,
+      "y": 5.94,
+      "elevation": 1.9,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 6,
+      "targetFootprint": null
+    },
+    {
+      "id": "B2",
+      "code": "B",
+      "name": "第二鳥居",
+      "asset": "second",
+      "x": 9.55,
+      "y": -18.73,
+      "elevation": 1.9,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 5.86,
+      "targetFootprint": null
+    },
+    {
+      "id": "D1",
+      "code": "D",
+      "name": "石燈籠 1",
+      "asset": "lantern",
+      "x": -41.9,
+      "y": -9.6,
+      "elevation": 1.6,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 3.1,
+      "targetFootprint": null
+    },
+    {
+      "id": "D2",
+      "code": "D",
+      "name": "石燈籠 2",
+      "asset": "lantern",
+      "x": -38.6,
+      "y": -3,
+      "elevation": 1.6,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 3.1,
+      "targetFootprint": null
+    },
+    {
+      "id": "D3",
+      "code": "D",
+      "name": "石燈籠 3",
+      "asset": "lantern",
+      "x": -82.5,
+      "y": 3,
+      "elevation": 1.6,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 3.1,
+      "targetFootprint": null
+    },
+    {
+      "id": "D4",
+      "code": "D",
+      "name": "石燈籠 4",
+      "asset": "lantern",
+      "x": -80.8,
+      "y": 9.5,
+      "elevation": 1.6,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 3.1,
+      "targetFootprint": null
+    },
+    {
+      "id": "D5",
+      "code": "D",
+      "name": "石燈籠 5",
+      "asset": "lantern",
+      "x": 1.22,
+      "y": -22.52,
+      "elevation": 1.6,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 3.1,
+      "targetFootprint": null
+    },
+    {
+      "id": "D6",
+      "code": "D",
+      "name": "石燈籠 6",
+      "asset": "lantern",
+      "x": 15.62,
+      "y": -22.32,
+      "elevation": 1.6,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 3.1,
+      "targetFootprint": null
+    },
+    {
+      "id": "E",
+      "code": "E",
+      "name": "制札／揭示場",
+      "asset": "notice",
+      "x": 4.2,
+      "y": -20.9,
+      "elevation": 1.575,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": 2.03,
+      "targetFootprint": null
+    },
+    {
+      "id": "F",
+      "code": "F",
+      "name": "下乘札",
+      "asset": "dismount",
+      "x": 6.43,
+      "y": -20.79,
+      "elevation": 1.575,
+      "scale": 1,
+      "rotation": -90,
+      "visible": true,
+      "targetHeight": 1.8,
+      "targetFootprint": null
+    },
+    {
+      "id": "G",
+      "code": "G",
+      "name": "社號標",
+      "asset": "namepillar",
+      "x": 13.2,
+      "y": -20.7,
+      "elevation": 1.575,
+      "scale": 1,
+      "rotation": -90,
+      "visible": true,
+      "targetHeight": 2.43,
+      "targetFootprint": null
+    },
+    {
+      "id": "H",
+      "code": "H",
+      "name": "社務所",
+      "asset": "office",
+      "x": 23.1,
+      "y": -14.8,
+      "elevation": 2.88,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": null,
+      "targetFootprint": [
+        9,
+        7.8
+      ]
+    },
+    {
+      "id": "Q",
+      "code": "Q",
+      "name": "本殿",
+      "asset": "photo-Q",
+      "x": 9.5,
+      "y": 21.69,
+      "elevation": 5.16,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "naturalScale": true,
+      "targetHeight": null,
+      "targetFootprint": null,
+      "evidence": "partial"
+    },
+    {
+      "id": "L",
+      "code": "L",
+      "name": "神馬",
+      "asset": "horse",
+      "x": 4.86,
+      "y": -3.9885,
+      "elevation": 2.8,
+      "scale": 1,
+      "rotation": 0,
+      "modelRotation": 270,
+      "visible": true,
+      "targetHeight": 2.201,
+      "targetFootprint": null,
+      "appearanceReference": "./assets/models/horse/current.jpg"
+    },
+    {
+      "id": "N",
+      "code": "N",
+      "name": "神門",
+      "asset": "photo-N",
+      "x": 9.66,
+      "y": 0.99,
+      "elevation": 3.85,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "naturalScale": true,
+      "targetHeight": null,
+      "targetFootprint": null,
+      "evidence": "visible"
+    },
+    {
+      "id": "P",
+      "code": "P",
+      "name": "拜殿",
+      "asset": "photo-P",
+      "x": 9.55,
+      "y": 13.08,
+      "elevation": 3.85,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "naturalScale": true,
+      "targetHeight": null,
+      "targetFootprint": null,
+      "evidence": "visible"
+    },
+    {
+      "id": "R",
+      "code": "R",
+      "name": "屋根付玉垣",
+      "asset": "photo-R",
+      "x": 9.55,
+      "y": 7.83,
+      "elevation": 4.3,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "naturalScale": true,
+      "targetHeight": null,
+      "targetFootprint": null,
+      "evidence": "visible"
+    },
+    {
+      "id": "S",
+      "code": "S",
+      "name": "透塀",
+      "asset": "photo-S",
+      "x": 9.55,
+      "y": 20.8,
+      "elevation": 4.5,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "naturalScale": true,
+      "targetHeight": null,
+      "targetFootprint": null,
+      "evidence": "partial"
+    }
+  ],
+  "unconfirmed": [
+    {
+      "asset": "unconfirmed",
+      "name": "303030.zip",
+      "note": "組合身分與位置未確認，不放入全區。"
+    }
+  ],
+  "legacyDefaults": {
+    "N": {
+      "id": "N",
+      "code": "N",
+      "name": "神門",
+      "asset": "base",
+      "x": 9.700000047683716,
+      "y": 0.9999999701976761,
+      "elevation": 3.853600025177002,
+      "rotation": 0,
+      "scale": 1,
+      "visible": true,
+      "sourceType": "schematic"
+    },
+    "P": {
+      "id": "P",
+      "code": "P",
+      "name": "拜殿",
+      "asset": "base",
+      "x": 9.549999952316284,
+      "y": 15.600000381469727,
+      "elevation": 4.505099773406986,
+      "rotation": 0,
+      "scale": 1,
+      "visible": true,
+      "sourceType": "schematic"
+    },
+    "Q": {
+      "id": "Q",
+      "code": "Q",
+      "name": "本殿",
+      "asset": "main",
+      "x": 9.5,
+      "y": 21.69,
+      "elevation": 5.16,
+      "scale": 1,
+      "rotation": 0,
+      "visible": true,
+      "targetHeight": null,
+      "targetFootprint": [
+        4.4,
+        6
+      ]
+    },
+    "R": {
+      "id": "R",
+      "code": "R",
+      "name": "屋根付玉垣",
+      "asset": "base",
+      "x": 9.549999810755253,
+      "y": 7.824999988079069,
+      "elevation": 4.300000190734863,
+      "rotation": 0,
+      "scale": 1,
+      "visible": true,
+      "sourceType": "schematic"
+    },
+    "S": {
+      "id": "S",
+      "code": "S",
+      "name": "透塀",
+      "asset": "base",
+      "x": 9.549999952316284,
+      "y": 20.649999618530273,
+      "elevation": 4.505099773406986,
+      "rotation": 0,
+      "scale": 1,
+      "visible": true,
+      "sourceType": "schematic"
+    }
+  },
+  "compatibleRevisions": [
+    "2026-11-01-A-S"
+  ]
+}
