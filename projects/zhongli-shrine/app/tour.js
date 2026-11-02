@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { loadShrine } from './scene-model.js';
+import { createGround, GROUND_LAYERS } from './ground.js';
 
 /* =========================================================
    導覽站點設定（文字、視角都在這裡改）
@@ -65,7 +66,7 @@ renderer.setClearColor(0xe9e6dc);
 host.append(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xe9e6dc, 160, 420);
+scene.fog = new THREE.Fog(0xe9e6dc, 260, 720);
 scene.add(new THREE.HemisphereLight(0xfff9eb, 0x7c826e, 2.2));
 const sun = new THREE.DirectionalLight(0xfff4dd, 1.8);
 sun.position.set(-40, 80, 50);
@@ -150,6 +151,7 @@ try {
   shrine = await loadShrine(config);
   scene.add(shrine.integrated);
   prepareGhost();
+  setupGround();     // 不等待：航照慢慢載入，不擋住畫面
   $('#loading').style.opacity = 0;
   setTimeout(() => $('#loading').remove(), 500);
 } catch (e) {
@@ -305,4 +307,31 @@ renderer.setAnimationLoop(() => {
   updatePins();
 });
 
-window.__tour = { go, setEra, camera, controls, photoMarker };
+/* ---------- 今日航照地面 ---------- */
+let ground = null;
+const GROUND_ORDER = ['photo', 'emap', 'off'];
+let groundIdx = 0;
+async function setupGround() {
+  try {
+    const md = await (await fetch('./map-data.json')).json();
+    // 地面高度：放在參道（C）底面下方一點
+    const path = shrine.objects.get('C');
+    let top = path ? new THREE.Box3().setFromObject(path.root).min.y - 0.03 : 1.5;
+    if (!isFinite(top)) top = 1.5;
+    ground = await createGround(scene, md.control, {
+      bounds: { x0: -190, x1: 140, y0: -140, y1: 130 }, height: top + 0.02, zoom: 18, layer: 'photo'
+    });
+    if (ground.ok) {
+      $('#groundBtn').hidden = false;
+    } else ground.mesh.visible = false;                      // 圖磚載不到就維持原樣
+    window.__tour.ground = ground;
+  } catch (e) { console.warn('航照地面載入失敗', e); }
+}
+$('#groundBtn').onclick = async () => {
+  groundIdx = (groundIdx + 1) % GROUND_ORDER.length;
+  const id = GROUND_ORDER[groundIdx];
+  $('#groundBtn').textContent = '地面：' + (id === 'off' ? '關' : GROUND_LAYERS[id].label);
+  await ground.setLayer(id);
+};
+
+window.__tour = { go, setEra, camera, controls, photoMarker, get shrine() { return shrine; } };
