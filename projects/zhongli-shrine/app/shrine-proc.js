@@ -131,30 +131,58 @@ function clean(g) {
 // 入母屋造（歇山）：下段四坡，上段兩坡＋山牆。cx,cu 為中心；W×D 為簷口範圍；
 // he 簷高、hm 轉折高、hr 屋脊高；屋脊沿 x。lift = 簷角起翹。
 function irimoya(B, cx, cu, W, D, he, hm, hr, lift = 0.3) {
-  const run = (hr - he) / (D / 2);              // 坡度（每公尺水平升高）
-  const inset = (hm - he) / run;                // 下段水平退縮
+  // 下段四坡做成反曲面（上陡下緩、簷角起翹），簷下一排垂木木口；上段兩坡＋山牆（妻）。
+  const run = (hr - he) / (D / 2);              // 平均坡度
+  const inset = (hm - he) / run * 1.15;         // 下段水平退縮（反曲面需稍深）
   const w2 = W / 2 - inset, d2 = D / 2 - inset, w = W / 2, d = D / 2;
-  const E = [[cx - w, cu - d, he + lift], [cx + w, cu - d, he + lift], [cx + w, cu + d, he + lift], [cx - w, cu + d, he + lift]];
-  const Em = [[cx, cu - d, he], [cx + w, cu, he + lift * 0.4], [cx, cu + d, he], [cx - w, cu, he + lift * 0.4]];
-  const T = [[cx - w2, cu - d2, hm], [cx + w2, cu - d2, hm], [cx + w2, cu + d2, hm], [cx - w2, cu + d2, hm]];
-  // 下段：每邊兩個三角形＋中間點，讓簷口中間略低（反り）
-  const sides = [[0, 1, 0], [1, 2, 1], [2, 3, 2], [3, 0, 3]];
-  sides.forEach(([a, b, m]) => {
-    B.mesh('roof', [E[a], Em[m], E[b], T[b], T[a]], [[0, 1, 4], [1, 3, 4], [1, 2, 3]]);
-    // 簷口厚度（鼻隠）
-    B.mesh('dark', [E[a], Em[m], E[b], [E[b][0], E[b][1], E[b][2] - 0.28], [Em[m][0], Em[m][1], Em[m][2] - 0.28], [E[a][0], E[a][1], E[a][2] - 0.28]],
-      [[0, 5, 4], [0, 4, 1], [1, 4, 3], [1, 3, 2]]);
+  const E = [[cx - w, cu - d], [cx + w, cu - d], [cx + w, cu + d], [cx - w, cu + d]];
+  const T = [[cx - w2, cu - d2], [cx + w2, cu - d2], [cx + w2, cu + d2], [cx - w2, cu + d2]];
+  const NT = 10, NS = 5, TH = 0.3;
+  const hAt = (s, t) => hm - (hm - he) * (1 - Math.pow(1 - s, 1.45)) + lift * Math.pow(s, 2.5) * Math.pow(Math.abs(t), 5);
+  for (let k = 0; k < 4; k++) {
+    const a = k, b = (k + 1) % 4, G = [];
+    for (let i = 0; i <= NT; i++) {
+      const t = -1 + 2 * i / NT, f = i / NT, row = [];
+      for (let j = 0; j <= NS; j++) {
+        const s = j / NS;
+        const ex = E[a][0] + (E[b][0] - E[a][0]) * f, eu = E[a][1] + (E[b][1] - E[a][1]) * f;
+        const tx = T[a][0] + (T[b][0] - T[a][0]) * f, tu = T[a][1] + (T[b][1] - T[a][1]) * f;
+        row.push([tx + (ex - tx) * s, tu + (eu - tu) * s, hAt(s, t)]);
+      }
+      G.push(row);
+    }
+    for (let i = 0; i < NT; i++) for (let j = 0; j < NS; j++)
+      B.quad('roof', G[i][j + 1], G[i + 1][j + 1], G[i + 1][j], G[i][j]);
+    for (let i = 0; i < NT; i++) {                // 簷口厚度（茅負・淡色檜皮斷面）
+      const p = G[i][NS], q = G[i + 1][NS];
+      B.quad('wood', p, q, [q[0], q[1], q[2] - TH], [p[0], p[1], p[2] - TH]);
+      B.quad('dark', [p[0], p[1], p[2] - TH], [q[0], q[1], q[2] - TH], G[i + 1][NS - 1].map((v, n) => n === 2 ? v - TH - 0.05 : v), G[i][NS - 1].map((v, n) => n === 2 ? v - TH - 0.05 : v));   // 軒裏
+    }
+    // 垂木：簷下白色木口，間隔約 0.33 公尺
+    const L = Math.hypot(E[b][0] - E[a][0], E[b][1] - E[a][1]), n = Math.floor(L / 0.33);
+    const nx = -(E[b][1] - E[a][1]) / L, nu = (E[b][0] - E[a][0]) / L;      // 向內法線
+    for (let i = 1; i < n; i++) {
+      const f = i / n, t = -1 + 2 * f, x = E[a][0] + (E[b][0] - E[a][0]) * f + nx * 0.25, u = E[a][1] + (E[b][1] - E[a][1]) * f + nu * 0.25;
+      const y = hAt(0.92, t) - TH - 0.02;
+      B.box('white', x, u, 0.1, 0.1, y - 0.1, y);
+    }
+  }
+  // 上段：兩坡屋面＋山牆三角（妻飾）
+  const R0 = [cx - w2, cu, hr], R1 = [cx + w2, cu, hr], TT = T.map(([x, u]) => [x, u, hm]);
+  B.quad('roof', TT[0], TT[1], R1, R0);
+  B.quad('roof', TT[2], TT[3], R0, R1);
+  B.mesh('dark', [TT[0], TT[3], R0], [[0, 1, 2]]);
+  B.mesh('dark', [TT[1], R1, TT[2]], [[0, 1, 2]]);
+  [-1, 1].forEach(sx => {                        // 破風板（妻側封簷，白木）
+    const x = cx + sx * (w2 + 0.02);
+    B.quad('wood', [x, cu - d2 - 0.15, hm - 0.05], [x, cu, hr + 0.05], [x, cu, hr - 0.3], [x, cu - d2 - 0.15, hm - 0.35]);
+    B.quad('wood', [x, cu + d2 + 0.15, hm - 0.05], [x, cu, hr + 0.05], [x, cu, hr - 0.3], [x, cu + d2 + 0.15, hm - 0.35]);
+    B.box('wood', x, cu, 0.08, 2 * d2 * 0.5, hm + (hr - hm) * 0.25, hm + (hr - hm) * 0.32);   // 妻の貫
   });
-  // 上段：兩坡屋面＋山牆三角
-  const R0 = [cx - w2, cu, hr], R1 = [cx + w2, cu, hr];
-  B.quad('roof', T[0], T[1], R1, R0);
-  B.quad('roof', T[2], T[3], R0, R1);
-  B.mesh('dark', [T[0], T[3], R0], [[0, 1, 2]]);
-  B.mesh('dark', [T[1], R1, T[2]], [[0, 1, 2]]);
-  // 屋脊（棟）＋鬼板
-  B.box('roof', cx, cu, 2 * w2 + 0.3, 0.45, hr - 0.05, hr + 0.35);
-  B.box('dark', cx - w2 - 0.1, cu, 0.25, 0.5, hr - 0.1, hr + 0.55);
-  B.box('dark', cx + w2 + 0.1, cu, 0.25, 0.5, hr - 0.1, hr + 0.55);
+  // 屋脊（箱棟）＋鬼板
+  B.box('roof', cx, cu, 2 * w2 + 0.3, 0.5, hr - 0.05, hr + 0.4);
+  B.box('white', cx, cu, 2 * w2 + 0.32, 0.52, hr + 0.18, hr + 0.24);      // 棟の飾り帯
+  [-1, 1].forEach(sx => { B.box('dark', cx + sx * (w2 + 0.1), cu, 0.25, 0.55, hr - 0.1, hr + 0.7); B.box('dark', cx + sx * (w2 + 0.1), cu, 0.25, 0.85, hr + 0.45, hr + 0.62); });
 }
 // 切妻造（兩坡）：屋脊沿 x（alongX）或沿 u。前後簷深可不同（流造）。
 function kirizuma(B, cx, cu, W, Df, Db, he, hr, alongX = true, lift = 0.2, heB = he) {
@@ -439,7 +467,15 @@ export function buildShrine() {
   B.box('white', 0, -3.1, 8.3, 0.03, F + 1.45, F + 1.95);             // 神紋幕（鎮座祭）
   B.box('dark', 0, 0, 8.8, 6.4, F + CH, F + CH + 0.4);                // 斗栱帶
   [-4.2, -2.1, 0, 2.1, 4.2].forEach(x => B.box('wood', x, -3.15, 0.3, 0.3, F + CH, F + CH + 0.35));   // 斗栱（正面可見）
-  irimoya(B, 0, 0, 12.4, 9.0, 4.04, 5.1, 6.9, 0.55);
+  // 組物（斗栱）：每根柱頂一組，正面與側面
+  [-4.2, -3.03, -1.38, 1.38, 3.03, 4.2].forEach(x => [-3.0, 3.0].forEach(u => {
+    B.box('wood', x, u, 0.42, 0.42, F + CH, F + CH + 0.16);            // 大斗
+    B.box('wood', x, u, 0.9, 0.22, F + CH + 0.16, F + CH + 0.3);        // 肘木
+    [-0.33, 0, 0.33].forEach(o => B.box('wood', x + o, u, 0.2, 0.26, F + CH + 0.3, F + CH + 0.42));   // 巻斗
+  }));
+  [-4.2, 4.2].forEach(x => [0].forEach(u => B.box('wood', x, u, 0.22, 0.9, F + CH + 0.16, F + CH + 0.3)));
+  B.box('wood', 0, -3.05, 8.8, 0.2, F + CH + 0.42, F + CH + 0.56);       // 桁
+  irimoya(B, 0, 0, 12.4, 9.0, 4.04, 5.3, 6.9, 0.7);
   // 兩翼屋頂：屋脊沿 x、外端小山牆（正面照可見翼端鬼瓦），內側收在主屋頂下
   [-1, 1].forEach(s => {
     const xi = s * 3.9, xg = s * 7.5, xo = s * 7.95, ue = 4.4, he = 3.36, hm = 4.15, hr = 4.7, ug = ue * (1 - (hm - he) / (hr - he));
