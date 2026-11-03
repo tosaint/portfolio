@@ -808,9 +808,12 @@ function strip(B, a, b, w, y, mat) {
     B.add('path', g);
   } else B.box(mat, 0, L / 2, w, L + w * 0.3, y - 0.05, y);
 }
+let onAsset = () => {};
+export const setOnAsset = f => { onAsset = f; };   // 非同步貼圖載入後通知重畫
 function chochinTexture() {             // 提燈：竹骨橫紋、一面紋章、一面「中壢神社」（照片中的紋：外圈花瓣、內五瓣）
-  const W = 512, H = 256, c = document.createElement('canvas'); c.width = W; c.height = H;
-  const x = c.getContext('2d');
+  const W = 512, H = 256, c = document.createElement('canvas'); c.width = W * 2; c.height = H * 2;
+  const x = c.getContext('2d'); x.scale(2, 2);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   x.fillStyle = '#f3efe4'; x.fillRect(0, 0, W, H);
   x.strokeStyle = 'rgba(120,110,95,.35)'; x.lineWidth = 1;
   for (let y = 8; y < H; y += 7) { x.beginPath(); x.moveTo(0, y); x.lineTo(W, y); x.stroke(); }
@@ -827,7 +830,18 @@ function chochinTexture() {             // 提燈：竹骨橫紋、一面紋章�
   // 文字（圓周 1/4 處，直書；與紋章相隔 90°）：粗筆
   x.fillStyle = ink; x.font = '900 46px "Noto Serif TC","PMingLiU",serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
   '中壢神社'.split('').forEach((ch, i) => x.fillText(ch, W * 0.25, 46 + i * 54));
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+  // 實際字跡：從老照片燈籠描下的「中壢神社」墨跡（assets/chochin-text.png），載入後取代上面的暫用字
+  const inkImg = new Image();
+  inkImg.onload = () => {
+    const tw = 80, th = 214, tx = W * 0.25 - tw / 2, ty = 22;
+    x.fillStyle = '#f3efe4'; x.fillRect(tx - 6, 0, tw + 12, H);
+    x.strokeStyle = 'rgba(120,110,95,.35)'; x.lineWidth = 1;
+    for (let y = 8; y < H; y += 7) { x.beginPath(); x.moveTo(tx - 6, y); x.lineTo(tx + tw + 6, y); x.stroke(); }
+    x.drawImage(inkImg, tx, ty, tw, th);
+    t.needsUpdate = true; onAsset();
+  };
+  inkImg.src = './assets/chochin-text.png';
+  return t;
 }
 function plaqueTexture() {              // 扁額「中壢神社」（白底黑字、深色框）
   const c = document.createElement('canvas'); c.width = 128; c.height = 256;
