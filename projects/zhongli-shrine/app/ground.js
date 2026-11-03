@@ -3,13 +3,16 @@
 import * as THREE from 'three';
 
 const NLSC = id => (z, x, y) => `https://wmts.nlsc.gov.tw/wmts/${id}/default/GoogleMapsCompatible/${z}/${y}/${x}`;
-const SINICA = (id, ext = 'jpg') => (z, x, y) => `https://gis.sinica.edu.tw/tileserver/file-exists.php?img=${id}-${ext}-${z}-${x}-${y}`;
-// zoom：用哪一層圖磚（18 約 0.5 公尺／像素）。舊地圖解析度較低，用 16。
+// 中研院百年歷史地圖：WMTS 說明（gis.sinica.edu.tw/tainan/wmts）列出的圖磚是 png，
+// 網址 file-exists.php?img=圖層-png-z-x-y。依序嘗試 tainan、tileserver 兩個服務與 png／jpg。
+const SINICA = id => ['tainan', 'tileserver'].flatMap(svc => ['png', 'jpg'].map(ext =>
+  (z, x, y) => `https://gis.sinica.edu.tw/${svc}/file-exists.php?img=${id}-${ext}-${z}-${x}-${y}`));
+// zoom：用哪一層圖磚（18 約 0.5 公尺／像素）。舊地圖解析度較低，用 16（失敗再試 15）。
 export const GROUND_LAYERS = {
   photo: { label: '今日航照', url: NLSC('PHOTO2'), zoom: 18 },
   emap:  { label: '今日地圖', url: NLSC('EMAP'),   zoom: 18 },
   jm25k: { label: '1921 日治地形圖', url: SINICA('JM25K_1921'), zoom: 16 },
-  am50k: { label: '1944 美軍地圖',   url: [SINICA('AM50K_1944', 'png'), (z, x, y) => `https://gis.sinica.edu.tw/tainan/file-exists.php?img=AM50K_1944-png-${z}-${x}-${y}`, SINICA('AM50K_1944')], zoom: 16 }   // 中研院 WMTS 中此圖層為 png 格式
+  am50k: { label: '1944 美軍地圖',   url: SINICA('AM50K_1944'), zoom: 16 }
 };
 
 /* ---- 座標轉換 ---- */
@@ -95,6 +98,10 @@ export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north })
       ty0 = Math.floor(lat2y(Math.max(...lats), z)); ty1 = Math.floor(lat2y(Math.min(...lats), z));
       off = document.createElement('canvas');
       off.width = (tx1 - tx0 + 1) * 256; off.height = (ty1 - ty0 + 1) * 256;
+      // 先用中間一張圖磚探路，失敗就換下一個網址，不必整批等逾時
+      const probe = await loadImg(url(z, (tx0 + tx1) >> 1, (ty0 + ty1) >> 1));
+      if (my !== token) return false;
+      if (!probe) continue;
       const octx = off.getContext('2d'), jobs = [];
       for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++)
         jobs.push(loadImg(url(z, tx, ty)).then(im => { if (im) octx.drawImage(im, (tx - tx0) * 256, (ty - ty0) * 256); return !!im; }));
