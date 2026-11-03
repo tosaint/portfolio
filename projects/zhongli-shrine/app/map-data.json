@@ -150,7 +150,7 @@
    "kind": "gone",
    "title": "神門與狛犬",
    "past": "單層的四腳門（切妻造），門前一對狛犬。老照片前景的就是這座門；依照片反推，屋頂寬約 7 公尺、屋脊高約 4.4 公尺，門到拜殿約 21 公尺。",
-   "change": "狛犬於 1950 年忠義祠整修時移入忠義祠；神門從未出現在壢中畢冊照片中。",
+   "change": "鎮座祭（1939.10）照片中看不到神門，推測為之後增建，狛犬也移到門前。狛犬於 1950 年忠義祠整修時移入忠義祠；神門從未出現在壢中畢冊照片中。",
    "now": "熱食部門口附近",
    "slides": [
     "s40"
@@ -162,8 +162,9 @@
     "kanagawa"
    ],
    "photos": [
-    "horse-komainu-gate",
-    "gate"
+    "gate",
+    "gate-postwar",
+    "horse-komainu-gate"
    ],
    "q": [
     0,
@@ -241,6 +242,7 @@
    ],
    "photos": [
     "haiden-front",
+    "haiden-priests",
     "haiden-group",
     "haiden-inside"
    ],
