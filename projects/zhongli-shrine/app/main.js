@@ -197,7 +197,7 @@ function loadKomainu() {
       const k = i ? g.scene : g.scene.clone();
       k.position.set(x, LV.T1 + KOMA_PED, -y);
       if (!i) k.scale.x = -1;                 // 左側鏡像
-      k.rotation.y = i ? -Math.PI / 2 : Math.PI / 2;   // 兩尊都朝參道中央（相對而立）
+      k.rotation.y = 0;                       // 與神門同向：背對神門、面朝參道來的方向
       scene.add(k);
     });
     applyEra(); dirty = true;
