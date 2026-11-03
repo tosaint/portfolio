@@ -16,6 +16,15 @@ const HIST_PHOTO = {                 // 神門照片的拍攝視角（2026-11-03
   axes: {"x": [0.8558, -0.00099, -0.5173], "y": [-0.03247, 0.99792, -0.05561], "z": [0.51628, 0.06439, 0.854]},
 };
 
+// 拜殿正面照（自神門往拜殿，鎮座祭）：以參拜道 3.01 公尺為比例尺，相機與拜殿尺寸聯合反求（22 點、誤差約 5 像素）。
+// 反求的拍攝位置在模型神門前約 13 公尺：照片中看不到神門，故此站把 17 公尺內的物件裁掉（near），
+// 神門實際位置與這張照片的關係待查。
+const HAIDEN_PHOTO = {
+  src: './assets/photo-study/haiden-front.jpg', aspect: 1.7938, near: 17,
+  eye: [-0.2316, 2.5923, 28.136], target: [-0.2973, 3.1092, 8.1428], fov: 18.72,
+  axes: {"x": [1.0, -0.002, -0.0033], "y": [0.0021, 0.9997, 0.0258], "z": [0.0033, -0.0258, 0.9997]},
+};
+
 const STOPS = [
   {
     title: '從中正路走進神社',
@@ -35,15 +44,13 @@ const STOPS = [
     title: '老照片的那一刻',
     text: '你現在站在當年攝影師的位置。拖曳滑桿讓老照片和 3D 模型疊合：前方是神門與狛犬，後方是拜殿。當年報紙說，中壢神社的檜皮葺屋頂是「臺灣唯一」。',
     now: '神門大約在今天熱食部門口附近；狛犬 1950 年移到了忠義祠。',
-    eye: HIST_PHOTO.eye, target: HIST_PHOTO.target,
-    photo: true
+    photo: HIST_PHOTO
   },
   {
-    title: '神門、拜殿、本殿',
-    text: '神門、拜殿、本殿沿著中軸線排列，外圍有玉垣圍起。本殿供奉北白川宮能久親王與豐受大神。',
-    now: '拜殿基座上曾蓋校舍，本殿基座上蓋了困學亭；1991 年興建陶然亭時，剩下的遺構全部拆除。親師樓後方還留有一段參拜道和圍牆基座。',
-    eye: [42, 26, -2], target: [9.5, 4, -13],
-    pins: [['N', '神門'], ['P', '拜殿'], ['Q', '本殿'], ['L', '神馬']]
+    title: '鎮座祭這天的拜殿',
+    text: '1939 年 10 月 15 日鎮座祭，從神門望向拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，拜殿掛著神紋幕與「中壢神社」燈籠。拖曳滑桿，看看 3D 拜殿和照片疊不疊得上。',
+    now: '這裡就是今天的陶然亭一帶。拜殿基座上曾蓋校舍，本殿基座上蓋了困學亭；1991 年興建陶然亭時，剩下的遺構全部拆除。',
+    photo: HAIDEN_PHOTO
   },
   {
     title: '神馬：從古留到今',
@@ -57,7 +64,7 @@ const STOPS = [
 
 // 以上座標都是原配置模型的單位；轉成公尺世界座標（見 site.js）
 // 第 4、5 站在內苑：跟著 1947 航照的內苑位置前移
-STOPS.forEach((s, i) => { if (s.m) return; if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); if (i >= 3) { s.eye[2] -= 13.2; s.target[2] -= 13.2; } } else { s.eye = HIST_PHOTO.eye; s.target = HIST_PHOTO.target; } });
+STOPS.forEach((s, i) => { if (s.m) return; if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); if (i >= 3) { s.eye[2] -= 13.2; s.target[2] -= 13.2; } } else { s.eye = s.photo.eye; s.target = s.photo.target; } });
 // 「今」模式下仍保持實心的構件（其餘變半透明）
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
@@ -90,9 +97,10 @@ controls.addEventListener('change', () => { dirty = true; });
 /* ---------- 版面：3D 高度 = 螢幕 − 目前的底部面板 ---------- */
 let viewH = innerHeight, baseFov = 50;
 const bottomSheet = () => $('#tour').hidden ? $('#explore') : $('#tour');
-function photoRect() { const w = innerWidth, h = w / HIST_PHOTO.aspect; return { w, h, top: Math.max(0, (viewH - h) / 2) }; }
+let curPhoto = HIST_PHOTO;
+function photoRect() { const w = innerWidth, h = w / curPhoto.aspect; return { w, h, top: Math.max(0, (viewH - h) / 2) }; }
 function photoFov() {
-  const half = THREE.MathUtils.degToRad(HIST_PHOTO.fov / 2);
+  const half = THREE.MathUtils.degToRad(curPhoto.fov / 2);
   return THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(half) * viewH / photoRect().h));
 }
 function resize() {
@@ -397,7 +405,7 @@ function startTour(i = 0) {
   go(i);
 }
 function endTour() {
-  inPhoto = false; showPhoto(false);
+  inPhoto = false; showPhoto(false); camera.near = 0.5; camera.updateProjectionMatrix();
   photoMarker.visible = true; controls.enabled = true;
   $('#tour').hidden = true; $('#explore').hidden = false;
   showPlacePins();
@@ -424,14 +432,17 @@ function go(i) {
   if (s.thumb) $('#thumbImg').src = s.thumb;
   inPhoto = !!s.photo;
   showPhoto(false);
+  curPhoto = s.photo || HIST_PHOTO;
+  if (s.photo) { $('#photoImg').src = curPhoto.src; $('#photoLayer .frame').style.aspectRatio = String(curPhoto.aspect); resize(); }
+  camera.near = 0.5; camera.updateProjectionMatrix();
   photoMarker.visible = !s.photo;
   controls.enabled = !s.photo;
   flyTo(new THREE.Vector3(...s.eye), new THREE.Vector3(...s.target), s.photo ? photoFov() : baseFov, () => {
     if (s.photo) {
       // 用反求出的相機軸向（含些微傾斜），而不是單純 lookAt
-      const A = HIST_PHOTO.axes;
+      const A = curPhoto.axes;
       if (A) camera.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(...A.x), new THREE.Vector3(...A.y), new THREE.Vector3(...A.z)));
-      camera.fov = photoFov(); camera.updateProjectionMatrix();   // 面板高度可能在飛行途中改變，最後再算一次
+      camera.fov = photoFov(); camera.near = curPhoto.near || 0.5; camera.updateProjectionMatrix();   // 面板高度可能在飛行途中改變，最後再算一次
       dirty = true; $('#fade').value = 0; showPhoto(true); applyFade(); }
   });
   showStopPins(s);
