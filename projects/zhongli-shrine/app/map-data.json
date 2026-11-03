@@ -110,6 +110,7 @@
     "deck"
    ],
    "photos": [
+    "lantern-kejiba",
     "lantern-torii2",
     "lantern"
    ],
@@ -118,6 +119,27 @@
     -69.0
    ],
    "stop": 3
+  },
+  {
+   "id": "kejiba",
+   "q": [
+    -6.8,
+    -66.6
+   ],
+   "kind": "gone",
+   "title": "揭示場／制札",
+   "short": "揭示場",
+   "past": "第二鳥居前、參道西側的公告場，石基座上立兩柱、掛白木告示板，上覆反曲的兩坡小屋頂，山牆有懸魚，四周圍著木柵。參道西側由外往內依序是石燈籠、揭示場、下乘札，再進第二鳥居。",
+   "change": "戰後拆除，年代不詳。",
+   "now": "莊敬樓川堂前一帶（位置為推估）",
+   "slides": [],
+   "photos": [
+    "lantern-kejiba",
+    "torii2-front"
+   ],
+   "src": [
+    "deck"
+   ]
   },
   {
    "id": "office",
