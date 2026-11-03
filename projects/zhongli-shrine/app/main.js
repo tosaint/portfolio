@@ -175,7 +175,8 @@ function loadHorseScan() {
   new GLTFLoader().load('./assets/horse-scan.glb', g => {
     const scan = g.scene;
     // 銅馬老照片：馬身與玉垣平行、馬頭朝神門（中軸），站在神門左前方的玉垣外
-    const q = [-9.0, GATE_Y - 3.6];
+    // 銅馬合影照（昭和14年）：馬在神門左側、背靠玉垣，馬頭朝神門與狛犬；馬與左狛犬水平相距約 4–5 公尺
+    const q = [-7.6, GATE_Y - 2.6];
     scan.rotation.y = -Math.PI / 2;      // 掃描檔馬頭朝 -z → 轉成朝 +x（中軸方向）
     scan.position.set(q[0], LV.T1, -q[1]);
     scan.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = false; fadeMats.push(m.material); } });
