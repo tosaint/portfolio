@@ -67,7 +67,7 @@ function loadImg(src) {
  * 建立地面。回傳 { mesh, setLayer(id), planToLL, llToPlan, north }。
  * bounds：要鋪多大（模型平面座標）。每個圖層用自己的 zoom 重新拼圖。
  */
-export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north }) {
+export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north, order = -1 }) {
   // bounds 為 q 座標（公尺）；四角換成經緯度，決定要抓哪些圖磚
   const corners = [[bounds.x0, bounds.y0], [bounds.x1, bounds.y0], [bounds.x1, bounds.y1], [bounds.x0, bounds.y1]].map(qToLL);
   const lats = corners.map(c => c[0]), lngs = corners.map(c => c[1]);
@@ -82,7 +82,8 @@ export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north })
   geo.setIndex([0, 3, 1, 1, 3, 2]);
   const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0 });
   const mesh = new THREE.Mesh(geo, mat);
-  mesh.renderOrder = -1;
+  mesh.renderOrder = order;
+  let alpha = 1;                                 // 疊圖用：外部控制的不透明度
   mesh.name = 'ground';
   mesh.visible = false;
   scene.add(mesh);
@@ -106,7 +107,7 @@ export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north })
       const W = im.width, H = im.height;
       geo.attributes.position.array.set([...P(toQ([0, 0])), ...P(toQ([W, 0])), ...P(toQ([W, H])), ...P(toQ([0, H]))]);
       geo.attributes.position.needsUpdate = true; geo.computeBoundingSphere();
-      tex.dispose(); tex.needsUpdate = true; mat.opacity = 1; mesh.visible = true;
+      tex.dispose(); tex.needsUpdate = true; mat.opacity = alpha; mesh.visible = alpha > 0.01;
       return true;
     }
     const urls = Array.isArray(L.url) ? L.url : [L.url];
@@ -149,8 +150,12 @@ export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north })
     geo.attributes.position.needsUpdate = true;
     geo.computeBoundingSphere();
     tex.dispose(); tex.needsUpdate = true;
-    mat.opacity = 1; mesh.visible = true;
+    mat.opacity = alpha; mesh.visible = alpha > 0.01;
     return true;
   }
-  return { mesh, setLayer, north, height };
+  function setOpacity(a) { alpha = a; mat.opacity = a; mat.depthWrite = a > 0.99; if (mat.map && canvas.width > 1) mesh.visible = a > 0.01 && mesh.userData.on !== false; }
+  function clear() { token++; mesh.visible = false; mesh.userData.on = false; }
+  const _set = setLayer;
+  async function setLayerOn(id) { mesh.userData.on = true; return _set(id); }
+  return { mesh, setLayer: setLayerOn, setOpacity, clear, north, height };
 }
