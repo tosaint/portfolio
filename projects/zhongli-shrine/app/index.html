@@ -30,7 +30,7 @@
 
   /* 3D 上的標籤 */
   #pins { position:fixed; inset:0; pointer-events:none; z-index:3; }
-  .pin { position:absolute; transform:translate(-50%,-100%); pointer-events:auto; display:flex; flex-direction:column; align-items:center; cursor:pointer; }
+  .pin { position:absolute; left:0; top:0; will-change:transform; pointer-events:auto; display:flex; flex-direction:column; align-items:center; cursor:pointer; }
   .pin span { background:rgba(29,27,23,.85); color:#fff; font-size:12px; font-weight:700; padding:2px 7px; border-radius:7px; white-space:nowrap; }
   .pin i { width:13px; height:13px; border-radius:50%; border:2.5px solid #fff; box-shadow:0 1px 5px rgba(0,0,0,.4); margin-top:3px; }
   .pin.cam span { background:var(--accent); }
@@ -138,7 +138,7 @@
 <body>
 <div id="view"></div>
 <div class="shade" id="shadeTop"></div><div class="shade" id="shadeBot"></div>
-<div id="photoLayer"><div class="frame"><img id="photoImg" src="./assets/photo-study/historical.jpg" alt="中壢神社老照片"><span class="tag">老照片</span><span class="tag r">3D 模型</span><span class="tag cr">三森久子捐贈，壢中校史館藏</span></div></div>
+<div id="photoLayer"><div class="frame"><img id="photoImg" alt="中壢神社老照片"><span class="tag">老照片</span><span class="tag r">3D 模型</span><span class="tag cr">三森久子捐贈，壢中校史館藏</span></div></div>
 <div id="pins"></div>
 <div id="credit"></div>
 

@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED, HORSE } from './shrine-proc.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+// 掃描檔已用 meshopt 壓縮、只留顏色貼圖；材質改成 Lambert，手機算得比較輕
+const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+const lambert = m => new THREE.MeshLambertMaterial({ map: m.map || null, color: m.map ? 0xffffff : m.color, side: THREE.DoubleSide });
 import { createGround, GROUND_LAYERS } from './ground.js';
 import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
 
@@ -91,7 +95,7 @@ const toast = (t, ms = 2600) => { const e = $('#toast'); e.textContent = t; e.st
 /* ---------- 場景 ---------- */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 // 解析度：大螢幕（桌機）畫素多，上限放低；之後依實際畫格時間自動再調（見主迴圈）
-let maxDPR = Math.min(devicePixelRatio, innerWidth > 900 ? 1.25 : 1.75);
+let maxDPR = Math.min(devicePixelRatio, innerWidth > 900 ? 1.25 : 1.5);
 renderer.setPixelRatio(maxDPR);
 renderer.setClearColor(0xe9e6dc);
 renderer.localClippingEnabled = true;   // 銅馬掃描：切掉今日的台座
@@ -147,7 +151,8 @@ ro.observe($('#explore')); ro.observe($('#tour'));
 const photoMarker = new THREE.Group();
 {
   const eye = new THREE.Vector3(...HIST_PHOTO.eye), tgt = new THREE.Vector3(...HIST_PHOTO.target);
-  const tex = new THREE.TextureLoader().load(HIST_PHOTO.src, () => { dirty = true; });
+  const tex = new THREE.TextureLoader().load('./assets/photo-study/historical-s.jpg',   // 視錐上的小圖用縮小版
+    () => { dirty = true; });
   tex.colorSpace = THREE.SRGBColorSpace;
   const dist = 7 * S_IN, hgt = 2 * dist * Math.tan(THREE.MathUtils.degToRad(HIST_PHOTO.fov / 2)), wid = hgt * HIST_PHOTO.aspect;
   const card = new THREE.Mesh(new THREE.PlaneGeometry(wid, hgt), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
@@ -187,7 +192,7 @@ $('#era').oninput = applyEra;
 // 2026 年的 3D 掃描，依現場實測（台座 102×249 公分、連台座自路面高 310 公分）校正成公尺。
 // 台座是今天的樣式，1939 年的台座形式不同。
 function loadHorseScan() {
-  new GLTFLoader().load('./assets/horse-scan.glb', g => {
+  gltf.load('./assets/horse-scan-2.glb', g => {
     const scan = g.scene;
     // 銅馬老照片：馬身與玉垣平行、馬頭朝神門（中軸），站在神門左前方的玉垣外
     // 銅馬合影照（昭和14年）：馬在神門左側、背靠玉垣，馬頭朝神門與狛犬。
@@ -196,7 +201,7 @@ function loadHorseScan() {
     scan.rotation.y = -Math.PI / 2;      // 掃描檔馬頭朝 -z → 轉成朝 +x（神門方向）
     scan.position.set(HORSE.q[0], base - HOOF, -HORSE.q[1]);
     const clip = [new THREE.Plane(new THREE.Vector3(0, 1, 0), -(base - 0.03))];
-    scan.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = false; m.material.clippingPlanes = clip; fadeMats.push(m.material); } });
+    scan.traverse(m => { if (m.isMesh) { m.material = lambert(m.material); m.material.clippingPlanes = clip; fadeMats.push(m.material); } });
     horseScan = scan; scene.add(scan); applyEra(); dirty = true;
   }, undefined, e => console.warn('銅馬掃描載入失敗', e));
 }
@@ -205,8 +210,8 @@ function loadHorseScan() {
 // 現存於中壢忠義祠的狛犬（台座刻「昭和十四年十月」）3D 掃描，裁切、減面後約 0.3 MB。
 // 掃描只有一尊，另一尊以鏡像代替（原為阿吽一對，造形不同）。
 function loadKomainu() {
-  new GLTFLoader().load('./assets/komainu-scan.glb', g => {
-    g.scene.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.side = THREE.DoubleSide; fadeMats.push(m.material); } });
+  gltf.load('./assets/komainu-scan-2.glb', g => {
+    g.scene.traverse(m => { if (m.isMesh) { m.material = lambert(m.material); fadeMats.push(m.material); } });
     KOMA_POS.forEach(([x, y], i) => {
       const k = i ? g.scene : g.scene.clone();
       k.position.set(x, LV.T1 + KOMA_PED, -y);
@@ -332,7 +337,8 @@ function updatePins() {
     tmp.copy(pos).project(camera);
     const vis = tmp.z < 1 && Math.abs(tmp.x) < 1.05 && Math.abs(tmp.y) < 1.05 && !fly && !inPhoto;
     el.style.display = vis ? '' : 'none';
-    if (vis) { el.style.left = (tmp.x + 1) / 2 * innerWidth + 'px'; el.style.top = (1 - tmp.y) / 2 * viewH + 'px'; }
+    // 用 transform 移動標籤（只需合成、不觸發版面重排），比改 left/top 省很多
+    if (vis) el.style.transform = `translate3d(${((tmp.x + 1) / 2 * innerWidth).toFixed(1)}px,${((1 - tmp.y) / 2 * viewH).toFixed(1)}px,0) translate(-50%,-100%)`;
   });
 }
 
