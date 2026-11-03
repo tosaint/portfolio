@@ -199,8 +199,8 @@ function kirizuma(B, cx, cu, W, Df, Db, he, hr, alongX = true, lift = 0.2, heB =
     [[f, fm, f2], [b2, bm, b]].forEach(([a, m, c]) => B.mesh('dark', [a, m, c, [c[0], c[1], c[2] - 0.22], [m[0], m[1], m[2] - 0.22], [a[0], a[1], a[2] - 0.22]], [[0, 5, 4], [0, 4, 1], [1, 4, 3], [1, 3, 2]]));
     // 破風板（山牆封簷）
     [-w, w].forEach(x => {
-      B.mesh('dark', [[cx + x, cu - Df, he], [cx + x, cu, hr], [cx + x, cu, hr + 0.3], [cx + x, cu - Df, he + 0.3]], [[0, 1, 2], [0, 2, 3]]);
-      B.mesh('dark', [[cx + x, cu + Db, heB], [cx + x, cu, hr], [cx + x, cu, hr + 0.3], [cx + x, cu + Db, heB + 0.3]], [[0, 2, 1], [0, 3, 2]]);
+      B.mesh('wood', [[cx + x, cu - Df, he - 0.1], [cx + x, cu, hr - 0.1], [cx + x, cu, hr + 0.25], [cx + x, cu - Df, he + 0.25]], [[0, 1, 2], [0, 2, 3]]);
+      B.mesh('wood', [[cx + x, cu + Db, heB - 0.1], [cx + x, cu, hr - 0.1], [cx + x, cu, hr + 0.25], [cx + x, cu + Db, heB + 0.25]], [[0, 2, 1], [0, 3, 2]]);
     });
     B.box('roof', cx, cu, W + 0.2, 0.4, hr - 0.05, hr + 0.3);
   } else {
@@ -212,6 +212,13 @@ function kirizuma(B, cx, cu, W, Df, Db, he, hr, alongX = true, lift = 0.2, heB =
     B.box('roof', cx, cu, 0.4, W + 0.2, hr - 0.05, hr + 0.3);
     [-d, d].forEach(u => B.mesh('dark', [[cx - Df, cu + u, he], [cx, cu + u, hr], [cx + Db, cu + u, heB]], [[0, 1, 2]]));
   }
+}
+// 懸魚：切妻（懸山）山牆頂端、破風板交會處垂下的裝飾板（神門照片可見）。x 為山牆面位置
+function gegyo(B, x, cu, ytop) {
+  B.box('wood', x, cu, 0.07, 0.3, ytop - 0.42, ytop);
+  B.box('wood', x, cu, 0.07, 0.56, ytop - 0.6, ytop - 0.38);
+  B.box('wood', x, cu, 0.07, 0.3, ytop - 0.72, ytop - 0.6);
+  B.box('dark', x, cu, 0.08, 0.1, ytop - 0.32, ytop - 0.2);   // 六葉
 }
 // 寄棟（四坡），屋脊沿 x
 function yosemune(B, cx, cu, W, D, he, hr, mat = 'roof') {
@@ -395,7 +402,8 @@ export function buildShrine() {
   B.begin('W').at(-8.0, TORII2_Y + 5.6, Math.PI / 2, LV.T1);
   [[-1.1, -0.75], [1.1, -0.75], [1.1, 0.75], [-1.1, 0.75]].forEach(([x, u]) => B.box('wood', x, u, 0.18, 0.18, 0, 2.3));
   B.box('stone', 0, 0, 1.4, 0.7, 0, 0.75);
-  irimoya(B, 0, 0, 3.4, 2.7, 2.3, 2.75, 3.4, 0.15);
+  kirizuma(B, 0, 0, 3.4, 1.4, 1.4, 2.3, 3.25, true, 0.08);   // 懸山（切妻造）
+  [-1.7, 1.7].forEach(x => gegyo(B, x, 0, 3.15));
   B.end();
 
   /* ---- 社務所 ---- */
@@ -436,6 +444,7 @@ export function buildShrine() {
   [-2.4, -1.2, 0, 1.2, 2.4].forEach(x => { B.box('wood', x, 0, 0.32, 0.32, 2.55, 2.68); B.box('wood', x, 0, 0.7, 0.18, 2.68, 2.78); });   // 斗栱
   B.box('dark', 0, 0, 5.4, 2.4, 2.55, 2.75);    // 斗栱帶
   kirizuma(B, 0, 0, 7.1, 3.0, 3.0, 2.75, 4.3, true, 0.15);
+  [-3.55, 3.55].forEach(x => gegyo(B, x, 0, 4.2));          // 懸魚（神門照片：山牆頂端可見）
   B.end();
   // 銅馬石座：兩段方形花崗岩（合影照中台座頂約在人的腰部，約 0.9 公尺），長邊順著玉垣
   B.begin('Lp').at(HORSE.q[0], HORSE.q[1], 0, LV.T1);
@@ -564,17 +573,16 @@ export function buildShrine() {
     B.cyl('roof', x, -3.6, 0.55, F + 2.22, F + 2.55, 4, 0.08);   // 小屋蓋
     B.box('white', x, -3.6, 0.9, 0.04, F + 2.45, F + 2.85);       // 桐紋飾板
   });
-  // 兩翼屋頂：屋脊沿 x、外端小山牆（正面照可見翼端鬼瓦），內側收在主屋頂下
+  // 兩翼（垛殿）屋頂：懸山（切妻造、平入）。屋脊與主屋脊平行，外端為山牆、屋面伸出牆外；內端收在主屋頂下
   [-1, 1].forEach(s => {
-    const xi = s * 3.9, xg = s * 7.5, xo = s * 7.95, ue = 4.4, he = 3.36, hm = 4.15, hr = 4.7, ug = ue * (1 - (hm - he) / (hr - he));
-    B.mesh('roof', [[xi, -ue, he], [xo, -ue, he + 0.3], [xg, -ug, hm], [xg, 0, hr], [xi, 0, hr]], [[0, 1, 2], [0, 2, 4], [2, 3, 4]]);
-    B.mesh('roof', [[xi, ue, he], [xo, ue, he + 0.3], [xg, ug, hm], [xg, 0, hr], [xi, 0, hr]], [[0, 2, 1], [0, 4, 2], [2, 4, 3]]);
-    B.quad('roof', [xo, -ue, he + 0.3], [xo, ue, he + 0.3], [xg, ug, hm], [xg, -ug, hm]);
-    B.mesh('dark', [[xg, -ug, hm], [xg, ug, hm], [xg, 0, hr]], [[0, 1, 2]]);
-    B.box('roof', (xi + xg) / 2, 0, Math.abs(xg - xi), 0.35, hr - 0.05, hr + 0.25);
-    B.box('dark', xg + s * 0.1, 0, 0.2, 0.45, hr - 0.1, hr + 0.45);
-    B.box('dark', (xi + xo) / 2, -ue, Math.abs(xo - xi), 0.1, he - 0.25, he);
-    B.box('dark', (xi + xo) / 2, ue, Math.abs(xo - xi), 0.1, he - 0.25, he);
+    const xi = 3.9, xo = 7.55, he = 3.36, hr = 4.7, D = 4.4;
+    kirizuma(B, s * (xi + xo) / 2, 0, xo - xi, D, D, he, hr, true, 0.12);
+    // 山牆（妻壁）：翼外牆上方的三角板壁
+    const xw = s * 6.82, yw = F + 2.2, ys = hr - (hr - he) * 3.0 / D;
+    B.mesh('panel', [[xw, -3, yw], [xw, -3, ys], [xw, 0, hr - 0.05], [xw, 3, ys], [xw, 3, yw]], [[0, 1, 2], [0, 2, 4], [4, 2, 3]]);
+    B.box('wood', xw, 0, 0.1, 6.0, yw - 0.05, yw + 0.08);
+    B.box('dark', s * (xo + 0.06), 0, 0.2, 0.45, hr - 0.1, hr + 0.45);   // 鬼板
+    gegyo(B, s * (xo + 0.04), 0, hr - 0.12);
   });
   B.end();
   // 春日燈籠（神門照片：拜殿台階旁）
