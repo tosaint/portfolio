@@ -11,8 +11,9 @@ const SINICA = id => ['tainan', 'tileserver'].flatMap(svc => ['png', 'jpg'].map(
 export const GROUND_LAYERS = {
   photo: { label: '今日航照', url: NLSC('PHOTO2'), zoom: 18 },
   emap:  { label: '今日地圖', url: NLSC('EMAP'),   zoom: 18 },
-  jm25k: { label: '1921 日治地形圖', url: SINICA('JM25K_1921'), zoom: 16 },
-  am50k: { label: '1944 美軍地圖',   url: SINICA('AM50K_1944'), zoom: 16 }
+  // local：先用存在作品裡的拼接圖（z16、自圖磚 x54832 y28072 起、3×2 張），沒有才連線抓
+  jm25k: { label: '1921 日治地形圖', url: SINICA('JM25K_1921'), zoom: 16, local: { src: './oldmaps/JM25K_1921_z16_x54832_y28072.png', z: 16, x0: 54832, y0: 28072 } },
+  am50k: { label: '1944 美軍地圖',   url: SINICA('AM50K_1944'), zoom: 16, local: { src: './oldmaps/AM50K_1944_z16_x54832_y28072.png', z: 16, x0: 54832, y0: 28072 } }
 };
 
 /* ---- 座標轉換 ---- */
@@ -92,7 +93,18 @@ export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north })
     // 依序嘗試：各個網址格式 × 原 zoom、低一級 zoom（舊地圖不一定有高 zoom 圖磚）
     const urls = Array.isArray(L.url) ? L.url : [L.url];
     let ok = false, z = L.zoom, tx0, tx1, ty0, ty1, off;
-    outer: for (const zz of [L.zoom, L.zoom - 1]) for (const url of urls) {
+    if (L.local) {
+      const im = await loadImg(L.local.src);
+      if (my !== token) return !!im;
+      if (im) {
+        z = L.local.z; tx0 = L.local.x0; ty0 = L.local.y0;
+        tx1 = tx0 + Math.round(im.width / 256) - 1; ty1 = ty0 + Math.round(im.height / 256) - 1;
+        off = document.createElement('canvas'); off.width = (tx1 - tx0 + 1) * 256; off.height = (ty1 - ty0 + 1) * 256;
+        off.getContext('2d').drawImage(im, 0, 0, off.width, off.height);
+        ok = true;
+      }
+    }
+    if (!ok) outer: for (const zz of [L.zoom, L.zoom - 1]) for (const url of urls) {
       z = zz;
       tx0 = Math.floor(lng2x(Math.min(...lngs), z)); tx1 = Math.floor(lng2x(Math.max(...lngs), z));
       ty0 = Math.floor(lat2y(Math.max(...lats), z)); ty1 = Math.floor(lat2y(Math.min(...lats), z));
