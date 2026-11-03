@@ -123,7 +123,15 @@ class Builder {
   build(mats) {
     const group = new THREE.Group();
     for (const [k, list] of Object.entries(this.bins)) {
-      const m = new THREE.Mesh(mergeGeometries(list), mats[k]);
+      const geo = mergeGeometries(list);
+      if (k === 'gravel') {                 // 碎石：依世界座標貼圖（每 2 公尺重複一次），各塊鋪面紋理連續
+        const P = geo.attributes.position, N = geo.attributes.normal, UV = geo.attributes.uv;
+        for (let i = 0; i < P.count; i++) {
+          const ny = Math.abs(N.getY(i)), nx = Math.abs(N.getX(i));
+          UV.setXY(i, (ny > 0.5 ? P.getX(i) : nx > 0.5 ? P.getZ(i) : P.getX(i)) / 2, (ny > 0.5 ? P.getZ(i) : P.getY(i)) / 2);
+        }
+      }
+      const m = new THREE.Mesh(geo, mats[k]);
       m.name = 'shrine-' + k; group.add(m);
     }
     return group;
@@ -470,6 +478,13 @@ export function buildShrine() {
   const L = curve.getLength(), n = Math.ceil(L / 3);
   const pts = curve.getSpacedPoints(n).map(v => [v.x, v.z]);
   for (let i = 0; i < pts.length - 1; i++) strip(B, pts[i], pts[i + 1], 8, 0.02, 'gravel');
+  // 兩側緣石：沿參道中心線左右 4.1 公尺各一排低石條（高出地面約 5 公分）
+  { const C = curve.getSpacedPoints(Math.ceil(L / 1.5));
+    for (const sd of [-1, 1]) for (let i = 0; i < C.length - 1; i++) {
+      const a = C[i], b = C[i + 1], dx = b.x - a.x, dz = b.z - a.z, l = Math.hypot(dx, dz), nx = -dz / l * 4.1 * sd, nz = dx / l * 4.1 * sd;
+      if (b.z > TORII2_Y - 16 && b.x > -18) continue;   // 進入第二鳥居前廣場後不再設緣石
+      strip(B, [a.x + nx, a.z + nz], [b.x + nx, b.z + nz], 0.16, 0.06, 'stone', false);
+    } }
   B.at(0, 0); B.box('gravel', -2, TORII2_Y - 8.5, 30, 15, -0.03, 0.02);              // 第二鳥居前廣場
   // 石板參拜道（實測寬 3.01 公尺）
   strip(B, [AX, -71], [AX, TORII2_Y - 1.7], 3.01, 0.04, 'path');
@@ -508,7 +523,9 @@ export function buildShrine() {
     const c = curve.getPointAt(tt), t = curve.getTangentAt(tt);
     ids.forEach((id, i) => { const s = i ? 1 : -1; B.begin(id).at(c.x - t.z * off * s, c.z + t.x * off * s, 0, 0); lantern(B); B.end(); });
   };
-  lanternPair(['D3', 'D4'], 6 / L, 5.5);
+  // 第一鳥居前一對：鳥居前方 4 公尺（中正路側），離中軸各 5.5 公尺
+  { const b1 = APPROACH[0], t = curve.getTangentAt(0), cx = b1[0] - t.x * 4, cz = b1[1] - t.z * 4;
+    ['D3', 'D4'].forEach((id, i) => { const sd = i ? 1 : -1; B.begin(id).at(cx - t.z * 5.5 * sd, cz + t.x * 5.5 * sd, 0, 0); lantern(B); B.end(); }); }
   { const k = closestT(curve, P([-40.25, -6.3])); lanternPair(['D1', 'D2'], k, 5.5); }
   // 第二鳥居前一對：石燈籠照片中燈籠緊鄰鳥居外側、分立參道兩旁
   [['D5', -9], ['D6', 9]].forEach(([id, x]) => { B.begin(id).at(x, TORII2_Y - 3.5, 0, 0); lantern(B); B.end(); });
@@ -795,6 +812,7 @@ export function buildShrine() {
   const mats = {};
   for (const [k, c] of Object.entries(COLORS)) mats[k] = new THREE.MeshLambertMaterial({ color: c, side: THREE.DoubleSide, shadowSide: THREE.FrontSide });
   mats.path = new THREE.MeshLambertMaterial({ map: slabTexture(), side: THREE.DoubleSide });
+  mats.gravel = new THREE.MeshLambertMaterial({ map: gravelTexture(), side: THREE.DoubleSide });
   mats.plaque = new THREE.MeshLambertMaterial({ map: plaqueTexture(), side: THREE.DoubleSide });
   mats.brocade = new THREE.MeshLambertMaterial({ map: brocadeTexture(), side: THREE.DoubleSide });
   // 天井：朝下的面只受地面反光，略加自發光以免室內一片漆黑
@@ -999,6 +1017,18 @@ function brocadeTexture() {             // 水引幕的花紋帶（照片中的�
   x.strokeStyle = '#e6d6b4'; x.lineWidth = 2;
   for (let i = 0; i < 8; i++) { x.beginPath(); x.ellipse(16 + i * 32, 16, 10, 9, 0, 0, Math.PI * 2); x.stroke(); }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(4, 1); return t;
+}
+function gravelTexture() {                 // 碎石子：淺米白底、深淺細點（程式生成，2×2 公尺一格）
+  const N = 256, c = document.createElement('canvas'); c.width = c.height = N;
+  const x = c.getContext('2d'); x.fillStyle = '#ece6d8'; x.fillRect(0, 0, N, N);
+  let r = 12345; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 5200; i++) {
+    const v = rnd(), g = v < 0.5 ? 200 + rnd() * 30 : 235 + rnd() * 20;
+    x.fillStyle = `rgb(${g},${g - 4},${g - 12})`;
+    const px = rnd() * N, py = rnd() * N, sz = 1 + rnd() * 2.2;
+    x.fillRect(px, py, sz, sz); if (px < 3 || py < 3) x.fillRect(px + N, py + N, sz, sz);
+  }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
 function slabTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 64;
