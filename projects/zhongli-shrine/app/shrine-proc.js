@@ -836,16 +836,16 @@ export function buildShrine() {
   mats.plaque = new THREE.MeshLambertMaterial({ map: plaqueTexture(), side: THREE.DoubleSide });
   mats.brocade = new THREE.MeshLambertMaterial({ map: brocadeTexture(), side: THREE.DoubleSide });
   // 天井：朝下的面只受地面反光，略加自發光以免室內一片漆黑
-  mats.chochin = new THREE.MeshLambertMaterial({ map: chochinTexture(), emissive: 0x2a2620, side: THREE.DoubleSide });
+  { const ct = chochinTexture(); mats.chochin = new THREE.MeshLambertMaterial({ map: ct, emissiveMap: ct, emissive: 0x2a2620, side: THREE.DoubleSide }); }
   mats.kamon = new THREE.MeshLambertMaterial({ map: kamonTexture(), side: THREE.DoubleSide });
   mats.geba = new THREE.MeshLambertMaterial({ map: gebaTexture(), side: THREE.FrontSide });
   mats.nobori = new THREE.MeshLambertMaterial({ map: noboriTexture(), side: THREE.FrontSide });
   mats.rope = new THREE.MeshLambertMaterial({ color: 0xb8a77f, side: THREE.DoubleSide });   // 稻草繩
   mats.shago = new THREE.MeshLambertMaterial({ map: shagoTexture(), side: THREE.FrontSide });
-  mats.kamonStone = new THREE.MeshLambertMaterial({ map: kamonTexture('#d9d5cb', '#8a8478'), side: THREE.DoubleSide });
+  { const kt = kamonTexture('#d9d5cb', '#8a8478'); mats.kamonStone = new THREE.MeshLambertMaterial({ map: kt, emissiveMap: kt, emissive: 0x000000, side: THREE.DoubleSide }); }
   mats.ceil = new THREE.MeshLambertMaterial({ color: COLORS.wood, emissive: 0x3e3022, side: THREE.DoubleSide });
   const group = B.build(mats);
-  return { group, boxes: B.boxes, mats: Object.values(mats) };
+  return { group, boxes: B.boxes, mats: Object.values(mats), matsByName: mats };
 }
 
 // 1947 年航照（簡報《壢中簡史與中壢神社》中的航照，比例尺 50 公尺）描出的參拜道中心線。
