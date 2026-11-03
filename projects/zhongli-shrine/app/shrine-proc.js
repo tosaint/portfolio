@@ -255,7 +255,7 @@ function kasugaLantern(B) {
   B.cyl('stone', 0, 0, 0.06, 1.8, 1.95, 6);
 }
 // 狛犬台座：神門照片中為素面方台，連石獅約 1.8 公尺
-export const KOMA_PED = 0.8;
+export const KOMA_PED = 1.0;   // 銅馬合影照：台座頂約在人的肩部，約 1 公尺
 function komainu(B, flip) {
   // 只建台座；石獅本身用忠義祠現存狛犬的 3D 掃描（main.js 載入 komainu-scan.glb）
   B.box('stone', 0, 0, 0.9, 1.1, 0, 0.18);
@@ -388,6 +388,7 @@ export function buildShrine() {
     B.box('dark', x + Math.sign(x) * 0.75, 0, 1.35, 0.08, 0.1, 2.25);      // 兩側門扉／板壁
   });
   B.box('wood', 0, 0, 6.0, 0.24, 2.25, 2.55);  // 冠木
+  B.box('white', 0, -0.15, 3.0, 0.03, 1.7, 2.22);  // 神紋幕（銅馬合影照：神門下掛有桐紋幕）
   B.box('dark', 0, 0, 5.4, 2.4, 2.55, 2.8);    // 斗栱帶
   kirizuma(B, 0, 0, 7.1, 3.0, 3.0, 2.75, 4.3, true, 0.15);
   B.end();
