@@ -287,7 +287,7 @@ function kasugaLantern(B) {
 // 狛犬台座：神門照片中為素面方台，連石獅約 1.8 公尺
 export const KOMA_PED = 1.0;   // 銅馬合影照：台座頂約在人的肩部，約 1 公尺
 function komainu(B, flip) {
-  // 只建台座；石獅本身用忠義祠現存狛犬的 3D 掃描（main.js 載入 komainu-scan.glb）
+  // 只建台座；石獅本身用忠義祠現存狛犬的 3D 掃描（main.js 載入 komainu-scan-2.glb）
   B.box('stone', 0, 0, 0.9, 1.1, 0, 0.18);
   B.box('stone', 0, 0, 0.72, 0.92, 0.18, 0.72);
   B.box('stone', 0, 0, 0.8, 1.0, 0.72, KOMA_PED);
