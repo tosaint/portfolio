@@ -179,17 +179,17 @@ dialog .small-note{font-size:12px;color:var(--muted);border-top:1px solid var(--
   <div id="partLabels" class="part-labels"></div>
   <div id="hoverTip" class="hover-tip" role="tooltip" hidden><b id="hoverTitle"></b><span id="hoverBody"></span></div>
 
-  <button id="drawerTab" class="drawer-tab primary" aria-expanded="false" aria-controls="drawer" hidden>步驟 0/8 · 展開</button>
+  <button id="drawerTab" class="drawer-tab primary" aria-expanded="false" aria-controls="drawer" hidden>步驟 0/6 · 展開</button>
   <aside id="drawer" class="drawer" aria-label="操作面板">
     <section class="d-step">
-      <div class="step-top"><span id="stepNo">第 1 步 · 共 8 步</span><button id="collapseDrawer" class="text-button" aria-label="收合操作面板">收合</button></div>
+      <div class="step-top"><span id="stepNo">第 1 步 · 共 6 步</span><button id="collapseDrawer" class="text-button" aria-label="收合操作面板">收合</button></div>
       <h2 id="stepTitle">取下鏡筒蓋</h2>
       <p id="stepLive" class="step-live"></p>
       <div class="dots" id="dots"><button id="listBtn" class="text-button" aria-expanded="false">全部步驟</button></div>
       <ol id="stepList" class="step-list" hidden></ol>
     </section>
     <section class="d-tool" id="tool">
-      <div id="finish" class="finish" hidden>八步都完成了！按右上角「繳交」，再請老師檢查。</div>
+      <div id="finish" class="finish" hidden>六步都完成了！按右上角「繳交」，再請老師檢查。</div>
       <div id="questionArea" class="question-area" hidden></div>
       <div class="tool-head" id="toolHead"><b id="partTitle"></b><button id="hintBtn" class="text-button">提示</button></div>
       <p id="partDesc" class="desc"></p>
@@ -220,7 +220,7 @@ dialog .small-note{font-size:12px;color:var(--muted);border-top:1px solid var(--
 <li><b>看視野：</b>兩個圓形視野是上下左右顛倒的影像，可以直接拖曳微調鏡筒。</li>
 </ul>
 <p>空白處拖曳可環繞觀察，兩指或滾輪縮放；按「↶ 全景」回到整體。面板可隨時收合，望遠鏡的位置不會改變。</p>
-<p class="small-note">教學近似模型：口徑 130 mm、焦長 650 mm、目鏡視野 50°；對焦位置與亮度為示意，器材細節以實物為準。太陽 6° 攔截只是教學警示，不是真實的安全界線。</p>
+<p class="small-note">教學近似模型：器材外觀、對焦位置與影像大小都是示意，器材細節以實物為準。太陽 6° 攔截只是教學警示，不是真實的安全界線。</p>
 <button class="primary" data-close="helpDialog">開始操作</button></dialog>
 
 <dialog id="submitDialog"><button class="dialog-close" data-close="submitDialog" aria-label="關閉">×</button><div class="eyebrow">繳交學習紀錄</div><h2 id="submitTitle">送出到老師的紀錄表</h2>
@@ -347,7 +347,7 @@ return {V,I,mul,tr,rot,scale,transform,inverse,perspective,look,Node,box,cylinde
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id),D=Math.PI/180,{V,Node}=G3D,root=new Node();
-const VERSION='2.3',KEY='lizhong-dobsonian-v23';
+const VERSION='2.4',KEY='lizhong-dobsonian-v24';
 const INIT={az:-6,alt:8,cap:true,ep:null,lock:0,focus:12,fx:1.7,fy:-1.15};
 const EP={20:{focus:38,mag:32.5,fov:50/32.5},4:{focus:66,mag:162.5,fov:50/162.5}};
 const newId=()=>{try{return crypto.randomUUID()}catch(_){return Date.now().toString(36)+Math.random().toString(36).slice(2,10)}};
@@ -362,16 +362,14 @@ const ease=t=>t*t*(3-2*t);
 const PARTS={
  cap:{name:'鏡筒蓋',short:'鏡筒蓋',desc:'保護鏡口。蓋子未取下，主鏡視野會完全被遮住。',task:0,
   hints:['觀察主鏡視野：現在是黑的嗎？','取下鏡筒蓋後，還需要裝上目鏡才能觀察。','向外拖出鏡筒蓋，或按「取下鏡筒蓋」。']},
- ep20:{name:'20 mm 目鏡',short:'20 mm 目鏡',desc:'低倍率目鏡，適合先找目標。此模型為 32.5 倍、約 1.54° 視野。',task:1,
-  hints:['先用低倍率找到招牌，再改用高倍率。','目鏡座只能放一支目鏡；有目鏡時須先取出。','拖曳目鏡朝目鏡座移動，或使用「插入目鏡」。插入後記得固定。']},
- ep4:{name:'4 mm 目鏡',short:'4 mm 目鏡',desc:'高倍率目鏡。此模型為 162.5 倍、約 0.31° 視野；換鏡後請重新對焦。',task:6,
-  hints:['高倍率是否讓你更難找到招牌？','先在 20 mm 視野將同一位置置中，再換鏡。','先鬆固定螺絲，取出 20 mm，再插入 4 mm 並固定。']},
+ ep20:{name:'20 mm 目鏡',short:'20 mm 目鏡',desc:'插在調焦座上，從這裡看主鏡的影像。插入後要輕輕鎖緊固定螺絲。',task:1,
+  hints:['目鏡要插在鏡筒上方的調焦座裡。','插入後還要鎖緊固定螺絲，目鏡才不會滑落。','拖曳目鏡朝目鏡座移動，或使用「插入這支目鏡」。']},
  screw:{name:'目鏡固定螺絲',short:'固定螺絲',desc:'輕輕固定目鏡。向右拖曳鎖緊，向左拖曳鬆開；轉到定位即可。',task:1,
   hints:['目鏡拔不出來時，先檢查這顆螺絲。','固定螺絲壓住目鏡，不是調焦旋鈕。','向左拖曳至「已鬆開」再取出目鏡。']},
  focus:{name:'調焦鈕',short:'調焦鈕',desc:'拖曳旋鈕改變目鏡位置，觀察影像由模糊變清楚。這不是改變主鏡的焦長。',task:3,
   hints:['先確認主鏡視野裡有目標，再調焦。','清晰後繼續轉，影像會再次模糊；請找到最清楚的位置。','左右拖曳旋鈕粗調，再用 ± 按鈕微調。']},
  tube:{name:'鏡筒與指向',short:'推動鏡筒',desc:'拖曳鏡筒：左右調方位、上下調仰角。放開立即停止；空白處拖曳只改變觀看角度。',task:2,
-  hints:['目標是對面大樓的「百川文隱」招牌。','先以 20 mm 找到大樓，再用「細」微調。尋星鏡尚未校正時不能當作準確指引。','可在主鏡圓形視野內拖曳，讓看到的目標跟著手指移動。']},
+  hints:['目標是對面大樓的「百川文隱」招牌。','先用「粗」把鏡筒轉向大樓，再用「細」微調。尋星鏡尚未校正時不能當作準確指引。','可在主鏡圓形視野內拖曳，讓看到的目標跟著手指移動。']},
  finder:{name:'尋星鏡與校正螺絲',short:'尋星鏡',desc:'先讓主鏡目標置中，再只調尋星鏡螺絲。十字線固定，背景目標會隨光軸調整而移動。',task:5,
   hints:['主鏡與尋星鏡的中心，現在看的是同一處嗎？','校正時先保持主鏡不動。拖曳圓形視野會移動整支望遠鏡，不是校正。','用左右／上下螺絲，把主鏡中心的同一目標移到尋星鏡十字線交點。']},
  'finder-x':{name:'尋星鏡左右螺絲',short:'左右校正',desc:'左右拖曳螺絲調整尋星鏡水平方向。主鏡與鏡筒不會跟著移動。',task:5},
@@ -381,12 +379,10 @@ PARTS['finder-x'].hints=PARTS.finder.hints;PARTS['finder-y'].hints=PARTS.finder.
 const TASKS=[
  {key:'cap',title:'取下鏡筒蓋',part:'cap'},
  {key:'ep',title:'20 mm 插入與固定',part:'ep20'},
- {key:'aim',title:'1a｜主鏡找到招牌',part:'tube'},
+ {key:'aim',title:'主鏡找到招牌',part:'tube'},
  {key:'focus',title:'調焦至影像清楚',part:'focus'},
  {key:'inv',title:'觀察倒像方向',part:'ep20'},
- {key:'align',title:'1b｜尋星鏡同軸',part:'finder'},
- {key:'ep4',title:'換 4 mm 並重新對焦',part:'ep4'},
- {key:'q2',title:'比較視野與寫觀察',part:'ep4'}
+ {key:'align',title:'尋星鏡同軸',part:'finder'}
 ];
 function log(type,data={}){events.push({at:new Date().toISOString(),type,...data});if(events.length>2000)events.splice(0,events.length-2000);scheduleSave()}
 function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(save,600)}
@@ -394,7 +390,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify({version:VERSION,S,h
 function restore(){try{let raw=localStorage.getItem(KEY);if(!raw)return;let x=JSON.parse(raw);if(x.version!==VERSION)return;
  for(let k of ['az','alt','focus','fx','fy','lock'])S[k]=finite(x.S?.[k],INIT[k]);
  S.az=clamp(S.az,-180,180);S.alt=clamp(S.alt,-8,78);S.focus=clamp(S.focus,0,100);S.lock=clamp(S.lock,0,1);S.fx=clamp(S.fx,-5,5);S.fy=clamp(S.fy,-5,5);
- S.cap=typeof x.S?.cap==='boolean'?x.S.cap:true;S.ep=[20,4].includes(x.S?.ep)?x.S.ep:null;if(!S.ep)S.lock=0;
+ S.cap=typeof x.S?.cap==='boolean'?x.S.cap:true;S.ep=x.S?.ep===20?20:null;if(!S.ep)S.lock=0;
  for(let t of TASKS)if(x.history?.[t.key]?.first)history[t.key]={first:String(x.history[t.key].first),last:String(x.history[t.key].last||x.history[t.key].first)};
  answers={inv:[0,1,2,3].includes(x.answers?.inv)?x.answers.inv:null,q2:[0,1,2].includes(x.answers?.q2)?x.answers.q2:null,q1:String(x.answers?.q1||'').slice(0,3000)};
  events=Array.isArray(x.events)?x.events.slice(-2000):[];started=String(x.started||started);
@@ -465,18 +461,18 @@ cyl(.07,.002,mat('#becdc7',{gloss:1}),tubeNode,[0,0,.231],'z','tube');
 for(let x of [-.048,0,.048])cyl(.007,.014,black,tubeNode,[x,-.025,.279],'z','tube');
 box(.15,.0018,.0025,steel,tubeNode,[0,0,-.285],'tube');box(.0018,.15,.0025,steel,tubeNode,[0,0,-.285],'tube');
 let secondary=cyl(.018,.006,mat('#8da4a1',{gloss:1}),tubeNode,[0,0,-.28],'z','tube');secondary.rot[0]=Math.PI/4;
-const badge=add(G3D.plane(.18,.045),mat('#ffffff',{texture:signTexture('130 / 650','#e2e6df','#3c5552',512,128),unlit:true}),tubeNode,[.0805,.01,.08],[0,Math.PI/2,0],'tube');
+const badge=add(G3D.plane(.18,.045),mat('#ffffff',{texture:signTexture('DOBSONIAN','#e2e6df','#3c5552',512,128),unlit:true}),tubeNode,[.0805,.01,.08],[0,Math.PI/2,0],'tube');
 const focuser=new Node();focuser.pos=[0,.083,-.25];focuser.tag='focus';tubeNode.add(focuser);
 box(.068,.025,.078,black,focuser,[0,0,0]);
 ring(.027,.017,.025,black,focuser,[0,.02,0]);
 const drawTube=ring(.0195,.016,.075,steel,focuser,[0,.045,0]);
-cyl(.004,.104,steel,focuser,[0,.012,0],'x');
-const knobLeft=new Node();knobLeft.pos=[-.053,.012,0];knobLeft.tag='focus';focuser.add(knobLeft);
-const knobRight=new Node();knobRight.pos=[.053,.012,0];knobRight.tag='focus';focuser.add(knobRight);
+cyl(.004,.104,steel,focuser,[0,.012,0],'z');
+const knobLeft=new Node();knobLeft.pos=[0,.012,-.053];knobLeft.tag='focus';focuser.add(knobLeft);
+const knobRight=new Node();knobRight.pos=[0,.012,.053];knobRight.tag='focus';focuser.add(knobRight);
 for(let k of [knobLeft,knobRight]){
- cyl(.016,.014,rubber,k,[0,0,0],'x');
- cyl(.009,.015,steel,k,[0,0,0],'x');
- for(let i=0;i<20;i++){let a=i/20*Math.PI*2;cyl(.0011,.014,mat('#364641'),k,[0,.016*Math.cos(a),.016*Math.sin(a)],'x',null,8)}
+ cyl(.016,.014,rubber,k,[0,0,0],'z');
+ cyl(.009,.015,steel,k,[0,0,0],'z');
+ for(let i=0;i<20;i++){let a=i/20*Math.PI*2;cyl(.0011,.014,mat('#364641'),k,[.016*Math.cos(a),.016*Math.sin(a),0],'z',null,8)}
 }
 const screwNode=new Node();screwNode.pos=[0,.075,-.03];screwNode.tag='screw';focuser.add(screwNode);
 cyl(.0035,.026,steel,screwNode,[0,0,0],'z');
@@ -497,7 +493,7 @@ cyl(.0028,.022,steel,fyKnob,[0,0,0]);cyl(.007,.007,black,fyKnob,[0,.012,0]);
 const capNode=new Node();capNode.tag='cap';capNode.optical=false;root.add(capNode);
 cyl(.086,.018,black,capNode,[0,0,0],'z');cyl(.024,.006,rubber,capNode,[0,0,-.013],'z');
 const eyepieces={};
-for(let mm of [20,4]){
+for(let mm of [20]){
  let n=new Node();n.optical=false;n.tag='ep'+mm;root.add(n);eyepieces[mm]=n;
  cyl(.0158,.032,steel,n,[0,.016,0]);
  ring(.0163,.0151,.004,black,n,[0,.027,0]);
@@ -507,9 +503,9 @@ for(let mm of [20,4]){
  cyl(.0095,.001,greenGlass,n,[0,.087,0]);
  for(let i=0;i<22;i++){let a=i/22*Math.PI*2;cyl(.0008,.021,mat('#3b4841'),n,[.021*Math.cos(a),.052,.021*Math.sin(a)],'y',null,6)}
 }
-const CAP_HOME=[.53,.59,.15],EP_HOME={20:[.43,.58,-.025],4:[.58,.58,-.025]};
+const CAP_HOME=[.53,.59,.15],EP_HOME={20:[.50,.58,-.025]};
 const anchors={
- cap:()=>capNode.point(),ep20:()=>eyepieces[20].point([0,.05,0]),ep4:()=>eyepieces[4].point([0,.05,0]),
+ cap:()=>capNode.point(),ep20:()=>eyepieces[20].point([0,.05,0]),
  screw:()=>screwNode.point([0,0,-.018]),focus:()=>knobRight.point(),tube:()=>tubeNode.point([.07,0,.04]),
  finder:()=>finderNode.point([0,0,0]),'finder-x':()=>fxKnob.point(),'finder-y':()=>fyKnob.point()
 };
@@ -525,7 +521,7 @@ function pose(){
  azNode.rot[1]=-S.az*D;tubeNode.rot[0]=S.alt*D;
  finderNode.rot=[S.fy*D,-S.fx*D,0];
  drawTube.pos[1]=.029+S.focus*.0004;
- knobLeft.rot[0]=knobRight.rot[0]=S.focus*.16;
+ knobLeft.rot[2]=knobRight.rot[2]=S.focus*.16;
  screwNode.pos=[0,.06+S.focus*.0004,-.034+(1-S.lock)*-.008];
  screwNode.rot[2]=S.lock*4*Math.PI;
  fxKnob.rot[0]=S.fx*3;fyKnob.rot[1]=S.fy*3;
@@ -534,7 +530,7 @@ function pose(){
   capNode.pos=S.cap?tubeNode.point([0,0,-.371]):CAP_HOME.slice();
   capNode.rot=S.cap?[S.alt*D,-S.az*D,0]:[Math.PI/2,0,0];
  }
- for(let mm of [20,4])if(!animation||animation.mm!==mm){
+ for(let mm of [20])if(!animation||animation.mm!==mm){
   eyepieces[mm].pos=S.ep===mm?focuser.point([0,.058+S.focus*.0004,0]):EP_HOME[mm].slice();
   eyepieces[mm].rot=S.ep===mm?[S.alt*D,-S.az*D,0]:[0,0,0];
  }
@@ -565,7 +561,7 @@ function measurements(){
 let drawerOpen=true,viewsOpen=true,listOpen=false,toolTag=undefined,explicitPart=false,layoutMode='side',advanceTimer=null;
 try{const u=JSON.parse(localStorage.getItem(KEY+'-ui')||'{}');if(typeof u.drawer==='boolean')drawerOpen=u.drawer;if(typeof u.views==='boolean')viewsOpen=u.views}catch(_){}
 function saveUI(){try{localStorage.setItem(KEY+'-ui',JSON.stringify({drawer:drawerOpen,views:viewsOpen}))}catch(_){}}
-const firstOpen=()=>{const i=TASKS.findIndex(t=>!history[t.key]);return i<0?7:i};
+const firstOpen=()=>{const i=TASKS.findIndex(t=>!history[t.key]);return i<0?TASKS.length-1:i};
 taskIndex=firstOpen();
 
 function controlsHTML(tag){
@@ -584,7 +580,6 @@ function partForStep(i){
  if(i===3)return 'focus';
  if(i===4)return null;
  if(i===5)return 'finder';
- if(i===6){if(S.ep===20)return S.lock>.1?'screw':'ep20';if(S.ep===4){if(S.lock<.8)return 'screw';return measurements().focused?'tube':'focus'}return 'ep4'}
  return null;
 }
 function renderTool(force){
@@ -597,7 +592,7 @@ function renderTool(force){
  uiCache='';dirty=true;
 }
 function goStep(i,fly=true){
- if(i<0||i>7)return;clearTimeout(advanceTimer);
+ if(i<0||i>=TASKS.length)return;clearTimeout(advanceTimer);
  taskIndex=i;explicitPart=false;renderQuestions();renderTool(true);
  if(fly&&toolTag)flyToPart(toolTag);
  if(!drawerOpen)setDrawer(true);
@@ -605,7 +600,7 @@ function goStep(i,fly=true){
 }
 function selectPart(tag,fly=true){
  if(!PARTS[tag])return;clearTimeout(advanceTimer);
- let next=PARTS[tag].task;if(['screw','focus','tube'].includes(tag)&&S.ep===4&&history.align)next=6;
+ let next=PARTS[tag].task;
  explicitPart=true;selection=tag;taskIndex=next;renderQuestions();renderTool(true);
  if(fly)flyToPart(tag);
  if(!drawerOpen)setDrawer(true);
@@ -616,7 +611,7 @@ const OVERVIEW={yaw:.72,pitch:.32,radius:1.63,target:[.10,.71,-.06]};
 const zoomK=()=>layoutMode==='sheet'?clamp(worldHeight/worldWidth*.8,1,1.7):1;
 function flyToPart(tag){
  if(!savedOverview)savedOverview=JSON.parse(JSON.stringify(orbit));
- const distances={tube:1.36,cap:.64,focus:.44,screw:.39,ep20:.48,ep4:.48,finder:.49,'finder-x':.39,'finder-y':.39};
+ const distances={tube:1.36,cap:.64,focus:.44,screw:.39,ep20:.48,finder:.49,'finder-x':.39,'finder-y':.39};
  let target=anchors[tag](),yaw=(tag.startsWith('finder')?-.78:tag==='cap'&&S.cap?2.0:.8)-S.az*D;
  startFlight({target,yaw,pitch:tag.startsWith('ep')?.56:.34,radius:(distances[tag]||.48)*zoomK()});log('select-part',{part:tag});
 }
@@ -671,8 +666,8 @@ TASKS.forEach((t,i)=>{
  const li=document.createElement('li'),b=document.createElement('button');b.innerHTML=`<span class="n">${i+1}</span><span><span class="t">${t.title}</span><small></small></span>`;b.onclick=()=>{setList(false);goStep(i)};li.appendChild(b);$('stepList').appendChild(li);listButtons.push(b);
 });
 function renderQuestions(){
- const area=$('questionArea');area.innerHTML='';area.hidden=![4,7].includes(taskIndex);if(area.hidden)return;
- const which=taskIndex===4?'inv':'q2';
+ const area=$('questionArea');area.innerHTML='';area.hidden=taskIndex!==4;if(area.hidden)return;
+ const which='inv';
  const question=which==='inv'?'主鏡視野裡的「百川文隱」看起來怎樣？':'Q2：哪一組看到比較多建築物（視野最大）？';
  const opts=which==='inv'?['和肉眼一樣','只有上下顛倒','只有左右顛倒','上下左右都顛倒']:['主鏡＋20 mm','主鏡＋4 mm','一樣大'];
  const h=document.createElement('h3');h.textContent=question;area.appendChild(h);
@@ -696,9 +691,7 @@ function evaluate(now){
   aim:history.ep&&ready&&S.ep===20&&m.eyeError<.35,
   focus:history.aim&&ready&&S.ep===20&&m.eyeError<.35&&m.focused,
   inv:history.focus&&answers.inv===3,
-  align:history.focus&&ready&&m.focused&&m.aligned&&!gesture,
-  ep4:history.ep&&history.focus&&epSequence.removed20&&epSequence.inserted4&&ready&&S.ep===4&&m.eyeError<.10&&m.focused,
-  q2:history.ep4&&answers.q2===0&&answers.q1.trim().length>0
+  align:history.focus&&ready&&m.focused&&m.aligned&&!gesture
  };
  TASKS.forEach((t,i)=>{
   if(candidates[t.key]){if(!stable[t.key])stable[t.key]=now;
@@ -715,13 +708,11 @@ function liveLabels(m){
  const ready=!S.cap&&!!S.ep;
  return [
   S.cap?'鏡筒蓋還蓋著':'鏡口已打開',
-  !S.ep?'目鏡座是空的':S.lock<.8?'目鏡還沒鎖緊':S.ep===20?'20 mm 已鎖好':'目前裝的是 4 mm',
+  !S.ep?'目鏡座是空的':S.lock<.8?'目鏡還沒鎖緊':'20 mm 已鎖好',
   !ready?'還不能觀測：要先打開鏡口、裝好目鏡':m.eyeError<.35?'招牌在視野中央附近':'招牌還不在主鏡視野中央',
   !S.ep?'還沒裝目鏡':m.focused?'影像清楚':'影像模糊，需要調焦',
   answers.inv===null?'看主鏡視野後作答':answers.inv===3?'答對了':'再看一次，答案可以改',
-  m.axisError<.12?'兩個視野已經對準同一處':`尋星鏡還偏 ${m.axisError.toFixed(2)}°`,
-  S.ep!==4?'還沒換上 4 mm':S.lock<.8?'4 mm 還沒鎖緊':!m.focused?'4 mm 需要重新調焦':m.eyeError>=.10?'招牌要再置中一點':'4 mm 已對準、對焦',
-  answers.q2===0&&answers.q1.trim()?'已作答，Q1 由老師檢查':'回答 Q2，並寫下 Q1 觀察'
+  m.axisError<.12?'兩個視野已經對準同一處':`尋星鏡還偏 ${m.axisError.toFixed(2)}°`
  ];
 }
 let uiCache='';
@@ -730,14 +721,14 @@ function syncUI(){
  if(stamp===uiCache)return;uiCache=stamp;
  renderTool(false);
  const m=measurements(),live=liveLabels(m),num=Object.keys(history).length,done=!!history[TASKS[taskIndex].key];
- $('stepNo').textContent=`第 ${taskIndex+1} 步 · 共 8 步　已完成 ${num}`;
+ $('stepNo').textContent=`第 ${taskIndex+1} 步 · 共 ${TASKS.length} 步　已完成 ${num}`;
  $('stepTitle').textContent=(done?'✓ ':'')+TASKS[taskIndex].title;
  $('stepLive').textContent=live[taskIndex];$('stepLive').classList.toggle('warn',done&&/模糊|偏|還不|還沒|不在|再置中/.test(live[taskIndex]));
  dotButtons.forEach((d,i)=>{d.classList.toggle('done',!!history[TASKS[i].key]);d.classList.toggle('cur',i===taskIndex);d.setAttribute('aria-current',i===taskIndex?'step':'false')});
  listButtons.forEach((b,i)=>{b.parentElement.classList.toggle('ok',!!history[TASKS[i].key]);b.querySelector('.n').textContent=history[TASKS[i].key]?'✓':i+1;b.querySelector('small').textContent=live[i]});
- $('drawerTab').textContent=`步驟 ${num}/8 · 展開面板`;
- $('finish').hidden=num!==8;
- $('eyeCaption').textContent=S.ep?`${S.ep} mm · ${EP[S.ep].mag}× · 視野 ${EP[S.ep].fov.toFixed(2)}°`:'等待安裝目鏡';
+ $('drawerTab').textContent=`步驟 ${num}/${TASKS.length} · 展開面板`;
+ $('finish').hidden=num!==TASKS.length;
+ $('eyeCaption').textContent=S.ep?'20 mm 目鏡':'等待安裝目鏡';
  $('pointReadout').textContent=`方位 ${((S.az+360)%360).toFixed(1)}° · 仰角 ${S.alt.toFixed(1)}°`;
  $('liveReadout').textContent=S.cap?'鏡筒蓋未取下':!S.ep?'未裝目鏡':S.lock<.8?'目鏡未鎖緊':m.focused?'已對焦':'需要調焦';
  const isFinder=toolTag?.startsWith('finder');
@@ -753,7 +744,7 @@ function syncUI(){
   if(toolTag==='cap')text=S.cap?'蓋子還遮著鏡口':'蓋子放在托盤上';
   else if(toolTag==='focus')text=!S.ep?'請先裝目鏡':m.focused?'影像清楚了':'還沒對焦，觀察字的邊緣';
   else if(toolTag==='screw')text=!S.ep?'目鏡座是空的':S.lock>=.8?'鎖好了，不要再硬轉':S.lock<=.1?'已鬆開，可以取出目鏡':'調整中';
-  else if(toolTag==='tube')text=!S.ep||S.cap?'要先打開鏡口、裝好目鏡才看得到':m.eyeError<(S.ep===4?.10:.35)?'招牌在視野中央':'招牌還不在視野中央';
+  else if(toolTag==='tube')text=!S.ep||S.cap?'要先打開鏡口、裝好目鏡才看得到':m.eyeError<.35?'招牌在視野中央':'招牌還不在視野中央';
   else if(isFinder)text=m.axisError<.12?'兩個視野已對準同一處':`尋星鏡還偏 ${m.axisError.toFixed(2)}°`;
   else text=S.ep===+toolTag.slice(2)?S.lock>=.8?'已插入並鎖緊':'已插入，還沒鎖緊':'放在托盤上';
   $('partState').textContent=text;$('partState').classList.toggle('warn',/還|空|偏|調整中|模糊|請先|要先/.test(text));
@@ -766,7 +757,7 @@ function layoutOverlays(){
  const w=worldWidth,h=worldHeight,used=[],dr=drawerRect(),cur=labelFor(toolTag);
  labelButtons.forEach(({tag,el})=>{
   const p=renderers.main.project(anchors[tag]());
-  const offsets={cap:[-35,-34],focus:[52,-28],finder:[-50,-35],tube:[12,38],ep20:[-26,30],ep4:[32,30],screw:[30,-26]};
+  const offsets={cap:[-35,-34],focus:[52,-28],finder:[-50,-35],tube:[12,38],ep20:[-26,30],screw:[30,-26]};
   const off=offsets[tag]||[0,-30],x=p.x+off[0],y=p.y+off[1],isCur=tag===cur;
   let show=(labelsOn||isCur)&&p.visible&&x>40&&y>56&&x<w-40&&y<h-30;
   if(show&&dr&&x>dr.l-40&&x<dr.r+40&&y>dr.t-20&&y<dr.b+20)show=false;
@@ -778,7 +769,7 @@ function layoutOverlays(){
   tip.style.left=`${clamp(tipPoint.x+18,8,Math.max(8,w-tw-8))}px`;tip.style.top=`${clamp(tipPoint.y+18,54,Math.max(54,h-th-10))}px`}
 }
 const labelButtons=[];
-for(let tag of ['cap','focus','screw','finder','tube','ep20','ep4']){
+for(let tag of ['cap','focus','screw','finder','tube','ep20']){
  const el=document.createElement('button');el.className='part-label';el.dataset.part=tag;el.textContent=PARTS[tag].short;el.setAttribute('aria-label','選取'+PARTS[tag].name);
  el.onclick=()=>selectPart(tag);
  el.onpointerenter=e=>{if(e.pointerType==='mouse'){const p=renderers.main.project(anchors[tag]());showHover(tag,p.x,p.y)}};
@@ -826,7 +817,7 @@ sceneCanvas.addEventListener('pointerup',e=>{
  if(!g||g.id!==e.pointerId)return;
  if(g.moved<6){if(g.tag)selectPart(g.tag,true);else if(explicitPart){explicitPart=false;renderTool(true);syncUI()}}
  else if(g.tag==='cap'&&g.moved>22)perform('cap');
- else if(g.tag==='ep20'||g.tag==='ep4'){
+ else if(g.tag==='ep20'){
   const mm=+g.tag.slice(2);
   if(S.ep===mm&&g.moved>22)perform(g.tag);
   else if(S.ep!==mm){const seat=renderers.main.project(focuser.point([0,.07,0]));
@@ -889,14 +880,14 @@ function download(name,text,type){const blob=new Blob([text],{type}),url=URL.cre
 /* ---------- 繳交紀錄：Apps Script 網頁 → 設定的收件網址 → 下載檔案 ---------- */
 const RECORD_ENDPOINT=''; // 放在 Cloudflare／GitHub 網站時：貼上 Apps Script 網頁應用程式網址（結尾為 /exec），紀錄就會寫進 Google 試算表
 const PREVIEW_ONLY=false;
-const OPTS={inv:['和肉眼一樣','只有上下顛倒','只有左右顛倒','上下左右都顛倒'],q2:['主鏡＋20 mm','主鏡＋4 mm','一樣大']};
+const OPTS={inv:['和肉眼一樣','只有上下顛倒','只有左右顛倒','上下左右都顛倒']};
 const hasGAS=()=>typeof google!=='undefined'&&!!(google.script&&google.script.run);
 const channel=()=>hasGAS()?'gas':RECORD_ENDPOINT?'endpoint':PREVIEW_ONLY?'preview':'file';
 function buildRecord(){
  const ans=(k,right)=>answers[k]==null?'':OPTS[k][answers[k]]+(answers[k]===right?'（正確）':'（待修正）');
  return {sessionId,version:VERSION,student:{...student},completed:Object.keys(history).length,
   tasks:TASKS.map(t=>({key:t.key,title:t.title,first:history[t.key]?.first||''})),
-  inversion:ans('inv',3),q2:ans('q2',0),q1:answers.q1,started,submittedAt:new Date().toISOString(),
+  inversion:ans('inv',3),started,submittedAt:new Date().toISOString(),
   minutes:Math.max(0,Math.round((Date.now()-Date.parse(started))/60000)),
   hints:events.filter(e=>e.type==='hint').length,blocked:events.filter(e=>e.type==='operation-blocked').length};
 }
@@ -906,7 +897,7 @@ $('reportBtn').onclick=()=>{
  save();const ch=channel(),n=Object.keys(history).length,cloud=ch==='gas'||ch==='endpoint';
  $('stClass').value=student.cls;$('stSeat').value=student.seat;$('stName').value=student.name;$('stGroup').value=student.group;
  $('submitTitle').textContent=cloud?'送出到老師的紀錄表':ch==='preview'?'預覽版不會送出紀錄':'下載學習紀錄';
- $('submitSummary').textContent=`目前完成 ${n}/8 步。${cloud?'可以先送出，完成更多步驟後再送一次，老師看最新一筆。':''}`;
+ $('submitSummary').textContent=`目前完成 ${n}/${TASKS.length} 步。${cloud?'可以先送出，完成更多步驟後再送一次，老師看最新一筆。':''}`;
  $('submitNote').textContent=cloud?'紀錄寫入老師的 Google 試算表，只包含班級、座號、姓名、組別與操作結果。':ch==='preview'?'這是預覽連結，紀錄不會送出。正式上課請使用老師提供的網址。':'這個網址沒有連到老師的試算表，送出會改成下載 JSON 檔，請上傳到 Google Classroom。';
  $('sendRecord').textContent=ch==='file'?'下載紀錄':'送出紀錄';$('sendRecord').disabled=ch==='preview';
  $('downloadJson').hidden=!cloud;setStatus('');$('submitDialog').showModal();
@@ -919,7 +910,7 @@ $('submitForm').addEventListener('submit',e=>{
  const rec=buildRecord(),ch=channel(),btn=$('sendRecord');
  const done=(ok,msg)=>{btn.disabled=false;log('submit',{ok,channel:ch});
   const time=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
-  setStatus(ok?(msg||`已送出（${time}），完成 ${rec.completed}/8 步。`):`送出失敗：${msg||'請檢查網路後再試一次'}`,!ok);
+  setStatus(ok?(msg||`已送出（${time}），完成 ${rec.completed}/${TASKS.length} 步。`):`送出失敗：${msg||'請檢查網路後再試一次'}`,!ok);
   if(ok)notify(msg||'紀錄已送出到老師的試算表。')};
  btn.disabled=true;setStatus('傳送中…');
  if(ch==='gas')google.script.run.withSuccessHandler(()=>done(true)).withFailureHandler(err=>done(false,err&&err.message)).saveRecord(rec);
@@ -946,7 +937,7 @@ function renderOptics(m){
  $('finderMessage').hidden=!m.danger;$('finderMessage').textContent=m.danger?'安全遮蔽\n不可觀看太陽':'';
  if(drawerOpen&&viewsOpen&&!m.danger){renderers.finder.render(root,c.finder,{optical:true});if(!S.cap&&S.ep)renderers.eye.render(root,c.eye,{optical:true})}
  const blur=S.ep?Math.min(8,Math.abs(S.focus-EP[S.ep].focus)*.24):0;
- $('eyeView').style.filter=`blur(${blur}px) brightness(${S.ep===4?.82:1})`;
+ $('eyeView').style.filter=`blur(${blur}px) brightness(1)`;
  opticsDirty=false;
 }
 let lastFrame=0,lastEval=0;

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>望遠鏡實境操作室 · Telescope Lab</title>
-<meta name="description" content="A web 3D simulator for learning to use a Dobsonian telescope in eight steps, made for high school astronomy lessons. 在網頁上用 3D 模型練習杜布森望遠鏡的八個操作步驟。">
+<meta name="description" content="A web 3D simulator for learning to use a Dobsonian telescope in six steps, made for high school astronomy lessons. 在網頁上用 3D 模型練習杜布森望遠鏡的六個操作步驟。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
@@ -127,49 +127,45 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
   </section>
 
   <nav class="enter" aria-label="Open the work">
-    <a href="app/"><b>開啟 3D 操作 <i>→</i></b><small>Open the simulator</small><p>桌上型杜布森反射望遠鏡放在校園走廊，對面大樓掛著「百川文隱」的招牌。照操作面板的八個步驟：取下鏡筒蓋、裝目鏡、找招牌、調焦、觀察倒像、校正尋星鏡、換高倍目鏡。做完一步會自動檢核，再帶到下一步。iPad 與電腦都可以用。</p></a>
+    <a href="app/"><b>開啟 3D 操作 <i>→</i></b><small>Open the simulator</small><p>桌上型杜布森反射望遠鏡放在校園走廊，對面大樓掛著「百川文隱」的招牌。照操作面板的六個步驟：取下鏡筒蓋、裝目鏡、找招牌、調焦、觀察倒像、校正尋星鏡。做完一步會自動檢核，再帶到下一步。iPad 與電腦都可以用。</p></a>
   </nav>
 
   <section class="text">
     <div lang="zh-Hant">
       <h2>關於</h2>
-      <p>學生第一次操作望遠鏡，常卡在幾個固定的地方：忘了拿鏡筒蓋、目鏡沒鎖緊、用高倍率找不到目標、不知道為什麼影像是倒的、尋星鏡和主鏡看的不是同一個地方。這些在實際器材前要一個一個排隊問老師，上課時間大多花在等待。</p>
-      <p>這個作品把學習單〈望遠鏡怎麼用？〉的任務一做成網頁上的 3D 模擬。每個動作都有對應的變化：鏡筒蓋沒拿掉，主鏡視野就是黑的；調焦鈕一轉，字由模糊變清楚；換上 4 mm 目鏡，倍率變五倍、視野變小也變暗。兩個圓形視野都呈現上下左右顛倒的影像。鏡筒轉向太陽時，畫面會立刻遮蔽並跳出警告。</p>
+      <p>學生第一次操作望遠鏡，常卡在幾個固定的地方：忘了拿鏡筒蓋、目鏡沒鎖緊、找不到目標、不知道為什麼影像是倒的、尋星鏡和主鏡看的不是同一個地方。這些在實際器材前要一個一個排隊問老師，上課時間大多花在等待。</p>
+      <p>這個作品把學習單〈望遠鏡怎麼用？〉的任務一做成網頁上的 3D 模擬。每個動作都有對應的變化：鏡筒蓋沒拿掉，主鏡視野就是黑的；調焦鈕一轉，字由模糊變清楚。兩個圓形視野都呈現上下左右顛倒的影像。鏡筒轉向太陽時，畫面會立刻遮蔽並跳出警告。</p>
       <p>學生在課前或課後先練熟順序，實作時間就能留給真正的觀測。</p>
     </div>
     <div lang="en">
       <h2>About</h2>
-      <p class="en">Students using a telescope for the first time get stuck in the same places: the dust cap is still on, the eyepiece is not locked, the target cannot be found at high power, the image is upside down, and the finder does not point where the main tube does. At the real instrument each of these becomes a queue for the teacher.</p>
-      <p class="en">This work turns the first task of the worksheet “How to Use a Telescope” into a 3D simulation in the browser. Every action has a visible result: with the cap on, the eyepiece view is black; turning the focuser brings the letters into focus; changing to the 4 mm eyepiece makes the image five times larger, the field smaller and the view darker. Both round views show the image turned upside down and left to right, as a real telescope does. If the tube swings toward the sun, both views are covered and a warning appears.</p>
+      <p class="en">Students using a telescope for the first time get stuck in the same places: the dust cap is still on, the eyepiece is not locked, the target cannot be found, the image is upside down, and the finder does not point where the main tube does. At the real instrument each of these becomes a queue for the teacher.</p>
+      <p class="en">This work turns the first task of the worksheet “How to Use a Telescope” into a 3D simulation in the browser. Every action has a visible result: with the cap on, the eyepiece view is black; turning the focuser brings the letters into focus. Both round views show the image turned upside down and left to right, as a real telescope does. If the tube swings toward the sun, both views are covered and a warning appears.</p>
       <p class="en">Students practise the sequence before or after class, so lesson time is left for real observing.</p>
     </div>
   </section>
 
   <section class="text">
     <div lang="zh-Hant">
-      <h2>八個步驟</h2>
+      <h2>六個步驟</h2>
       <ol>
         <li>取下鏡筒蓋。</li>
         <li>插入 20 mm 目鏡，輕輕鎖緊固定螺絲。</li>
-        <li>任務 1a：推動鏡筒，讓主鏡對準「百川文隱」。</li>
+        <li>推動鏡筒，讓主鏡對準「百川文隱」。</li>
         <li>轉調焦鈕，讓字變清楚。</li>
         <li>觀察倒像：字是上下左右都顛倒的。</li>
-        <li>任務 1b：只轉尋星鏡的螺絲，讓十字線對到主鏡看到的同一處。</li>
-        <li>鬆開螺絲換上 4 mm 目鏡，重新對準、對焦。</li>
-        <li>比較兩種目鏡的視野，並寫下觀察。</li>
+        <li>只轉尋星鏡的螺絲，讓十字線對到主鏡看到的同一處。</li>
       </ol>
     </div>
     <div lang="en">
-      <h2>Eight steps</h2>
+      <h2>Six steps</h2>
       <ol class="en">
         <li>Take off the dust cap.</li>
         <li>Insert the 20 mm eyepiece and lock it gently.</li>
-        <li>Task 1a: push the tube until the main view finds the sign.</li>
+        <li>Push the tube until the main view finds the sign.</li>
         <li>Turn the focuser until the letters are sharp.</li>
         <li>Notice the image is upside down and reversed.</li>
-        <li>Task 1b: turn only the finder’s screws until its crosshair meets the same point.</li>
-        <li>Change to the 4 mm eyepiece, then centre and focus again.</li>
-        <li>Compare the two fields of view and write down what you saw.</li>
+        <li>Turn only the finder’s screws until its crosshair meets the same point.</li>
       </ol>
     </div>
   </section>
@@ -291,7 +287,7 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
     <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
     <dt>Teacher</dt><dd>授課教師：黃慧春老師<span>國立中央大學附屬中壢高中 地球科學科 · Earth Science, Zhongli Senior High School</span></dd>
     <dt>Medium</dt><dd>WebGL, HTML, JavaScript</dd>
-    <dt>Model</dt><dd>130 mm / 650 mm 桌上型杜布森望遠鏡<span>Tabletop Dobsonian, 20 mm and 4 mm eyepieces, 6×30 finder</span></dd>
+    <dt>Model</dt><dd>桌上型杜布森反射望遠鏡、20 mm 目鏡、尋星鏡<span>Tabletop Dobsonian with a 20 mm eyepiece and a finder</span></dd>
     <dt>Devices</dt><dd>iPad Safari、電腦瀏覽器<span>iPad and desktop browsers, no installation</span></dd>
     <dt>Worksheet</dt><dd>〈望遠鏡怎麼用？〉任務一<span>Task one of the worksheet “How to Use a Telescope”</span></dd>
     <dt>Records</dt><dd>學習紀錄只存在學生的瀏覽器，可下載交給老師<span>Progress stays in the browser and can be downloaded for the teacher</span></dd>

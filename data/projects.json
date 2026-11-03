@@ -91,7 +91,7 @@
       "JavaScript"
     ],
     "role": "Teaching design, 3D modelling, development",
-    "summary": "A browser-based 3D Dobsonian telescope for high school astronomy lessons. Students work through eight steps from the worksheet “How to Use a Telescope”: take off the cap, fit the eyepiece, find the sign across the courtyard, focus, see the inverted image, align the finder and change to high power. Each step is checked as it is done, and the panel folds away to leave the telescope in view.",
+    "summary": "A browser-based 3D Dobsonian telescope for high school astronomy lessons. Students work through six steps from the worksheet “How to Use a Telescope”: take off the cap, fit the eyepiece, find the sign across the courtyard, focus, see the inverted image and align the finder. Each step is checked as it is done, and the panel folds away to leave the telescope in view.",
     "image": "projects/telescope/img/line.svg",
     "image_style": "line",
     "link": "projects/telescope/"
