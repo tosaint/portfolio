@@ -7,7 +7,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 // 掃描物不用照片貼圖（顏色偏暗、與周圍風格不一），改成與建築一致的單色材質，只保留造形
 const flat = color => new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide });
-const BRONZE = 0x5f7f72, GRANITE = 0xd3cfc4;   // 銅馬（帶綠青的古銅）、狛犬（花崗岩）
+const BRONZE = 0x6f5a3c, GRANITE = 0xd3cfc4;   // 銅馬（咖啡金黃的古銅，與白木、檜皮同一暖色系）、狛犬（花崗岩）
 import { createGround, GROUND_LAYERS } from './ground.js';
 import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
 
