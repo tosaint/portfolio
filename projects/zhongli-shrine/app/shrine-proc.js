@@ -460,7 +460,10 @@ export function buildShrine() {
   B.begin('P').at(AX, -6.7 + IN, 0, LV.T2);
   const F = 1.0;                                            // 地板高（拜殿正面照：台階約 1 公尺）
   B.box('stone', 0, 0, 14.6, 7.2, 0, 0.75);                 // 基壇
-  B.box('wood', 0, 0, 14.0, 6.6, 0.75, F);                  // 木地板
+  B.box('wood', 0, 0, 14.0, 6.6, 0.75, F - 0.02);           // 木地板（底）
+  // ---- 拜殿內部（依拜殿內三張照片）----
+  // 床板：縱向鋪設、朝本殿方向
+  for (let x = -4.35; x < 4.35; x += 0.3) B.box('wood', x + 0.145, 0, 0.29, 6.4, F - 0.02, F);
   steps(B, 0, -4.93, 6.0, F, 5, 0.33);                      // 正面石階（正面照反求）
   // 正面照（自神門往拜殿，鎮座祭；參拜道 3.01 公尺為比例尺）以相機＋尺寸聯合反求，22 個對應點誤差約 5 像素：
   // 中央間 2.76、柱列 ±1.38／±3.03／±4.2、柱高 2.66、主屋頂簷寬 12.4、連兩翼簷寬 15.9、
@@ -480,8 +483,39 @@ export function buildShrine() {
   });
   B.box('wood', 0, -3.0, 13.8, 0.24, F + CH - 0.4, F + CH - 0.15);   // 正面虹梁（頭貫）
   B.box('wood', 0, -3.05, 8.6, 0.12, F + 1.95, F + 2.05);             // 內法長押（幕串）
-  B.box('white', 0, -3.1, 8.3, 0.03, F + 1.45, F + 1.95);             // 神紋幕（鎮座祭）
-  B.box('dark', 0, 0, 8.8, 6.4, F + CH, F + CH + 0.4);                // 斗栱帶
+  // 御簾：捲起的竹簾（深色帶）＋白色帽額垂布＋黑色總角房，沿正面與兩側一周（內部照片）
+  const sudare = (x0, u0, x1, u1) => {
+    const L = Math.hypot(x1 - x0, u1 - u0), n = Math.round(L / 0.55);
+    const ax = (x1 - x0) / L, au = (u1 - u0) / L, alongX = Math.abs(ax) > 0.5;
+    B.box('dark', (x0 + x1) / 2, (u0 + u1) / 2, alongX ? L : 0.1, alongX ? 0.1 : L, F + CH - 0.62, F + CH - 0.42);
+    for (let i = 0; i < n; i++) {
+      const t = (i + 0.5) / n, x = x0 + (x1 - x0) * t, u = u0 + (u1 - u0) * t;
+      B.box('white', x, u, alongX ? 0.48 : 0.03, alongX ? 0.03 : 0.48, F + CH - 1.15, F + CH - 0.62);
+      if (i % 2 === 0) B.box('dark', x, u, 0.08, 0.08, F + CH - 1.0, F + CH - 0.75);   // 總角房
+    }
+  };
+  sudare(-4.2, -3.08, 4.2, -3.08);
+  sudare(-4.28, -3.0, -4.28, 3.0); sudare(4.28, -3.0, 4.28, 3.0);
+  // 天井：板天井＋棹縁（照片中可見木板與細桟）
+  B.box('ceil', 0, 0, 8.8, 6.4, F + CH + 0.4, F + CH + 0.44);
+  for (let x = -4.2; x <= 4.2; x += 0.6) B.box('ceil', x, 0, 0.06, 6.4, F + CH + 0.34, F + CH + 0.4);
+  // 釣燈籠（天井中央垂下）
+  B.box('dark', -2.6, -1.5, 0.03, 0.03, F + CH - 0.25, F + CH + 0.4);
+  B.cyl('dark', -2.6, -1.5, 0.22, F + CH - 0.75, F + CH - 0.3, 6, 0.22);
+  B.cyl('roof', -2.6, -1.5, 0.36, F + CH - 0.3, F + CH - 0.14, 6, 0.06);
+  // 後壁：幣殿入口上方的水引幕（織紋帶）、內法壁與「中壢神社」扁額（內側朝拜殿）
+  B.box('panel', 0, 2.95, 2.8, 0.08, F + 2.5, F + CH + 0.4);
+  B.box('brocade', 0, 2.88, 8.4, 0.04, F + 2.12, F + 2.42);
+  B.box('dark', 0, 2.86, 0.4, 0.06, F + 2.44, F + CH + 0.32);      // 扁額框（水引幕與天井之間）
+  { const g = new THREE.PlaneGeometry(0.27, 0.46); g.translate(0, (F + 2.44 + F + CH + 0.32) / 2 - 0.05, -2.82); B.add('plaque', g); }
+  [-1.38, 1.38].forEach(x => B.box('white', x, 2.9, 0.12, 0.06, F + 1.6, F + 2.12));   // 榊（以白紙垂示意）
+  // 柱際の結界：中央通路兩側的低矮木柵（照片中柱腳的白木柵）
+  [-1.65, 1.65].forEach(x => {
+    for (let u = 1.2; u <= 2.9; u += 0.14) B.box('wood', x, u, 0.05, 0.05, F, F + 0.75);
+    B.box('wood', x, 2.05, 0.07, 1.8, F + 0.62, F + 0.7); B.box('wood', x, 2.05, 0.07, 1.8, F + 0.08, F + 0.16);
+  });
+  // 斗栱帶：只做外圍一圈（原本是實心板，會把室內天井整個蓋黑）
+  [[0, -3.1, 8.8, 0.2], [0, 3.1, 8.8, 0.2], [-4.3, 0, 0.2, 6.4], [4.3, 0, 0.2, 6.4]].forEach(([x, u, w, d]) => B.box('dark', x, u, w, d, F + CH, F + CH + 0.4));
   [-4.2, -2.1, 0, 2.1, 4.2].forEach(x => B.box('wood', x, -3.15, 0.3, 0.3, F + CH, F + CH + 0.35));   // 斗栱（正面可見）
   // 組物（斗栱）：每根柱頂一組，正面與側面
   [-4.2, -3.03, -1.38, 1.38, 3.03, 4.2].forEach(x => [-3.0, 3.0].forEach(u => {
@@ -539,6 +573,10 @@ export function buildShrine() {
   B.box('wood', 0, 0, 5.4, 5.0, Fh - 0.15, Fh);             // 濡緣
   B.box('wood', 0, 0, 3.6, 3.0, Fh, Fh + 2.3);              // 身舍
   B.box('dark', 0, -1.52, 1.4, 0.05, Fh + 0.1, Fh + 2.0);  // 正面門扉
+  // 御帳（白幕）與神饌台：自拜殿內望本殿的照片
+  [-0.9, -0.3, 0.3, 0.9].forEach(x => B.box('white', x, -1.6, 0.56, 0.03, Fh + 0.9, Fh + 2.05));
+  B.box('wood', 0, -1.85, 1.6, 0.4, Fh + 0.55, Fh + 0.62);
+  [-0.5, 0, 0.5].forEach(x => B.box('wood', x, -1.85, 0.26, 0.26, Fh + 0.62, Fh + 0.85));
   // ---- 以下依本殿歷史照片（巫女立於濡緣，身高約 1.5 公尺為比例）----
   // 高欄：濡緣三面，親柱＋上下橫木＋擬寶珠
   const rail = (x0, u0, x1, u1) => {
@@ -602,6 +640,10 @@ export function buildShrine() {
   const mats = {};
   for (const [k, c] of Object.entries(COLORS)) mats[k] = new THREE.MeshLambertMaterial({ color: c, side: THREE.DoubleSide, shadowSide: THREE.FrontSide });
   mats.path = new THREE.MeshLambertMaterial({ map: slabTexture(), side: THREE.DoubleSide });
+  mats.plaque = new THREE.MeshLambertMaterial({ map: plaqueTexture(), side: THREE.DoubleSide });
+  mats.brocade = new THREE.MeshLambertMaterial({ map: brocadeTexture(), side: THREE.DoubleSide });
+  // 天井：朝下的面只受地面反光，略加自發光以免室內一片漆黑
+  mats.ceil = new THREE.MeshLambertMaterial({ color: COLORS.wood, emissive: 0x3e3022, side: THREE.DoubleSide });
   const group = B.build(mats);
   return { group, boxes: B.boxes, mats: Object.values(mats) };
 }
@@ -696,6 +738,22 @@ function strip(B, a, b, w, y, mat) {
     for (let i = 0; i < uv.count; i++) uv.setXY(i, P.getX(i) / 0.76, P.getZ(i) / 0.78);
     B.add('path', g);
   } else B.box(mat, 0, L / 2, w, L + w * 0.3, y - 0.05, y);
+}
+function plaqueTexture() {              // 扁額「中壢神社」（白底黑字、深色框）
+  const c = document.createElement('canvas'); c.width = 128; c.height = 256;
+  const x = c.getContext('2d');
+  x.fillStyle = '#f4efe2'; x.fillRect(0, 0, 128, 256);
+  x.fillStyle = '#1d1712'; x.font = 'bold 50px "Noto Serif TC","PMingLiU",serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  '中壢神社'.split('').forEach((ch, i) => x.fillText(ch, 64, 36 + i * 61));
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function brocadeTexture() {             // 水引幕的花紋帶（照片中的連續菱花紋）
+  const c = document.createElement('canvas'); c.width = 256; c.height = 32;
+  const x = c.getContext('2d');
+  x.fillStyle = '#8c6f4c'; x.fillRect(0, 0, 256, 32);
+  x.strokeStyle = '#e6d6b4'; x.lineWidth = 2;
+  for (let i = 0; i < 8; i++) { x.beginPath(); x.ellipse(16 + i * 32, 16, 10, 9, 0, 0, Math.PI * 2); x.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.set(4, 1); return t;
 }
 function slabTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 64;

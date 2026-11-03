@@ -66,15 +66,15 @@ const STOPS = [
     text: '鎮座祭當天的拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，簷下掛著神紋幕與「中壢神社」燈籠。《臺灣日日新報》稱它的檜皮葺屋頂是「臺灣唯一」。拖曳滑桿，讓照片和 3D 疊合。',
     now: '這裡就是今天的陶然亭一帶。拜殿基座上曾蓋校舍，1991 年興建陶然亭時遺構全部拆除。',
     photo: HAIDEN_PHOTO,
-    thumbs: [['photos/haiden-priests.jpg', '鎮座祭神職合影（' + CR + '）']]
+    thumbs: [['photos/haiden-priests.jpg', '鎮座祭神職合影（' + CR + '）'], ['photos/haiden-in-guests.jpg', '拜殿內：來賓列座，四周掛御簾、垂釣燈籠'], ['photos/haiden-in-miko.jpg', '拜殿內：神職與巫女']]
   },
   {
     title: '本殿：最深處',
-    text: '本殿是流造，屋頂前坡長長伸出、蓋住木階，屋脊上有千木和 6 根鰹木，供奉豐受大神與北白川宮能久親王。照片中巫女站在高起的濡緣上。',
+    text: '從拜殿內往裡看：頭上是「中壢神社」扁額與織紋的水引幕，穿過幣殿，盡頭是本殿的木階與白色御帳，祭主正在階前奉仕。本殿是流造，供奉豐受大神與北白川宮能久親王。',
     now: '本殿基座上後來蓋了困學亭（壢中亭），1991 年改建陶然亭時拆除。',
-    eye: [-13, 5.2, -7], target: [0, 4.6, -19.5],
-    pins: [['Q', '本殿'], ['P', '拜殿']],
-    thumbs: [['photos/honden.jpg', '本殿側面（' + CR + '）']]
+    eye: [0.3, 3.4, -4.2], target: [0, 3.5, -19.8],    // 拜殿內、站在御簾後，朝本殿看（拜殿內部照片）
+    pins: [['Q', '本殿']],
+    thumbs: [['photos/haiden-in-honden.jpg', '自拜殿內望本殿：扁額「中壢神社」、水引幕、幣殿與本殿木階（' + CR + '）'], ['photos/honden.jpg', '本殿側面（' + CR + '）']]
   },
   {
     title: '神門、狛犬與銅馬',
@@ -211,7 +211,8 @@ let edgeMat = null, shadowPlane = null;
 function buildSpots() {
   addPreciseSpot(HIST_PHOTO, './assets/photo-study/historical-s.jpg', '神門照', 5);
   addPreciseSpot(HAIDEN_PHOTO, './assets/photo-study/haiden-front-s.jpg', '拜殿正面照', 3);
-  [[0, '南大門'], [1, '鎮座祭行列'], [2, '石燈籠'], [4, '本殿']].forEach(([i, l]) => addApproxSpot(STOPS[i].eye, STOPS[i].target, l, i));
+  [[0, '南大門'], [1, '鎮座祭行列'], [2, '石燈籠'], [4, '拜殿內望本殿']].forEach(([i, l]) => addApproxSpot(STOPS[i].eye, STOPS[i].target, l, i));
+  // 第 5 站已改為拜殿內望本殿
   addApproxSpot([-15, 1.6, 84], [2, 3, 55], '第二鳥居側面', 1);
   addApproxSpot([-6.4, 1.6, 28.5], [-5.2, 2.2, 17.2], '銅馬合影', 5);
 }
@@ -481,6 +482,7 @@ function buildViewChips() {
   const box = $('#viewChips');
   const sb = document.createElement('button'); sb.id = 'spotBtn'; sb.textContent = '📷 拍攝點'; sb.onclick = () => setSpots(!spotsOn); box.append(sb);
   const top = document.createElement('button'); top.textContent = '全景'; top.onclick = () => flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov); box.append(top);
+  { const b = document.createElement('button'); b.textContent = '拜殿內部'; b.onclick = () => { closeCard(); flyTo(new THREE.Vector3(0.3, 3.4, -4.2), new THREE.Vector3(0, 3.5, -19.8), baseFov); }; box.append(b); }
   VIEWS.forEach(([id, label, dir]) => { const b = document.createElement('button'); b.textContent = label; b.onclick = () => { closeCard(); flyToObj(id, dir); }; box.append(b); });
 }
 // 雙擊（或雙點）畫面上的地點：飛過去，以該點為旋轉中心
