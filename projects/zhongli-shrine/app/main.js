@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { loadShrine } from './scene-model.js';
+import { buildShrine, LV, DIMS } from './shrine-proc.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createGround, GROUND_LAYERS } from './ground.js';
 import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
@@ -10,10 +10,10 @@ import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from '
    座標系：x = 平面 X，y = 高度，z = -(平面 Y)，與 buildings.json 相同
    導覽站點的文字與視角在 STOPS；地點卡片與校準點在 map-data.json
    ========================================================= */
-const HIST_PHOTO = {                 // 老照片的拍攝視角（沿用 photo-study 的對位參數）
+const HIST_PHOTO = {                 // 神門照片的拍攝視角（2026-11-03 以照片程式模型重新反求，公尺）
   src: './assets/photo-study/historical.jpg',
-  eye: [22.97, 6.50, 11.13], target: [10.61, 5.33, -4.55], fov: 35.7, aspect: 1.5,
-  axes: {"x": [0.78031, 0.07959, -0.62031], "y": [-0.09874, 0.99511, 0.00347], "z": [0.61755, 0.05855, 0.78435]},   // 2026-11-02 以對位工具反求（與模型修正一起解）
+  eye: [20.972, 5.836, 54.194], target: [10.646, 4.548, 37.114], fov: 24.6, aspect: 1.5,
+  axes: {"x": [0.8558, -0.00099, -0.5173], "y": [-0.03247, 0.99792, -0.05561], "z": [0.51628, 0.06439, 0.854]},
 };
 
 const STOPS = [
@@ -33,33 +33,31 @@ const STOPS = [
   },
   {
     title: '老照片的那一刻',
-    text: '你現在站在當年攝影師的位置。拖曳滑桿讓老照片和 3D 模型疊合：前方是樓門與狛犬，後方是拜殿。當年報紙說，中壢神社的檜皮葺屋頂是「臺灣唯一」。',
-    now: '樓門大約在今天熱食部門口附近；狛犬 1950 年移到了忠義祠。',
+    text: '你現在站在當年攝影師的位置。拖曳滑桿讓老照片和 3D 模型疊合：前方是神門與狛犬，後方是拜殿。當年報紙說，中壢神社的檜皮葺屋頂是「臺灣唯一」。',
+    now: '神門大約在今天熱食部門口附近；狛犬 1950 年移到了忠義祠。',
     eye: HIST_PHOTO.eye, target: HIST_PHOTO.target,
     photo: true
   },
   {
-    title: '樓門、拜殿、本殿',
-    text: '樓門、拜殿、本殿沿著中軸線排列，外圍有玉垣圍起。本殿供奉北白川宮能久親王與豐受大神。',
+    title: '神門、拜殿、本殿',
+    text: '神門、拜殿、本殿沿著中軸線排列，外圍有玉垣圍起。本殿供奉北白川宮能久親王與豐受大神。',
     now: '拜殿基座上曾蓋校舍，本殿基座上蓋了困學亭；1991 年興建陶然亭時，剩下的遺構全部拆除。親師樓後方還留有一段參拜道和圍牆基座。',
     eye: [42, 26, -2], target: [9.5, 4, -13],
-    pins: [['N', '樓門'], ['P', '拜殿'], ['Q', '本殿'], ['L', '神馬']]
+    pins: [['N', '神門'], ['P', '拜殿'], ['Q', '本殿'], ['L', '神馬']]
   },
   {
     title: '神馬：從古留到今',
-    text: '銅製神馬原本立在樓門前。神社其他建築都不在了，神馬是少數留下來的文物。',
+    text: '銅製神馬原本立在神門前。神社其他建築都不在了，神馬是少數留下來的文物。',
     now: '神馬在壢中遷入後被搬過好幾次，現在立在中央西路的正門。虛線是它從原位置到現在正門的距離。',
     eye: [17, 7, 12], target: [4.86, 3.6, 3.99],
-    pins: [['L', '神馬（原位置）'], ['N', '樓門']],
+    pins: [['L', '神馬（原位置）'], ['N', '神門']],
     thumb: './assets/models/horse/current.jpg'
   }
 ];
 
 // 以上座標都是原配置模型的單位；轉成公尺世界座標（見 site.js）
-HIST_PHOTO.eye = modelToWorld(HIST_PHOTO.eye); HIST_PHOTO.target = modelToWorld(HIST_PHOTO.target);
 STOPS.forEach(s => { if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); } else { s.eye = HIST_PHOTO.eye; s.target = HIST_PHOTO.target; } });
 // 「今」模式下仍保持實心的構件（其餘變半透明）
-const HIDE_WHEN_GROUND = new Set(['A']);   // 中正路模型：航照上已經有真的路，鋪了航照就隱藏
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
 const GROUND_ORDER = ['photo', 'emap', 'jm25k', 'am50k', 'off'];
@@ -138,57 +136,8 @@ const photoMarker = new THREE.Group();
 let shrine, ground, places = [], groundH = 0, histData = null, horseScan = null;
 
 /* ---------- 古 ↔ 今：神社模型的透明度 ---------- */
-// 效能關鍵：Tinkercad 模型與照片參照構件原本有上萬個小物件（6 萬次以上繪製呼叫）。
-// 載入後把每個構件合併成「一個網格＋頂點顏色」，繪製呼叫降到幾十次，手機才會順。
+// 神社模型由 shrine-proc.js 依老照片程式建構：同材質合併成一個網格，全部只要十來次繪製呼叫
 const fadeMats = [];
-// 地形類（道路、參道、運動場）逐點拉長；其他構件以自己的底部中心等比例換成公尺，避免變形
-const TERRAIN = new Set(['A', 'C', 'K']);
-function toMetres(v, st, terrain, anchorQ) {
-  if (terrain) { const q = warpH([v.x, -v.z]); v.set(q[0], v.y * LEVEL, -q[1]); return; }
-  const dx = (v.x - st.x) * S_IN, dy = (-v.z - st.y) * S_IN;
-  v.set(anchorQ[0] + dx, warpY(v.y, st.elevation), -(anchorQ[1] + dy));
-}
-function prepareFade() {
-  const n3 = new THREE.Matrix3();
-  shrine.integrated.updateMatrixWorld(true);
-  shrine.objects.forEach((o, id) => {
-    const pos = [], nor = [], col = [];
-    const anchorQ = warpH([o.setting.x, o.setting.y]);
-    o.root.traverse(m => {
-      if (!m.isMesh || !m.geometry.attributes.position) return;
-      let g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry;
-      if (!g.attributes.normal) { g = g.clone(); g.computeVertexNormals(); }
-      const P = g.attributes.position, N = g.attributes.normal;
-      const mats = Array.isArray(m.material) ? m.material : [m.material];
-      const groups = g.groups.length ? g.groups : [{ start: 0, count: P.count, materialIndex: 0 }];
-      n3.getNormalMatrix(m.matrixWorld);
-      const v = new THREE.Vector3(), nn = new THREE.Vector3();
-      for (const gr of groups) {
-        const c = (mats[gr.materialIndex] || mats[0]).color || new THREE.Color(0x888888);
-        const end = Math.min(gr.start + gr.count, P.count);
-        for (let i = gr.start; i < end; i++) {
-          v.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld);
-          toMetres(v, o.setting, TERRAIN.has(id), anchorQ);
-          pos.push(v.x, v.y, v.z);
-          nn.fromBufferAttribute(N, i).applyMatrix3(n3).normalize(); nor.push(nn.x, nn.y, nn.z);
-          col.push(c.r, c.g, c.b);
-        }
-      }
-    });
-    if (!pos.length) return;
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-    const mat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
-    const mesh = new THREE.Mesh(g, mat);
-    mesh.name = 'merged-' + id;
-    scene.add(mesh);
-    o.merged = mesh;
-    fadeMats.push(mat);
-    o.root.visible = false;            // 原始物件只留著算標籤位置，不再繪製
-  });
-}
 let eraT = 0;                                       // 0 = 古，1 = 今
 function applyEra() {
   eraT = $('#era').value / 100;
@@ -207,23 +156,13 @@ $('#era').oninput = applyEra;
 // 2026 年的 3D 掃描，依現場實測（台座 102×249 公分、連台座自路面高 310 公分）校正成公尺。
 // 台座是今天的樣式，1939 年的台座形式不同。
 function loadHorseScan() {
-  const o = shrine.objects.get('L'); if (!o || !o.merged) return;
   new GLTFLoader().load('./assets/horse-scan.glb', g => {
     const scan = g.scene;
-    // 對齊朝向：讓掃描的「馬頭」（最高點）跟原模型的馬頭同一側
-    const headDir = obj => {
-      const b = new THREE.Box3().setFromObject(obj), c = b.getCenter(new THREE.Vector3());
-      let top = null; obj.updateMatrixWorld(true);
-      obj.traverse(m => { if (!m.isMesh) return; const P = m.geometry.attributes.position, v = new THREE.Vector3();
-        for (let i = 0; i < P.count; i += 7) { v.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld); if (!top || v.y > top.y) top = v.clone(); } });
-      return new THREE.Vector2(top.x - c.x, top.z - c.z).normalize();
-    };
-    const want = headDir(o.merged), have = headDir(scan);
-    scan.rotation.y = Math.atan2(have.y, have.x) - Math.atan2(want.y, want.x);
-    const b = new THREE.Box3().setFromObject(o.merged), c = b.getCenter(new THREE.Vector3());
-    scan.position.set(c.x, warpY(o.setting.elevation, o.setting.elevation), c.z);
+    // 位置：配置圖的神馬（神門前左側），朝向沿用先前與原模型馬頭對齊的結果
+    const q = warpH([4.86, -3.9885]);
+    scan.rotation.y = -2.2768;
+    scan.position.set(q[0], LV.T1, -q[1]);
     scan.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = false; fadeMats.push(m.material); } });
-    o.merged.visible = false;
     horseScan = scan; scene.add(scan); applyEra(); dirty = true;
   }, undefined, e => console.warn('銅馬掃描載入失敗', e));
 }
@@ -240,12 +179,9 @@ function buildScaleAids() {
     const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), mat); head.position.y = 1.58;
     g.add(body, head); return g;
   };
-  // 放在樓門前、第二鳥居旁、拜殿台階前
-  [['N', 0, -5], ['B2', 4, 0], ['P', 2, -9]].forEach(([id, ox, oy]) => {
-    const o = shrine.objects.get(id); if (!o) return;
-    const q = warpH([o.setting.x, o.setting.y]), p = person();
-    p.position.set(q[0] + ox, warpY(o.setting.elevation, o.setting.elevation), -(q[1] + oy));
-    scaleAids.add(p);
+  // 放在神門前、第二鳥居旁、拜殿台階前（q 座標＋地坪高）
+  [[1.2, -33, LV.T1], [3.2, -55.5, LV.T1], [2.4, -13.5, LV.T2]].forEach(([x, y, h]) => {
+    const p = person(); p.position.set(x, h, -y); scaleAids.add(p);
   });
   scene.add(scaleAids);
 }
@@ -274,7 +210,6 @@ async function setGround(id) {
   const btn = $(`#groundChips [data-id="${id}"]`);
   if (!ok) { btn.classList.add('fail'); toast('這個底圖目前載不到'); }
   const on = ok && id !== 'off';
-  HIDE_WHEN_GROUND.forEach(k => { const o = shrine.objects.get(k); if (o && o.merged) o.merged.visible = !on; });
   dirty = true;
   $('#credit').textContent = !on ? '' : id.startsWith('jm') || id.startsWith('am') ? '中央研究院 臺灣百年歷史地圖' : '© 內政部國土測繪中心';
 }
@@ -318,8 +253,7 @@ function showStopPins(s) {
     let pos;
     if (id === '@photo') pos = new THREE.Vector3(...HIST_PHOTO.eye).add(new THREE.Vector3(0, 1.8, 0));
     else {
-      const o = shrine?.objects.get(id); if (!o) return;
-      const b = new THREE.Box3().setFromObject(id === 'L' && horseScan ? horseScan : (o.merged || o.root));
+      const b = boxOf(id); if (!b) return;
       pos = new THREE.Vector3((b.min.x + b.max.x) / 2, b.max.y + 0.3, (b.min.z + b.max.z) / 2);
     }
     const el = document.createElement('div');
@@ -344,7 +278,9 @@ function updatePins() {
 /* ---------- 地點卡片 ---------- */
 function openCard(p) {
   const imgs = (p.photo ? [`<img src="${p.photo}" alt="今日照片">`] : [])
-    .concat(p.slides.map(s => `<img src="slides/${s}.jpg" alt="簡報：${p.title}">`)).join('');
+    .concat((p.photos || []).map(s => `<img src="photos/${s}.jpg" alt="老照片：${p.title}">`))
+    .concat(p.slides.map(s => `<img src="slides/${s}.jpg" alt="簡報：${p.title}">`)).join('')
+    + (p.photos ? '<small class="pcredit">老照片：三森久子捐贈，壢中校史館藏</small>' : '');
   $('#cardBody').innerHTML = `
     <span class="tag" style="background:${KIND_COLOR[p.kind]}">${KIND_TEXT[p.kind]}</span>
     <h2>${p.title}</h2>
@@ -368,13 +304,18 @@ function openCard(p) {
 }
 // 構件尺寸（公尺）：依老照片、銅馬掃描與參拜道實測推估
 const PLACE_OBJ = { torii1: 'B1', torii2: 'B2', lantern: 'D6', office: 'H', gate: 'N', 'horse-old': 'L', 'horse-now': 'L', haiden: 'P', honden: 'Q' };
+function boxOf(id) {
+  if (id === 'L') return horseScan ? new THREE.Box3().setFromObject(horseScan) : null;
+  return shrine?.boxes.get(id) || null;
+}
 function dimsOf(p) {
-  const id = PLACE_OBJ[p.id], o = id && shrine?.objects.get(id); if (!o) return '';
-  const obj = id === 'L' && horseScan ? horseScan : o.merged; if (!obj) return '';
-  const s = new THREE.Box3().setFromObject(obj).getSize(new THREE.Vector3());
+  const id = PLACE_OBJ[p.id], b = id && boxOf(id); if (!b) return '';
+  const s = b.getSize(new THREE.Vector3());
   const f = v => v < 10 ? v.toFixed(1) : v.toFixed(0);
-  const src = id === 'L' ? '3D 掃描＋現場實測' : '依老照片、銅馬與參拜道實測推估';
-  return `<div class="dims">約 寬 ${f(s.x)} × 深 ${f(s.z)} × 高 ${f(s.y)} 公尺<small>${src}</small></div>`;
+  // 寬、深以構件自身方向為準（第一鳥居斜放，取較寬的一邊當寬）
+  const w = Math.max(s.x, s.z), d = Math.min(s.x, s.z);
+  const h = id === 'L' ? s.y : b.max.y;     // 高度自外參道地面起算
+  return `<div class="dims">約 寬 ${f(w)} × 深 ${f(d)} × 高 ${f(h)} 公尺<small>${DIMS[id] || ''}</small></div>`;
 }
 // 出處清單（對應 history.json 的 sources）
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -523,11 +464,11 @@ function flyTo(eye, target, fov, done) {
 }
 /* ---------- 載入 ---------- */
 try {
-  const [config, md, hist] = await Promise.all([fetch('./buildings.json').then(r => r.json()), fetch('./map-data.json').then(r => r.json()), fetch('./history.json').then(r => r.json()).catch(() => null)]);
+  const [md, hist] = await Promise.all([fetch('./map-data.json').then(r => r.json()), fetch('./history.json').then(r => r.json()).catch(() => null)]);
   histData = hist;
-  shrine = await loadShrine(config);
-  scene.add(shrine.integrated);
-  prepareFade();
+  shrine = buildShrine();
+  scene.add(shrine.group);
+  fadeMats.push(...shrine.mats);
   groundH = -0.05;      // 公尺：今日地面（外參道高度）
   ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH, qToLL, llToQ, north: NORTH_Q });
   places = md.places.map(p => ({ ...p, pos: p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng) }));

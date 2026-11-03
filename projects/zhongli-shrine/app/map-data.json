@@ -76,6 +76,10 @@
    "short": "第二鳥居",
    "src": [
     "deck"
+   ],
+   "photos": [
+    "torii2",
+    "lantern"
    ]
   },
   {
@@ -96,6 +100,9 @@
    "src": [
     "nichinichi1015",
     "deck"
+   ],
+   "photos": [
+    "lantern"
    ]
   },
   {
@@ -125,18 +132,21 @@
     0.99
    ],
    "kind": "gone",
-   "title": "樓門（神門）與狛犬",
-   "past": "樓門前有一對狛犬守護。老照片前景的就是這座門。",
-   "change": "狛犬於 1950 年忠義祠整修時移入忠義祠；樓門從未出現在壢中畢冊照片中。",
+   "title": "神門與狛犬",
+   "past": "單層的四腳門（切妻造），門前一對狛犬。老照片前景的就是這座門；依照片反推，屋頂寬約 7 公尺、屋脊高約 4.4 公尺，門到拜殿約 21 公尺。",
+   "change": "狛犬於 1950 年忠義祠整修時移入忠義祠；神門從未出現在壢中畢冊照片中。",
    "now": "熱食部門口附近",
    "slides": [
     "s40"
    ],
    "stop": 3,
-   "short": "樓門",
+   "short": "神門",
    "src": [
     "deck",
     "kanagawa"
+   ],
+   "photos": [
+    "gate"
    ]
   },
   {
@@ -200,6 +210,11 @@
    "src": [
     "nichinichi1015",
     "deck"
+   ],
+   "photos": [
+    "haiden-front",
+    "haiden-group",
+    "haiden-inside"
    ]
   },
   {
@@ -223,6 +238,10 @@
     "miko",
     "chen",
     "deck"
+   ],
+   "photos": [
+    "honden",
+    "haiden-inside"
    ]
   },
   {
