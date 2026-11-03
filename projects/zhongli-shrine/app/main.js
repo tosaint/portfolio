@@ -66,7 +66,7 @@ const STOPS = [
     text: '鎮座祭當天的拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，簷下掛著神紋幕與「中壢神社」燈籠。《臺灣日日新報》稱它的檜皮葺屋頂是「臺灣唯一」。拖曳滑桿，讓照片和 3D 疊合。',
     now: '這裡就是今天的陶然亭一帶。拜殿基座上曾蓋校舍，1991 年興建陶然亭時遺構全部拆除。',
     photo: HAIDEN_PHOTO,
-    thumbs: [['photos/haiden-priests.jpg', '鎮座祭神職合影（' + CR + '）'], ['photos/haiden-in-guests.jpg', '拜殿內：來賓列座，四周掛御簾、垂釣燈籠'], ['photos/haiden-in-miko.jpg', '拜殿內：神職與巫女']]
+    thumbs: [['photos/haiden-priests.jpg', '鎮座祭神職合影（' + CR + '）'], ['photos/haiden-in-guests.jpg', '拜殿內：來賓列座，四周掛御簾、垂釣燈籠'], ['photos/haiden-in-miko.jpg', '拜殿內：神職與巫女'], ['photos/haiden-wedding.jpg', '拜殿前婚禮合影：板扉開啟、兩側格子戸、中央鈴緒']]
   },
   {
     title: '本殿：最深處',
