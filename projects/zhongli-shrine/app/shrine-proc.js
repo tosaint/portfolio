@@ -248,7 +248,7 @@ function chochin(B, x, u, y0, s, textFront) {
   // 背後的花瓣形飾框：以屋頂中心為圓心、半圓排列的大花瓣（白框透空）
   const cy = yb + h * 0.35;
   for (let i = 0; i < 9; i++) {
-    const a = Math.PI * (-0.08 + 1.16 * i / 8), g = new THREE.TorusGeometry(0.2 * s, 0.026 * s, 4, 16);
+    const a = Math.PI * (-0.08 + 1.16 * i / 8), g = new THREE.TorusGeometry(0.2 * s, 0.026 * s, 3, 12);
     g.translate(x + Math.cos(a) * 0.72 * s, cy + Math.sin(a) * 0.62 * s, -(u + D + 0.06)); B.add('white', g);
   }
 }
