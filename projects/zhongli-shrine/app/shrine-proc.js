@@ -512,11 +512,11 @@ export function buildShrine() {
 
   /* ---- 第二鳥居（木造明神鳥居，高約 6 公尺，柱距 4 公尺）---- */
   B.begin('B2').at(AX, TORII2_Y, 0, LV.T1); torii(B, 'wood', 4.0, 6.0, 0.21); shimenawa(B, 4.0, 4.5); B.end();
-  B.at(AX, TORII2_Y - 1.7, 0, 0); steps(B, 0, 0, 8.6, LV.T1, 3, 0.43);   // 石階三段（鎮座祭照片）
-  [-4.48, 4.48].forEach(x => { B.box('stone', x, 0.65, 0.36, 1.3, 0, LV.T1 + 0.06); B.box('stone', x, -0.08, 0.36, 0.25, 0, 0.3); });   // 袖石
+  B.at(AX, TORII2_Y - 1.7, 0, 0); steps(B, 0, 0, 4.6, LV.T1, 3, 0.43);   // 寬度＝兩柱礎外緣（鎮座祭照片）   // 石階三段（鎮座祭照片）
+  [-2.48, 2.48].forEach(x => { B.box('stone', x, 0.65, 0.36, 1.3, 0, LV.T1 + 0.06); B.box('stone', x, -0.08, 0.36, 0.25, 0, 0.3); });   // 袖石
   // 鳥居兩側的大提燈（立柱上，欄杆內側）
   B.at(0, 0);
-  [-1, 1].forEach(sx => { B.box('dark', sx * 3.1, TORII2_Y + 0.6, 0.12, 0.12, LV.T1, LV.T1 + 1.4); chochin(B, sx * 3.1, TORII2_Y + 0.6, LV.T1 + 1.35, 0.75, sx > 0); });
+  [-1, 1].forEach(sx => { B.box('dark', sx * 2.9, TORII2_Y + 0.6, 0.1, 0.1, LV.T1, LV.T1 + 0.9); chochin(B, sx * 2.9, TORII2_Y + 0.6, LV.T1 + 0.85, 0.55, sx > 0); });   // 緊貼柱外、燈身約在欄杆頂上方
   // 長旗（幟）：「中壢神社」書法字，立於東側欄杆前（鎮座祭照片）
   { const x = NOBORI[0], u = NOBORI[1];
     B.cyl('wood', x + 0.48, u, 0.06, 0, 9.6, 8, 0.045);                         // 竿
@@ -525,8 +525,8 @@ export function buildShrine() {
     for (let k = 0; k < 9; k++) B.box('white', x + 0.45, u, 0.1, 0.03, 2.6 + k * 0.78, 2.66 + k * 0.78);   // 乳（竿側的環）
   }
   // 前庭外緣的低玉垣（鳥居照片中台階兩側）
-  fence(B, [T1.x0, T1.y0], [-4.7, T1.y0], LV.T1, 'low');
-  fence(B, [4.7, T1.y0], [T1.x1, T1.y0], LV.T1, 'low');
+  fence(B, [T1.x0, T1.y0], [-2.7, T1.y0], LV.T1, 'low');
+  fence(B, [2.7, T1.y0], [T1.x1, T1.y0], LV.T1, 'low');
 
   /* ---- 第一鳥居（鋼筋水泥、洗石子）---- */
   {
