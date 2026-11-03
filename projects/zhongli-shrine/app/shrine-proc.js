@@ -29,7 +29,8 @@ export const HORSE = { q: [-7.6, GATE_Y - 2.6], ped: 0.9 };
 // （自參道正面看第二鳥居的照片＋石燈籠照片）。揭示場與社號標距參道邊約 4 公尺，石燈籠在其外側
 export const KEJIBA = [-5.5, -66.6];
 export const SHAGO = [5.5, -66.6];
-export const GEBA = [-2.9, -66.9];   // 下乘札：揭示場（西）與參道之間
+export const GEBA = [-2.9, -66.9];
+export const NOBORI = [7.2, -65.6];   // 幟：東側欄杆前、社號標與東石燈籠之間的後方   // 下乘札：揭示場（西）與參道之間
 export const KOMA_POS = [[-3.2, GATE_Y - 4.3], [3.2, GATE_Y - 4.3]];   // 狛犬（神門照片反求）
 const IN = GATE_Y + 28.2;             // 內苑各構件相對於舊配置的位移（神門照片反求時神門在 −28.2）
 export const TORII2_Y = -64.0;        // 第二鳥居
@@ -66,6 +67,7 @@ const COLORS = {
   tile: 0x4d5257,      // 日式燻瓦（藍灰）
   copper: 0x7fa595,    // 唐破風銅板葺（綠青）
   sash: 0x8a6c4f,      // 窗框、雨庇
+  leaf: 0x5f7a4a,      // 榊、笹
 };
 
 /* =========================================================
@@ -307,6 +309,15 @@ function gebafuda(B) {
   B.mesh('roof', [[-w, -d, y0], [w, -d, y0], [0, -d, y0 + h]], [[0, 2, 1]]);
   B.mesh('roof', [[-w, d, y0], [w, d, y0], [0, d, y0 + h]], [[0, 1, 2]]);
 }
+function noboriTexture() {                 // 幟：白布、照片描下的「中壢神社」墨跡
+  const c = document.createElement('canvas'); c.width = 128; c.height = 940;
+  const x = c.getContext('2d'); x.fillStyle = '#f5f2ea'; x.fillRect(0, 0, 128, 940);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  const im = new Image();
+  im.onload = () => { x.drawImage(im, 4, 30, 120, 765); t.needsUpdate = true; onAsset(); };
+  im.src = './assets/nobori-text.png';
+  return t;
+}
 function gebaTexture() {                   // 札面「下乘」：白木底、墨書
   const c = document.createElement('canvas'); c.width = 128; c.height = 320;
   const x = c.getContext('2d'); x.fillStyle = '#e8d6b4'; x.fillRect(0, 0, 128, 320);
@@ -337,23 +348,31 @@ function torii(B, mat, span, H, r) {
   B.box(mat, 0, 0, Ln, 0.24 * k, H - 1.45 * k, H - 1.15 * k);         // 貫（第二鳥居照片：貫位置較高，約 0.76 H）
   B.box(mat, 0, 0, 0.35 * k, 0.2 * k, H - 1.15 * k, H - 0.55 * k);    // 額束
   B.box(mat, 0, 0, L - 0.4 * k, 0.32 * k, H - 0.55 * k, H - 0.3 * k); // 島木
-  // 笠木：兩端起翹，分段組成
-  const n = 16, y0 = H - 0.3 * k, t = 0.3 * k;
+  // 笠木：連續的反り曲面（兩端起翹、端部斜切），鎮座祭照片
+  const n = 20, y0 = H - 0.3 * k, t = 0.3 * k, d = 0.42 * k / 2, Lk = L + 0.3 * k;
+  const yb = x => y0 + Math.pow(Math.abs(x) / (Lk / 2), 2.6) * 0.26 * k;
+  const P = [];
+  for (let i = 0; i <= n; i++) { const x = -Lk / 2 + Lk * i / n, cut = (Math.abs(x) > Lk / 2 - 1e-6) ? 0.12 * k : 0; P.push([x, yb(x), yb(x) + t + 0.05 * k * (1 - Math.abs(x) / (Lk / 2)) + cut]); }
   for (let i = 0; i < n; i++) {
-    const a = -L / 2 + L * i / n, b = a + L / n, m = (a + b) / 2;
-    const s = Math.pow(Math.abs(m) / (L / 2), 3) * 0.32 * k;
-    B.box(mat, m, 0, L / n + 0.02, 0.42 * k, y0 + s, y0 + s + t);
+    const [x0, b0, t0] = P[i], [x1, b1, t1] = P[i + 1];
+    B.quad(mat, [x0, -d, t0], [x1, -d, t1], [x1, d, t1], [x0, d, t0]);          // 上
+    B.quad(mat, [x0, d, b0], [x1, d, b1], [x1, -d, b1], [x0, -d, b0]);          // 下
+    B.quad(mat, [x0, -d, b0], [x1, -d, b1], [x1, -d, t1], [x0, -d, t0]);        // 前
+    B.quad(mat, [x1, d, b1], [x0, d, b0], [x0, d, t0], [x1, d, t1]);            // 後
   }
+  [P[0], P[n]].forEach(([x, b, tt]) => B.quad(mat, [x, -d, b], [x, -d, tt], [x, d, tt], [x, d, b]));
+  // 島木也略帶反り
+  B.box(mat, 0, 0, 0.12 * k, 0.12 * k, H - 0.55 * k, H - 0.3 * k);
 }
 function shimenawa(B, span, y) {
-  // 注連繩（下垂）＋四條紙垂
-  const n = 10;
-  for (let i = 0; i < n; i++) {
-    const a = -span / 2 + span * i / n, b = a + span / n, m = (a + b) / 2;
-    const sag = 0.45 * (1 - Math.pow(m / (span / 2), 2));
-    B.rod('dark', m, 0, y - sag, 0.07, span / n + 0.05);
-  }
-  [-0.6, -0.2, 0.2, 0.6].forEach(f => B.box('white', f * span / 2, 0, 0.12, 0.03, y - 0.45 - 0.5, y - 0.4));
+  // 注連繩：自貫下垂的粗繩（管狀曲線），紙垂（之字形白紙）與黑色房交錯（鎮座祭照片）
+  const pts = []; for (let i = 0; i <= 12; i++) { const f = -1 + 2 * i / 12; pts.push(new THREE.Vector3(f * span / 2, y - 0.38 * (1 - f * f), 0)); }
+  B.add('rope', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.065, 6, false));
+  [-0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75].forEach((f, i) => {
+    const x = f * span / 2, yt = y - 0.38 * (1 - f * f) - 0.04;
+    if (i % 2) { B.box('dark', x, 0, 0.07, 0.07, yt - 0.5, yt); B.box('dark', x, 0, 0.12, 0.1, yt - 0.6, yt - 0.45); }
+    else for (let k = 0; k < 4; k++) B.box('white', x + (k % 2 ? 0.05 : -0.05), 0, 0.12, 0.02, yt - 0.15 * (k + 1), yt - 0.15 * k - 0.02);
+  });
 }
 // 石燈籠（石燈籠照片）：總高約 3.6 公尺
 // 石燈籠：依第二鳥居旁石燈籠的老照片（三層基壇、鼓形腰竿、斗栱中台、刻五三桐紋的火袋、反翹笠、寶珠），總高約 3.6 公尺
@@ -403,9 +422,11 @@ function fence(B, a, b, base, type) {
   // 局部：u 沿牆走向，x 為牆厚方向
   B.at(a[0], a[1], ang, base);
   if (type === 'low') {
-    for (let u = 0; u <= L + 1e-6; u += 1.8) B.box('wood', 0, Math.min(u, L), 0.16, 0.16, 0, 1.05);
-    B.box('wood', 0, L / 2, 0.08, L, 0.85, 0.95);
-    B.box('wood', 0, L / 2, 0.08, L, 0.35, 0.43);
+    // 低玉垣（鎮座祭照片）：角柱、上下兩道貫、之間密排的縱板
+    for (let u = 0; u <= L + 1e-6; u += 1.8) { B.box('wood', 0, Math.min(u, L), 0.16, 0.16, 0, 1.12); B.box('wood', 0, Math.min(u, L), 0.2, 0.2, 1.12, 1.18); }
+    B.box('wood', 0, L / 2, 0.1, L, 0.92, 1.02);
+    B.box('wood', 0, L / 2, 0.1, L, 0.2, 0.28);
+    for (let u = 0.15; u < L; u += 0.15) B.box('wood', 0, u, 0.05, 0.09, 0.28, 0.92);
     return;
   }
   const tall = type === 'tama';
@@ -463,8 +484,29 @@ export function buildShrine() {
   strip(B, [AX, GATE_Y + 1.5], [AX, -11.7 + IN], 3.01, LV.T2 + 0.03, 'path');
 
   /* ---- 第二鳥居（木造明神鳥居，高約 6 公尺，柱距 4 公尺）---- */
-  B.begin('B2').at(AX, TORII2_Y, 0, LV.T1); torii(B, 'wood', 4.0, 6.0, 0.21); shimenawa(B, 4.0, 4.05); B.end();
-  B.at(AX, TORII2_Y - 1.7, 0, 0); steps(B, 0, 0, 4.7, LV.T1, 3, 0.43);
+  B.begin('B2').at(AX, TORII2_Y, 0, LV.T1); torii(B, 'wood', 4.0, 6.0, 0.21); shimenawa(B, 4.0, 4.5); B.end();
+  B.at(AX, TORII2_Y - 1.7, 0, 0); steps(B, 0, 0, 5.0, LV.T1, 3, 0.43);   // 石階三段（鎮座祭照片）
+  [-2.68, 2.68].forEach(x => { B.box('stone', x, 0.65, 0.36, 1.3, 0, LV.T1 + 0.06); B.box('stone', x, -0.08, 0.36, 0.25, 0, 0.3); });   // 袖石
+  // 鳥居柱上綁的笹枝（細枝向上斜伸＋白紙垂），鎮座祭照片
+  [-2.0, 2.0].forEach(x => {
+    for (let j = 0; j < 6; j++) {
+      const a = (j / 5 - 0.5) * 1.3 + (x > 0 ? 0.25 : -0.25), len = 1.0 + (j % 3) * 0.25, y0 = LV.T1 + 1.2;
+      const g = new THREE.CylinderGeometry(0.012, 0.02, len, 4); g.translate(0, len / 2, 0); g.rotateZ(-a); g.translate(x, y0, 0.28); B.add('leaf', g);
+      const tx = x + Math.sin(a) * len, ty = y0 + Math.cos(a) * len;
+      const t = new THREE.BoxGeometry(0.22, 0.06, 0.04); t.rotateZ(-a + 0.6); t.translate(tx, ty, 0.28); B.add('leaf', t);
+    }
+    for (let k = 0; k < 3; k++) B.box('white', x + (k - 1) * 0.16, -0.3, 0.06, 0.02, LV.T1 + 1.25, LV.T1 + 1.75 - k * 0.05);
+  });
+  // 鳥居兩側的大提燈（立柱上，欄杆內側）
+  B.at(0, 0);
+  [-1, 1].forEach(sx => { B.box('dark', sx * 3.1, TORII2_Y + 0.6, 0.12, 0.12, LV.T1, LV.T1 + 1.4); chochin(B, sx * 3.1, TORII2_Y + 0.6, LV.T1 + 1.35, 0.75, sx > 0); });
+  // 長旗（幟）：「中壢神社」書法字，立於東側欄杆前（鎮座祭照片）
+  { const x = NOBORI[0], u = NOBORI[1];
+    B.cyl('wood', x + 0.48, u, 0.06, 0, 9.6, 8, 0.045);                         // 竿
+    B.box('wood', x, u, 1.0, 0.05, 9.0, 9.07);                                 // 上端橫竿
+    { const g = new THREE.PlaneGeometry(0.9, 6.6); g.translate(x, 5.7, -u + 0.01); B.add('nobori', g); const g2 = new THREE.PlaneGeometry(0.9, 6.6); g2.rotateY(Math.PI); g2.translate(x, 5.7, -u - 0.01); B.add('nobori', g2); }
+    for (let k = 0; k < 9; k++) B.box('white', x + 0.45, u, 0.1, 0.03, 2.6 + k * 0.78, 2.66 + k * 0.78);   // 乳（竿側的環）
+  }
   // 前庭外緣的低玉垣（鳥居照片中台階兩側）
   fence(B, [T1.x0, T1.y0], [-2.6, T1.y0], LV.T1, 'low');
   fence(B, [2.6, T1.y0], [T1.x1, T1.y0], LV.T1, 'low');
@@ -775,6 +817,8 @@ export function buildShrine() {
   mats.chochin = new THREE.MeshLambertMaterial({ map: chochinTexture(), emissive: 0x2a2620, side: THREE.DoubleSide });
   mats.kamon = new THREE.MeshLambertMaterial({ map: kamonTexture(), side: THREE.DoubleSide });
   mats.geba = new THREE.MeshLambertMaterial({ map: gebaTexture(), side: THREE.FrontSide });
+  mats.nobori = new THREE.MeshLambertMaterial({ map: noboriTexture(), side: THREE.FrontSide });
+  mats.rope = new THREE.MeshLambertMaterial({ color: 0xb8a77f, side: THREE.DoubleSide });   // 稻草繩
   mats.kamonStone = new THREE.MeshLambertMaterial({ map: kamonTexture('#d9d5cb', '#8a8478'), side: THREE.DoubleSide });
   mats.ceil = new THREE.MeshLambertMaterial({ color: COLORS.wood, emissive: 0x3e3022, side: THREE.DoubleSide });
   const group = B.build(mats);
