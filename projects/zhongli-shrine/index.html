@@ -118,7 +118,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <div lang="zh-Hant">
       <h2>關於</h2>
       <p>中壢神社於 1939 年 10 月 15 日鎮座，面朝中壢市區。1947 年這塊地撥給中壢中學，神社建築在之後幾十年間陸續被拆除或改建：鳥居成了校門，拜殿與本殿的基座上蓋了校舍和亭子，最後在 1991 年改建陶然亭時全部消失。今天還留在校園裡的，只有神馬、一座石燈籠，以及親師樓後方一小段參拜道和圍牆基座。</p>
-      <p>這個作品把散落的史料放回同一個空間：把「戲說壢中 CLHS+Minecraft 創世神」計畫中學生以 Tinkercad 建立的模型，整合成神社的配置，再對位到今天的地圖上，讓「當年在這裡的是什麼」可以直接在校園裡看見。</p>
+      <p>這個作品把散落的史料放回同一個空間：以「戲說壢中 CLHS+Minecraft 創世神」計畫中學生以 Tinkercad 建立的模型為起點，再依壢中校史館藏的老照片反推每座建築的尺寸，以 three.js 重新建構整座神社，對位到今天的地圖上，讓「當年在這裡的是什麼」可以直接在校園裡看見。</p>
     </div>
     <div lang="en">
       <h2>About</h2>
@@ -211,19 +211,19 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 
   <dl class="data">
     <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
-    <dt>Medium</dt><dd>Tinkercad, three.js</dd>
+    <dt>Medium</dt><dd>three.js（依老照片程式建構）；初版 Tinkercad<span>Built in code from old photographs; first version in Tinkercad</span></dd>
     <dt>Base maps</dt><dd>內政部國土測繪中心 航照與電子地圖<span>NLSC aerial photo and e-map</span></dd>
     <dt>Old maps</dt><dd>中央研究院 臺灣百年歷史地圖<span>Academia Sinica, Taiwan historical maps</span></dd>
     <dt>Layout</dt><dd>羅偉源 考證之配置<span>Site layout after research by Lo Wei-yuan</span></dd>
     <dt>Sources</dt><dd>簡報《壢中簡史與中壢神社》<span>Slides on the history of the school and the shrine</span></dd>
-    <dt>Models</dt><dd>「戲說壢中 CLHS+Minecraft 創世神」建築組學生<span>Student modellers, CLHS+Minecraft project</span></dd>
+    <dt>Models</dt><dd>初版模型：「戲說壢中 CLHS+Minecraft 創世神」建築組學生<span>First-version models by student modellers, CLHS+Minecraft project</span></dd>
     <dt>Main hall</dt><dd>神社主殿：莊○文、劉○輔、簡○揚、邱○毅</dd>
     <dt>Front hall</dt><dd>神社前殿：羅○翎、鄭○軒、邱○捷</dd>
     <dt>Torii, path</dt><dd>鳥居參道：周○航、張○丞、梁○安</dd>
     <dt>Photos</dt><dd>三森久子捐贈，壢中校史館藏<span>Donated by Mimori Hisako, school history room</span></dd>
     <dt>Purpose</dt><dd>非營利教育用途，希望讓大家更重視自己生活周遭的歷史。<span>Non-commercial, for education and local history.</span></dd>
-    <dt>Scale</dt><dd>以公尺呈現：銅馬 3D 掃描與現場實測（連台座高 3.10 公尺）、拜殿前參拜道殘段實測寬 3.01 公尺，換算內苑尺度；神社中軸依殘段實測方位 308°；長參道依南大門舊址拉長到真實距離。<span>In metres, calibrated with a 3D scan of the bronze horse, the measured width of the surviving approach path (3.01 m) and its bearing (308°).</span></dd>
-    <dt>Note</dt><dd>模型依配置圖、老照片與少數實測推估，並非測繪復原；位置誤差約 10–20 公尺，高程為手機量測（約 ±3 公尺）。<span>An estimate from the plan, old photographs and a few site measurements, not a survey.</span></dd>
+    <dt>Scale</dt><dd>以公尺呈現。拜殿尺寸由正面照反推（參拜道實測寬 3.01 公尺＝約 8 塊 38×78 公分石板）；神門、狛犬、玉垣與各建築距離由神門照片反推（以拜殿為比例尺，同時解出拍攝位置，疊合誤差約 13 像素）；銅馬為 3D 掃描（連台座高 3.10 公尺）；神社中軸依殘段實測方位 308°。<span>In metres. The worship hall is sized from a frontal photo using the measured 3.01 m path; the gate, guardian lions, fence and distances are solved from the gate photo, with the hall as the scale.</span></dd>
+    <dt>Note</dt><dd>模型依配置圖、老照片與少數實測推估，並非測繪復原；照片沒拍到的部分（如拜殿深度、本殿背面、社務所）為推估；位置誤差約 5–20 公尺，高程為手機量測（約 ±3 公尺）。<span>An estimate from the plan, old photographs and a few site measurements, not a survey.</span></dd>
   </dl>
 </main>
 </body>
