@@ -5,7 +5,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 // 掃描檔已用 meshopt 壓縮、只留顏色貼圖；材質改成 Lambert，手機算得比較輕
 const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
-const lambert = m => new THREE.MeshLambertMaterial({ map: m.map || null, color: m.map ? 0xffffff : m.color, side: THREE.DoubleSide });
+// 掃描物不用照片貼圖（顏色偏暗、與周圍風格不一），改成與建築一致的單色材質，只保留造形
+const flat = color => new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide });
+const BRONZE = 0x5f7f72, GRANITE = 0xd3cfc4;   // 銅馬（帶綠青的古銅）、狛犬（花崗岩）
 import { createGround, GROUND_LAYERS } from './ground.js';
 import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
 
@@ -97,14 +99,25 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 // 解析度：大螢幕（桌機）畫素多，上限放低；之後依實際畫格時間自動再調（見主迴圈）
 let maxDPR = Math.min(devicePixelRatio, innerWidth > 900 ? 1.25 : 1.5);
 renderer.setPixelRatio(maxDPR);
-renderer.setClearColor(0xe9e6dc);
+renderer.setClearColor(0xeef0ec);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;   // 色彩對比更自然鮮明
+renderer.toneMappingExposure = 1.15;
+// 陰影：場景是靜態的，只在載入後算一次，之後不再更新，幾乎不增加每格的負擔
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.shadowMap.autoUpdate = false;
 renderer.localClippingEnabled = true;   // 銅馬掃描：切掉今日的台座
 host.append(renderer.domElement);
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xe9e6dc, 450, 1300);
-scene.add(new THREE.HemisphereLight(0xfff9eb, 0x7c826e, 2.2));
-const sun = new THREE.DirectionalLight(0xfff4dd, 1.8);
-sun.position.set(-40, 80, 50);
+scene.fog = new THREE.Fog(0xeef0ec, 450, 1300);
+scene.add(new THREE.HemisphereLight(0xf4f7ff, 0x8a7d62, 1.3));   // 天光微冷、地面反光微暖
+const sun = new THREE.DirectionalLight(0xffe9c8, 2.9);             // 午後斜陽
+sun.position.set(-55, 70, 40);
+sun.castShadow = true;
+sun.shadow.mapSize.set(innerWidth > 900 ? 2048 : 1024, innerWidth > 900 ? 2048 : 1024);
+Object.assign(sun.shadow.camera, { left: -70, right: 70, top: 70, bottom: -70, near: 1, far: 260 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.04;
+sun.target.position.set(0, 0, 25); scene.add(sun.target);
 scene.add(sun);
 const camera = new THREE.PerspectiveCamera(50, 1, 0.5, 3000);   // near 0.5：遠看時深度較精準
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -168,6 +181,7 @@ const photoMarker = new THREE.Group();
   scene.add(photoMarker);
 }
 
+let edgeMat = null, shadowPlane = null;
 let shrine, ground, overlay, places = [], groundH = 0, histData = null, horseScan = null;
 
 /* ---------- 古 ↔ 今：神社模型的透明度 ---------- */
@@ -183,6 +197,8 @@ function applyEra() {
   });
   dirty = true;
   horseLine && (horseLine.material.opacity = 0.35 + 0.65 * eraT);
+  if (edgeMat) edgeMat.opacity = 0.4 * op;
+  if (shadowPlane) shadowPlane.material.opacity = 0.34 * Math.max(0, 1 - eraT * 1.6);
   overlay && overlay.setOpacity(overlayOn ? 1 - 0.9 * eraT : 0);
   if (!$('#tour').hidden) renderStopText();
 }
@@ -201,8 +217,8 @@ function loadHorseScan() {
     scan.rotation.y = -Math.PI / 2;      // 掃描檔馬頭朝 -z → 轉成朝 +x（神門方向）
     scan.position.set(HORSE.q[0], base - HOOF, -HORSE.q[1]);
     const clip = [new THREE.Plane(new THREE.Vector3(0, 1, 0), -(base - 0.03))];
-    scan.traverse(m => { if (m.isMesh) { m.material = lambert(m.material); m.material.clippingPlanes = clip; fadeMats.push(m.material); } });
-    horseScan = scan; scene.add(scan); applyEra(); dirty = true;
+    scan.traverse(m => { if (m.isMesh) { m.material = flat(BRONZE); m.material.clippingPlanes = clip; m.castShadow = true; fadeMats.push(m.material); } });
+    horseScan = scan; scene.add(scan); applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true;
   }, undefined, e => console.warn('銅馬掃描載入失敗', e));
 }
 
@@ -211,7 +227,7 @@ function loadHorseScan() {
 // 掃描只有一尊，另一尊以鏡像代替（原為阿吽一對，造形不同）。
 function loadKomainu() {
   gltf.load('./assets/komainu-scan-2.glb', g => {
-    g.scene.traverse(m => { if (m.isMesh) { m.material = lambert(m.material); fadeMats.push(m.material); } });
+    g.scene.traverse(m => { if (m.isMesh) { m.material = flat(GRANITE); m.castShadow = true; fadeMats.push(m.material); } });
     KOMA_POS.forEach(([x, y], i) => {
       const k = i ? g.scene : g.scene.clone();
       k.position.set(x, LV.T1 + KOMA_PED, -y);
@@ -219,7 +235,7 @@ function loadKomainu() {
       k.rotation.y = 0;                       // 與神門同向：背對神門、面朝參道來的方向
       scene.add(k);
     });
-    applyEra(); dirty = true;
+    applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true;
   }, undefined, e => console.warn('狛犬掃描載入失敗', e));
 }
 
@@ -573,6 +589,19 @@ try {
   shrine = buildShrine();
   scene.add(shrine.group);
   fadeMats.push(...shrine.mats);
+  shrine.group.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+  // 細輪廓線：讓屋簷、柱列、格子的層次更清楚（一次繪製）
+  {
+    const edges = [];
+    shrine.group.children.forEach(m => { if (!/gravel|path/.test(m.name)) edges.push(new THREE.EdgesGeometry(m.geometry, 28)); });
+    const pos = []; edges.forEach(g => pos.push(...g.attributes.position.array));
+    const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    const lm = new THREE.LineBasicMaterial({ color: 0x2b2118, transparent: true, opacity: 0.4 });
+    scene.add(new THREE.LineSegments(lg, lm)); edgeMat = lm;
+  }
+  // 陰影承接面：只顯示陰影、不遮住底圖
+  shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(400, 400).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.34, transparent: true, depthWrite: false }));
+  shadowPlane.position.set(0, groundH + 0.02, 20); shadowPlane.receiveShadow = true; shadowPlane.renderOrder = 0; scene.add(shadowPlane);
   groundH = -0.05;      // 公尺：今日地面（外參道高度）
   ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.3, qToLL, llToQ, north: NORTH_Q, order: -2 });   // 兩層地面隔開，遠看才不會互相穿插
   overlay = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.12, qToLL, llToQ, north: NORTH_Q, order: -1 });
@@ -584,6 +613,7 @@ try {
   buildChips();
   buildViewChips();
   setGround('photo');
+  renderer.shadowMap.needsUpdate = true;
   $('#loading').style.opacity = 0;
   setTimeout(() => $('#loading').remove(), 500);
 } catch (e) {

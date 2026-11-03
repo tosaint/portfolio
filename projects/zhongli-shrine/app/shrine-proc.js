@@ -42,20 +42,23 @@ export const DIMS = {
   L: '3D 掃描＋現場實測',
 };
 
+// 色調（2026-11 重新設計）：老照片是黑白的，配色依日本神社常見材質推定——
+// 白木（素木的檜）偏暖淡金、檜皮葺為深栗褐、花崗岩帶一點冷灰、白砂利、紙垂純白、千木鰹木包銅帶綠青。
 const COLORS = {
-  wood: 0xcdb48d,      // 白木（檜）
-  dark: 0x6d5a45,      // 格子、門板、木構陰影
-  roof: 0x5e5044,      // 檜皮葺
-  stone: 0xd4cdbd,     // 花崗岩、洗石子
-  grey: 0xb9b4a8,      // 第一鳥居（洗石子）
-  gravel: 0xdcd5c3,    // 砂利
-  white: 0xf3efe4,     // 紙垂
-  bronze: 0x4c4a40,    // 千木、鰹木的金屬包覆
-  plaster: 0xebe5d8,   // 社務所白漆喰牆（與神社建築統一的和風配色）
-  brown: 0x5f4b3b,     // 社務所腰板（深色木）
-  tile: 0x5d5b58,      // 日式黑瓦
-  copper: 0x6f7a72,    // 社務所唐破風屋頂（銅板葺、帶綠青的灰綠）
-  sash: 0x7c6650,      // 窗框、雨庇（木色）
+  wood: 0xe0c497,      // 白木（檜、素木）
+  dark: 0x5e4a3a,      // 格子、門板、木構陰影
+  panel: 0xc7a77b,     // 板壁、格子壁（白木，受光較少處）
+  roof: 0x5c4334,      // 檜皮葺（深栗褐）
+  stone: 0xd9d5cb,     // 花崗岩
+  grey: 0xc9c5bb,      // 第一鳥居（洗石子）
+  gravel: 0xf0ece2,    // 白砂利
+  white: 0xfbf9f3,     // 紙垂、幕
+  bronze: 0x6e9484,    // 千木、鰹木的銅板（綠青）
+  plaster: 0xf3efe6,   // 社務所白漆喰
+  brown: 0x5a4636,     // 社務所腰板
+  tile: 0x4d5257,      // 日式燻瓦（藍灰）
+  copper: 0x7fa595,    // 唐破風銅板葺（綠青）
+  sash: 0x8a6c4f,      // 窗框、雨庇
 };
 
 /* =========================================================
@@ -468,11 +471,12 @@ export function buildShrine() {
   [-6.8, 6.8].forEach(x => rowU.forEach(u => B.box('wood', x, u, 0.22, 0.22, F, F + 2.2)));
   // 兩翼：格子壁
   [-1, 1].forEach(s => {
-    B.box('dark', s * 5.5, -3.0, 2.6, 0.08, F + 0.1, F + 2.1);
-    B.box('dark', s * 6.8, 0, 0.08, 6.0, F + 0.1, F + 2.1);
-    B.box('dark', s * 5.5, 3.0, 2.6, 0.08, F + 0.1, F + 2.1);
-    B.box('dark', s * 2.8, 3.0, 2.8, 0.08, F + 0.1, F + 2.5);
-    B.box('wood', s * 5.5, -3.0, 2.6, 0.1, F + 1.25, F + 1.35);      // 翼部長押   // 主體背面板壁（中間開口通幣殿）
+    B.box('panel', s * 5.5, -3.0, 2.6, 0.08, F + 0.1, F + 2.1);
+    B.box('panel', s * 6.8, 0, 0.08, 6.0, F + 0.1, F + 2.1);
+    B.box('panel', s * 5.5, 3.0, 2.6, 0.08, F + 0.1, F + 2.1);
+    B.box('panel', s * 2.8, 3.0, 2.8, 0.08, F + 0.1, F + 2.5);
+    B.box('wood', s * 5.5, -3.0, 2.6, 0.1, F + 1.25, F + 1.35);      // 翼部長押
+    for (let k = -5; k <= 5; k++) B.box('wood', s * 5.5 + k * 0.22, -3.06, 0.05, 0.05, F + 1.35, F + 2.1);   // 上段縱格子   // 主體背面板壁（中間開口通幣殿）
   });
   B.box('wood', 0, -3.0, 13.8, 0.24, F + CH - 0.4, F + CH - 0.15);   // 正面虹梁（頭貫）
   B.box('wood', 0, -3.05, 8.6, 0.12, F + 1.95, F + 2.05);             // 內法長押（幕串）
@@ -596,7 +600,7 @@ export function buildShrine() {
 
   /* ---- 材質 ---- */
   const mats = {};
-  for (const [k, c] of Object.entries(COLORS)) mats[k] = new THREE.MeshLambertMaterial({ color: c, side: THREE.DoubleSide });
+  for (const [k, c] of Object.entries(COLORS)) mats[k] = new THREE.MeshLambertMaterial({ color: c, side: THREE.DoubleSide, shadowSide: THREE.FrontSide });
   mats.path = new THREE.MeshLambertMaterial({ map: slabTexture(), side: THREE.DoubleSide });
   const group = B.build(mats);
   return { group, boxes: B.boxes, mats: Object.values(mats) };
