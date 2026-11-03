@@ -61,7 +61,7 @@ STOPS.forEach((s, i) => { if (s.m) return; if (!s.photo) { s.eye = modelToWorld(
 // 「今」模式下仍保持實心的構件（其餘變半透明）
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
-const GROUND_ORDER = ['photo', 'emap', 'aer1947', 'am50k', 'jm25k'];
+const GROUND_ORDER = ['photo', 'aer1947', 'am50k', 'jm25k', 'emap'];
 
 const $ = s => document.querySelector(s);
 const host = $('#view');
@@ -134,7 +134,7 @@ const photoMarker = new THREE.Group();
   scene.add(photoMarker);
 }
 
-let shrine, ground, places = [], groundH = 0, histData = null, horseScan = null;
+let shrine, ground, overlay, places = [], groundH = 0, histData = null, horseScan = null;
 
 /* ---------- 古 ↔ 今：神社模型的透明度 ---------- */
 // 神社模型由 shrine-proc.js 依老照片程式建構：同材質合併成一個網格，全部只要十來次繪製呼叫
@@ -149,6 +149,7 @@ function applyEra() {
   });
   dirty = true;
   horseLine && (horseLine.material.opacity = 0.35 + 0.65 * eraT);
+  overlay && overlay.setOpacity(overlayOn ? 1 - 0.9 * eraT : 0);
   if (!$('#tour').hidden) renderStopText();
 }
 $('#era').oninput = applyEra;
@@ -193,7 +194,10 @@ function setScale(on) {
 }
 
 /* ---------- 地面圖層 ---------- */
-let groundId = 'photo';
+// 底圖分兩層：下層永遠是今天（航照或電子地圖），上層疊舊地圖。
+// 「古 ↔ 今」滑桿同時淡出神社模型與舊地圖：拉到「古」看到舊圖，拉到「今」露出今日航照。
+const OLD = new Set(['aer1947', 'am50k', 'jm25k']);
+let groundId = 'photo', baseId = 'photo', overlayOn = false;
 function buildChips() {
   GROUND_ORDER.forEach(id => {
     const b = document.createElement('button');
@@ -203,16 +207,23 @@ function buildChips() {
     $('#groundChips').append(b);
   });
 }
+const CREDIT = {
+  aer1947: '1947.09.05 舊航照（47M7045／022）· 中研院 GIS 中心提供 · 標註：羅偉源',
+  am50k: '中央研究院 臺灣百年歷史地圖', jm25k: '中央研究院 臺灣百年歷史地圖',
+};
 async function setGround(id) {
   groundId = id;
   [...$('#groundChips').children].forEach(b => b.classList.toggle('on', b.dataset.id === id));
-  const ok = await ground.setLayer(id);
+  const isOld = OLD.has(id), want = isOld ? 'photo' : id;
+  if (want !== baseId || !ground.mesh.visible) { baseId = want; ground.setLayer(want).then(() => { dirty = true; }); }
+  let ok = true;
+  if (isOld) { ok = await overlay.setLayer(id); overlayOn = ok; }
+  else { overlay.clear(); overlayOn = false; }
   if (groundId !== id) return;
-  const btn = $(`#groundChips [data-id="${id}"]`);
-  if (!ok) { btn.classList.add('fail'); toast('這個底圖目前載不到'); }
-  const on = ok && id !== 'off';
-  dirty = true;
-  $('#credit').textContent = !on ? '' : id === 'aer1947' ? '1947.09.05 舊航照（47M7045／022）· 中研院 GIS 中心提供 · 標註：羅偉源' : id.startsWith('jm') || id.startsWith('am') ? '中央研究院 臺灣百年歷史地圖' : '© 內政部國土測繪中心';
+  if (!ok) { $(`#groundChips [data-id="${id}"]`).classList.add('fail'); toast('這個底圖目前載不到'); }
+  applyEra();
+  if (isOld && ok && eraT < 0.05) toast('拖曳「古 ↔ 今」滑桿，舊圖會淡出、露出今日航照', 3200);
+  $('#credit').textContent = (isOld ? CREDIT[id] + '／' : '') + '© 內政部國土測繪中心';
 }
 
 /* ---------- 神馬遷移虛線 ---------- */
@@ -471,7 +482,8 @@ try {
   scene.add(shrine.group);
   fadeMats.push(...shrine.mats);
   groundH = -0.05;      // 公尺：今日地面（外參道高度）
-  ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH, qToLL, llToQ, north: NORTH_Q });
+  ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH, qToLL, llToQ, north: NORTH_Q, order: -2 });
+  overlay = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH + 0.03, qToLL, llToQ, north: NORTH_Q, order: -1 });
   places = md.places.map(p => ({ ...p, pos: p.q || (p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng)) }));
   loadHorseScan();
   buildScaleAids();
