@@ -462,7 +462,7 @@ export function buildShrine() {
   { const q = [9.5, TORII2_Y - 9.5]; B.begin('G').at(q[0], q[1], 0, 0);   // 社號標：石燈籠照片中在東側燈籠前方
     B.box('stone', 0, 0, 1.15, 1.15, 0, 0.3); B.box('stone', 0, 0, 0.85, 0.85, 0.3, 0.6); B.box('stone', 0, 0, 0.46, 0.46, 0.6, 3.8); B.end(); }
   // 參道西側由外往內：石燈籠 → 揭示場 → 下乘札 → 第二鳥居（石燈籠照片、自參道正面看第二鳥居照片）
-  B.begin('E').at(KEJIBA[0], KEJIBA[1], -Math.PI / 2, 0); kejiba(B); B.end();   // 告示板朝參道（東）
+  B.begin('E').at(KEJIBA[0], KEJIBA[1], 0, 0); kejiba(B); B.end();   // 告示板朝參拜者走來的方向（背對第二鳥居）
   { const q = [-3.5, TORII2_Y - 1.0]; B.begin('F').at(q[0], q[1], -Math.PI / 2, 0);
     B.box('wood', 0, 0, 0.14, 0.14, 0, 1.8); B.box('white', 0, -0.1, 0.4, 0.04, 0.9, 1.75); B.end(); }
   // 手水舍（位置推估：石燈籠照片中在鳥居內側）
