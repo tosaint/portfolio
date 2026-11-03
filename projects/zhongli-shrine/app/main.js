@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildShrine, LV, DIMS } from './shrine-proc.js';
+import { buildShrine, LV, DIMS, GATE_Y } from './shrine-proc.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createGround, GROUND_LAYERS } from './ground.js';
 import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
@@ -12,7 +12,7 @@ import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from '
    ========================================================= */
 const HIST_PHOTO = {                 // 神門照片的拍攝視角（2026-11-03 以照片程式模型重新反求，公尺）
   src: './assets/photo-study/historical.jpg',
-  eye: [20.972, 5.836, 54.194], target: [10.646, 4.548, 37.114], fov: 24.6, aspect: 1.5,
+  eye: [20.972, 5.836, 54.194 - 13.2], target: [10.646, 4.548, 37.114 - 13.2], fov: 24.6, aspect: 1.5,   // 內苑依 1947 航照前移 13.2 公尺，相機一起移
   axes: {"x": [0.8558, -0.00099, -0.5173], "y": [-0.03247, 0.99792, -0.05561], "z": [0.51628, 0.06439, 0.854]},
 };
 
@@ -56,7 +56,8 @@ const STOPS = [
 ];
 
 // 以上座標都是原配置模型的單位；轉成公尺世界座標（見 site.js）
-STOPS.forEach(s => { if (s.m) return; if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); } else { s.eye = HIST_PHOTO.eye; s.target = HIST_PHOTO.target; } });
+// 第 4、5 站在內苑：跟著 1947 航照的內苑位置前移
+STOPS.forEach((s, i) => { if (s.m) return; if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); if (i >= 3) { s.eye[2] -= 13.2; s.target[2] -= 13.2; } } else { s.eye = HIST_PHOTO.eye; s.target = HIST_PHOTO.target; } });
 // 「今」模式下仍保持實心的構件（其餘變半透明）
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
@@ -158,9 +159,9 @@ $('#era').oninput = applyEra;
 function loadHorseScan() {
   new GLTFLoader().load('./assets/horse-scan.glb', g => {
     const scan = g.scene;
-    // 位置：配置圖的神馬（神門前左側），朝向沿用先前與原模型馬頭對齊的結果
-    const q = warpH([4.86, -3.9885]);
-    scan.rotation.y = -2.2768;
+    // 銅馬老照片：馬身與玉垣平行、馬頭朝神門（中軸），站在神門左前方的玉垣外
+    const q = [-9.0, GATE_Y - 3.6];
+    scan.rotation.y = -Math.PI / 2;      // 掃描檔馬頭朝 -z → 轉成朝 +x（中軸方向）
     scan.position.set(q[0], LV.T1, -q[1]);
     scan.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = false; fadeMats.push(m.material); } });
     horseScan = scan; scene.add(scan); applyEra(); dirty = true;
@@ -180,7 +181,7 @@ function buildScaleAids() {
     g.add(body, head); return g;
   };
   // 放在神門前、第二鳥居旁、拜殿台階前（q 座標＋地坪高）
-  [[1.2, -33, LV.T1], [3.2, -55.5, LV.T1], [2.4, -13.5, LV.T2]].forEach(([x, y, h]) => {
+  [[1.2, GATE_Y - 5, LV.T1], [3.2, -62.5, LV.T1], [2.4, -0.3, LV.T2]].forEach(([x, y, h]) => {
     const p = person(); p.position.set(x, h, -y); scaleAids.add(p);
   });
   scene.add(scaleAids);
@@ -471,7 +472,7 @@ try {
   fadeMats.push(...shrine.mats);
   groundH = -0.05;      // 公尺：今日地面（外參道高度）
   ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH, qToLL, llToQ, north: NORTH_Q });
-  places = md.places.map(p => ({ ...p, pos: p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng) }));
+  places = md.places.map(p => ({ ...p, pos: p.q || (p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng)) }));
   loadHorseScan();
   buildScaleAids();
   buildHorseLine();
