@@ -13,6 +13,8 @@ export const GROUND_LAYERS = {
   emap:  { label: '今日地圖', url: NLSC('EMAP'),   zoom: 18 },
   // local：先用存在作品裡的拼接圖（z16、自圖磚 x54832 y28072 起、3×2 張），沒有才連線抓
   jm25k: { label: '1921 日治地形圖', url: SINICA('JM25K_1921'), zoom: 16, local: { src: './oldmaps/JM25K_1921_z16_x54832_y28072.png', z: 16, x0: 54832, y0: 28072 } },
+  // 1947 航照（簡報《壢中簡史與中壢神社》，已去除標註文字）：以南大門舊址與陶然亭兩點對位
+  aer1947: { label: '1947 航照', image: { src: './oldmaps/aerial_1947.jpg', a: [325, 300], b: [425, 597.5], la: [24.96265, 121.209686], lb: [24.961157, 121.208661] } },
   am50k: { label: '1944 美軍地圖',   url: SINICA('AM50K_1944'), zoom: 16, local: { src: './oldmaps/AM50K_1944_z16_x54832_y28072.png', z: 16, x0: 54832, y0: 28072 } }
 };
 
@@ -91,6 +93,21 @@ export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north })
     if (id === 'off') { mesh.visible = false; return true; }
     const L = GROUND_LAYERS[id];
     // 依序嘗試：各個網址格式 × 原 zoom、低一級 zoom（舊地圖不一定有高 zoom 圖磚）
+    if (L.image) {                    // 單張已對位的影像（兩點相似轉換）
+      const I = L.image, im = await loadImg(I.src);
+      if (my !== token) return !!im;
+      if (!im) return false;
+      const qa = llToQ(...I.la), qb = llToQ(...I.lb);
+      const za = [I.b[0] - I.a[0], -(I.b[1] - I.a[1])], zq = [qb[0] - qa[0], qb[1] - qa[1]], d = za[0] ** 2 + za[1] ** 2;
+      const k = [(zq[0] * za[0] + zq[1] * za[1]) / d, (zq[1] * za[0] - zq[0] * za[1]) / d];
+      const toQ = ([x, y]) => { const re = x - I.a[0], imv = -(y - I.a[1]); return [qa[0] + k[0] * re - k[1] * imv, qa[1] + k[0] * imv + k[1] * re]; };
+      canvas.width = im.width; canvas.height = im.height; ctx.drawImage(im, 0, 0);
+      const W = im.width, H = im.height;
+      geo.attributes.position.array.set([...P(toQ([0, 0])), ...P(toQ([W, 0])), ...P(toQ([W, H])), ...P(toQ([0, H]))]);
+      geo.attributes.position.needsUpdate = true; geo.computeBoundingSphere();
+      tex.dispose(); tex.needsUpdate = true; mat.opacity = 1; mesh.visible = true;
+      return true;
+    }
     const urls = Array.isArray(L.url) ? L.url : [L.url];
     let ok = false, z = L.zoom, tx0, tx1, ty0, ty1, off;
     if (L.local) {
