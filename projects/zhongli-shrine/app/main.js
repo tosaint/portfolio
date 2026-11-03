@@ -212,7 +212,7 @@ async function setGround(id) {
   if (!ok) { btn.classList.add('fail'); toast('這個底圖目前載不到'); }
   const on = ok && id !== 'off';
   dirty = true;
-  $('#credit').textContent = !on ? '' : id === 'aer1947' ? '1947.09.05 舊航照（任務 47M7045／照片 022）· 中研院 GIS 中心提供' : id.startsWith('jm') || id.startsWith('am') ? '中央研究院 臺灣百年歷史地圖' : '© 內政部國土測繪中心';
+  $('#credit').textContent = !on ? '' : id === 'aer1947' ? '1947.09.05 舊航照（47M7045／022）· 中研院 GIS 中心提供 · 標註：羅偉源' : id.startsWith('jm') || id.startsWith('am') ? '中央研究院 臺灣百年歷史地圖' : '© 內政部國土測繪中心';
 }
 
 /* ---------- 神馬遷移虛線 ---------- */
