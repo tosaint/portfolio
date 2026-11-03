@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { loadShrine } from './scene-model.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createGround, GROUND_LAYERS } from './ground.js';
+import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
 
 /* =========================================================
    中壢神社 古今對照：3D 神社立在今日航照上
@@ -53,6 +55,10 @@ const STOPS = [
   }
 ];
 
+// 以上座標都是原配置模型的單位；轉成公尺世界座標（見 site.js）
+HIST_PHOTO.eye = modelToWorld(HIST_PHOTO.eye); HIST_PHOTO.target = modelToWorld(HIST_PHOTO.target);
+STOPS.forEach(s => { if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); } else { s.eye = HIST_PHOTO.eye; s.target = HIST_PHOTO.target; } });
+// 「今」模式下仍保持實心的構件（其餘變半透明）
 const HIDE_WHEN_GROUND = new Set(['A']);   // 中正路模型：航照上已經有真的路，鋪了航照就隱藏
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
@@ -68,17 +74,18 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
 renderer.setClearColor(0xe9e6dc);
 host.append(renderer.domElement);
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0xe9e6dc, 300, 800);
+scene.fog = new THREE.Fog(0xe9e6dc, 450, 1300);
 scene.add(new THREE.HemisphereLight(0xfff9eb, 0x7c826e, 2.2));
 const sun = new THREE.DirectionalLight(0xfff4dd, 1.8);
 sun.position.set(-40, 80, 50);
 scene.add(sun);
-const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 2000);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 3000);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI / 2 - 0.03;
 controls.minDistance = 3;
-controls.maxDistance = 420;
+controls.maxDistance = 650;
+controls.minDistance = 4;
 controls.addEventListener('change', () => { dirty = true; });
 
 /* ---------- 版面：3D 高度 = 螢幕 − 目前的底部面板 ---------- */
@@ -114,7 +121,7 @@ const photoMarker = new THREE.Group();
   const eye = new THREE.Vector3(...HIST_PHOTO.eye), tgt = new THREE.Vector3(...HIST_PHOTO.target);
   const tex = new THREE.TextureLoader().load(HIST_PHOTO.src, () => { dirty = true; });
   tex.colorSpace = THREE.SRGBColorSpace;
-  const dist = 7, hgt = 2 * dist * Math.tan(THREE.MathUtils.degToRad(HIST_PHOTO.fov / 2)), wid = hgt * HIST_PHOTO.aspect;
+  const dist = 7 * S_IN, hgt = 2 * dist * Math.tan(THREE.MathUtils.degToRad(HIST_PHOTO.fov / 2)), wid = hgt * HIST_PHOTO.aspect;
   const card = new THREE.Mesh(new THREE.PlaneGeometry(wid, hgt), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
   card.position.copy(eye).addScaledVector(tgt.clone().sub(eye).normalize(), dist);
   card.lookAt(eye); card.updateMatrixWorld();
@@ -123,22 +130,30 @@ const photoMarker = new THREE.Group();
   const pts = [];
   corners.forEach(c => pts.push(eye, c));
   photoMarker.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xb23a2a })));
-  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.6, 16, 12), new THREE.MeshBasicMaterial({ color: 0xb23a2a }));
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 12), new THREE.MeshBasicMaterial({ color: 0xb23a2a }));
   dot.position.copy(eye); photoMarker.add(dot);
   scene.add(photoMarker);
 }
 
-let shrine, ground, places = [], groundH = 0, history = null;
+let shrine, ground, places = [], groundH = 0, histData = null, horseScan = null;
 
 /* ---------- 古 ↔ 今：神社模型的透明度 ---------- */
 // 效能關鍵：Tinkercad 模型與照片參照構件原本有上萬個小物件（6 萬次以上繪製呼叫）。
 // 載入後把每個構件合併成「一個網格＋頂點顏色」，繪製呼叫降到幾十次，手機才會順。
 const fadeMats = [];
+// 地形類（道路、參道、運動場）逐點拉長；其他構件以自己的底部中心等比例換成公尺，避免變形
+const TERRAIN = new Set(['A', 'C', 'K']);
+function toMetres(v, st, terrain, anchorQ) {
+  if (terrain) { const q = warpH([v.x, -v.z]); v.set(q[0], v.y * LEVEL, -q[1]); return; }
+  const dx = (v.x - st.x) * S_IN, dy = (-v.z - st.y) * S_IN;
+  v.set(anchorQ[0] + dx, warpY(v.y, st.elevation), -(anchorQ[1] + dy));
+}
 function prepareFade() {
   const n3 = new THREE.Matrix3();
   shrine.integrated.updateMatrixWorld(true);
   shrine.objects.forEach((o, id) => {
     const pos = [], nor = [], col = [];
+    const anchorQ = warpH([o.setting.x, o.setting.y]);
     o.root.traverse(m => {
       if (!m.isMesh || !m.geometry.attributes.position) return;
       let g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry;
@@ -152,7 +167,9 @@ function prepareFade() {
         const c = (mats[gr.materialIndex] || mats[0]).color || new THREE.Color(0x888888);
         const end = Math.min(gr.start + gr.count, P.count);
         for (let i = gr.start; i < end; i++) {
-          v.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld); pos.push(v.x, v.y, v.z);
+          v.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld);
+          toMetres(v, o.setting, TERRAIN.has(id), anchorQ);
+          pos.push(v.x, v.y, v.z);
           nn.fromBufferAttribute(N, i).applyMatrix3(n3).normalize(); nor.push(nn.x, nn.y, nn.z);
           col.push(c.r, c.g, c.b);
         }
@@ -185,6 +202,58 @@ function applyEra() {
   if (!$('#tour').hidden) renderStopText();
 }
 $('#era').oninput = applyEra;
+
+/* ---------- 銅馬掃描（真實尺寸）---------- */
+// 2026 年的 3D 掃描，依現場實測（台座 102×249 公分、連台座自路面高 310 公分）校正成公尺。
+// 台座是今天的樣式，1939 年的台座形式不同。
+function loadHorseScan() {
+  const o = shrine.objects.get('L'); if (!o || !o.merged) return;
+  new GLTFLoader().load('./assets/horse-scan.glb', g => {
+    const scan = g.scene;
+    // 對齊朝向：讓掃描的「馬頭」（最高點）跟原模型的馬頭同一側
+    const headDir = obj => {
+      const b = new THREE.Box3().setFromObject(obj), c = b.getCenter(new THREE.Vector3());
+      let top = null; obj.updateMatrixWorld(true);
+      obj.traverse(m => { if (!m.isMesh) return; const P = m.geometry.attributes.position, v = new THREE.Vector3();
+        for (let i = 0; i < P.count; i += 7) { v.fromBufferAttribute(P, i).applyMatrix4(m.matrixWorld); if (!top || v.y > top.y) top = v.clone(); } });
+      return new THREE.Vector2(top.x - c.x, top.z - c.z).normalize();
+    };
+    const want = headDir(o.merged), have = headDir(scan);
+    scan.rotation.y = Math.atan2(have.y, have.x) - Math.atan2(want.y, want.x);
+    const b = new THREE.Box3().setFromObject(o.merged), c = b.getCenter(new THREE.Vector3());
+    scan.position.set(c.x, warpY(o.setting.elevation, o.setting.elevation), c.z);
+    scan.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = false; fadeMats.push(m.material); } });
+    o.merged.visible = false;
+    horseScan = scan; scene.add(scan); applyEra(); dirty = true;
+  }, undefined, e => console.warn('銅馬掃描載入失敗', e));
+}
+
+/* ---------- 比例尺：10 公尺格線＋1.7 公尺人形 ---------- */
+let scaleOn = false; const scaleAids = new THREE.Group(); scaleAids.visible = false;
+function buildScaleAids() {
+  const grid = new THREE.GridHelper(500, 50, 0x8a6b45, 0x8a6b45);
+  grid.material.transparent = true; grid.material.opacity = 0.35; grid.position.y = groundH + 0.05;
+  scaleAids.add(grid);
+  const person = () => {
+    const g = new THREE.Group(), mat = new THREE.MeshLambertMaterial({ color: 0x2b2a27 });
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.17, 1.45, 10), mat); body.position.y = 0.725;
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), mat); head.position.y = 1.58;
+    g.add(body, head); return g;
+  };
+  // 放在樓門前、第二鳥居旁、拜殿台階前
+  [['N', 0, -5], ['B2', 4, 0], ['P', 2, -9]].forEach(([id, ox, oy]) => {
+    const o = shrine.objects.get(id); if (!o) return;
+    const q = warpH([o.setting.x, o.setting.y]), p = person();
+    p.position.set(q[0] + ox, warpY(o.setting.elevation, o.setting.elevation), -(q[1] + oy));
+    scaleAids.add(p);
+  });
+  scene.add(scaleAids);
+}
+function setScale(on) {
+  scaleOn = on; scaleAids.visible = on; $('#scaleBtn').classList.toggle('on', on);
+  if (on) toast('格線每格 10 公尺，黑色人形高 1.7 公尺', 3000);
+  dirty = true;
+}
 
 /* ---------- 地面圖層 ---------- */
 let groundId = 'photo';
@@ -227,7 +296,7 @@ function buildHorseLine() {
 /* ---------- 標籤：探索模式顯示所有地點；導覽模式顯示該站重點 ---------- */
 const pinBox = $('#pins');
 let pins = [];
-function worldOf(p) { return new THREE.Vector3(p.pos[0], groundH + 3, -p.pos[1]); }
+function worldOf(p) { return new THREE.Vector3(p.pos[0], groundH + 4, -p.pos[1]); }
 function showPlacePins() {
   pinBox.innerHTML = ''; pins = [];
   places.forEach(p => {
@@ -240,17 +309,17 @@ function showPlacePins() {
   const cam = document.createElement('div');
   cam.className = 'pin cam'; cam.innerHTML = '<span>📷 老照片</span>';
   cam.onclick = () => startTour(STOPS.findIndex(s => s.photo));
-  pinBox.append(cam); pins.push({ el: cam, pos: new THREE.Vector3(...HIST_PHOTO.eye).add(new THREE.Vector3(0, 1.2, 0)) });
+  pinBox.append(cam); pins.push({ el: cam, pos: new THREE.Vector3(...HIST_PHOTO.eye).add(new THREE.Vector3(0, 1.8, 0)) });
   addMePin();
 }
 function showStopPins(s) {
   pinBox.innerHTML = ''; pins = [];
   (s.pins || []).forEach(([id, label]) => {
     let pos;
-    if (id === '@photo') pos = new THREE.Vector3(...HIST_PHOTO.eye).add(new THREE.Vector3(0, 1.2, 0));
+    if (id === '@photo') pos = new THREE.Vector3(...HIST_PHOTO.eye).add(new THREE.Vector3(0, 1.8, 0));
     else {
       const o = shrine?.objects.get(id); if (!o) return;
-      const b = new THREE.Box3().setFromObject(o.root);
+      const b = new THREE.Box3().setFromObject(id === 'L' && horseScan ? horseScan : (o.merged || o.root));
       pos = new THREE.Vector3((b.min.x + b.max.x) / 2, b.max.y + 0.3, (b.min.z + b.max.z) / 2);
     }
     const el = document.createElement('div');
@@ -279,6 +348,7 @@ function openCard(p) {
   $('#cardBody').innerHTML = `
     <span class="tag" style="background:${KIND_COLOR[p.kind]}">${KIND_TEXT[p.kind]}</span>
     <h2>${p.title}</h2>
+    ${dimsOf(p)}
     <div class="tl">
       <div><b>1939 當年</b>${p.past}</div>
       <div><b>之後</b>${p.change}</div>
@@ -290,25 +360,35 @@ function openCard(p) {
     </div>
     <div class="imgs">${imgs}</div>
     ${srcList(p.src)}`;
-  $('#flyBtn').onclick = () => { closeCard(); const w = worldOf(p); w.y = groundH + 2; flyTo(w.clone().add(new THREE.Vector3(14, 16, 18)), w, baseFov); };
+  $('#flyBtn').onclick = () => { closeCard(); const w = worldOf(p); w.y = groundH + 2; flyTo(w.clone().add(new THREE.Vector3(20, 22, 26)), w, baseFov); };
   if (p.stop) $('#stopBtn').onclick = () => { closeCard(); startTour(p.stop - 1); };
   $('#cardBody').querySelectorAll('.imgs img').forEach(im => im.onclick = () => { $('#lightImg').src = im.src; $('#lightbox').classList.add('show'); });
   $('#card').scrollTop = 0;
   $('#card').classList.add('open');
 }
+// 構件尺寸（公尺）：依老照片、銅馬掃描與參拜道實測推估
+const PLACE_OBJ = { torii1: 'B1', torii2: 'B2', lantern: 'D6', office: 'H', gate: 'N', 'horse-old': 'L', 'horse-now': 'L', haiden: 'P', honden: 'Q' };
+function dimsOf(p) {
+  const id = PLACE_OBJ[p.id], o = id && shrine?.objects.get(id); if (!o) return '';
+  const obj = id === 'L' && horseScan ? horseScan : o.merged; if (!obj) return '';
+  const s = new THREE.Box3().setFromObject(obj).getSize(new THREE.Vector3());
+  const f = v => v < 10 ? v.toFixed(1) : v.toFixed(0);
+  const src = id === 'L' ? '3D 掃描＋現場實測' : '依老照片、銅馬與參拜道實測推估';
+  return `<div class="dims">約 寬 ${f(s.x)} × 深 ${f(s.z)} × 高 ${f(s.y)} 公尺<small>${src}</small></div>`;
+}
 // 出處清單（對應 history.json 的 sources）
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function srcList(ids) {
-  if (!ids || !history) return '';
-  const items = ids.map(id => history.sources.find(s => s.id === id)).filter(Boolean)
+  if (!ids || !histData) return '';
+  const items = ids.map(id => histData.sources.find(s => s.id === id)).filter(Boolean)
     .map(s => `<li>${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)}</a>` : esc(s.title)}</li>`).join('');
   return items ? `<div class="srcs"><b>出處</b><ul>${items}</ul></div>` : '';
 }
 function openHistory() {
-  if (!history) return;
-  const tl = history.timeline.map(t => `<div class="ev"><time>${esc(t.date)}</time><p>${esc(t.text)}</p>${srcTags(t.src)}</div>`).join('');
-  const ppl = history.people.map(p => `<div class="ev"><time>${esc(p.name)}</time><p><b>${esc(p.role)}</b>　${esc(p.text)}</p>${srcTags(p.src)}</div>`).join('');
-  const all = history.sources.map((s, i) => `<li id="src-${s.id}">${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)}</a>` : esc(s.title)}</li>`).join('');
+  if (!histData) return;
+  const tl = histData.timeline.map(t => `<div class="ev"><time>${esc(t.date)}</time><p>${esc(t.text)}</p>${srcTags(t.src)}</div>`).join('');
+  const ppl = histData.people.map(p => `<div class="ev"><time>${esc(p.name)}</time><p><b>${esc(p.role)}</b>　${esc(p.text)}</p>${srcTags(p.src)}</div>`).join('');
+  const all = histData.sources.map((s, i) => `<li id="src-${s.id}">${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)}</a>` : esc(s.title)}</li>`).join('');
   $('#cardBody').innerHTML = `<span class="tag" style="background:#8a6b45">史料</span><h2>中壢神社年表</h2>
     <div class="timeline">${tl}</div><h3>相關人物</h3><div class="timeline">${ppl}</div>
     <h3>參考資料</h3><ol class="srcAll">${all}</ol>
@@ -317,8 +397,8 @@ function openHistory() {
   $('#card').classList.add('open');
 }
 function srcTags(ids) {
-  if (!ids || !history) return '';
-  return `<div class="stag">${ids.map(id => { const k = history.sources.findIndex(s => s.id === id); return k < 0 ? '' : `<span>[${k + 1}]</span>`; }).join('')}</div>`;
+  if (!ids || !histData) return '';
+  return `<div class="stag">${ids.map(id => { const k = histData.sources.findIndex(s => s.id === id); return k < 0 ? '' : `<span>[${k + 1}]</span>`; }).join('')}</div>`;
 }
 function closeCard() { $('#card').classList.remove('open'); }
 $('#cardX').onclick = closeCard;
@@ -326,14 +406,15 @@ $('#lightbox').onclick = () => $('#lightbox').classList.remove('show');
 renderer.domElement.addEventListener('pointerdown', closeCard);
 
 /* ---------- 視角 ---------- */
-const HOME = { eye: [-150, 95, 40], target: [-10, 0, -8] };
+const HOME = { eye: [-210, 150, 150], target: [-40, 0, 30] };   // 公尺
 function topView() {
   // 從正上方往下看，讓北方朝上（相機稍微偏南，OrbitControls 才轉得動）
-  const t = new THREE.Vector3(-20, groundH, -5), n = ground.north;
-  flyTo(t.clone().add(new THREE.Vector3(-n[0] * 2, 300, n[1] * 2)), t, baseFov);
+  const t = new THREE.Vector3(-40, groundH, 40), n = NORTH_Q;
+  flyTo(t.clone().add(new THREE.Vector3(-n[0] * 3, 460, n[1] * 3)), t, baseFov);
 }
 $('#viewTop').onclick = topView;
 $('#histBtn').onclick = () => { closeCard(); openHistory(); };
+$('#scaleBtn').onclick = () => setScale(!scaleOn);
 $('#view3d').onclick = () => flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov);
 
 /* ---------- 導覽模式 ---------- */
@@ -351,7 +432,7 @@ function endTour() {
   $('#tour').hidden = true; $('#explore').hidden = false;
   showPlacePins();
   flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov);
-  history.replaceState(null, '', location.pathname);
+  window.history.replaceState(null, '', location.pathname);
 }
 $('#startTour').onclick = () => startTour(0);
 $('#endTour').onclick = endTour;
@@ -384,7 +465,7 @@ function go(i) {
       dirty = true; $('#fade').value = 0; showPhoto(true); applyFade(); }
   });
   showStopPins(s);
-  history.replaceState(null, '', '#stop-' + (stopIndex + 1));
+  window.history.replaceState(null, '', '#stop-' + (stopIndex + 1));
 }
 $('#prev').onclick = () => go(stopIndex - 1);
 $('#next').onclick = () => stopIndex === STOPS.length - 1 ? endTour() : go(stopIndex + 1);
@@ -404,7 +485,7 @@ host.addEventListener('pointermove', e => {
 
 /* ---------- 我在哪（GPS，需要 https）---------- */
 let me = null, watching = null, lastNear = null;
-const meDot = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.3, 24), new THREE.MeshBasicMaterial({ color: 0x1a73e8 }));
+const meDot = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 0.3, 24), new THREE.MeshBasicMaterial({ color: 0x1a73e8 }));
 meDot.visible = false; scene.add(meDot);
 function addMePin() {
   if (!me) return;
@@ -418,7 +499,7 @@ $('#locBtn').onclick = () => {
   if (watching !== null) return;
   watching = navigator.geolocation.watchPosition(pos => {
     const first = !me;
-    me = ground.llToPlan(pos.coords.latitude, pos.coords.longitude);
+    me = llToQ(pos.coords.latitude, pos.coords.longitude);
     meDot.position.set(me[0], groundH + 0.2, -me[1]); meDot.visible = true; dirty = true;
     if (first) { $('#tour').hidden ? showPlacePins() : showStopPins(STOPS[stopIndex]); flyMe(); }
     nearest();
@@ -426,12 +507,12 @@ $('#locBtn').onclick = () => {
 };
 function flyMe() {
   const w = new THREE.Vector3(me[0], groundH, -me[1]);
-  if (Math.hypot(me[0] + 20, me[1]) > 250) toast('你目前不在中壢高中附近');
-  flyTo(w.clone().add(new THREE.Vector3(0, 60, 40)), w, baseFov);
+  if (Math.hypot(me[0], me[1]) > 400) toast('你目前不在中壢高中附近');
+  flyTo(w.clone().add(new THREE.Vector3(0, 90, 60)), w, baseFov);
 }
 function nearest() {
   let best = null, bd = 1e9;
-  places.forEach(p => { const d = Math.hypot(p.pos[0] - me[0], p.pos[1] - me[1]) * 2.24; if (d < bd) { bd = d; best = p; } });   // 模型單位約 2.24 公尺
+  places.forEach(p => { const d = Math.hypot(p.pos[0] - me[0], p.pos[1] - me[1]); if (d < bd) { bd = d; best = p; } });   // 公尺
   if (best && bd < 25 && best.id !== lastNear) { lastNear = best.id; toast(`你正站在：${best.title}`); }
 }
 
@@ -443,15 +524,15 @@ function flyTo(eye, target, fov, done) {
 /* ---------- 載入 ---------- */
 try {
   const [config, md, hist] = await Promise.all([fetch('./buildings.json').then(r => r.json()), fetch('./map-data.json').then(r => r.json()), fetch('./history.json').then(r => r.json()).catch(() => null)]);
-  history = hist;
+  histData = hist;
   shrine = await loadShrine(config);
   scene.add(shrine.integrated);
   prepareFade();
-  const path = shrine.objects.get('C');
-  groundH = path ? new THREE.Box3().setFromObject(path.root).min.y - 0.03 : 0;
-  if (!isFinite(groundH)) groundH = 0;
-  ground = createGround(scene, md.control, { bounds: { x0: -200, x1: 150, y0: -150, y1: 140 }, height: groundH });
-  places = md.places.map(p => ({ ...p, pos: p.plan ? p.plan : ground.llToPlan(p.lat, p.lng) }));
+  groundH = -0.05;      // 公尺：今日地面（外參道高度）
+  ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH, qToLL, llToQ, north: NORTH_Q });
+  places = md.places.map(p => ({ ...p, pos: p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng) }));
+  loadHorseScan();
+  buildScaleAids();
   buildHorseLine();
   buildChips();
   setGround('photo');
