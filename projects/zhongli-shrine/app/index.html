@@ -121,6 +121,12 @@
   #lightbox span { position:fixed; top:calc(env(safe-area-inset-top) + 10px); right:12px; color:#fff; font-size:15px; background:rgba(255,255,255,.15); padding:6px 12px; border-radius:10px; }
   #toast { position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); z-index:30; background:rgba(29,27,23,.9); color:#fff;
     padding:10px 16px; border-radius:12px; font-size:14px; display:none; max-width:80vw; text-align:center; }
+  /* 桌機：面板浮在左下，3D 佔滿整個畫面 */
+  @media (min-width: 900px) {
+    .sheet, #card { left:16px; right:auto; bottom:16px; width:440px; border-radius:16px; box-shadow:0 6px 24px rgba(0,0,0,.18); }
+    #card { max-height:calc(100vh - 100px); transform:translateY(calc(100% + 30px)); }
+    #card.open { transform:none; }
+  }
   #credit { position:fixed; right:6px; z-index:4; font-size:10px; color:#6b6454; background:rgba(246,242,232,.75); padding:1px 6px; border-radius:6px; pointer-events:none; }
   #loading { position:fixed; inset:0; z-index:40; background:var(--ink); color:var(--paper); display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:14px; transition:opacity .5s; }
@@ -146,6 +152,7 @@
 <div class="sheet" id="explore">
   <div class="eraRow"><b>古</b><input id="era" type="range" min="0" max="100" value="0" aria-label="古今：神社模型與舊地圖的透明度"><b>今</b></div>
   <div class="chips" id="groundChips"></div>
+  <div class="chips" id="viewChips" aria-label="移到建築旁"></div>
   <div class="row">
     <button id="viewTop">俯視</button>
     <button id="view3d">立體</button>
