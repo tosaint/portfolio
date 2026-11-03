@@ -224,26 +224,33 @@ function gegyo(B, x, cu, ytop) {
 // 上有白緣的切妻小屋蓋，背後襯一圈扇形的花瓣形透雕飾框。s 為比例；textFront：字面朝前（否則紋面朝前）
 function chochin(B, x, u, y0, s, textFront) {
   const H = 1.15 * s, R = 0.42 * s;
-  const body = new THREE.CylinderGeometry(R, R, H, 20, 1, true);
-  body.rotateY(textFront ? -Math.PI / 2 : -Math.PI); body.translate(x, y0 + H / 2, -u); B.add('chochin', body);
-  B.cyl('dark', x, u, R * 0.78, y0 - 0.08 * s, y0 + 0.02, 16); B.cyl('dark', x, u, R * 0.78, y0 + H - 0.02, y0 + H + 0.1 * s, 16);
-  const yr = y0 + H + 0.12 * s;                                   // 小屋蓋
-  B.box('dark', x, u, 0.12 * s, 0.12 * s, yr - 0.05, yr + 0.05);
-  const w = 0.75 * s, d = 0.5 * s, h = 0.38 * s;
-  B.quad('roof', [x - w, u - d, yr], [x + w, u - d, yr], [x + w, u, yr + h], [x - w, u, yr + h]);
-  B.quad('roof', [x + w, u + d, yr], [x - w, u + d, yr], [x - w, u, yr + h], [x + w, u, yr + h]);
-  [-w, w].forEach(dx => { B.quad('white', [x + dx, u - d - 0.04, yr - 0.03], [x + dx, u, yr + h + 0.02], [x + dx, u, yr + h + 0.1], [x + dx, u - d - 0.04, yr + 0.05]);
-    B.quad('white', [x + dx, u + d + 0.04, yr - 0.03], [x + dx, u, yr + h + 0.02], [x + dx, u, yr + h + 0.1], [x + dx, u + d + 0.04, yr + 0.05]); });
-  B.quad('white', [x - w, u - d - 0.04, yr - 0.03], [x + w, u - d - 0.04, yr - 0.03], [x + w, u - d - 0.04, yr + 0.05], [x - w, u - d - 0.04, yr + 0.05]);
-  B.box('white', x, u - 0.02, 0.1 * s, 0.1 * s, yr + h, yr + h + 0.14 * s);   // 棟の飾り
-  // 背後的花瓣形飾框：兩層白色圓環沿半圓排列（照片中的扇形透雕）
-  const cy = yr + 0.1 * s;
-  [[0.82, 11, 0.21], [0.52, 7, 0.13]].forEach(([rr, n, rs]) => {
-    for (let i = 0; i < n; i++) {
-      const a = Math.PI * (-0.12 + 1.24 * i / (n - 1)) * (rr > 0.6 ? 1 : 0.8) + (rr > 0.6 ? 0 : 0.1 * Math.PI), g = new THREE.TorusGeometry(rs * s, 0.025 * s, 4, 14);
-      g.translate(x + Math.cos(a) * rr * s, cy + Math.sin(a) * rr * s * 0.85, -(u + 0.12)); B.add('white', g);
-    }
-  });
+  // 燈身：上下收圓的長圓形（車削曲面），貼竹骨、紋章與文字
+  const prof = [[0.34, 0], [0.62, 0.02], [0.84, 0.07], [0.96, 0.16], [1, 0.3], [1, 0.7], [0.96, 0.84], [0.84, 0.93], [0.62, 0.98], [0.34, 1]]
+    .map(([r, h]) => new THREE.Vector2(r * R, h * H));
+  const body = new THREE.LatheGeometry(prof, 28);
+  { const P = body.attributes.position, UV = body.attributes.uv; for (let i = 0; i < UV.count; i++) UV.setY(i, P.getY(i) / H); }   // 依高度重設貼圖座標，文字不變形
+  body.rotateY(textFront ? -Math.PI / 2 : Math.PI); body.translate(x, y0, -u); B.add('chochin', body);
+  B.cyl('dark', x, u, R * 0.4, y0 - 0.07 * s, y0 + 0.01, 14); B.cyl('dark', x, u, R * 0.4, y0 + H - 0.01, y0 + H + 0.06 * s, 14);   // 上下口輪
+  // 吊架：燈頂與屋蓋之間的深色木塊
+  const yr = y0 + H + 0.06 * s;
+  B.box('dark', x, u, 0.55 * s, 0.3 * s, yr, yr + 0.1 * s);
+  // 屋蓋：妻入（山牆朝前）、屋面反り（上陡下緩、簷端微翹），白色破風板
+  const w = 0.82 * s, D = 0.5 * s, h = 0.56 * s, yb = yr + 0.1 * s, N = 10, Y = t => yb + h * (1 - Math.pow(t, 0.5)) + 0.05 * s * Math.pow(t, 8);
+  for (const sg of [-1, 1]) for (let i = 0; i < N; i++) {
+    const t0 = i / N, t1 = (i + 1) / N, x0 = x + sg * w * t0, x1 = x + sg * w * t1, y0r = Y(t0), y1r = Y(t1);
+    const q = [[x0, u - D, y0r], [x1, u - D, y1r], [x1, u + D, y1r], [x0, u + D, y0r]];
+    sg > 0 ? B.quad('roof', q[0], q[1], q[2], q[3]) : B.quad('roof', q[1], q[0], q[3], q[2]);
+    for (const uf of [u - D - 0.02, u + D + 0.02])                  // 破風板（前後）
+      B.quad('white', [x0, uf, y0r - 0.09 * s], [x1, uf, y1r - 0.09 * s], [x1, uf, y1r + 0.03 * s], [x0, uf, y0r + 0.03 * s]);
+    B.quad('white', [x0, u - D + 0.03, yb], [x1, u - D + 0.03, yb], [x1, u - D + 0.03, y1r - 0.09 * s], [x0, u - D + 0.03, y0r - 0.09 * s]);   // 妻板
+  }
+  B.box('white', x, u - D, 0.2 * s, 0.1 * s, yb + h - 0.02, yb + h + 0.16 * s);   // 棟の飾り（桐）
+  // 背後的花瓣形飾框：以屋頂中心為圓心、半圓排列的大花瓣（白框透空）
+  const cy = yb + h * 0.35;
+  for (let i = 0; i < 9; i++) {
+    const a = Math.PI * (-0.08 + 1.16 * i / 8), g = new THREE.TorusGeometry(0.2 * s, 0.026 * s, 4, 16);
+    g.translate(x + Math.cos(a) * 0.72 * s, cy + Math.sin(a) * 0.62 * s, -(u + D + 0.06)); B.add('white', g);
+  }
 }
 // 寄棟（四坡），屋脊沿 x
 function yosemune(B, cx, cu, W, D, he, hr, mat = 'roof') {
@@ -475,7 +482,7 @@ export function buildShrine() {
     const x0 = -3.2 + 6.4 * i / 10, m = x0 + 0.32, sag = 0.4 * Math.sin(Math.PI * ((m + 3.2) % 3.2) / 3.2);
     B.box('dark', m, -1.25, 0.66, 0.03, 2.55 - sag, 2.85);
   }
-  chochin(B, -2.25, -1.55, 0.95, 1, false); chochin(B, 2.25, -1.55, 0.95, 1, true);
+  chochin(B, -2.25, -1.55, 0.8, 1, false); chochin(B, 2.25, -1.55, 0.8, 1, true);
   B.end();
   // 銅馬石座：兩段方形花崗岩（合影照中台座頂約在人的腰部，約 0.9 公尺），長邊順著玉垣
   B.begin('Lp').at(HORSE.q[0], HORSE.q[1], 0, LV.T1);
@@ -807,19 +814,19 @@ function chochinTexture() {             // 提燈：竹骨橫紋、一面紋章�
   x.fillStyle = '#f3efe4'; x.fillRect(0, 0, W, H);
   x.strokeStyle = 'rgba(120,110,95,.35)'; x.lineWidth = 1;
   for (let y = 8; y < H; y += 7) { x.beginPath(); x.moveTo(0, y); x.lineTo(W, y); x.stroke(); }
-  // 紋章（圓周 1/2 處）
-  const cx = W * 0.5, cy = H / 2, ink = '#2a2420';
-  x.strokeStyle = ink; x.lineWidth = 5;
-  for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; x.beginPath(); x.arc(cx + Math.cos(a) * 62, cy + Math.sin(a) * 62 * 1.0, 24, 0, Math.PI * 2); x.stroke(); }
-  x.fillStyle = '#f3efe4'; x.beginPath(); x.arc(cx, cy, 56, 0, Math.PI * 2); x.fill();
-  x.lineWidth = 7; x.beginPath();
-  for (let i = 0; i <= 5; i++) { const a = -Math.PI / 2 + i / 5 * Math.PI * 2; const px = cx + Math.cos(a) * 46, py = cy + Math.sin(a) * 46; i ? x.lineTo(px, py) : x.moveTo(px, py); }
-  x.stroke(); x.lineWidth = 4;
-  for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i + 0.5) / 5 * Math.PI * 2; x.beginPath(); x.arc(cx + Math.cos(a) * 24, cy + Math.sin(a) * 24, 14, 0, Math.PI * 2); x.stroke(); }
-  x.beginPath(); x.arc(cx, cy, 8, 0, Math.PI * 2); x.stroke();
-  // 文字（圓周 1/4 處，直書；與紋章相隔 90°）
-  x.fillStyle = ink; x.font = 'bold 50px "Noto Serif TC","PMingLiU",serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-  '中壢神社'.split('').forEach((ch, i) => x.fillText(ch, W * 0.25, 34 + i * 58));
+  // 紋章（圓周 1/2 處）：外圈十瓣、內五角與五瓣（照片中的紋），約佔燈身寬的一半
+  const cx = W * 0.5, cy = H / 2, ink = '#2a2420', k = 0.62;
+  x.strokeStyle = ink; x.lineWidth = 4;
+  for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; x.beginPath(); x.arc(cx + Math.cos(a) * 62 * k, cy + Math.sin(a) * 70 * k, 24 * k, 0, Math.PI * 2); x.stroke(); }
+  x.fillStyle = '#f3efe4'; x.beginPath(); x.ellipse(cx, cy, 56 * k, 63 * k, 0, 0, Math.PI * 2); x.fill();
+  x.lineWidth = 5; x.beginPath();
+  for (let i = 0; i <= 5; i++) { const a = -Math.PI / 2 + i / 5 * Math.PI * 2; const px = cx + Math.cos(a) * 46 * k, py = cy + Math.sin(a) * 52 * k; i ? x.lineTo(px, py) : x.moveTo(px, py); }
+  x.stroke(); x.lineWidth = 3;
+  for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i + 0.5) / 5 * Math.PI * 2; x.beginPath(); x.arc(cx + Math.cos(a) * 24 * k, cy + Math.sin(a) * 27 * k, 14 * k, 0, Math.PI * 2); x.stroke(); }
+  x.beginPath(); x.arc(cx, cy, 6, 0, Math.PI * 2); x.stroke();
+  // 文字（圓周 1/4 處，直書；與紋章相隔 90°）：粗筆
+  x.fillStyle = ink; x.font = '900 46px "Noto Serif TC","PMingLiU",serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  '中壢神社'.split('').forEach((ch, i) => x.fillText(ch, W * 0.25, 46 + i * 54));
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
 function plaqueTexture() {              // 扁額「中壢神社」（白底黑字、深色框）
