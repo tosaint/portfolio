@@ -25,6 +25,7 @@ export const LV = {
 export const GATE_Y = -15.0;          // 神門（內苑前緣）
 // 銅馬（昭和 14 年合影照）：神門左側玉垣前，低矮方形石座，馬頭朝神門
 export const HORSE = { q: [-7.6, GATE_Y - 2.6], ped: 0.9 };
+export const KEJIBA = [-6.8, -66.6];   // 揭示場：參道邊外約 5 公尺，位在西側石燈籠與下乘札之間
 export const KOMA_POS = [[-3.2, GATE_Y - 4.3], [3.2, GATE_Y - 4.3]];   // 狛犬（神門照片反求）
 const IN = GATE_Y + 28.2;             // 內苑各構件相對於舊配置的位移（神門照片反求時神門在 −28.2）
 export const TORII2_Y = -64.0;        // 第二鳥居
@@ -40,6 +41,7 @@ export const DIMS = {
   H: '位置依 1947 航照；外觀依校史館照片（唐破風玄關、黑瓦寄棟），以合影人身高推估',
   G: '依石燈籠照片背景',
   L: '3D 掃描＋現場實測',
+  E: '依 Tinkercad 模型與石燈籠照片：石基座 2.8×1.5、木柵約 1 公尺、告示板 2×1.1、總高約 3 公尺',
 };
 
 // 色調（2026-11 重新設計）：老照片是黑白的，配色依日本神社常見材質推定——
@@ -214,11 +216,11 @@ function kirizuma(B, cx, cu, W, Df, Db, he, hr, alongX = true, lift = 0.2, heB =
   }
 }
 // 懸魚：切妻（懸山）山牆頂端、破風板交會處垂下的裝飾板（神門照片可見）。x 為山牆面位置
-function gegyo(B, x, cu, ytop) {
-  B.box('wood', x, cu, 0.07, 0.3, ytop - 0.42, ytop);
-  B.box('wood', x, cu, 0.07, 0.56, ytop - 0.6, ytop - 0.38);
-  B.box('wood', x, cu, 0.07, 0.3, ytop - 0.72, ytop - 0.6);
-  B.box('dark', x, cu, 0.08, 0.1, ytop - 0.32, ytop - 0.2);   // 六葉
+function gegyo(B, x, cu, ytop, k = 1) {
+  B.box('wood', x, cu, 0.07, 0.3 * k, ytop - 0.42 * k, ytop);
+  B.box('wood', x, cu, 0.07, 0.56 * k, ytop - 0.6 * k, ytop - 0.38 * k);
+  B.box('wood', x, cu, 0.07, 0.3 * k, ytop - 0.72 * k, ytop - 0.6 * k);
+  B.box('dark', x, cu, 0.08, 0.1 * k, ytop - 0.32 * k, ytop - 0.2 * k);   // 六葉
 }
 // 大提燈（神門、拜殿前，鎮座祭照片）：白紙燈身＋上下黑色口輪、一面桐紋一面「中壢神社」、
 // 上有白緣的切妻小屋蓋，背後襯一圈扇形的花瓣形透雕飾框。s 為比例；textFront：字面朝前（否則紋面朝前）
@@ -251,6 +253,39 @@ function chochin(B, x, u, y0, s, textFront) {
     const a = Math.PI * (-0.08 + 1.16 * i / 8), g = new THREE.TorusGeometry(0.2 * s, 0.026 * s, 3, 12);
     g.translate(x + Math.cos(a) * 0.72 * s, cy + Math.sin(a) * 0.62 * s, -(u + D + 0.06)); B.add('white', g);
   }
+}
+// 揭示場（制札）：Tinkercad 模型＋石燈籠照片。石基座 2.8×1.5、木柵高約 1 公尺、告示板 2×1.1、總高約 3 公尺。
+// 局部座標：x 沿長邊、-u 為告示板正面。屋頂為反曲兩坡（照り屋根），山牆有懸魚，屋脊兩端起翹。
+function kejiba(B) {
+  B.box('stone', 0, 0, 2.8, 1.5, 0, 0.22);
+  const fx = 1.32, fu = 0.66, top = 0.22 + 0.95;
+  const picket = (x, u, i) => B.box('wood', x, u, 0.05, 0.05, 0.22, top - (i % 3 === 1 ? 0.1 : 0));
+  let i = 0;
+  for (let x = -fx; x <= fx + 1e-6; x += 0.12) { picket(x, -fu, i); picket(x, fu, i++); }
+  for (let u = -fu + 0.12; u < fu - 0.05; u += 0.12) { picket(-fx, u, i); picket(fx, u, i++); }
+  [0.35, top - 0.2].forEach(y => {
+    B.box('wood', 0, -fu, 2 * fx, 0.05, y, y + 0.05); B.box('wood', 0, fu, 2 * fx, 0.05, y, y + 0.05);
+    B.box('wood', -fx, 0, 0.05, 2 * fu, y, y + 0.05); B.box('wood', fx, 0, 0.05, 2 * fu, y, y + 0.05);
+  });
+  [-1.08, 1.08].forEach(x => B.box('wood', x, 0, 0.14, 0.14, 0.22, 2.42));
+  B.box('wood', 0, 0, 2.3, 0.1, 2.32, 2.44);
+  B.box('wood', 0, 0, 2.12, 0.08, 0.98, 2.2);
+  B.box('white', 0, -0.045, 1.98, 0.02, 1.04, 2.14);
+  for (let k = 0; k < 7; k++) B.box('grey', -0.72 + k * 0.24, -0.06, 0.025, 0.005, 1.25, 1.95);   // 墨書（示意）
+  const W = 1.62, D = 1.05, he = 2.42, hr = 2.92, N = 6, Y = t => hr - (hr - he) * Math.pow(t, 0.62);
+  for (const sg of [-1, 1]) for (let k = 0; k < N; k++) {
+    const t0 = k / N, t1 = (k + 1) / N, u0 = sg * D * t0, u1 = sg * D * t1, y0 = Y(t0), y1 = Y(t1);
+    const q = [[-W, u0, y0], [W, u0, y0], [W, u1, y1], [-W, u1, y1]];
+    sg > 0 ? B.quad('roof', q[0], q[1], q[2], q[3]) : B.quad('roof', q[1], q[0], q[3], q[2]);
+    B.quad('dark', [-W, u1, y1], [W, u1, y1], [W, u1, y1 - 0.08], [-W, u1, y1 - 0.08]);
+    for (const x of [-W - 0.02, W + 0.02]) B.quad('wood', [x, u0, y0 + 0.04], [x, u1, y1 + 0.04], [x, u1, y1 - 0.12], [x, u0, y0 - 0.12]);
+  }
+  B.box('roof', 0, 0, 2 * W + 0.1, 0.22, hr - 0.02, hr + 0.14);
+  [-1, 1].forEach(sx => {
+    B.box('dark', sx * (W + 0.02), 0, 0.14, 0.26, hr - 0.05, hr + 0.24);
+    const g = new THREE.BoxGeometry(0.1, 0.32, 0.1); g.rotateZ(-sx * 0.6); g.translate(sx * (W + 0.1), hr + 0.26, 0); B.add('roof', g);
+    gegyo(B, sx * (W + 0.03), 0, hr - 0.05, 0.42);
+  });
 }
 // 寄棟（四坡），屋脊沿 x
 function yosemune(B, cx, cu, W, D, he, hr, mat = 'roof') {
@@ -303,14 +338,15 @@ function lantern(B, s = 1) {
   sq(B, 0, 0.32 * s, 2.3 * s, 2.2 * s);               // 基壇三層
   sq(B, 0.32 * s, 0.58 * s, 1.75 * s, 1.68 * s);
   sq(B, 0.58 * s, 0.88 * s, 1.4 * s, 1.34 * s);
-  sq(B, 0.88 * s, 1.15 * s, 1.25 * s, 0.82 * s);       // 腰竿：下寬、中細、上略寬（鼓形）
-  sq(B, 1.15 * s, 1.62 * s, 0.82 * s, 0.66 * s);
-  sq(B, 1.62 * s, 1.95 * s, 0.66 * s, 0.78 * s);
+  // 竿：方形斷面、四面內凹的沙漏形（石燈籠特寫照：下寬、腰細、上略寬）
+  const wq = t => t < 0.45 ? 0.56 + 0.8 * Math.pow(1 - t / 0.45, 2) : 0.56 + 0.36 * Math.pow((t - 0.45) / 0.55, 2);
+  for (let i = 0; i < 8; i++) { const t0 = i / 8, t1 = (i + 1) / 8; sq(B, (0.88 + 1.07 * t0) * s, (0.88 + 1.07 * t1) * s, wq(t0) * s, wq(t1) * s); }
   sq(B, 1.95 * s, 2.06 * s, 0.95 * s, 1.1 * s);        // 斗栱
   sq(B, 2.06 * s, 2.3 * s, 1.28 * s, 1.24 * s);        // 中台
   sq(B, 2.3 * s, 2.78 * s, 0.76 * s, 0.76 * s);        // 火袋
-  B.box('dark', 0, 0, 0.5 * s, 0.78 * s, 2.4 * s, 2.68 * s);   // 火口／桐紋（示意）
-  B.box('dark', 0, 0, 0.78 * s, 0.5 * s, 2.4 * s, 2.68 * s);
+  for (let k = 0; k < 4; k++) {                          // 火袋四面：菊桔梗社紋浮雕
+    const g = new THREE.PlaneGeometry(0.42 * s, 0.42 * s); g.translate(0, 2.54 * s, 0.385 * s); g.rotateY(k * Math.PI / 2); B.add('kamonStone', g);
+  }
   sq(B, 2.78 * s, 2.86 * s, 1.95 * s, 1.95 * s);       // 笠：薄簷＋反翹
   sq(B, 2.86 * s, 3.12 * s, 1.85 * s, 0.55 * s);
   [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([a, c]) => B.box('stone', a * 0.92 * s, c * 0.92 * s, 0.18 * s, 0.18 * s, 2.8 * s, 2.98 * s));   // 蕨手般的翹角
@@ -425,10 +461,9 @@ export function buildShrine() {
   [['D5', -5.2], ['D6', 5.2]].forEach(([id, x]) => { B.begin(id).at(x, TORII2_Y - 5.5, 0, 0); lantern(B); B.end(); });
   { const q = [9.5, TORII2_Y - 9.5]; B.begin('G').at(q[0], q[1], 0, 0);   // 社號標：石燈籠照片中在東側燈籠前方
     B.box('stone', 0, 0, 1.15, 1.15, 0, 0.3); B.box('stone', 0, 0, 0.85, 0.85, 0.3, 0.6); B.box('stone', 0, 0, 0.46, 0.46, 0.6, 3.8); B.end(); }
-  { const q = P([4.2, -20.9]); B.begin('E').at(q[0], q[1] + OUT, 0, 0);
-    B.box('wood', -1.0, 0, 0.14, 0.14, 0, 2.1); B.box('wood', 1.0, 0, 0.14, 0.14, 0, 2.1);
-    B.box('dark', 0, 0, 2.2, 0.06, 0.9, 1.9); kirizuma(B, 0, 0, 2.7, 0.45, 0.45, 2.05, 2.45); B.end(); }
-  { const q = P([6.43, -20.79]); B.begin('F').at(q[0], q[1] + OUT, 0, 0);
+  // 參道西側由外往內：石燈籠 → 揭示場 → 下乘札 → 第二鳥居（石燈籠照片、自參道正面看第二鳥居照片）
+  B.begin('E').at(KEJIBA[0], KEJIBA[1], -Math.PI / 2, 0); kejiba(B); B.end();   // 告示板朝參道（東）
+  { const q = [-3.5, TORII2_Y - 1.0]; B.begin('F').at(q[0], q[1], -Math.PI / 2, 0);
     B.box('wood', 0, 0, 0.14, 0.14, 0, 1.8); B.box('white', 0, -0.1, 0.4, 0.04, 0.9, 1.75); B.end(); }
   // 手水舍（位置推估：石燈籠照片中在鳥居內側）
   B.begin('W').at(-8.0, TORII2_Y + 5.6, Math.PI / 2, LV.T1);
@@ -713,6 +748,7 @@ export function buildShrine() {
   // 天井：朝下的面只受地面反光，略加自發光以免室內一片漆黑
   mats.chochin = new THREE.MeshLambertMaterial({ map: chochinTexture(), emissive: 0x2a2620, side: THREE.DoubleSide });
   mats.kamon = new THREE.MeshLambertMaterial({ map: kamonTexture(), side: THREE.DoubleSide });
+  mats.kamonStone = new THREE.MeshLambertMaterial({ map: kamonTexture('#d9d5cb', '#8a8478'), side: THREE.DoubleSide });
   mats.ceil = new THREE.MeshLambertMaterial({ color: COLORS.wood, emissive: 0x3e3022, side: THREE.DoubleSide });
   const group = B.build(mats);
   return { group, boxes: B.boxes, mats: Object.values(mats) };
@@ -842,10 +878,11 @@ function drawKamon(x, r, ink, paper) {
   x.beginPath(); x.arc(0, 0, r * 0.11, 0, Math.PI * 2); x.stroke();                                                          // 花心
   for (let i = 0; i < 5; i++) { x.beginPath(); x.moveTo(...P(tip(i), r * 0.13)); x.lineTo(...P(tip(i), r * 0.2)); x.stroke(); }   // 花蕊
 }
-function kamonTexture() {                  // 神門紋幕用：白底社紋
+function kamonTexture(paper = '#fbf9f3', ink = '#2a2420') {   // 社紋貼圖（紋幕：白底墨線；石燈籠火袋：石色底、淺刻線）
   const c = document.createElement('canvas'); c.width = c.height = 256;
-  const x = c.getContext('2d'); x.fillStyle = '#fbf9f3'; x.fillRect(0, 0, 256, 256);
-  x.translate(128, 128); drawKamon(x, 110, '#2a2420', '#fbf9f3');
+  const x = c.getContext('2d'); x.fillStyle = paper; x.fillRect(0, 0, 256, 256);
+  if (paper !== '#fbf9f3') { x.strokeStyle = ink; x.lineWidth = 6; x.strokeRect(10, 10, 236, 236); }   // 火袋的方形彫り込み
+  x.translate(128, 128); drawKamon(x, 96, ink, paper);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
 let onAsset = () => {};
