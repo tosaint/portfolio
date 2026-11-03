@@ -23,6 +23,8 @@ export const LV = {
 // 暗帶後方的亮方塊是內苑（砂利）；第二鳥居在帶狀區前端 q.y 約 −62～−68。
 // 神門到拜殿的距離（21 公尺）則用神門照片反求的結果。
 export const GATE_Y = -15.0;          // 神門（內苑前緣）
+// 銅馬（昭和 14 年合影照）：神門左側玉垣前，低矮方形石座，馬頭朝神門
+export const HORSE = { q: [-7.6, GATE_Y - 2.6], ped: 0.9 };
 export const KOMA_POS = [[-3.2, GATE_Y - 4.3], [3.2, GATE_Y - 4.3]];   // 狛犬（神門照片反求）
 const IN = GATE_Y + 28.2;             // 內苑各構件相對於舊配置的位移（神門照片反求時神門在 −28.2）
 export const TORII2_Y = -64.0;        // 第二鳥居
@@ -391,6 +393,12 @@ export function buildShrine() {
   B.box('white', 0, -0.15, 3.0, 0.03, 1.7, 2.22);  // 神紋幕（銅馬合影照：神門下掛有桐紋幕）
   B.box('dark', 0, 0, 5.4, 2.4, 2.55, 2.8);    // 斗栱帶
   kirizuma(B, 0, 0, 7.1, 3.0, 3.0, 2.75, 4.3, true, 0.15);
+  B.end();
+  // 銅馬石座：兩段方形花崗岩（合影照中台座頂約在人的腰部，約 0.9 公尺），長邊順著玉垣
+  B.begin('Lp').at(HORSE.q[0], HORSE.q[1], 0, LV.T1);
+  B.box('stone', 0, 0, 3.1, 1.5, 0, 0.22);
+  B.box('stone', 0, 0, 2.7, 1.15, 0.22, HORSE.ped - 0.08);
+  B.box('stone', 0, 0, 2.85, 1.3, HORSE.ped - 0.08, HORSE.ped);
   B.end();
   KOMA_POS.forEach(([x, y], i) => { B.begin('K').at(x, y, 0, LV.T1); komainu(B, i ? 1 : -1); B.end(); });
 
