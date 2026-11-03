@@ -67,8 +67,8 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
 .text ol { margin: 0; padding-left: 1.3em; }
 .text li { margin-bottom: .5em; }
 
-/* Three photographs: one square, two upright, bottoms aligned */
-.gallery { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: clamp(12px, 2vw, 20px); align-items: end; margin: 0 0 clamp(28px, 4vw, 48px); padding-top: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+/* Two photographs, one square and one upright, at the same height */
+.gallery { display: grid; grid-template-columns: 1fr .75fr; gap: clamp(12px, 2vw, 20px); align-items: end; margin: 0 0 clamp(28px, 4vw, 48px); padding-top: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
 .gallery figure { margin: 0; min-width: 0; }
 .gallery img { width: 100%; height: auto; display: block; }
 .gallery figcaption { margin-top: 10px; font: 400 12px/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
@@ -81,8 +81,6 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
 @media (max-width: 760px) {
   .head, .text { grid-template-columns: 1fr; }
   .plan { justify-self: start; order: -1; }
-  .gallery { grid-template-columns: 1fr 1fr; }
-  .gallery figure:first-child { grid-column: 1 / -1; }
 }
 </style>
 </head>
@@ -155,12 +153,10 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
     <div lang="zh-Hant">
       <h2>設計</h2>
       <p>畫面只有兩個部分：佔滿螢幕的 3D 望遠鏡，和一個可以整個收合的操作面板。面板依序顯示現在這一步、要用的工具和兩個觀測視野；面板收合或展開時，望遠鏡的位置不會改變。模型上平常只標出這一步要動的零件。</p>
-      <p>這個版本是與 AI 助理（Claude、ChatGPT）來回修改的結果：第一版把選單浮在模型上，遮住了望遠鏡；第二版改成固定側欄，模型清楚了但面板收不起來；第三版合併成一個可收合的面板，並讓步驟完成後自動前進。</p>
     </div>
     <div lang="en">
       <h2>Design</h2>
       <p class="en">The screen has two parts: the telescope in 3D, filling the screen, and one control panel that folds away completely. The panel shows the current step, the tool it needs and the two views. Opening or closing it never moves the telescope. Only the part used in the current step is labelled on the model.</p>
-      <p class="en">The design went through rounds of review with AI assistants (Claude and ChatGPT). The first version floated menus over the model and hid the telescope; the second used a fixed side panel that kept the model clear but could not be closed; the third merged everything into one panel that folds away and moves on by itself when a step is done.</p>
     </div>
   </section>
 
@@ -170,10 +166,6 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
       <figcaption>桃園市第 63 屆科學展覽會<br>63rd Taoyuan City Science Fair</figcaption>
     </figure>
     <figure>
-      <img src="img/tree-fair.jpg" width="1200" height="1600" alt="A teacher and four students at the 2025 Technology Exploration booth of the Kaohsiung Girls’ High School promotion centre, with posters on artificial intelligence and a laptop on the table" loading="lazy">
-      <figcaption>2025 科技探險趣 · 新興科技推廣中心展位<br>2025 Technology Exploration fair</figcaption>
-    </figure>
-    <figure>
       <img src="img/night.jpg" width="1200" height="1600" alt="At night under a haloed moon, an observer lit by a red torch adjusts a white refractor on an equatorial mount and tripod" loading="lazy">
       <figcaption>夜間觀測：紅光下操作赤道儀<br>Night observing by red light</figcaption>
     </figure>
@@ -181,6 +173,7 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
 
   <dl class="data">
     <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
+    <dt>Teacher</dt><dd>授課教師：黃慧春老師<span>國立中央大學附屬中壢高中 地球科學科 · Earth Science, Zhongli Senior High School</span></dd>
     <dt>Medium</dt><dd>WebGL, HTML, JavaScript</dd>
     <dt>Model</dt><dd>130 mm / 650 mm 桌上型杜布森望遠鏡<span>Tabletop Dobsonian, 20 mm and 4 mm eyepieces, 6×30 finder</span></dd>
     <dt>Devices</dt><dd>iPad Safari、電腦瀏覽器<span>iPad and desktop browsers, no installation</span></dd>
