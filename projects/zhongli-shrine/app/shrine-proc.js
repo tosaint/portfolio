@@ -18,6 +18,15 @@ export const LV = {
 };
 
 // ---- 尺寸依據（顯示在地點卡片上）----
+// ---- 配置（公尺，q 座標）：依 1947 年航照 ----
+// 航照可辨認：參道帶狀亮區沿中軸從第二鳥居延伸到一道暗帶（神門與屋根付玉垣）＝ q.y 約 −15；
+// 暗帶後方的亮方塊是內苑（砂利）；第二鳥居在帶狀區前端 q.y 約 −62～−68。
+// 神門到拜殿的距離（21 公尺）則用神門照片反求的結果。
+export const GATE_Y = -15.0;          // 神門（內苑前緣）
+const IN = GATE_Y + 28.2;             // 內苑各構件相對於舊配置的位移（神門照片反求時神門在 −28.2）
+export const TORII2_Y = -64.0;        // 第二鳥居
+const OUT = TORII2_Y + 56.6;          // 第二鳥居一帶（燈籠、社號標等）相對舊配置的位移
+
 export const DIMS = {
   B1: '形式依簡報照片（鋼筋水泥、洗石子）；尺寸參考第二鳥居放大推估，待查',
   B2: '依鎮座祭鳥居照片：以台階與人身高為比例，柱距約 4 公尺',
@@ -279,13 +288,13 @@ export function buildShrine() {
   /* ---- 地坪 ---- */
   B.at(0, 0);
   // 前庭（第二鳥居後到本殿區）：配置圖中的大平台（含社務所）
-  const T1 = { x0: -18.6, x1: 46.5, y0: -57.0, y1: 22.8 };
+  const T1 = { x0: -18.6, x1: 50, y0: TORII2_Y - 0.4, y1: 36 };
   plat(B, T1, 0, LV.T1);
   // 內苑：屋根付玉垣以內
-  const T2 = { x0: -13.1, x1: 13.1, y0: -28.2, y1: -1.0 };   // 神門照片反求：轉角距中軸 13 公尺
+  const T2 = { x0: -13.1, x1: 13.1, y0: GATE_Y, y1: -1.0 + IN };   // 神門照片反求：轉角距中軸 13 公尺
   plat(B, T2, LV.T1, LV.T2);
   // 本殿區：透塀以內
-  const T3 = { x0: -6.1, x1: 6.1, y0: -3.7, y1: 14.0 };
+  const T3 = { x0: -6.1, x1: 6.1, y0: -3.7 + IN, y1: 14.0 + IN };
   plat(B, T3, LV.T2, LV.T3);
 
   // 外參道（第一鳥居 → 第二鳥居）：依 1947 年航照描出的參拜道走向（見 APPROACH）
@@ -293,15 +302,16 @@ export function buildShrine() {
   const L = curve.getLength(), n = Math.ceil(L / 3);
   const pts = curve.getSpacedPoints(n).map(v => [v.x, v.z]);
   for (let i = 0; i < pts.length - 1; i++) strip(B, pts[i], pts[i + 1], 8, 0.02, 'gravel');
-  B.at(0, 0); B.box('gravel', -2, -66, 30, 17, -0.03, 0.02);              // 第二鳥居前廣場
+  B.at(0, 0); B.box('gravel', -2, TORII2_Y - 8.5, 30, 15, -0.03, 0.02);              // 第二鳥居前廣場
   // 石板參拜道（實測寬 3.01 公尺）
-  strip(B, [AX, -69.5], [AX, -58.3], 3.01, 0.04, 'path');
-  strip(B, [AX, -57.0], [AX, -30.1], 3.01, LV.T1 + 0.03, 'path');
-  strip(B, [AX, -26.7], [AX, -11.7], 3.01, LV.T2 + 0.03, 'path');
+  strip(B, [AX, -71], [AX, TORII2_Y - 1.7], 3.01, 0.04, 'path');
+  strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.5], 3.01, LV.T1 + 0.03, 'path');
+  strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.5], 9, LV.T1 + 0.015, 'gravel');   // 航照中的帶狀亮區
+  strip(B, [AX, GATE_Y + 1.5], [AX, -11.7 + IN], 3.01, LV.T2 + 0.03, 'path');
 
   /* ---- 第二鳥居（木造明神鳥居，高約 6 公尺，柱距 4 公尺）---- */
-  B.begin('B2').at(AX, -56.6, 0, LV.T1); torii(B, 'wood', 4.0, 6.0, 0.21); shimenawa(B, 4.0, 4.05); B.end();
-  B.at(AX, -58.3, 0, 0); steps(B, 0, 0, 4.7, LV.T1, 3, 0.43);
+  B.begin('B2').at(AX, TORII2_Y, 0, LV.T1); torii(B, 'wood', 4.0, 6.0, 0.21); shimenawa(B, 4.0, 4.05); B.end();
+  B.at(AX, TORII2_Y - 1.7, 0, 0); steps(B, 0, 0, 4.7, LV.T1, 3, 0.43);
   // 前庭外緣的低玉垣（鳥居照片中台階兩側）
   fence(B, [T1.x0, T1.y0], [-2.6, T1.y0], LV.T1, 'low');
   fence(B, [2.6, T1.y0], [T1.x1, T1.y0], LV.T1, 'low');
@@ -321,33 +331,36 @@ export function buildShrine() {
   };
   lanternPair(['D3', 'D4'], 6 / L, 5.5);
   { const k = closestT(curve, P([-40.25, -6.3])); lanternPair(['D1', 'D2'], k, 5.5); }
-  for (const [id, p] of Object.entries({ D5: [1.22, -22.52], D6: [15.62, -22.32] })) { const q = P(p); B.begin(id).at(q[0], q[1], 0, 0); lantern(B); B.end(); }
-  { const q = P([13.2, -20.7]); B.begin('G').at(q[0], q[1], 0, 0);
+  for (const [id, p] of Object.entries({ D5: [1.22, -22.52], D6: [15.62, -22.32] })) { const q = P(p); B.begin(id).at(q[0], q[1] + OUT, 0, 0); lantern(B); B.end(); }
+  { const q = P([13.2, -20.7]); B.begin('G').at(q[0], q[1] + OUT, 0, 0);
     B.box('stone', 0, 0, 1.15, 1.15, 0, 0.3); B.box('stone', 0, 0, 0.85, 0.85, 0.3, 0.6); B.box('stone', 0, 0, 0.46, 0.46, 0.6, 3.8); B.end(); }
-  { const q = P([4.2, -20.9]); B.begin('E').at(q[0], q[1], 0, 0);
+  { const q = P([4.2, -20.9]); B.begin('E').at(q[0], q[1] + OUT, 0, 0);
     B.box('wood', -1.0, 0, 0.14, 0.14, 0, 2.1); B.box('wood', 1.0, 0, 0.14, 0.14, 0, 2.1);
     B.box('dark', 0, 0, 2.2, 0.06, 0.9, 1.9); kirizuma(B, 0, 0, 2.7, 0.45, 0.45, 2.05, 2.45); B.end(); }
-  { const q = P([6.43, -20.79]); B.begin('F').at(q[0], q[1], 0, 0);
+  { const q = P([6.43, -20.79]); B.begin('F').at(q[0], q[1] + OUT, 0, 0);
     B.box('wood', 0, 0, 0.14, 0.14, 0, 1.8); B.box('white', 0, -0.1, 0.4, 0.04, 0.9, 1.75); B.end(); }
   // 手水舍（位置推估：石燈籠照片中在鳥居內側）
-  B.begin('W').at(-8.0, -51.0, Math.PI / 2, LV.T1);
+  B.begin('W').at(-8.0, TORII2_Y + 5.6, Math.PI / 2, LV.T1);
   [[-1.1, -0.75], [1.1, -0.75], [1.1, 0.75], [-1.1, 0.75]].forEach(([x, u]) => B.box('wood', x, u, 0.18, 0.18, 0, 2.3));
   B.box('stone', 0, 0, 1.4, 0.7, 0, 0.75);
   irimoya(B, 0, 0, 3.4, 2.7, 2.3, 2.75, 3.4, 0.15);
   B.end();
 
   /* ---- 社務所 ---- */
-  // 配置圖位置 (21.1, -49.9) 會擋住神門照片的拍攝點（反求的相機在其屋簷上方約 5.8 公尺處），
-  // 故東移約 10 公尺；照片可能是從社務所屋頂或高台上拍的，待查。
-  { const q = [31.0, -48.5]; B.begin('H').at(q[0], q[1], 0, LV.T1);
+  // 社務所：1947 航照（簡報標示位置）
+  { const q = [37.8, -51.4]; B.begin('H').at(q[0], q[1], 0, LV.T1);
     B.box('stone', 0, 0, 13.4, 9.4, 0, 0.45);
     B.box('wood', 0, 0, 13, 9, 0.45, 3.1);
     B.box('dark', 0, -4.52, 11, 0.06, 1.0, 2.6);
     yosemune(B, 0, 0, 14.6, 10.6, 3.0, 5.6); B.end(); }
+  // 宿舍（1947 航照簡報標示位置；外觀推估）
+  B.begin('H2').at(57.1, -50.3, 0, 0);
+  B.box('stone', 0, 0, 10.4, 7.4, 0, 0.45); B.box('wood', 0, 0, 10, 7, 0.45, 3.0);
+  yosemune(B, 0, 0, 11.4, 8.4, 2.9, 5.0); B.end();
 
   /* ---- 神門（四脚門、切妻造）＋狛犬 ---- */
   // 神門照片反求（以拜殿正面照定出的拜殿尺寸為比例尺）：屋頂寬約 7.1、簷高 2.75、屋脊 4.4 公尺
-  B.begin('N').at(AX, -28.2, 0, LV.T2);
+  B.begin('N').at(AX, GATE_Y, 0, LV.T2);
   B.box('stone', 0, 0, 6.0, 3.0, -0.4, 0);                // 門下石敷
   B.box('stone', 0, -2.0, 4.6, 1.0, -0.4, -0.2);          // 前台階
   [-1.55, 1.55].forEach(x => {
@@ -359,7 +372,7 @@ export function buildShrine() {
   B.box('dark', 0, 0, 5.4, 2.4, 2.55, 2.8);    // 斗栱帶
   kirizuma(B, 0, 0, 7.1, 3.0, 3.0, 2.75, 4.3, true, 0.15);
   B.end();
-  [-3.2, 3.2].forEach((x, i) => { B.begin('K').at(x, -32.5, 0, LV.T1); komainu(B, i ? 1 : -1); B.end(); });
+  [-3.2, 3.2].forEach((x, i) => { B.begin('K').at(x, GATE_Y - 4.3, 0, LV.T1); komainu(B, i ? 1 : -1); B.end(); });
 
   /* ---- 屋根付玉垣（內苑四周）＋透塀（本殿四周）---- */
   fence(B, [T2.x0, T2.y0], [-2.4, T2.y0], LV.T2, 'tama');
@@ -373,7 +386,7 @@ export function buildShrine() {
   fence(B, [T3.x0, T3.y1], [T3.x0, T3.y0], LV.T3, 'sukibei');
 
   /* ---- 拜殿（入母屋造、檜皮葺，左右附翼）---- */
-  B.begin('P').at(AX, -6.7, 0, LV.T2);
+  B.begin('P').at(AX, -6.7 + IN, 0, LV.T2);
   const F = 1.0;                                            // 地板高（拜殿正面照：台階約 1 公尺）
   B.box('stone', 0, 0, 14.6, 7.2, 0, 0.75);                 // 基壇
   B.box('wood', 0, 0, 14.0, 6.6, 0.75, F);                  // 木地板
@@ -408,10 +421,10 @@ export function buildShrine() {
   });
   B.end();
   // 春日燈籠（神門照片：拜殿台階旁）
-  [-2.6, 2.6].forEach(x => { B.at(x, -12.2, 0, LV.T2); kasugaLantern(B); });   // 神門照片反求
+  [-2.6, 2.6].forEach(x => { B.at(x, -12.2 + IN, 0, LV.T2); kasugaLantern(B); });   // 神門照片反求
 
   /* ---- 幣殿（連接拜殿與本殿，內部照片中可見）---- */
-  B.begin('Pd').at(AX, -0.8, 0, LV.T3);
+  B.begin('Pd').at(AX, -0.8 + IN, 0, LV.T3);
   const Fd = LV.T2 + F - LV.T3;                             // 與拜殿同高的地板
   B.box('stone', 0, 0, 4.8, 5.8, 0, Fd - 0.2);
   B.box('wood', 0, 0, 4.6, 5.8, Fd - 0.2, Fd);
@@ -422,7 +435,7 @@ export function buildShrine() {
   B.end();
 
   /* ---- 本殿（流造、千木・鰹木，高床）---- */
-  B.begin('Q').at(AX, 6.65, 0, LV.T3);
+  B.begin('Q').at(AX, 6.65 + IN, 0, LV.T3);
   const Fh = 1.9;                                            // 本殿側面照：巫女站立的濡緣高
   B.box('stone', 0, 0, 5.8, 5.4, 0, 0.5);                   // 石基壇
   for (const x of [-2.55, -1.3, 0, 1.3, 2.55]) for (const u of [-2.35, 2.35]) B.box('wood', x, u, 0.2, 0.2, 0.5, Fh);

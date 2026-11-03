@@ -3,13 +3,13 @@
 import * as THREE from 'three';
 
 const NLSC = id => (z, x, y) => `https://wmts.nlsc.gov.tw/wmts/${id}/default/GoogleMapsCompatible/${z}/${y}/${x}`;
-const SINICA = id => (z, x, y) => `https://gis.sinica.edu.tw/tileserver/file-exists.php?img=${id}-jpg-${z}-${x}-${y}`;
+const SINICA = (id, ext = 'jpg') => (z, x, y) => `https://gis.sinica.edu.tw/tileserver/file-exists.php?img=${id}-${ext}-${z}-${x}-${y}`;
 // zoom：用哪一層圖磚（18 約 0.5 公尺／像素）。舊地圖解析度較低，用 16。
 export const GROUND_LAYERS = {
   photo: { label: '今日航照', url: NLSC('PHOTO2'), zoom: 18 },
   emap:  { label: '今日地圖', url: NLSC('EMAP'),   zoom: 18 },
   jm25k: { label: '1921 日治地形圖', url: SINICA('JM25K_1921'), zoom: 16 },
-  am50k: { label: '1944 美軍地圖',   url: SINICA('AM50K_1944'), zoom: 16 }
+  am50k: { label: '1944 美軍地圖',   url: [SINICA('AM50K_1944', 'png'), (z, x, y) => `https://gis.sinica.edu.tw/tainan/file-exists.php?img=AM50K_1944-png-${z}-${x}-${y}`, SINICA('AM50K_1944')], zoom: 16 }   // 中研院 WMTS 中此圖層為 png 格式
 };
 
 /* ---- 座標轉換 ---- */
@@ -85,16 +85,23 @@ export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north })
   async function setLayer(id) {
     const my = ++token;
     if (id === 'off') { mesh.visible = false; return true; }
-    const L = GROUND_LAYERS[id], z = L.zoom;
-    const tx0 = Math.floor(lng2x(Math.min(...lngs), z)), tx1 = Math.floor(lng2x(Math.max(...lngs), z));
-    const ty0 = Math.floor(lat2y(Math.max(...lats), z)), ty1 = Math.floor(lat2y(Math.min(...lats), z));
-    const off = document.createElement('canvas');
-    off.width = (tx1 - tx0 + 1) * 256; off.height = (ty1 - ty0 + 1) * 256;
-    const octx = off.getContext('2d');
-    const jobs = [];
-    for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++)
-      jobs.push(loadImg(L.url(z, tx, ty)).then(im => { if (im) octx.drawImage(im, (tx - tx0) * 256, (ty - ty0) * 256); return !!im; }));
-    const ok = (await Promise.all(jobs)).some(Boolean);
+    const L = GROUND_LAYERS[id];
+    // 依序嘗試：各個網址格式 × 原 zoom、低一級 zoom（舊地圖不一定有高 zoom 圖磚）
+    const urls = Array.isArray(L.url) ? L.url : [L.url];
+    let ok = false, z = L.zoom, tx0, tx1, ty0, ty1, off;
+    outer: for (const zz of [L.zoom, L.zoom - 1]) for (const url of urls) {
+      z = zz;
+      tx0 = Math.floor(lng2x(Math.min(...lngs), z)); tx1 = Math.floor(lng2x(Math.max(...lngs), z));
+      ty0 = Math.floor(lat2y(Math.max(...lats), z)); ty1 = Math.floor(lat2y(Math.min(...lats), z));
+      off = document.createElement('canvas');
+      off.width = (tx1 - tx0 + 1) * 256; off.height = (ty1 - ty0 + 1) * 256;
+      const octx = off.getContext('2d'), jobs = [];
+      for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++)
+        jobs.push(loadImg(url(z, tx, ty)).then(im => { if (im) octx.drawImage(im, (tx - tx0) * 256, (ty - ty0) * 256); return !!im; }));
+      ok = (await Promise.all(jobs)).some(Boolean);
+      if (my !== token) return ok;
+      if (ok) break outer;
+    }
     if (my !== token) return ok;
     if (!ok) return false;
     canvas.width = off.width; canvas.height = off.height;
