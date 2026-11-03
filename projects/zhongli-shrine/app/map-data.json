@@ -48,14 +48,17 @@
     "s34",
     "s35"
    ],
-   "stop": 2,
+   "stop": 1,
    "short": "第一鳥居",
    "src": [
     "deck",
     "miko"
    ],
    "lat": 24.961157,
-   "lng": 121.208661
+   "lng": 121.208661,
+   "photos": [
+    "torii1-school"
+   ]
   },
   {
    "id": "torii2",
@@ -84,7 +87,8 @@
    "q": [
     0,
     -64
-   ]
+   ],
+   "stop": 2
   },
   {
    "id": "lantern",
@@ -112,7 +116,8 @@
    "q": [
     9.5,
     -69.0
-   ]
+   ],
+   "stop": 3
   },
   {
    "id": "office",
@@ -139,7 +144,8 @@
    ],
    "photos": [
     "lantern-torii2"
-   ]
+   ],
+   "stop": 3
   },
   {
    "id": "gate",
@@ -155,7 +161,7 @@
    "slides": [
     "s40"
    ],
-   "stop": 3,
+   "stop": 6,
    "short": "神門",
    "src": [
     "deck",
@@ -185,7 +191,7 @@
    "slides": [
     "s41"
    ],
-   "stop": 5,
+   "stop": 6,
    "short": "神馬原址",
    "src": [
     "deck",
@@ -212,7 +218,7 @@
     "s41"
    ],
    "photo": "assets/models/horse/current.jpg",
-   "stop": 5,
+   "stop": 6,
    "short": "神馬今址",
    "src": [
     "deck",
@@ -266,7 +272,7 @@
     "s44",
     "s43"
    ],
-   "stop": 4,
+   "stop": 5,
    "short": "本殿",
    "src": [
     "miko",
