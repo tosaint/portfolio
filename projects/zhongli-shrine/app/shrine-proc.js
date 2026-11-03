@@ -33,7 +33,7 @@ export const DIMS = {
   B2: '依鎮座祭鳥居照片：以台階與人身高為比例，柱距約 4 公尺',
   N: '依神門與狛犬照片反求（以拜殿尺寸為比例尺，同時解出拍攝位置）；神門到拜殿約 21 公尺',
   P: '依拜殿正面照：以參拜道實測寬 3.01 公尺（約 8 塊石板）為比例；深度依神門照片',
-  Q: '依本殿側面照：以巫女身高約 1.5 公尺為比例',
+  Q: '依本殿歷史照片：流造檜皮葺、前簷延伸為向拜、千木與鰹木 6 根、高床與三面高欄；以巫女身高約 1.5 公尺為比例',
   D6: '依石燈籠照片：三層台座、竿、中台、火袋、笠、寶珠',
   H: '位置依 1947 航照；外觀依校史館照片（唐破風玄關、黑瓦寄棟），以合影人身高推估',
   G: '依石燈籠照片背景',
@@ -49,11 +49,11 @@ const COLORS = {
   gravel: 0xdcd5c3,    // 砂利
   white: 0xf3efe4,     // 紙垂
   bronze: 0x4c4a40,    // 千木、鰹木的金屬包覆
-  plaster: 0xe8d6c6,   // 社務所外牆（彩色照片：淡粉米色）
-  brown: 0x7a5340,     // 社務所腰牆
+  plaster: 0xebe5d8,   // 社務所白漆喰牆（與神社建築統一的和風配色）
+  brown: 0x5f4b3b,     // 社務所腰板（深色木）
   tile: 0x5d5b58,      // 日式黑瓦
-  copper: 0xc8763f,    // 社務所唐破風屋頂（彩色照片：橘銅色）
-  sash: 0x8aa0a6,      // 窗框、窗格（灰藍）
+  copper: 0x6f7a72,    // 社務所唐破風屋頂（銅板葺、帶綠青的灰綠）
+  sash: 0x7c6650,      // 窗框、雨庇（木色）
 };
 
 /* =========================================================
@@ -354,7 +354,8 @@ export function buildShrine() {
   /* ---- 社務所 ---- */
   // 社務所：位置依 1947 航照；外觀依校史館照片（民國 61 年合影、畢業紀念冊彩色照，民國 69 年拆除）
   // 平房、寄棟黑瓦，外牆淡色、壁面有規則分格、深色腰牆；鐵窗外有小雨庇；
-  // 入口為唐破風玄關（橘銅色屋頂、白色雙柱）。尺寸以合影人身高約 1.65 公尺推估。
+  // 入口為唐破風玄關。尺寸以合影人身高約 1.65 公尺推估。
+  // 照片為戰後修復上色，顏色改以和風神社配色統一：白漆喰牆、白木柱、深色腰板、黑瓦、銅板葺玄關。
   // 長邊沿中軸方向、玄關朝參道（西側）。
   { const q = [37.8, -51.4]; B.begin('H').at(q[0], q[1], Math.PI / 2, 0); office(B); B.end(); }
   // 宿舍（1947 航照簡報標示位置；外觀推估）
@@ -447,26 +448,63 @@ export function buildShrine() {
   B.box('wood', 0, 0, 5.4, 5.0, Fh - 0.15, Fh);             // 濡緣
   B.box('wood', 0, 0, 3.6, 3.0, Fh, Fh + 2.3);              // 身舍
   B.box('dark', 0, -1.52, 1.4, 0.05, Fh + 0.1, Fh + 2.0);  // 正面門扉
-  // 高欄
-  [[0, -2.45, 5.4, 0.08], [0, 2.45, 5.4, 0.08], [-2.65, 0, 0.08, 5.0], [2.65, 0, 0.08, 5.0]].forEach(([x, u, w, d]) => {
-    if (u === -2.45) { B.box('wood', -1.75, u, 1.9, d, Fh + 0.7, Fh + 0.8); B.box('wood', 1.75, u, 1.9, d, Fh + 0.7, Fh + 0.8); }
-    else B.box('wood', x, u, w, d, Fh + 0.7, Fh + 0.8);
-  });
-  // 正面木階：從幣殿地板升到濡緣
+  // ---- 以下依本殿歷史照片（巫女立於濡緣，身高約 1.5 公尺為比例）----
+  // 高欄：濡緣三面，親柱＋上下橫木＋擬寶珠
+  const rail = (x0, u0, x1, u1) => {
+    const L = Math.hypot(x1 - x0, u1 - u0), n = Math.max(1, Math.round(L / 0.9));
+    for (let i = 0; i <= n; i++) { const x = x0 + (x1 - x0) * i / n, u = u0 + (u1 - u0) * i / n; B.box('wood', x, u, 0.1, 0.1, Fh, Fh + 0.85); }
+    const cx = (x0 + x1) / 2, cu = (u0 + u1) / 2, w = Math.abs(x1 - x0) + 0.08, d = Math.abs(u1 - u0) + 0.08;
+    B.box('wood', cx, cu, w, d, Fh + 0.78, Fh + 0.88);          // 架木
+    B.box('wood', cx, cu, w, d, Fh + 0.42, Fh + 0.5);           // 平桁
+    B.box('wood', cx, cu, w, d, Fh + 0.05, Fh + 0.13);          // 地覆
+  };
+  rail(-2.65, -2.45, -0.9, -2.45); rail(0.9, -2.45, 2.65, -2.45);
+  rail(-2.65, -2.45, -2.65, 2.45); rail(2.65, -2.45, 2.65, 2.45);
+  [[-0.9, -2.45], [0.9, -2.45]].forEach(([x, u]) => B.cyl('bronze', x, u, 0.07, Fh + 0.88, Fh + 1.05, 8, 0.03));   // 擬寶珠
+  // 身舍：板壁、柱、長押
+  [[-1.8, -1.5], [1.8, -1.5], [-1.8, 1.5], [1.8, 1.5], [0, -1.5]].forEach(([x, u]) => B.cyl('wood', x, u, 0.13, Fh, Fh + 2.35, 10));
+  B.box('wood', 0, -1.52, 3.7, 0.12, Fh + 1.75, Fh + 1.88);    // 長押
+  B.box('wood', 0, -1.52, 3.7, 0.12, Fh + 2.2, Fh + 2.35);     // 頭貫
+  // 正面木階＋登高欄（從幣殿地板升到濡緣）
   for (let i = 0; i < 7; i++) {
     const y0 = Fd + (Fh - Fd) * i / 7, y1 = Fd + (Fh - Fd) * (i + 1) / 7;
     B.box('wood', 0, -2.5 - 0.27 * (7 - i) + 0.135, 1.6, 0.27, y0, y1);
   }
-  [-0.85, 0.85].forEach(x => B.box('wood', x, -3.45, 0.08, 2.0, Fd + 0.5, Fh + 0.75));
-  // 屋頂：前簷較深（流造），屋脊沿 x
-  kirizuma(B, 0, 0, 6.0, 3.5, 2.4, Fh + 2.15, Fh + 4.15, true, 0.22, Fh + 2.25);
-  // 千木（山牆兩端交叉）與鰹木
-  const hr = Fh + 4.15;
-  [-3.0, 3.0].forEach(x => {
-    const g1 = new THREE.BoxGeometry(0.1, 1.7, 0.2); g1.rotateX(0.65); g1.translate(x, hr + 0.4, 0.35); B.add('bronze', g1);
-    const g2 = new THREE.BoxGeometry(0.1, 1.7, 0.2); g2.rotateX(-0.65); g2.translate(x, hr + 0.4, -0.35); B.add('bronze', g2);
+  [-0.85, 0.85].forEach(x => {
+    const g = new THREE.BoxGeometry(0.08, 0.08, 2.1); g.rotateX(-Math.atan2(Fh - Fd, 1.9)); g.translate(x, (Fd + Fh) / 2 + 0.85, 3.45); B.add('wood', g);
+    B.box('wood', x, -4.4, 0.12, 0.12, Fd, Fd + 0.95);
   });
-  [-2.0, -1.0, 0, 1.0, 2.0].forEach(x => B.rod('bronze', x, 0, hr + 0.45, 0.13, 1.0, false));
+  // 向拜柱：流造前簷延伸蓋過木階，由兩根角柱支撐
+  const ue = -4.75, heF = Fh + 1.55;
+  [-1.35, 1.35].forEach(x => { B.box('wood', x, ue + 0.35, 0.22, 0.22, Fd - 0.2, heF - 0.15); B.box('wood', x, ue + 0.35, 0.3, 0.3, Fd - 0.3, Fd - 0.1); });
+  B.box('wood', 0, ue + 0.35, 3.1, 0.24, heF - 0.45, heF - 0.15);     // 向拜虹梁
+  [-1.35, 1.35].forEach(x => B.box('wood', x, (ue + 0.35 - 1.5) / 2, 0.16, Math.abs(ue + 0.35 + 1.5), heF - 0.35, heF - 0.15));   // 手挾（海老虹梁）
+  // 屋頂：流造。前坡長而反曲（凹弧）、延伸到向拜；後坡短。檜皮葺，簷口厚約 0.35 公尺
+  const W = 3.15, ur = 0.3, hr = Fh + 4.3, ub = 2.75, heB = Fh + 2.3, T = 0.35, N = 10;
+  const prof = (u0, h0, n) => Array.from({ length: n + 1 }, (_, i) => { const s = i / n; return [ur + (u0 - ur) * s, hr - (hr - h0) * Math.pow(s, 0.72)]; });
+  const front = prof(ue, heF, N), back = prof(ub, heB, 6);
+  for (const P of [front, back]) {
+    for (let i = 0; i < P.length - 1; i++) {
+      const [ua, ya] = P[i], [ub2, yb] = P[i + 1];
+      const lift = i === P.length - 2 ? 0.12 : 0;       // 簷端微反
+      B.quad('roof', [-W, ua, ya], [W, ua, ya], [W, ub2, yb + lift], [-W, ub2, yb + lift]);
+      B.quad('dark', [-W + 0.2, ua, ya - T], [W - 0.2, ua, ya - T], [W - 0.2, ub2, yb - T + lift], [-W + 0.2, ub2, yb - T + lift]);   // 軒裏
+      [-W, W].forEach(x => B.quad('wood', [x, ua, ya + 0.05], [x, ub2, yb + 0.05 + lift], [x, ub2, yb - T - 0.05 + lift], [x, ua, ya - T - 0.05]));   // 破風板
+    }
+    const [ul, yl] = P[P.length - 1];
+    B.quad('wood', [-W, ul, yl + 0.12], [W, ul, yl + 0.12], [W, ul, yl - T + 0.12], [-W, ul, yl - T + 0.12]);   // 簷口（淡色檜皮斷面）
+    // 垂木（軒裏的白色木口列）
+    for (let x = -W + 0.25; x < W; x += 0.32) B.box('white', x, ul + (ul < 0 ? 0.25 : -0.25), 0.1, 0.1, yl - T - 0.02, yl - T + 0.08);
+  }
+  // 山牆（妻）：板壁三角
+  [-1.85, 1.85].forEach(x => B.mesh('wood', [[x, -1.5, Fh + 2.35], [x, ur, hr - 0.4], [x, 1.5, Fh + 2.35]], [[0, 1, 2]]));
+  B.box('roof', 0, ur, 2 * W + 0.3, 0.55, hr - 0.1, hr + 0.3);           // 箱棟
+  // 千木（兩端交叉，外削）與鰹木 6 根（歷史照片可數）
+  [-W, W].forEach(x => {
+    const g1 = new THREE.BoxGeometry(0.12, 2.0, 0.24); g1.rotateX(0.62); g1.translate(x, hr + 0.55, ur + 0.42); B.add('wood', g1);
+    const g2 = new THREE.BoxGeometry(0.12, 2.0, 0.24); g2.rotateX(-0.62); g2.translate(x, hr + 0.55, ur - 0.42); B.add('wood', g2);
+  });
+  [-2.25, -1.35, -0.45, 0.45, 1.35, 2.25].forEach(x => { B.rod('wood', x, ur, hr + 0.48, 0.17, 1.1, false, 10); B.box('dark', x, ur, 0.12, 0.3, hr + 0.25, hr + 0.35); });
   B.end();
 
   /* ---- 材質 ---- */
@@ -506,8 +544,8 @@ function office(B) {
   B.box('brown', 0, 0, L, D, 0, F + 0.35);                 // 基礎＋腰牆（深色）
   B.box('plaster', 0, 0, L - 0.04, D - 0.04, F + 0.35, E);  // 外牆
   // 壁面分格：直向壁柱＋一道橫帶
-  for (let x = -L / 2; x <= L / 2 + 1e-6; x += 1.25) { B.box('plaster', x, -D / 2, 0.12, 0.08, F + 0.35, E); B.box('plaster', x, D / 2, 0.12, 0.08, F + 0.35, E); }
-  for (let u = -D / 2; u <= D / 2 + 1e-6; u += 1.25) { B.box('plaster', -L / 2, u, 0.08, 0.12, F + 0.35, E); B.box('plaster', L / 2, u, 0.08, 0.12, F + 0.35, E); }
+  for (let x = -L / 2; x <= L / 2 + 1e-6; x += 1.25) { B.box('wood', x, -D / 2, 0.12, 0.08, F + 0.35, E); B.box('wood', x, D / 2, 0.12, 0.08, F + 0.35, E); }
+  for (let u = -D / 2; u <= D / 2 + 1e-6; u += 1.25) { B.box('wood', -L / 2, u, 0.08, 0.12, F + 0.35, E); B.box('wood', L / 2, u, 0.08, 0.12, F + 0.35, E); }
   [-D / 2, D / 2].forEach(u => B.box('brown', 0, u, L + 0.05, 0.1, F + 0.3, F + 0.4));
   // 鐵窗（灰藍窗格）＋小雨庇
   const win = (x, u, alongX) => {
@@ -532,8 +570,8 @@ function office(B) {
   const px = 1.6, pw = 4.2, pd = 2.6, pu0 = -D / 2 - pd;
   B.box('stone', px, pu0 + pd / 2, pw + 0.4, pd + 0.2, 0, F - 0.15);          // 玄關土間
   B.box('stone', px, pu0 - 0.3, pw - 0.6, 0.6, 0, (F - 0.15) / 2);           // 台階
-  [-1, 1].forEach(sx => { B.cyl('white', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.16, F - 0.15, 3.05, 12); B.box('white', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.42, 0.42, 2.95, 3.15); });
-  B.box('white', px, pu0 + 0.25, pw - 0.3, 0.22, 2.75, 2.95);                 // 虹梁
+  [-1, 1].forEach(sx => { B.cyl('wood', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.16, F - 0.15, 3.05, 12); B.box('wood', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.42, 0.42, 2.95, 3.15); });
+  B.box('wood', px, pu0 + 0.25, pw - 0.3, 0.22, 2.75, 2.95);                 // 虹梁
   B.box('dark', px, -D / 2 - 0.05, 1.8, 0.1, F, F + 2.3);                    // 入口門
   // 唐破風屋頂：橫向斷面中央隆起、兩端反翹，沿進深拉出
   const n = 16, W = pw + 1.0, he = 3.15, rise = 1.1;
@@ -543,7 +581,7 @@ function office(B) {
     const t0 = -1 + 2 * i / n, t1 = -1 + 2 * (i + 1) / n, x0 = px + t0 * W / 2, x1 = px + t1 * W / 2;
     const y0 = hAt(Math.abs(t0)), y1 = hAt(Math.abs(t1));
     B.quad('copper', [x0, uf, y0 + 0.25], [x1, uf, y1 + 0.25], [x1, ub, y1 + 0.25], [x0, ub, y0 + 0.25]);   // 屋面
-    B.quad('white', [x0, uf, y0], [x1, uf, y1], [x1, uf, y1 + 0.25], [x0, uf, y0 + 0.25]);                 // 白色唐破風板
+    B.quad('wood', [x0, uf, y0], [x1, uf, y1], [x1, uf, y1 + 0.25], [x0, uf, y0 + 0.25]);                  // 唐破風板（白木）
     B.quad('dark', [x0, uf + 0.05, he - 0.15], [x1, uf + 0.05, he - 0.15], [x1, uf + 0.05, y1], [x0, uf + 0.05, y0]);   // 破風內側
   }
 }
