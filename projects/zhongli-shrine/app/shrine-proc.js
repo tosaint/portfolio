@@ -8,7 +8,7 @@
 // three.js 世界座標 = (q.x, 高度, -q.y)。高度 0 = 外參道地面。
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { warpH } from './site.js';
+import { warpH, llToQ } from './site.js';
 
 // ---- 地坪高度（公尺，外參道 = 0）----
 export const LV = {
@@ -49,7 +49,7 @@ class Builder {
   /** 設定接下來構件的位置：q 座標、旋轉（沿 u 軸朝向的角度，弧度）、基準高度 */
   at(qx, qy, ang = 0, base = 0) {
     // 局部 (x, u, y)：x 橫向、u 沿構件前後、y 向上 → 世界 (x, y, -u) 經旋轉平移
-    this.M.makeRotationY(ang).setPosition(qx, base, -qy);
+    this.M.makeRotationY(-ang).setPosition(qx, base, -qy);   // 局部 u 軸 → q 方向 (sin ang, cos ang)
     return this;
   }
   begin(id) { this.cur = id; if (!this.boxes.has(id)) this.boxes.set(id, new THREE.Box3()); return this; }
@@ -189,7 +189,7 @@ function torii(B, mat, span, H, r) {
   B.box(mat, 0, 0, 0.35 * k, 0.2 * k, H - 1.45 * k, H - 0.55 * k);    // 額束
   B.box(mat, 0, 0, L - 0.4 * k, 0.32 * k, H - 0.55 * k, H - 0.3 * k); // 島木
   // 笠木：兩端起翹，分段組成
-  const n = 8, y0 = H - 0.3 * k, t = 0.3 * k;
+  const n = 16, y0 = H - 0.3 * k, t = 0.3 * k;
   for (let i = 0; i < n; i++) {
     const a = -L / 2 + L * i / n, b = a + L / n, m = (a + b) / 2;
     const s = Math.pow(Math.abs(m) / (L / 2), 3) * 0.32 * k;
@@ -288,12 +288,14 @@ export function buildShrine() {
   const T3 = { x0: -6.1, x1: 6.1, y0: -3.7, y1: 14.0 };
   plat(B, T3, LV.T2, LV.T3);
 
-  // 外參道（第一鳥居 → 第二鳥居前廣場）：砂利帶，寬約 8 公尺
-  const band = [[-92, 8.3], [-80.05, 5.94], [-54.9, 1.2], [1.28, -26.55]].map(P);
-  for (let i = 0; i < band.length - 1; i++) strip(B, band[i], band[i + 1], 8, 0.02, 'gravel');
+  // 外參道（第一鳥居 → 第二鳥居）：依 1947 年航照描出的參拜道走向（見 APPROACH）
+  const curve = approachCurve();
+  const L = curve.getLength(), n = Math.ceil(L / 3);
+  const pts = curve.getSpacedPoints(n).map(v => [v.x, v.z]);
+  for (let i = 0; i < pts.length - 1; i++) strip(B, pts[i], pts[i + 1], 8, 0.02, 'gravel');
   B.at(0, 0); B.box('gravel', -2, -66, 30, 17, -0.03, 0.02);              // 第二鳥居前廣場
   // 石板參拜道（實測寬 3.01 公尺）
-  strip(B, [AX, -66], [AX, -58.3], 3.01, 0.04, 'path');
+  strip(B, [AX, -69.5], [AX, -58.3], 3.01, 0.04, 'path');
   strip(B, [AX, -57.0], [AX, -30.1], 3.01, LV.T1 + 0.03, 'path');
   strip(B, [AX, -26.7], [AX, -11.7], 3.01, LV.T2 + 0.03, 'path');
 
@@ -306,14 +308,20 @@ export function buildShrine() {
 
   /* ---- 第一鳥居（鋼筋水泥、洗石子）---- */
   {
-    const b1 = P([-80.05, 5.94]), nx = P([-54.9, 1.2]);
-    const ang = Math.atan2(nx[0] - b1[0], nx[1] - b1[1]);
-    B.begin('B1').at(b1[0], b1[1], ang, 0); torii(B, 'grey', 4.8, 7.0, 0.3); B.end();
+    const b1 = APPROACH[0], t = curve.getTangentAt(0);
+    B.begin('B1').at(b1[0], b1[1], Math.atan2(t.x, t.z), 0); torii(B, 'grey', 4.8, 7.0, 0.3); B.end();
   }
 
   /* ---- 石燈籠三對＋社號標、制札、下乘札、手水舍 ---- */
-  const LANTERNS = { D1: [-41.9, -9.6], D2: [-38.6, -3], D3: [-82.5, 3], D4: [-80.8, 9.5], D5: [1.22, -22.52], D6: [15.62, -22.32] };
-  for (const [id, p] of Object.entries(LANTERNS)) { const q = P(p); B.begin(id).at(q[0], q[1], 0, 0); lantern(B); B.end(); }
+  // 石燈籠三對（「兩座鳥居前各一對」＋參道中途一對）：第一鳥居與中途的兩對沿 1947 航照參道對稱排列；
+  // 第二鳥居前一對依羅偉源配置。
+  const lanternPair = (ids, tt, off) => {
+    const c = curve.getPointAt(tt), t = curve.getTangentAt(tt);
+    ids.forEach((id, i) => { const s = i ? 1 : -1; B.begin(id).at(c.x - t.z * off * s, c.z + t.x * off * s, 0, 0); lantern(B); B.end(); });
+  };
+  lanternPair(['D3', 'D4'], 6 / L, 5.5);
+  { const k = closestT(curve, P([-40.25, -6.3])); lanternPair(['D1', 'D2'], k, 5.5); }
+  for (const [id, p] of Object.entries({ D5: [1.22, -22.52], D6: [15.62, -22.32] })) { const q = P(p); B.begin(id).at(q[0], q[1], 0, 0); lantern(B); B.end(); }
   { const q = P([13.2, -20.7]); B.begin('G').at(q[0], q[1], 0, 0);
     B.box('stone', 0, 0, 1.15, 1.15, 0, 0.3); B.box('stone', 0, 0, 0.85, 0.85, 0.3, 0.6); B.box('stone', 0, 0, 0.46, 0.46, 0.6, 3.8); B.end(); }
   { const q = P([4.2, -20.9]); B.begin('E').at(q[0], q[1], 0, 0);
@@ -450,6 +458,29 @@ export function buildShrine() {
   mats.path = new THREE.MeshLambertMaterial({ map: slabTexture(), side: THREE.DoubleSide });
   const group = B.build(mats);
   return { group, boxes: B.boxes, mats: Object.values(mats) };
+}
+
+// 1947 年航照（簡報《壢中簡史與中壢神社》中的航照，比例尺 50 公尺）描出的參拜道中心線。
+// 航照以兩點對位：陶然亭 ↔ 拜殿位置、南大門舊址 ↔ 第一鳥居（約 0.31 公尺／像素，
+// 檢查點「熱食部門口」對位誤差約 1 公尺）。參道從中正路的第一鳥居向東北，
+// 中段略向東弧出，約在拜殿前 70 公尺處接上神社中軸，再直行到第二鳥居。
+const NANDAMEN = [24.961157, 121.208661];
+const AIR_PX = [[850, 1195], [835, 1150], [830, 1000], [850, 900], [885, 800], [897, 700], [885, 620], [860, 590]];
+let APPROACH = null;
+function approachCurve() {
+  const a = [650, 600], qb = llToQ(...NANDAMEN);
+  const za = { re: 850 - a[0], im: -(1195 - a[1]) };
+  const d2 = za.re * za.re + za.im * za.im;
+  const k = { re: (qb[0] * za.re + qb[1] * za.im) / d2, im: (qb[1] * za.re - qb[0] * za.im) / d2 };
+  const toQ = ([x, y]) => { const re = x - a[0], im = -(y - a[1]); return [k.re * re - k.im * im, k.re * im + k.im * re]; };
+  APPROACH = AIR_PX.map(toQ);
+  APPROACH.push([-1.5, -69.5], [0, -69.5]);           // 接上中軸（第二鳥居前廣場）
+  return new THREE.CatmullRomCurve3(APPROACH.map(([x, y]) => new THREE.Vector3(x, 0, y)), false, 'centripetal');
+}
+function closestT(curve, [x, y]) {
+  let best = 0, bd = Infinity;
+  for (let i = 0; i <= 400; i++) { const p = curve.getPointAt(i / 400), d = (p.x - x) ** 2 + (p.z - y) ** 2; if (d < bd) { bd = d; best = i / 400; } }
+  return best;
 }
 
 // 平台：外圍石砌擋土＋頂面砂利

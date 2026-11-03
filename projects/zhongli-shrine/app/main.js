@@ -28,7 +28,7 @@ const STOPS = [
     title: '鳥居與參道',
     text: '第一鳥居後來成了學校的校門，1951 年掛上校名與校訓。當年報紙特別提到中壢神社「沒有燈籠」（除了必要的之外），石燈籠只有三對。',
     now: '1965 年中央西路開通，正門遷走，這座鳥居改稱南大門，約 1988–89 年拆除。',
-    eye: [-122, 10, 4], target: [-62, 3, -6],
+    eye: [-214, 8, 10], target: [-150, 2, 34], m: true,   // 公尺：第一鳥居後方，順著 1947 航照的參道看
     pins: [['B1', '第一鳥居'], ['D3', '石燈籠'], ['D1', '石燈籠']]
   },
   {
@@ -56,7 +56,7 @@ const STOPS = [
 ];
 
 // 以上座標都是原配置模型的單位；轉成公尺世界座標（見 site.js）
-STOPS.forEach(s => { if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); } else { s.eye = HIST_PHOTO.eye; s.target = HIST_PHOTO.target; } });
+STOPS.forEach(s => { if (s.m) return; if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); } else { s.eye = HIST_PHOTO.eye; s.target = HIST_PHOTO.target; } });
 // 「今」模式下仍保持實心的構件（其餘變半透明）
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
