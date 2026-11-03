@@ -35,7 +35,7 @@ export const DIMS = {
   P: '依拜殿正面照：以參拜道實測寬 3.01 公尺（約 8 塊石板）為比例；深度依神門照片',
   Q: '依本殿側面照：以巫女身高約 1.5 公尺為比例',
   D6: '依石燈籠照片：三層台座、竿、中台、火袋、笠、寶珠',
-  H: '位置依配置圖（為讓出神門照片的拍攝點略後移）；外觀依石燈籠照片背景',
+  H: '位置依 1947 航照；外觀依校史館照片（唐破風玄關、黑瓦寄棟），以合影人身高推估',
   G: '依石燈籠照片背景',
   L: '3D 掃描＋現場實測',
 };
@@ -49,6 +49,11 @@ const COLORS = {
   gravel: 0xdcd5c3,    // 砂利
   white: 0xf3efe4,     // 紙垂
   bronze: 0x4c4a40,    // 千木、鰹木的金屬包覆
+  plaster: 0xe8d6c6,   // 社務所外牆（彩色照片：淡粉米色）
+  brown: 0x7a5340,     // 社務所腰牆
+  tile: 0x5d5b58,      // 日式黑瓦
+  copper: 0xc8763f,    // 社務所唐破風屋頂（彩色照片：橘銅色）
+  sash: 0x8aa0a6,      // 窗框、窗格（灰藍）
 };
 
 /* =========================================================
@@ -347,12 +352,11 @@ export function buildShrine() {
   B.end();
 
   /* ---- 社務所 ---- */
-  // 社務所：1947 航照（簡報標示位置）
-  { const q = [37.8, -51.4]; B.begin('H').at(q[0], q[1], 0, LV.T1);
-    B.box('stone', 0, 0, 13.4, 9.4, 0, 0.45);
-    B.box('wood', 0, 0, 13, 9, 0.45, 3.1);
-    B.box('dark', 0, -4.52, 11, 0.06, 1.0, 2.6);
-    yosemune(B, 0, 0, 14.6, 10.6, 3.0, 5.6); B.end(); }
+  // 社務所：位置依 1947 航照；外觀依校史館照片（民國 61 年合影、畢業紀念冊彩色照，民國 69 年拆除）
+  // 平房、寄棟黑瓦，外牆淡色、壁面有規則分格、深色腰牆；鐵窗外有小雨庇；
+  // 入口為唐破風玄關（橘銅色屋頂、白色雙柱）。尺寸以合影人身高約 1.65 公尺推估。
+  // 長邊沿中軸方向、玄關朝參道（西側）。
+  { const q = [37.8, -51.4]; B.begin('H').at(q[0], q[1], Math.PI / 2, 0); office(B); B.end(); }
   // 宿舍（1947 航照簡報標示位置；外觀推估）
   B.begin('H2').at(57.1, -50.3, 0, 0);
   B.box('stone', 0, 0, 10.4, 7.4, 0, 0.45); B.box('wood', 0, 0, 10, 7, 0.45, 3.0);
@@ -494,6 +498,54 @@ function closestT(curve, [x, y]) {
   let best = 0, bd = Infinity;
   for (let i = 0; i <= 400; i++) { const p = curve.getPointAt(i / 400), d = (p.x - x) ** 2 + (p.z - y) ** 2; if (d < bd) { bd = d; best = i / 400; } }
   return best;
+}
+
+// 社務所（局部座標：x 沿長邊 15 公尺，u 為進深 9 公尺，-u 為正面／玄關側）
+function office(B) {
+  const L = 15, D = 9, F = 0.55, E = 3.35;               // 長、深、地板高、簷高
+  B.box('brown', 0, 0, L, D, 0, F + 0.35);                 // 基礎＋腰牆（深色）
+  B.box('plaster', 0, 0, L - 0.04, D - 0.04, F + 0.35, E);  // 外牆
+  // 壁面分格：直向壁柱＋一道橫帶
+  for (let x = -L / 2; x <= L / 2 + 1e-6; x += 1.25) { B.box('plaster', x, -D / 2, 0.12, 0.08, F + 0.35, E); B.box('plaster', x, D / 2, 0.12, 0.08, F + 0.35, E); }
+  for (let u = -D / 2; u <= D / 2 + 1e-6; u += 1.25) { B.box('plaster', -L / 2, u, 0.08, 0.12, F + 0.35, E); B.box('plaster', L / 2, u, 0.08, 0.12, F + 0.35, E); }
+  [-D / 2, D / 2].forEach(u => B.box('brown', 0, u, L + 0.05, 0.1, F + 0.3, F + 0.4));
+  // 鐵窗（灰藍窗格）＋小雨庇
+  const win = (x, u, alongX) => {
+    const w = 1.8, y0 = F + 0.95, y1 = F + 2.35;
+    if (alongX) {
+      B.box('sash', x, u, w, 0.1, y0, y1);
+      for (let k = -2; k <= 2; k++) B.box('dark', x + k * w / 5, u + Math.sign(u) * 0.06, 0.04, 0.04, y0, y1);
+      B.box('sash', x, u + Math.sign(u) * 0.3, w + 0.3, 0.6, y1 + 0.15, y1 + 0.2);    // 雨庇
+    } else {
+      B.box('sash', x, u, 0.1, w, y0, y1);
+      for (let k = -2; k <= 2; k++) B.box('dark', x + Math.sign(x) * 0.06, u + k * w / 5, 0.04, 0.04, y0, y1);
+      B.box('sash', x + Math.sign(x) * 0.3, u, 0.6, w + 0.3, y1 + 0.15, y1 + 0.2);
+    }
+  };
+  [-5.5, -2.8, 4.8].forEach(x => win(x, -D / 2 - 0.03, true));
+  [-5, -1.5, 2, 5].forEach(x => win(x, D / 2 + 0.03, true));
+  [-2, 2].forEach(u => { win(-L / 2 - 0.03, u, false); win(L / 2 + 0.03, u, false); });
+  // 寄棟黑瓦屋頂（出簷 0.8）
+  yosemune(B, 0, 0, L + 1.6, D + 1.6, E - 0.05, E + 2.7, 'tile');
+  B.box('tile', 0, 0, L + 1.6 - D - 1.6 + 0.3, 0.3, E + 2.6, E + 2.85);
+  // 唐破風玄關：寬 4.2、出 2.6 公尺，白色雙柱
+  const px = 1.6, pw = 4.2, pd = 2.6, pu0 = -D / 2 - pd;
+  B.box('stone', px, pu0 + pd / 2, pw + 0.4, pd + 0.2, 0, F - 0.15);          // 玄關土間
+  B.box('stone', px, pu0 - 0.3, pw - 0.6, 0.6, 0, (F - 0.15) / 2);           // 台階
+  [-1, 1].forEach(sx => { B.cyl('white', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.16, F - 0.15, 3.05, 12); B.box('white', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.42, 0.42, 2.95, 3.15); });
+  B.box('white', px, pu0 + 0.25, pw - 0.3, 0.22, 2.75, 2.95);                 // 虹梁
+  B.box('dark', px, -D / 2 - 0.05, 1.8, 0.1, F, F + 2.3);                    // 入口門
+  // 唐破風屋頂：橫向斷面中央隆起、兩端反翹，沿進深拉出
+  const n = 16, W = pw + 1.0, he = 3.15, rise = 1.1;
+  const hAt = t => he + rise * Math.pow(Math.cos(t * Math.PI / 2), 2) - 0.25 * t * t + 0.35 * Math.pow(t, 6);
+  const uf = pu0 - 0.4, ub = -D / 2 + 0.6;
+  for (let i = 0; i < n; i++) {
+    const t0 = -1 + 2 * i / n, t1 = -1 + 2 * (i + 1) / n, x0 = px + t0 * W / 2, x1 = px + t1 * W / 2;
+    const y0 = hAt(Math.abs(t0)), y1 = hAt(Math.abs(t1));
+    B.quad('copper', [x0, uf, y0 + 0.25], [x1, uf, y1 + 0.25], [x1, ub, y1 + 0.25], [x0, ub, y0 + 0.25]);   // 屋面
+    B.quad('white', [x0, uf, y0], [x1, uf, y1], [x1, uf, y1 + 0.25], [x0, uf, y0 + 0.25]);                 // 白色唐破風板
+    B.quad('dark', [x0, uf + 0.05, he - 0.15], [x1, uf + 0.05, he - 0.15], [x1, uf + 0.05, y1], [x0, uf + 0.05, y0]);   // 破風內側
+  }
 }
 
 // 平台：外圍石砌擋土＋頂面砂利
