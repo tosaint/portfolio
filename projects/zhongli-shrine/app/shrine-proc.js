@@ -469,7 +469,7 @@ export function buildShrine() {
   // 神紋幕：五幅白布，第二、四幅有桐紋（戰後合影照）
   [-1.2, -0.6, 0, 0.6, 1.2].forEach((x, i) => {
     B.box('white', x, -0.15, 0.55, 0.03, 1.72, 2.22);
-    if (i === 1 || i === 3) B.box('dark', x, -0.17, 0.22, 0.02, 1.86, 2.08);
+    if (i === 1 || i === 3) { const g = new THREE.PlaneGeometry(0.4, 0.4); g.rotateY(Math.PI); g.translate(x, 1.97, 0.168); B.add('kamon', g); }   // 社紋（菊＋桔梗）
   });
   B.rod('dark', 0, -0.18, 2.24, 0.04, 3.1);               // 注連繩
   [-1.3, -0.65, 0, 0.65, 1.3].forEach(x => B.box('white', x, -0.2, 0.08, 0.02, 1.95, 2.2));   // 紙垂
@@ -712,6 +712,7 @@ export function buildShrine() {
   mats.brocade = new THREE.MeshLambertMaterial({ map: brocadeTexture(), side: THREE.DoubleSide });
   // 天井：朝下的面只受地面反光，略加自發光以免室內一片漆黑
   mats.chochin = new THREE.MeshLambertMaterial({ map: chochinTexture(), emissive: 0x2a2620, side: THREE.DoubleSide });
+  mats.kamon = new THREE.MeshLambertMaterial({ map: kamonTexture(), side: THREE.DoubleSide });
   mats.ceil = new THREE.MeshLambertMaterial({ color: COLORS.wood, emissive: 0x3e3022, side: THREE.DoubleSide });
   const group = B.build(mats);
   return { group, boxes: B.boxes, mats: Object.values(mats) };
@@ -808,6 +809,45 @@ function strip(B, a, b, w, y, mat) {
     B.add('path', g);
   } else B.box(mat, 0, L / 2, w, L + w * 0.3, y - 0.05, y);
 }
+// 中壢神社社紋：外圈菊花十二瓣、內為桔梗五瓣（尖端朝上），中心小圓帶五枚花蕊。r = 外半徑
+function drawKamon(x, r, ink, paper) {
+  x.strokeStyle = ink; x.lineJoin = 'round';
+  const Rf = r * 0.78, pr = r * 0.235;   // 相鄰花瓣圓略為重疊，交線即瓣間分界
+  x.lineWidth = r * 0.045;
+  const pc = i => { const a = (i + 0.5) / 12 * Math.PI * 2; return [Math.cos(a) * Rf, Math.sin(a) * Rf]; };
+  for (let i = 0; i < 12; i++) { x.beginPath(); x.arc(...pc(i), pr, 0, Math.PI * 2); x.stroke(); }
+  x.fillStyle = paper;                                     // 塗掉重疊處，只留外緣花瓣輪廓
+  for (let i = 0; i < 12; i++) { x.beginPath(); x.arc(...pc(i), pr - x.lineWidth / 2, 0, Math.PI * 2); x.fill(); }
+  x.beginPath(); x.arc(0, 0, Rf, 0, Math.PI * 2); x.fill();
+  const h = Rf * Math.sin(Math.PI / 12), rx = Rf * Math.cos(Math.PI / 12) + Math.sqrt(Math.max(0, pr * pr - h * h));
+  for (let i = 0; i < 12; i++) {                           // 瓣間分界線：自桔梗外緣到花瓣交點
+    const a = i / 12 * Math.PI * 2; x.beginPath(); x.moveTo(Math.cos(a) * r * 0.64, Math.sin(a) * r * 0.64); x.lineTo(Math.cos(a) * rx, Math.sin(a) * rx); x.stroke();
+  }
+  // 外緣花瓣弧（填白後重描外半圈）
+  for (let i = 0; i < 12; i++) { const a = (i + 0.5) / 12 * Math.PI * 2, [cx, cy] = pc(i); const d = Math.acos(Math.min(1, (rx * rx - Rf * Rf - pr * pr) / (-2 * Rf * pr)));
+    x.beginPath(); x.arc(cx, cy, pr, a - (Math.PI - d), a + (Math.PI - d)); x.stroke(); }
+  // 桔梗：五瓣，瓣端略尖，外框粗
+  const Rt = r * 0.62, Rn = r * 0.5, tip = i => -Math.PI / 2 + i / 5 * Math.PI * 2, nb = i => tip(i) + Math.PI / 5;
+  const P = (a, rr) => [Math.cos(a) * rr, Math.sin(a) * rr];
+  x.lineWidth = r * 0.085; x.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const n0 = P(nb(i - 1), Rn), t = P(tip(i), Rt), n1 = P(nb(i), Rn);
+    const mid = (a, b, k) => [(a[0] + b[0]) / 2 * k, (a[1] + b[1]) / 2 * k], c0 = mid(n0, t, 1.12), c1 = mid(t, n1, 1.12);   // 瓣緣微凸、近乎直線，整體呈五角形
+    if (!i) x.moveTo(...n0);
+    x.quadraticCurveTo(...c0, ...t); x.quadraticCurveTo(...c1, ...n1);
+  }
+  x.closePath(); x.stroke();
+  x.lineWidth = r * 0.05;
+  for (let i = 0; i < 5; i++) { x.beginPath(); x.moveTo(...P(nb(i), r * 0.13)); x.lineTo(...P(nb(i), Rn)); x.stroke(); }   // 瓣間分線
+  x.beginPath(); x.arc(0, 0, r * 0.11, 0, Math.PI * 2); x.stroke();                                                          // 花心
+  for (let i = 0; i < 5; i++) { x.beginPath(); x.moveTo(...P(tip(i), r * 0.13)); x.lineTo(...P(tip(i), r * 0.2)); x.stroke(); }   // 花蕊
+}
+function kamonTexture() {                  // 神門紋幕用：白底社紋
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const x = c.getContext('2d'); x.fillStyle = '#fbf9f3'; x.fillRect(0, 0, 256, 256);
+  x.translate(128, 128); drawKamon(x, 110, '#2a2420', '#fbf9f3');
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
 let onAsset = () => {};
 export const setOnAsset = f => { onAsset = f; };   // 非同步貼圖載入後通知重畫
 function chochinTexture() {             // 提燈：竹骨橫紋、一面紋章、一面「中壢神社」（照片中的紋：外圈花瓣、內五瓣）
@@ -817,16 +857,9 @@ function chochinTexture() {             // 提燈：竹骨橫紋、一面紋章�
   x.fillStyle = '#f3efe4'; x.fillRect(0, 0, W, H);
   x.strokeStyle = 'rgba(120,110,95,.35)'; x.lineWidth = 1;
   for (let y = 8; y < H; y += 7) { x.beginPath(); x.moveTo(0, y); x.lineTo(W, y); x.stroke(); }
-  // 紋章（圓周 1/2 處）：外圈十瓣、內五角與五瓣（照片中的紋），約佔燈身寬的一半
-  const cx = W * 0.5, cy = H / 2, ink = '#2a2420', k = 0.62;
-  x.strokeStyle = ink; x.lineWidth = 4;
-  for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; x.beginPath(); x.arc(cx + Math.cos(a) * 62 * k, cy + Math.sin(a) * 70 * k, 24 * k, 0, Math.PI * 2); x.stroke(); }
-  x.fillStyle = '#f3efe4'; x.beginPath(); x.ellipse(cx, cy, 56 * k, 63 * k, 0, 0, Math.PI * 2); x.fill();
-  x.lineWidth = 5; x.beginPath();
-  for (let i = 0; i <= 5; i++) { const a = -Math.PI / 2 + i / 5 * Math.PI * 2; const px = cx + Math.cos(a) * 46 * k, py = cy + Math.sin(a) * 52 * k; i ? x.lineTo(px, py) : x.moveTo(px, py); }
-  x.stroke(); x.lineWidth = 3;
-  for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i + 0.5) / 5 * Math.PI * 2; x.beginPath(); x.arc(cx + Math.cos(a) * 24 * k, cy + Math.sin(a) * 27 * k, 14 * k, 0, Math.PI * 2); x.stroke(); }
-  x.beginPath(); x.arc(cx, cy, 6, 0, Math.PI * 2); x.stroke();
+  // 社紋（圓周 1/2 處）：菊（外圈十二瓣）與桔梗（內五瓣）——依燈籠老照片描繪
+  x.save(); x.translate(W * 0.5, H / 2); x.scale(1, 1.15); drawKamon(x, 56, '#2a2420', '#f3efe4'); x.restore();
+  const ink = '#2a2420';
   // 文字（圓周 1/4 處，直書；與紋章相隔 90°）：粗筆
   x.fillStyle = ink; x.font = '900 46px "Noto Serif TC","PMingLiU",serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
   '中壢神社'.split('').forEach((ch, i) => x.fillText(ch, W * 0.25, 46 + i * 54));
