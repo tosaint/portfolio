@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>舊地圖下載（中壢神社一帶）</title>
+<style>
+  body { margin: 0; padding: 14px; font-family: -apple-system, "PingFang TC", "Noto Sans TC", sans-serif; background: #f6f2e8; color: #1d1b17; }
+  h1 { font-size: 18px; margin: 0 0 6px; }
+  p { font-size: 14px; line-height: 1.6; margin: 4px 0 10px; }
+  section { margin: 18px 0 26px; }
+  h2 { font-size: 16px; margin: 0 0 6px; }
+  .grid { display: grid; gap: 0; border: 3px solid #b23a2a; width: max-content; max-width: 100%; overflow: auto; background: #ddd; }
+  .grid img { display: block; width: 256px; height: 256px; }
+  .st { font-size: 13px; color: #8a6b45; margin: 6px 0; }
+  a.dl { display: inline-block; background: #1d1b17; color: #fff; padding: 9px 14px; border-radius: 10px; text-decoration: none; font-size: 14px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<h1>舊地圖下載：中壢神社一帶</h1>
+<p>這頁直接向中研院百年歷史地圖抓圖磚（zoom 16，3×2 張），拼成一張圖。出現「下載 PNG」就請點下載；如果只看得到地圖、沒有下載鈕，請截圖紅框內的整張地圖。兩種都把圖傳回對話即可。</p>
+<p class="st">資料來源：中央研究院人社中心 GIS 專題中心「臺灣百年歷史地圖」。</p>
+<div id="out"></div>
+<script>
+const Z = 16, X0 = 54832, X1 = 54834, Y0 = 28072, Y1 = 28073;
+const LAYERS = [
+  ['JM25K_1921', '1921 日治二萬五千分之一地形圖'],
+  ['AM50K_1944', '1944 美軍地形圖（五萬分之一）'],
+];
+const URLS = id => ['tainan', 'tileserver'].flatMap(s => ['png', 'jpg'].map(e => (x, y) => `https://gis.sinica.edu.tw/${s}/file-exists.php?img=${id}-${e}-${Z}-${x}-${y}`));
+const load = (src, cors) => new Promise(r => { const im = new Image(); if (cors) im.crossOrigin = 'anonymous'; im.onload = () => r(im); im.onerror = () => r(null); im.src = src; });
+
+for (const [id, title] of LAYERS) {
+  const sec = document.createElement('section');
+  sec.innerHTML = `<h2>${title}</h2><div class="st">尋找圖磚中…</div>`;
+  document.getElementById('out').append(sec);
+  (async () => {
+    const st = sec.querySelector('.st');
+    let url = null;
+    for (const u of URLS(id)) { if (await load(u((X0 + X1) >> 1, Y0), false)) { url = u; break; } }
+    if (!url) { st.textContent = '抓不到這張地圖的圖磚（四種網址都失敗）。'; return; }
+    st.textContent = '圖磚網址：' + url(X0, Y0);
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    grid.style.gridTemplateColumns = `repeat(${X1 - X0 + 1}, 256px)`;
+    for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) { const im = new Image(); im.src = url(x, y); grid.append(im); }
+    sec.append(grid);
+    // 伺服器若允許跨網域，就能拼成一張 PNG 直接下載
+    const cv = document.createElement('canvas');
+    cv.width = (X1 - X0 + 1) * 256; cv.height = (Y1 - Y0 + 1) * 256;
+    const ctx = cv.getContext('2d');
+    let n = 0;
+    for (let y = Y0; y <= Y1; y++) for (let x = X0; x <= X1; x++) {
+      const im = await load(url(x, y), true);
+      if (im) { ctx.drawImage(im, (x - X0) * 256, (y - Y0) * 256); n++; }
+    }
+    try {
+      if (!n) throw 0;
+      const a = document.createElement('a');
+      a.className = 'dl'; a.textContent = '下載 PNG';
+      a.href = cv.toDataURL('image/png');
+      a.download = `${id}_z${Z}_x${X0}_y${Y0}.png`;
+      sec.append(a);
+    } catch (e) {
+      const p = document.createElement('div'); p.className = 'st';
+      p.textContent = '伺服器不允許網頁直接存檔，請截圖紅框內的地圖。';
+      sec.append(p);
+    }
+  })();
+}
+</script>
+</body>
+</html>
