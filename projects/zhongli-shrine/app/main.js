@@ -113,7 +113,8 @@ renderer.localClippingEnabled = true;   // 銅馬掃描：切掉今日的台座
 host.append(renderer.domElement);
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xeef0ec, 450, 1300);
-scene.add(new THREE.HemisphereLight(0xf4f7ff, 0x8a7d62, 1.3));   // 天光微冷、地面反光微暖
+const hemi = new THREE.HemisphereLight(0xf4f7ff, 0x8a7d62, 1.3);   // 天光微冷、地面反光微暖
+scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xffe9c8, 2.9);             // 午後斜陽
 sun.position.set(-55, 70, 40);
 sun.castShadow = true;
@@ -515,8 +516,55 @@ function topView() {
 }
 $('#viewTop').onclick = topView;
 $('#histBtn').onclick = () => { closeCard(); openHistory(); };
-$('#scaleBtn').onclick = () => setScale(!scaleOn);
-$('#view3d').onclick = () => flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov);
+/* ---------- 環繞：鏡頭繞目前中心慢慢轉（約 60 秒一圈），一碰畫面就停 ---------- */
+function setOrbit(on) {
+  controls.autoRotate = on; controls.autoRotateSpeed = 1.0;
+  $('#orbitBtn').classList.toggle('on', on); dirty = true;
+}
+$('#orbitBtn').onclick = () => setOrbit(!controls.autoRotate);
+controls.addEventListener('start', () => { if (controls.autoRotate) setOrbit(false); });
+
+/* ---------- 夜間：深藍天色、月光、提燈與石燈籠火袋透出暖光，星空與提燈微閃 ---------- */
+let night = false, stars = null, glows = [];
+const DAY = { clear: 0xeef0ec, hemiSky: 0xf4f7ff, hemiGround: 0x8a7d62, hemiI: 1.3, sunC: 0xffe9c8, sunI: 2.9, sunP: [-55, 70, 40], exp: 1.15 };
+const NIGHT = { clear: 0x0d1526, hemiSky: 0x5d6f9c, hemiGround: 0x1d1a16, hemiI: 0.42, sunC: 0xa9bde6, sunI: 0.55, sunP: [40, 80, -30], exp: 1.05 };
+function buildNight() {
+  // 星星：遠方天球上的點
+  const n = 700, pos = new Float32Array(n * 3);
+  let r = 99; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < n; i++) { const a = rnd() * Math.PI * 2, e = Math.asin(0.08 + rnd() * 0.92), R = 1200;
+    pos.set([Math.cos(a) * Math.cos(e) * R, Math.sin(e) * R, Math.sin(a) * Math.cos(e) * R], i * 3); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  stars = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xdfe6ff, size: 1.6, sizeAttenuation: false, fog: false, transparent: true, opacity: 0.85 }));
+  stars.visible = false; scene.add(stars);
+  // 三處暖光：第二鳥居、神門、拜殿內（只在夜間開）
+  [[0, LV.T1 + 1.6, 63.4], [0, LV.T2 + 2.2, -GATE_Y + 1.5], [0, LV.T2 + 2.3, -6.5]].forEach(([x, y, z], i) => {
+    const L = new THREE.PointLight(0xffb867, 0, i === 2 ? 14 : 18, 1.6); L.position.set(x, y, z); L.visible = false; scene.add(L); glows.push(L);
+  });
+}
+function setNight(on) {
+  night = on; const S = on ? NIGHT : DAY;
+  renderer.setClearColor(S.clear); scene.fog.color.set(S.clear); renderer.toneMappingExposure = S.exp;
+  hemi.color.set(S.hemiSky); hemi.groundColor.set(S.hemiGround); hemi.intensity = S.hemiI;
+  sun.color.set(S.sunC); sun.intensity = S.sunI; sun.position.set(...S.sunP);
+  const M = shrine?.matsByName || {};
+  if (M.chochin) { M.chochin.emissive.set(on ? 0xffc27a : 0x2a2620); M.chochin.emissiveIntensity = 1; }
+  if (M.kamonStone) { M.kamonStone.emissive.set(on ? 0xffa24a : 0x000000); }
+  [ground, overlay].forEach(gd => gd && gd.mesh.material.color.set(on ? 0x3a4458 : 0xffffff));
+  if (edgeMat) edgeMat.color.set(on ? 0x05070c : 0x2b2118);
+  if (stars) stars.visible = on;
+  glows.forEach(L => { L.visible = on; L.intensity = on ? 9 : 0; });
+  ['#nightBtn', '#nightBtn2'].forEach(q => $(q)?.classList.toggle('on', on));
+  renderer.shadowMap.needsUpdate = true; dirty = true;
+}
+$('#nightBtn').onclick = () => setNight(!night);
+$('#nightBtn2').onclick = () => setNight(!night);
+function flicker(t) {                 // 提燈微閃：燭火般的不規則亮度
+  const M = shrine?.matsByName; if (!M) return;
+  const f = 0.88 + 0.08 * Math.sin(t * 0.0071) + 0.05 * Math.sin(t * 0.0193 + 1.3) + 0.03 * Math.sin(t * 0.047);
+  M.chochin.emissiveIntensity = f; glows.forEach((L, i) => L.intensity = 9 * (f + 0.04 * Math.sin(t * 0.011 + i)));
+  if (stars) stars.material.opacity = 0.75 + 0.1 * Math.sin(t * 0.002);
+}
 
 /* ---------- 導覽模式 ---------- */
 let stopIndex = 0, inPhoto = false;
@@ -653,6 +701,7 @@ try {
   buildHorseLine();
   buildChips();
   buildViewChips();
+  buildNight();
   buildSpots();
   setGround('photo');
   renderer.shadowMap.needsUpdate = true;
@@ -682,6 +731,7 @@ renderer.setAnimationLoop(() => {
     if (k === 1) { const d = fly.done; fly = null; d && d(); }
     dirty = true;
   } else if (controls.enabled && controls.update()) dirty = true;
+  if (night) { flicker(performance.now()); dirty = true; }
   if (dirty) fadeSpotCards();
   if (!dirty) return;                  // 畫面沒變就不重畫：省電、不發燙
   dirty = false;

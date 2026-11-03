@@ -68,6 +68,7 @@
   .row { display:flex; gap:8px; }
   .row button { flex:1; border:0; border-radius:12px; padding:11px 0; font-size:14px; font-weight:700; background:#e4ddcc; }
   .row button.on { background:var(--ink); color:var(--paper); }
+  #nightBtn2.on { background:var(--ink); color:var(--paper); }
   .dims { font-size:14px; font-weight:700; color:var(--ink); background:#ece5d3; border-radius:8px; padding:6px 10px; margin:0 0 8px; }
   .dims small { display:block; font-size:11px; font-weight:400; color:#7a7262; }
   .row button.main { background:var(--ink); color:var(--paper); flex:1.4; }
@@ -161,9 +162,9 @@
   <div class="chips" id="viewChips" aria-label="移到建築旁"></div>
   <div class="row">
     <button id="viewTop">俯視</button>
-    <button id="view3d">立體</button>
+    <button id="orbitBtn">環繞</button>
+    <button id="nightBtn">夜間</button>
     <button id="histBtn">史料</button>
-    <button id="scaleBtn">比例尺</button>
     <button class="main" id="startTour">▶ 六站導覽</button>
   </div>
   <div class="legend">
@@ -176,7 +177,7 @@
 <!-- 導覽卡 -->
 <div class="sheet" id="tour" hidden>
   <div class="dots" id="dots"></div>
-  <div class="eyebrow"><span id="stopNo"></span><button id="endTour">✕ 結束導覽</button></div>
+  <div class="eyebrow"><span id="stopNo"></span><span><button id="nightBtn2">☾ 夜間</button> <button id="endTour">✕ 結束導覽</button></span></div>
   <h2 id="stopTitle"></h2>
   <p id="stopText"></p>
   <div class="slider2" id="slider2">
@@ -193,6 +194,6 @@
 <div id="toast"></div>
 <div id="loading"><b>中壢神社</b><small id="loadMsg">模型載入中…</small></div>
 
-<script type="module" src="./main.js?v=20261103y"></script>
+<script type="module" src="./main.js?v=20261103z"></script>
 </body>
 </html>
