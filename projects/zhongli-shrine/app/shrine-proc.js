@@ -200,8 +200,8 @@ function torii(B, mat, span, H, r) {
     B.cyl('stone', x, 0, r * 1.45, 0, 0.35 * k, 14, r * 1.25);      // 亀腹
   });
   const L = span + 3.4 * k, Ln = span + 2.6 * k;
-  B.box(mat, 0, 0, Ln, 0.24 * k, H - 1.8 * k, H - 1.45 * k);          // 貫
-  B.box(mat, 0, 0, 0.35 * k, 0.2 * k, H - 1.45 * k, H - 0.55 * k);    // 額束
+  B.box(mat, 0, 0, Ln, 0.24 * k, H - 1.45 * k, H - 1.15 * k);         // 貫（第二鳥居照片：貫位置較高，約 0.76 H）
+  B.box(mat, 0, 0, 0.35 * k, 0.2 * k, H - 1.15 * k, H - 0.55 * k);    // 額束
   B.box(mat, 0, 0, L - 0.4 * k, 0.32 * k, H - 0.55 * k, H - 0.3 * k); // 島木
   // 笠木：兩端起翹，分段組成
   const n = 16, y0 = H - 0.3 * k, t = 0.3 * k;
@@ -222,16 +222,29 @@ function shimenawa(B, span, y) {
   [-0.6, -0.2, 0.2, 0.6].forEach(f => B.box('white', f * span / 2, 0, 0.12, 0.03, y - 0.45 - 0.5, y - 0.4));
 }
 // 石燈籠（石燈籠照片）：總高約 3.6 公尺
+// 石燈籠：依第二鳥居旁石燈籠的老照片（三層基壇、鼓形腰竿、斗栱中台、刻五三桐紋的火袋、反翹笠、寶珠），總高約 3.6 公尺
+const sq = (B, y0, y1, w0, w1) => {                   // 方形斷面的錐台（底寬 w0、頂寬 w1）
+  const g = new THREE.CylinderGeometry(w1 / Math.SQRT2, w0 / Math.SQRT2, y1 - y0, 4, 1);
+  g.rotateY(Math.PI / 4); g.translate(0, (y0 + y1) / 2, 0); B.add('stone', g);
+};
 function lantern(B, s = 1) {
-  B.box('stone', 0, 0, 1.6 * s, 1.6 * s, 0, 0.35 * s);
-  B.box('stone', 0, 0, 1.25 * s, 1.25 * s, 0.35 * s, 0.65 * s);
-  B.box('stone', 0, 0, 0.95 * s, 0.95 * s, 0.65 * s, 0.95 * s);
-  B.cyl('stone', 0, 0, 0.36 * s, 0.95 * s, 1.55 * s, 10, 0.24 * s);
-  B.cyl('stone', 0, 0, 0.24 * s, 1.55 * s, 2.15 * s, 10, 0.36 * s);
-  B.box('stone', 0, 0, 0.9 * s, 0.9 * s, 2.15 * s, 2.4 * s);
-  B.box('stone', 0, 0, 0.62 * s, 0.62 * s, 2.4 * s, 2.95 * s);
-  B.cyl('stone', 0, 0, 0.95 * s, 2.95 * s, 3.3 * s, 4, 0.25 * s);   // 笠（四角錐）
-  B.cyl('stone', 0, 0, 0.13 * s, 3.3 * s, 3.62 * s, 8, 0.06 * s);
+  sq(B, 0, 0.32 * s, 2.3 * s, 2.2 * s);               // 基壇三層
+  sq(B, 0.32 * s, 0.58 * s, 1.75 * s, 1.68 * s);
+  sq(B, 0.58 * s, 0.88 * s, 1.4 * s, 1.34 * s);
+  sq(B, 0.88 * s, 1.15 * s, 1.25 * s, 0.82 * s);       // 腰竿：下寬、中細、上略寬（鼓形）
+  sq(B, 1.15 * s, 1.62 * s, 0.82 * s, 0.66 * s);
+  sq(B, 1.62 * s, 1.95 * s, 0.66 * s, 0.78 * s);
+  sq(B, 1.95 * s, 2.06 * s, 0.95 * s, 1.1 * s);        // 斗栱
+  sq(B, 2.06 * s, 2.3 * s, 1.28 * s, 1.24 * s);        // 中台
+  sq(B, 2.3 * s, 2.78 * s, 0.76 * s, 0.76 * s);        // 火袋
+  B.box('dark', 0, 0, 0.5 * s, 0.78 * s, 2.4 * s, 2.68 * s);   // 火口／桐紋（示意）
+  B.box('dark', 0, 0, 0.78 * s, 0.5 * s, 2.4 * s, 2.68 * s);
+  sq(B, 2.78 * s, 2.86 * s, 1.95 * s, 1.95 * s);       // 笠：薄簷＋反翹
+  sq(B, 2.86 * s, 3.12 * s, 1.85 * s, 0.55 * s);
+  [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([a, c]) => B.box('stone', a * 0.92 * s, c * 0.92 * s, 0.18 * s, 0.18 * s, 2.8 * s, 2.98 * s));   // 蕨手般的翹角
+  sq(B, 3.12 * s, 3.24 * s, 0.4 * s, 0.32 * s);        // 請花
+  B.cyl('stone', 0, 0, 0.17 * s, 3.24 * s, 3.56 * s, 10, 0.1 * s);   // 寶珠
+  B.cyl('stone', 0, 0, 0.04 * s, 3.56 * s, 3.62 * s, 6, 0.02 * s);
 }
 function kasugaLantern(B) {
   B.box('stone', 0, 0, 0.6, 0.6, 0, 0.2);
@@ -336,8 +349,9 @@ export function buildShrine() {
   };
   lanternPair(['D3', 'D4'], 6 / L, 5.5);
   { const k = closestT(curve, P([-40.25, -6.3])); lanternPair(['D1', 'D2'], k, 5.5); }
-  for (const [id, p] of Object.entries({ D5: [1.22, -22.52], D6: [15.62, -22.32] })) { const q = P(p); B.begin(id).at(q[0], q[1] + OUT, 0, 0); lantern(B); B.end(); }
-  { const q = P([13.2, -20.7]); B.begin('G').at(q[0], q[1] + OUT, 0, 0);
+  // 第二鳥居前一對：石燈籠照片中燈籠緊鄰鳥居外側、分立參道兩旁
+  [['D5', -5.2], ['D6', 5.2]].forEach(([id, x]) => { B.begin(id).at(x, TORII2_Y - 5.5, 0, 0); lantern(B); B.end(); });
+  { const q = [9.5, TORII2_Y - 9.5]; B.begin('G').at(q[0], q[1], 0, 0);   // 社號標：石燈籠照片中在東側燈籠前方
     B.box('stone', 0, 0, 1.15, 1.15, 0, 0.3); B.box('stone', 0, 0, 0.85, 0.85, 0.3, 0.6); B.box('stone', 0, 0, 0.46, 0.46, 0.6, 3.8); B.end(); }
   { const q = P([4.2, -20.9]); B.begin('E').at(q[0], q[1] + OUT, 0, 0);
     B.box('wood', -1.0, 0, 0.14, 0.14, 0, 2.1); B.box('wood', 1.0, 0, 0.14, 0.14, 0, 2.1);
