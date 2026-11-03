@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED, HORSE } from './shrine-proc.js';
+import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED, HORSE, setOnAsset } from './shrine-proc.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 // 掃描檔已用 meshopt 壓縮、只留顏色貼圖；材質改成 Lambert，手機算得比較輕
@@ -624,6 +624,7 @@ function flyTo(eye, target, fov, done) {
 try {
   const [md, hist] = await Promise.all([fetch('./map-data.json').then(r => r.json()), fetch('./history.json').then(r => r.json()).catch(() => null)]);
   histData = hist;
+  setOnAsset(() => { dirty = true; });
   shrine = buildShrine();
   scene.add(shrine.group);
   fadeMats.push(...shrine.mats);
