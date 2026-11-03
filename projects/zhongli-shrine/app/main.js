@@ -76,7 +76,9 @@ const toast = (t, ms = 2600) => { const e = $('#toast'); e.textContent = t; e.st
 
 /* ---------- 場景 ---------- */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+// 解析度：大螢幕（桌機）畫素多，上限放低；之後依實際畫格時間自動再調（見主迴圈）
+let maxDPR = Math.min(devicePixelRatio, innerWidth > 900 ? 1.25 : 1.75);
+renderer.setPixelRatio(maxDPR);
 renderer.setClearColor(0xe9e6dc);
 host.append(renderer.domElement);
 const scene = new THREE.Scene();
@@ -88,10 +90,13 @@ scene.add(sun);
 const camera = new THREE.PerspectiveCamera(50, 1, 0.5, 3000);   // near 0.5：遠看時深度較精準
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+controls.dampingFactor = 0.12;
+controls.zoomToCursor = true;          // 滾輪／雙指往游標處縮放，才能拉近到各棟建築旁
+controls.screenSpacePanning = false;   // 平移沿地面
+controls.zoomSpeed = 1.2;
 controls.maxPolarAngle = Math.PI / 2 - 0.03;
-controls.minDistance = 3;
+controls.minDistance = 2;
 controls.maxDistance = 650;
-controls.minDistance = 4;
 controls.addEventListener('change', () => { dirty = true; });
 
 /* ---------- 版面：3D 高度 = 螢幕 − 目前的底部面板 ---------- */
@@ -104,7 +109,8 @@ function photoFov() {
   return THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(half) * viewH / photoRect().h));
 }
 function resize() {
-  viewH = innerHeight - bottomSheet().offsetHeight + 16;
+  const wide = innerWidth >= 900;      // 桌機面板浮在畫面上，不壓縮 3D 高度
+  viewH = wide ? innerHeight : innerHeight - bottomSheet().offsetHeight + 16;
   host.style.height = viewH + 'px';
   renderer.setSize(innerWidth, viewH);
   camera.aspect = innerWidth / viewH;
@@ -116,7 +122,7 @@ function resize() {
   Object.assign($('#shadeTop').style, { top: 0, height: top + 'px' });
   Object.assign($('#shadeBot').style, { top: (top + h) + 'px', height: Math.max(0, viewH - top - h) + 'px' });
   $('#photoLayer').style.top = top + 'px';
-  $('#credit').style.bottom = (innerHeight - viewH + 4) + 'px';
+  $('#credit').style.bottom = (wide ? 6 : innerHeight - viewH + 4) + 'px';
 }
 addEventListener('resize', resize);
 const ro = new ResizeObserver(resize);
@@ -137,7 +143,7 @@ const photoMarker = new THREE.Group();
   const pts = [];
   corners.forEach(c => pts.push(eye, c));
   photoMarker.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xb23a2a })));
-  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 12), new THREE.MeshBasicMaterial({ color: 0xb23a2a }));
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 12), new THREE.MeshBasicMaterial({ color: 0xb23a2a }));
   dot.position.copy(eye); photoMarker.add(dot);
   scene.add(photoMarker);
 }
@@ -384,7 +390,36 @@ $('#lightbox').onclick = () => $('#lightbox').classList.remove('show');
 renderer.domElement.addEventListener('pointerdown', closeCard);
 
 /* ---------- 視角 ---------- */
-const HOME = { eye: [-210, 150, 150], target: [-40, 0, 30] };   // 公尺
+// 移到各建築旁：以建築外框為準，從斜前方、約人眼到二樓高度看過去
+const VIEWS = [
+  ['B1', '第一鳥居', [-0.2, 0.25, 1]], ['B2', '第二鳥居', [0.35, 0.25, 1]], ['N', '神門', [0.5, 0.3, 1]],
+  ['P', '拜殿', [0.25, 0.25, 1]], ['Q', '本殿', [-1, 0.35, 0.25]], ['H', '社務所', [-1, 0.3, 0.6]], ['L', '神馬', [0.8, 0.3, 0.6]],
+];
+function flyToObj(id, dir) {
+  const b = boxOf(id); if (!b) return;
+  const c = b.getCenter(new THREE.Vector3()), s = b.getSize(new THREE.Vector3());
+  const d = Math.max(s.x, s.y, s.z) * 1.5 + 5, v = new THREE.Vector3(...dir).normalize();
+  c.y = Math.min(c.y, b.min.y + s.y * 0.45);
+  flyTo(c.clone().addScaledVector(v, d), c, baseFov);
+}
+function buildViewChips() {
+  const box = $('#viewChips');
+  const top = document.createElement('button'); top.textContent = '全景'; top.onclick = () => flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov); box.append(top);
+  VIEWS.forEach(([id, label, dir]) => { const b = document.createElement('button'); b.textContent = label; b.onclick = () => { closeCard(); flyToObj(id, dir); }; box.append(b); });
+}
+// 雙擊（或雙點）畫面上的地點：飛過去，以該點為旋轉中心
+const ray = new THREE.Raycaster();
+renderer.domElement.addEventListener('dblclick', e => {
+  if (inPhoto) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ray.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1), camera);
+  const hit = ray.intersectObjects(scene.children, true).find(h => h.object.visible && h.object.type === 'Mesh');
+  if (!hit) return;
+  const p = hit.point, off = camera.position.clone().sub(controls.target);
+  off.setLength(Math.max(12, Math.min(off.length() * 0.45, 60)));
+  flyTo(p.clone().add(off), p, camera.fov);
+});
+const HOME = { eye: innerWidth >= 900 ? [-46, 46, 100] : [-12, 48, 82], target: innerWidth >= 900 ? [10, 0, 30] : [3, 0, 16] };   // 公尺：斜前方望第二鳥居、神門、拜殿與社務所
 function topView() {
   // 從正上方往下看，讓北方朝上（相機稍微偏南，OrbitControls 才轉得動）
   const t = new THREE.Vector3(-40, groundH, 40), n = NORTH_Q;
@@ -498,7 +533,7 @@ function nearest() {
 }
 
 /* ---------- 相機飛行與主迴圈 ---------- */
-let fly = null, dirty = true;
+let fly = null, dirty = true, slow = 0, fast = 0, lastFrame = 0;
 function flyTo(eye, target, fov, done) {
   fly = { p0: camera.position.clone(), t0: controls.target.clone(), f0: camera.fov, p1: eye, t1: target, f1: fov, start: performance.now(), ms: 1300, done };
 }
@@ -518,6 +553,7 @@ try {
   buildScaleAids();
   buildHorseLine();
   buildChips();
+  buildViewChips();
   setGround('photo');
   $('#loading').style.opacity = 0;
   setTimeout(() => $('#loading').remove(), 500);
@@ -527,7 +563,7 @@ try {
 }
 
 resize();
-camera.position.set(-160, 200, 160); controls.target.set(-10, 0, -8);
+camera.position.set(-90, 120, 190); controls.target.set(6, 2, 22);
 camera.fov = baseFov; camera.updateProjectionMatrix();
 const hashStop = Number((location.hash.match(/stop-(\d)/) || [])[1]);
 if (hashStop) startTour(hashStop - 1);
@@ -548,6 +584,14 @@ renderer.setAnimationLoop(() => {
   if (!dirty) return;                  // 畫面沒變就不重畫：省電、不發燙
   dirty = false;
   renderer.render(scene, camera);
+  // 依實際畫格間隔調解析度：連續重畫時若常超過約 28 毫秒（不到 35 fps）就降低，持續順暢再慢慢升回上限
+  const now = performance.now(), dt = now - lastFrame, pr = renderer.getPixelRatio();
+  if (dt < 200) {
+    slow = dt > 28 ? slow + 1 : Math.max(0, slow - 1);
+    if (slow > 8 && pr > 0.75) { renderer.setPixelRatio(Math.max(0.75, pr - 0.25)); slow = 0; fast = 0; }
+    else if (dt < 18 && pr < maxDPR && ++fast > 240) { renderer.setPixelRatio(Math.min(maxDPR, pr + 0.25)); fast = 0; }
+  }
+  lastFrame = now;
   updatePins();
 });
 
