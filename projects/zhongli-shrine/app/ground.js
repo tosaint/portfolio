@@ -60,11 +60,10 @@ function loadImg(src) {
  * 建立地面。回傳 { mesh, setLayer(id), planToLL, llToPlan, north }。
  * bounds：要鋪多大（模型平面座標）。每個圖層用自己的 zoom 重新拼圖。
  */
-export function createGround(scene, control, { bounds, height = 0 } = {}) {
-  const { planToLL, llToPlan } = fit(control);
-  const corners = [[bounds.x0, bounds.y0], [bounds.x1, bounds.y0], [bounds.x1, bounds.y1], [bounds.x0, bounds.y1]].map(planToLL);
+export function createGround(scene, { bounds, height = 0, qToLL, llToQ, north }) {
+  // bounds 為 q 座標（公尺）；四角換成經緯度，決定要抓哪些圖磚
+  const corners = [[bounds.x0, bounds.y0], [bounds.x1, bounds.y0], [bounds.x1, bounds.y1], [bounds.x0, bounds.y1]].map(qToLL);
   const lats = corners.map(c => c[0]), lngs = corners.map(c => c[1]);
-
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   const tex = new THREE.CanvasTexture(canvas);
@@ -80,7 +79,7 @@ export function createGround(scene, control, { bounds, height = 0 } = {}) {
   mesh.name = 'ground';
   mesh.visible = false;
   scene.add(mesh);
-  const P = ([x, y]) => [x, height, -y];         // 模型平面 → three.js 世界座標
+  const P = ([x, y]) => [x, height, -y];         // q → three.js 世界座標
 
   let token = 0;
   async function setLayer(id) {
@@ -96,12 +95,12 @@ export function createGround(scene, control, { bounds, height = 0 } = {}) {
     for (let ty = ty0; ty <= ty1; ty++) for (let tx = tx0; tx <= tx1; tx++)
       jobs.push(loadImg(L.url(z, tx, ty)).then(im => { if (im) octx.drawImage(im, (tx - tx0) * 256, (ty - ty0) * 256); return !!im; }));
     const ok = (await Promise.all(jobs)).some(Boolean);
-    if (my !== token) return ok;                 // 使用者已經切到別的圖層
+    if (my !== token) return ok;
     if (!ok) return false;
     canvas.width = off.width; canvas.height = off.height;
     ctx.drawImage(off, 0, 0);
-    const tl = llToPlan(y2lat(ty0, z), x2lng(tx0, z)), tr = llToPlan(y2lat(ty0, z), x2lng(tx1 + 1, z));
-    const br = llToPlan(y2lat(ty1 + 1, z), x2lng(tx1 + 1, z)), bl = llToPlan(y2lat(ty1 + 1, z), x2lng(tx0, z));
+    const tl = llToQ(y2lat(ty0, z), x2lng(tx0, z)), tr = llToQ(y2lat(ty0, z), x2lng(tx1 + 1, z));
+    const br = llToQ(y2lat(ty1 + 1, z), x2lng(tx1 + 1, z)), bl = llToQ(y2lat(ty1 + 1, z), x2lng(tx0, z));
     geo.attributes.position.array.set([...P(tl), ...P(tr), ...P(br), ...P(bl)]);
     geo.attributes.position.needsUpdate = true;
     geo.computeBoundingSphere();
@@ -109,9 +108,5 @@ export function createGround(scene, control, { bounds, height = 0 } = {}) {
     mat.opacity = 1; mesh.visible = true;
     return true;
   }
-  // 正北方向（模型平面座標的單位向量），俯視時讓北方朝上
-  const a = llToPlan(24.962, 121.2095), b = llToPlan(24.963, 121.2095);
-  const nl = Math.hypot(b[0] - a[0], b[1] - a[1]);
-  const north = [(b[0] - a[0]) / nl, (b[1] - a[1]) / nl];
-  return { mesh, setLayer, planToLL, llToPlan, north, height };
+  return { mesh, setLayer, north, height };
 }
