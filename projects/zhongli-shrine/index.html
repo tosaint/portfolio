@@ -74,6 +74,12 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 .text ol.tl b { display: inline-block; min-width: 6.5em; font: 400 12px var(--mono); color: var(--ink-3); }
 .text ol.refs { font-size: 14px; color: var(--ink-2); }
 .text li { margin-bottom: .5em; }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 14px 0 6px; }
+.pgrid figure { margin: 0; }
+.pgrid img { width: 100%; aspect-ratio: 3/2; object-fit: cover; display: block; border: 1px solid var(--rule); }
+.pgrid figcaption { font-size: 12px; color: var(--ink-3); margin-top: 4px; line-height: 1.4; }
+.pgrid .no img { outline: 3px solid #b23a2a; outline-offset: -3px; }
+.pgrid .yes img { outline: 3px solid #2f6f4f; outline-offset: -3px; }
 
 .data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; padding-top: clamp(24px, 4vw, 40px); border-top: 1px solid var(--rule); font-size: 14px; }
 .data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
@@ -102,7 +108,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
       <p class="en-title">Zhongli Shrine, Then and Now</p>
       <p class="lede">1939 年的神社，今天的中壢高中。<span>A shrine of 1939, on the ground of today’s Zhongli Senior High School.</span></p>
     </div>
-    <figure class="plan"><img src="img/axon.png" alt="Axonometric line drawing of the reconstructed shrine: the tower gate with its stone lions and bronze horse in front, the worship hall with a sweeping roof, the main sanctuary behind, all inside a roofed wooden fence"></figure>
+    <figure class="plan"><img src="img/axon.png" alt="Axonometric line drawing of the reconstructed shrine: the gate with its stone lions and bronze horse in front, the worship hall with curved irimoya roof and bracket sets, the nagare-style main sanctuary with chigi and katsuogi behind, all inside a roofed wooden fence"></figure>
   </section>
 
   <nav class="enter one" aria-label="Open the work">
@@ -185,6 +191,29 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
         <li><b>1991</b>The last remains of the halls go when the Taoran Pavilion is built.</li>
         <li><b>2000s</b>The first priest's widow donates the ceremony photographs to the school.</li>
       </ol>
+    </div>
+  </section>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>照片比對：神門是後來增建的嗎？</h2>
+      <p>3D 復原時，把老照片逐張對到模型上（以參拜道實測寬 3.01 公尺為比例尺反求拍攝位置），發現照片分成兩組：<b>1939 年 10 月鎮座祭當天</b>拍的照片，中軸上都看不到神門；看得到神門的照片，則都沒有祭典場面。</p>
+      <div class="pgrid">
+        <figure class="no"><img src="app/photos/torii2-festival.jpg" alt="鎮座祭行列穿過第二鳥居" loading="lazy"><figcaption>鎮座祭行列：穿過第二鳥居，後方直接是石階、木柵與拜殿</figcaption></figure>
+        <figure class="no"><img src="app/photos/torii2-side.jpg" alt="第二鳥居側面" loading="lazy"><figcaption>第二鳥居側面：狛犬立在鳥居內側石階旁，不見神門</figcaption></figure>
+        <figure class="no"><img src="app/assets/photo-study/haiden-front.jpg" alt="鎮座祭拜殿正面" loading="lazy"><figcaption>拜殿正面（來賓帳篷）：反求拍攝點距石階約 29 公尺，前方無遮擋</figcaption></figure>
+        <figure class="yes"><img src="app/photos/gate.jpg" alt="神門與狛犬" loading="lazy"><figcaption>神門與狛犬，後方為拜殿（拍攝年代未知）</figcaption></figure>
+        <figure class="yes"><img src="app/photos/horse-komainu-gate.jpg" alt="銅馬合影" loading="lazy"><figcaption>銅馬合影：馬在神門左側，狛犬立在門柱前</figcaption></figure>
+        <figure class="yes"><img src="app/photos/gate-postwar.jpg" alt="神門前合影" loading="lazy"><figcaption>神門前合影：格子壁、桐紋幕（服裝看來為 1940 年代）</figcaption></figure>
+      </div>
+      <p style="font-size:12px;color:var(--ink-3)">照片：三森久子捐贈，壢中校史館藏；銅馬合影與神門前合影翻拍自校內展示。</p>
+      <p>紅框為看不到神門的照片，綠框為看得到神門的照片。鎮座祭那幾張的拍攝位置，正好落在配置圖上神門所在的位置附近；若當時已有神門，應該會擋在畫面正中央。狛犬的位置也不同：鎮座祭時在第二鳥居內側，其他照片中則在神門前。</p>
+      <p><b>暫定推論：</b>神門與屋根付玉垣的正面，是鎮座之後才增建，狛犬也隨之移到門前。3D 模型呈現的是增建後的配置。</p>
+      <p class="en" style="color:var(--ink-3)">待查證：銅馬說明牌寫此照為「昭和十四年（1939）初落成時」，與上述推論不一致，可能是說明牌年代較籠統；也還沒有找到神門興建年代的文獻。如有資料，歡迎指正。</p>
+    </div>
+    <div lang="en">
+      <h2>Was the gate added later?</h2>
+      <p class="en">Matching the old photographs to the model splits them into two groups. The photographs taken at the consecration in October 1939 show no gate on the axis: the procession walks through the second torii straight to the steps and the worship hall, and the photographer of the frontal view stood where the plan puts the gate. Every photograph that does show the gate has no ceremony in it. The working reading is that the gate and the front of the fence were added after 1939 and the stone lions moved in front of it; the model shows that later layout. One caption dates a gate photograph to 1939, so this is still open.</p>
     </div>
   </section>
 
