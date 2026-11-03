@@ -23,6 +23,7 @@ export const LV = {
 // 暗帶後方的亮方塊是內苑（砂利）；第二鳥居在帶狀區前端 q.y 約 −62～−68。
 // 神門到拜殿的距離（21 公尺）則用神門照片反求的結果。
 export const GATE_Y = -15.0;          // 神門（內苑前緣）
+export const KOMA_POS = [[-3.2, GATE_Y - 4.3], [3.2, GATE_Y - 4.3]];   // 狛犬（神門照片反求）
 const IN = GATE_Y + 28.2;             // 內苑各構件相對於舊配置的位移（神門照片反求時神門在 −28.2）
 export const TORII2_Y = -64.0;        // 第二鳥居
 const OUT = TORII2_Y + 56.6;          // 第二鳥居一帶（燈籠、社號標等）相對舊配置的位移
@@ -235,15 +236,13 @@ function kasugaLantern(B) {
   B.cyl('stone', 0, 0, 0.42, 1.55, 1.8, 6, 0.08);
   B.cyl('stone', 0, 0, 0.06, 1.8, 1.95, 6);
 }
-// 狛犬（簡化造形）：神門照片反求，連台座約 1.7 公尺
+// 狛犬台座：神門照片中為素面方台，連石獅約 1.8 公尺
+export const KOMA_PED = 0.8;
 function komainu(B, flip) {
-  B.box('stone', 0, 0, 0.85, 0.85, 0, 0.2);
-  B.box('stone', 0, 0, 0.68, 0.68, 0.2, 0.92);
-  B.box('stone', 0, 0, 0.76, 0.76, 0.92, 1.0);
-  B.box('stone', 0, 0.1, 0.36, 0.46, 1.0, 1.26);            // 後腿坐姿
-  B.box('stone', 0, -0.1, 0.3, 0.26, 1.0, 1.52);            // 胸與前腳
-  B.box('stone', 0, -0.15, 0.32, 0.3, 1.44, 1.68);          // 頭
-  B.box('stone', flip * 0.04, 0.3, 0.12, 0.12, 1.24, 1.52); // 尾
+  // 只建台座；石獅本身用忠義祠現存狛犬的 3D 掃描（main.js 載入 komainu-scan.glb）
+  B.box('stone', 0, 0, 0.9, 1.1, 0, 0.18);
+  B.box('stone', 0, 0, 0.72, 0.92, 0.18, 0.72);
+  B.box('stone', 0, 0, 0.8, 1.0, 0.72, KOMA_PED);
 }
 // 圍牆一段：從 a 到 b（q 座標），type = 'tama'（屋根付玉垣）| 'sukibei'（透塀）| 'low'（低玉垣）
 function fence(B, a, b, base, type) {
@@ -373,7 +372,7 @@ export function buildShrine() {
   B.box('dark', 0, 0, 5.4, 2.4, 2.55, 2.8);    // 斗栱帶
   kirizuma(B, 0, 0, 7.1, 3.0, 3.0, 2.75, 4.3, true, 0.15);
   B.end();
-  [-3.2, 3.2].forEach((x, i) => { B.begin('K').at(x, GATE_Y - 4.3, 0, LV.T1); komainu(B, i ? 1 : -1); B.end(); });
+  KOMA_POS.forEach(([x, y], i) => { B.begin('K').at(x, y, 0, LV.T1); komainu(B, i ? 1 : -1); B.end(); });
 
   /* ---- 屋根付玉垣（內苑四周）＋透塀（本殿四周）---- */
   fence(B, [T2.x0, T2.y0], [-2.4, T2.y0], LV.T2, 'tama');
