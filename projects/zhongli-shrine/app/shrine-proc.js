@@ -254,12 +254,6 @@ function chochin(B, x, u, y0, s, textFront) {
     B.quad('white', [x0, u - D + 0.03, yb], [x1, u - D + 0.03, yb], [x1, u - D + 0.03, y1r - 0.09 * s], [x0, u - D + 0.03, y0r - 0.09 * s]);   // 妻板
   }
   B.box('white', x, u - D, 0.2 * s, 0.1 * s, yb + h - 0.02, yb + h + 0.16 * s);   // 棟の飾り（桐）
-  // 背後的花瓣形飾框：以屋頂中心為圓心、半圓排列的大花瓣（白框透空）
-  const cy = yb + h * 0.35;
-  for (let i = 0; i < 9; i++) {
-    const a = Math.PI * (-0.08 + 1.16 * i / 8), g = new THREE.TorusGeometry(0.2 * s, 0.026 * s, 3, 12);
-    g.translate(x + Math.cos(a) * 0.72 * s, cy + Math.sin(a) * 0.62 * s, -(u + D + 0.06)); B.add('white', g);
-  }
 }
 // 揭示場（制札）：Tinkercad 模型＋石燈籠照片。石基座 2.8×1.5、木柵高約 1 公尺、告示板 2×1.1、總高約 3 公尺。
 // 局部座標：x 沿長邊、-u 為告示板正面。屋頂為反曲兩坡（照り屋根），山牆有懸魚，屋脊兩端起翹。
@@ -487,16 +481,6 @@ export function buildShrine() {
   B.begin('B2').at(AX, TORII2_Y, 0, LV.T1); torii(B, 'wood', 4.0, 6.0, 0.21); shimenawa(B, 4.0, 4.5); B.end();
   B.at(AX, TORII2_Y - 1.7, 0, 0); steps(B, 0, 0, 5.0, LV.T1, 3, 0.43);   // 石階三段（鎮座祭照片）
   [-2.68, 2.68].forEach(x => { B.box('stone', x, 0.65, 0.36, 1.3, 0, LV.T1 + 0.06); B.box('stone', x, -0.08, 0.36, 0.25, 0, 0.3); });   // 袖石
-  // 鳥居柱上綁的笹枝（細枝向上斜伸＋白紙垂），鎮座祭照片
-  [-2.0, 2.0].forEach(x => {
-    for (let j = 0; j < 6; j++) {
-      const a = (j / 5 - 0.5) * 1.3 + (x > 0 ? 0.25 : -0.25), len = 1.0 + (j % 3) * 0.25, y0 = LV.T1 + 1.2;
-      const g = new THREE.CylinderGeometry(0.012, 0.02, len, 4); g.translate(0, len / 2, 0); g.rotateZ(-a); g.translate(x, y0, 0.28); B.add('leaf', g);
-      const tx = x + Math.sin(a) * len, ty = y0 + Math.cos(a) * len;
-      const t = new THREE.BoxGeometry(0.22, 0.06, 0.04); t.rotateZ(-a + 0.6); t.translate(tx, ty, 0.28); B.add('leaf', t);
-    }
-    for (let k = 0; k < 3; k++) B.box('white', x + (k - 1) * 0.16, -0.3, 0.06, 0.02, LV.T1 + 1.25, LV.T1 + 1.75 - k * 0.05);
-  });
   // 鳥居兩側的大提燈（立柱上，欄杆內側）
   B.at(0, 0);
   [-1, 1].forEach(sx => { B.box('dark', sx * 3.1, TORII2_Y + 0.6, 0.12, 0.12, LV.T1, LV.T1 + 1.4); chochin(B, sx * 3.1, TORII2_Y + 0.6, LV.T1 + 1.35, 0.75, sx > 0); });
