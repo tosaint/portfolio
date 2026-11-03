@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildShrine, LV, DIMS, GATE_Y } from './shrine-proc.js';
+import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED } from './shrine-proc.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createGround, GROUND_LAYERS } from './ground.js';
 import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
@@ -167,6 +167,23 @@ function loadHorseScan() {
     scan.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = false; fadeMats.push(m.material); } });
     horseScan = scan; scene.add(scan); applyEra(); dirty = true;
   }, undefined, e => console.warn('銅馬掃描載入失敗', e));
+}
+
+/* ---------- 狛犬掃描 ---------- */
+// 現存於中壢忠義祠的狛犬（台座刻「昭和十四年十月」）3D 掃描，裁切、減面後約 0.3 MB。
+// 掃描只有一尊，另一尊以鏡像代替（原為阿吽一對，造形不同）。
+function loadKomainu() {
+  new GLTFLoader().load('./assets/komainu-scan.glb', g => {
+    g.scene.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.side = THREE.DoubleSide; fadeMats.push(m.material); } });
+    KOMA_POS.forEach(([x, y], i) => {
+      const k = i ? g.scene : g.scene.clone();
+      k.position.set(x, LV.T1 + KOMA_PED, -y);
+      if (!i) k.scale.x = -1;                 // 左側鏡像
+      k.rotation.y = i ? 0.35 : -0.35;        // 略朝參道中央
+      scene.add(k);
+    });
+    applyEra(); dirty = true;
+  }, undefined, e => console.warn('狛犬掃描載入失敗', e));
 }
 
 /* ---------- 比例尺：10 公尺格線＋1.7 公尺人形 ---------- */
@@ -486,6 +503,7 @@ try {
   overlay = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.12, qToLL, llToQ, north: NORTH_Q, order: -1 });
   places = md.places.map(p => ({ ...p, pos: p.q || (p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng)) }));
   loadHorseScan();
+  loadKomainu();
   buildScaleAids();
   buildHorseLine();
   buildChips();
