@@ -43,7 +43,7 @@ export const DIMS = {
   P: '依拜殿正面照（自神門往拜殿）：以參拜道實測寬 3.01 公尺為比例，相機與尺寸聯合反求，誤差約 5 像素；深度依神門照片',
   Q: '依本殿歷史照片：流造檜皮葺、前簷延伸為向拜、千木與鰹木 6 根、高床與三面高欄；以巫女身高約 1.5 公尺為比例',
   D6: '依石燈籠照片：三層台座、竿、中台、火袋、笠、寶珠',
-  H: '位置依 1947 航照；外觀依校史館照片（唐破風玄關、黑瓦寄棟），以合影人身高推估',
+  H: '量體依 Tinkercad 粗模：主屋 15×9、屋脊 7.7 公尺，背後接宿舍（後棟）與小附屬屋；外觀依校史館照片；位置依 1947 航照',
   G: '依石燈籠照片背景',
   L: '3D 掃描＋現場實測',
   F: '依 Tinkercad 模型：兩段石台座、方柱、札板「下乘」、小屋蓋，總高約 2.4 公尺',
@@ -474,7 +474,7 @@ export function buildShrine() {
   // 石板參拜道（實測寬 3.01 公尺）
   strip(B, [AX, -71], [AX, TORII2_Y - 1.7], 3.01, 0.04, 'path');
   strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.5], 3.01, LV.T1 + 0.03, 'path');
-  strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.5], 9, LV.T1 + 0.015, 'gravel');   // 航照中的帶狀亮區
+  strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.5], 9, LV.T1 + 0.015, 'gravel', false);   // 航照中的帶狀亮區
   strip(B, [AX, GATE_Y + 1.5], [AX, -11.7 + IN], 3.01, LV.T2 + 0.03, 'path');
 
   /* ---- 第二鳥居（木造明神鳥居，高約 6 公尺，柱距 4 公尺）---- */
@@ -532,10 +532,10 @@ export function buildShrine() {
   // 照片為戰後修復上色，顏色改以和風神社配色統一：白漆喰牆、白木柱、深色腰板、黑瓦、銅板葺玄關。
   // 長邊沿中軸方向、玄關朝參道（西側）。
   { const q = [37.8, -51.4]; B.begin('H').at(q[0], q[1], Math.PI / 2, 0); office(B); B.end(); }
-  // 宿舍（1947 航照簡報標示位置；外觀推估）
-  B.begin('H2').at(57.1, -50.3, 0, 0);
-  B.box('stone', 0, 0, 10.4, 7.4, 0, 0.45); B.box('wood', 0, 0, 10, 7, 0.45, 3.0);
-  yosemune(B, 0, 0, 11.4, 8.4, 2.9, 5.0); B.end();
+  // 社務所前的鋪面：玄關前前庭＋斜向步道，接到第二鳥居前廣場（依 1947 航照的亮色開闊地）
+  strip(B, [30.9, -51.4], [27.3, -51.4], 6.0, 0.04, 'path');
+  strip(B, [27.6, -51.4], [21.5, -58.2], 2.5, 0.04, 'path');
+  strip(B, [21.9, -57.8], [13.6, -63.6], 2.5, 0.04, 'path');
 
   /* ---- 神門（四脚門、切妻造）＋狛犬 ---- */
   // 神門照片反求（以拜殿正面照定出的拜殿尺寸為比例尺）：屋頂寬約 7.1、簷高 2.75、屋脊 4.4 公尺
@@ -832,9 +832,21 @@ function closestT(curve, [x, y]) {
   return best;
 }
 
+// 社務所附屬量體：與主屋同樣式（深色腰板、白漆喰牆、白木壁柱、鐵窗、燻瓦寄棟）。cx,cu 中心；w 沿 x、d 沿 u
+function annex(B, cx, cu, w, d, F, E, hr, win) {
+  B.box('brown', cx, cu, w, d, 0, F + 0.35);
+  B.box('plaster', cx, cu, w - 0.04, d - 0.04, F + 0.35, E);
+  for (let x = cx - w / 2; x <= cx + w / 2 + 1e-6; x += w / Math.max(1, Math.round(w / 1.25))) B.box('wood', x, cu + d / 2, 0.12, 0.08, F + 0.35, E);
+  for (let u = cu - d / 2; u <= cu + d / 2 + 1e-6; u += d / Math.max(1, Math.round(d / 1.25))) { B.box('wood', cx - w / 2, u, 0.08, 0.12, F + 0.35, E); B.box('wood', cx + w / 2, u, 0.08, 0.12, F + 0.35, E); }
+  B.box('brown', cx, cu + d / 2, w + 0.05, 0.1, F + 0.3, F + 0.4);
+  if (win) { win(cx - w / 4, cu + d / 2 + 0.03, true); win(cx + w / 4, cu + d / 2 + 0.03, true); win(cx - w / 2 - 0.03, cu, false); win(cx + w / 2 + 0.03, cu, false); }
+  else B.box('sash', cx + w / 2 + 0.03, cu, 0.08, 0.6, F + 1.4, F + 1.9);
+  yosemune(B, cx, cu, w + 1.0, d + 1.0, E - 0.05, hr, 'tile');
+}
 // 社務所（局部座標：x 沿長邊 15 公尺，u 為進深 9 公尺，-u 為正面／玄關側）
 function office(B) {
-  const L = 15, D = 9, F = 0.55, E = 3.35;               // 長、深、地板高、簷高
+  // 量體依 Tinkercad 粗模（0.214 公尺／單位）：主屋 15×9、屋脊 7.7；背後中央接宿舍（後棟）與小附屬屋
+  const L = 15, D = 9, F = 0.55, E = 3.6;                // 長、深、地板高、簷高
   B.box('brown', 0, 0, L, D, 0, F + 0.35);                 // 基礎＋腰牆（深色）
   B.box('plaster', 0, 0, L - 0.04, D - 0.04, F + 0.35, E);  // 外牆
   // 壁面分格：直向壁柱＋一道橫帶
@@ -855,13 +867,17 @@ function office(B) {
     }
   };
   [-5.5, -2.8, 4.8].forEach(x => win(x, -D / 2 - 0.03, true));
-  [-5, -1.5, 2, 5].forEach(x => win(x, D / 2 + 0.03, true));
+  [-5.4, 5.4].forEach(x => win(x, D / 2 + 0.03, true));
   [-2, 2].forEach(u => { win(-L / 2 - 0.03, u, false); win(L / 2 + 0.03, u, false); });
   // 寄棟黑瓦屋頂（出簷 0.8）
-  yosemune(B, 0, 0, L + 1.6, D + 1.6, E - 0.05, E + 2.7, 'tile');
-  B.box('tile', 0, 0, L + 1.6 - D - 1.6 + 0.3, 0.3, E + 2.6, E + 2.85);
+  yosemune(B, 0, 0, L + 1.6, D + 1.6, E - 0.05, 7.7, 'tile');
+  B.box('tile', 0, 0, L + 1.6 - D - 1.6 + 0.3, 0.3, 7.6, 7.85);
+  // 宿舍（後棟）：接在主屋背面中央，6.6 × 5.1、簷高 3.2、屋脊 6.1
+  annex(B, 0, D / 2 + 2.55, 6.6, 5.1, F, 3.2, 6.1, win);
+  // 小附屬屋（浴廁推估）：接在宿舍後方，1.9 × 1.9、簷高 2.5
+  annex(B, -1.6, D / 2 + 5.1 + 0.95, 1.9, 1.9, F, 2.5, 3.3, null);
   // 唐破風玄關：寬 4.2、出 2.6 公尺，白色雙柱
-  const px = 1.6, pw = 4.2, pd = 2.6, pu0 = -D / 2 - pd;
+  const px = 0, pw = 4.2, pd = 2.6, pu0 = -D / 2 - pd;
   B.box('stone', px, pu0 + pd / 2, pw + 0.4, pd + 0.2, 0, F - 0.15);          // 玄關土間
   B.box('stone', px, pu0 - 0.3, pw - 0.6, 0.6, 0, (F - 0.15) / 2);           // 台階
   [-1, 1].forEach(sx => { B.cyl('wood', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.16, F - 0.15, 3.05, 12); B.box('wood', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.42, 0.42, 2.95, 3.15); });
@@ -888,7 +904,7 @@ function plat(B, r, y0, y1) {
   B.box('gravel', cx, cy, w - 0.1, d - 0.1, y1 - 0.03, y1);
 }
 // 帶狀鋪面（石板道或砂利道）：a→b，寬 w，頂高 y
-function strip(B, a, b, w, y, mat) {
+function strip(B, a, b, w, y, mat, ext = true) {
   const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy);
   B.at(a[0], a[1], Math.atan2(dx, dy), 0);
   if (mat === 'path') {
@@ -898,7 +914,7 @@ function strip(B, a, b, w, y, mat) {
     const uv = g.attributes.uv, P = g.attributes.position;
     for (let i = 0; i < uv.count; i++) uv.setXY(i, P.getX(i) / 0.76, P.getZ(i) / 0.78);
     B.add('path', g);
-  } else B.box(mat, 0, L / 2, w, L + w * 0.3, y - 0.05, y);
+  } else B.box(mat, 0, L / 2, w, ext ? L + w * 0.3 : L, y - 0.05, y);   // ext：接縫處前後多鋪一點（曲線參道用）
 }
 // 中壢神社社紋：外圈菊花十二瓣、內為桔梗五瓣（尖端朝上），中心小圓帶五枚花蕊。r = 外半徑
 function drawKamon(x, r, ink, paper) {
