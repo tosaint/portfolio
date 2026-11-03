@@ -25,7 +25,10 @@ export const LV = {
 export const GATE_Y = -15.0;          // 神門（內苑前緣）
 // 銅馬（昭和 14 年合影照）：神門左側玉垣前，低矮方形石座，馬頭朝神門
 export const HORSE = { q: [-7.6, GATE_Y - 2.6], ped: 0.9 };
-export const KEJIBA = [-6.8, -66.6];   // 揭示場：參道邊外約 5 公尺，位在西側石燈籠與下乘札之間
+// 第二鳥居前的配置（自參道走向鳥居看，由左而右）：西石燈籠、揭示場、〔參道〕、社號標、東石燈籠
+// （自參道正面看第二鳥居的照片＋石燈籠照片）。揭示場與社號標距參道邊約 4 公尺，石燈籠在其外側
+export const KEJIBA = [-5.5, -66.6];
+export const SHAGO = [5.5, -66.6];
 export const KOMA_POS = [[-3.2, GATE_Y - 4.3], [3.2, GATE_Y - 4.3]];   // 狛犬（神門照片反求）
 const IN = GATE_Y + 28.2;             // 內苑各構件相對於舊配置的位移（神門照片反求時神門在 −28.2）
 export const TORII2_Y = -64.0;        // 第二鳥居
@@ -458,12 +461,12 @@ export function buildShrine() {
   lanternPair(['D3', 'D4'], 6 / L, 5.5);
   { const k = closestT(curve, P([-40.25, -6.3])); lanternPair(['D1', 'D2'], k, 5.5); }
   // 第二鳥居前一對：石燈籠照片中燈籠緊鄰鳥居外側、分立參道兩旁
-  [['D5', -5.2], ['D6', 5.2]].forEach(([id, x]) => { B.begin(id).at(x, TORII2_Y - 5.5, 0, 0); lantern(B); B.end(); });
-  { const q = [9.5, TORII2_Y - 9.5]; B.begin('G').at(q[0], q[1], 0, 0);   // 社號標：石燈籠照片中在東側燈籠前方
+  [['D5', -9], ['D6', 9]].forEach(([id, x]) => { B.begin(id).at(x, TORII2_Y - 3.5, 0, 0); lantern(B); B.end(); });
+  { const q = [SHAGO[0], SHAGO[1]]; B.begin('G').at(q[0], q[1], 0, 0);   // 社號標：參道東側、東石燈籠內側
     B.box('stone', 0, 0, 1.15, 1.15, 0, 0.3); B.box('stone', 0, 0, 0.85, 0.85, 0.3, 0.6); B.box('stone', 0, 0, 0.46, 0.46, 0.6, 3.8); B.end(); }
   // 參道西側由外往內：石燈籠 → 揭示場 → 下乘札 → 第二鳥居（石燈籠照片、自參道正面看第二鳥居照片）
   B.begin('E').at(KEJIBA[0], KEJIBA[1], 0, 0); kejiba(B); B.end();   // 告示板朝參拜者走來的方向（背對第二鳥居）
-  { const q = [-3.5, TORII2_Y - 1.0]; B.begin('F').at(q[0], q[1], -Math.PI / 2, 0);
+  { const q = [-3.0, TORII2_Y - 0.9]; B.begin('F').at(q[0], q[1], -Math.PI / 2, 0);
     B.box('wood', 0, 0, 0.14, 0.14, 0, 1.8); B.box('white', 0, -0.1, 0.4, 0.04, 0.9, 1.75); B.end(); }
   // 手水舍（位置推估：石燈籠照片中在鳥居內側）
   B.begin('W').at(-8.0, TORII2_Y + 5.6, Math.PI / 2, LV.T1);
