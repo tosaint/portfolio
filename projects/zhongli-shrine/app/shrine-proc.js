@@ -29,6 +29,7 @@ export const HORSE = { q: [-7.6, GATE_Y - 2.6], ped: 0.9 };
 // （自參道正面看第二鳥居的照片＋石燈籠照片）。揭示場與社號標距參道邊約 4 公尺，石燈籠在其外側
 export const KEJIBA = [-5.5, -66.6];
 export const SHAGO = [5.5, -66.6];
+export const GEBA = [-2.9, -66.9];   // 下乘札：揭示場（西）與參道之間
 export const KOMA_POS = [[-3.2, GATE_Y - 4.3], [3.2, GATE_Y - 4.3]];   // 狛犬（神門照片反求）
 const IN = GATE_Y + 28.2;             // 內苑各構件相對於舊配置的位移（神門照片反求時神門在 −28.2）
 export const TORII2_Y = -64.0;        // 第二鳥居
@@ -44,6 +45,7 @@ export const DIMS = {
   H: '位置依 1947 航照；外觀依校史館照片（唐破風玄關、黑瓦寄棟），以合影人身高推估',
   G: '依石燈籠照片背景',
   L: '3D 掃描＋現場實測',
+  F: '依 Tinkercad 模型：兩段石台座、方柱、札板「下乘」、小屋蓋，總高約 2.4 公尺',
   E: '依 Tinkercad 模型與石燈籠照片：石基座 2.8×1.5、木柵約 1 公尺、告示板 2×1.1、總高約 3 公尺',
 };
 
@@ -290,6 +292,28 @@ function kejiba(B) {
     gegyo(B, sx * (W + 0.03), 0, hr - 0.05, 0.42);
   });
 }
+// 下乘札（Tinkercad 模型，總高 43 單位 → 約 2.4 公尺）：兩段石台座、方柱、白木札板「下乘」、小切妻屋蓋。-u 為札面
+function gebafuda(B) {
+  B.box('stone', 0, 0, 0.78, 0.78, 0, 0.17); B.box('stone', 0, 0, 0.74, 0.74, 0.17, 0.33);
+  B.box('stone', 0, 0, 0.45, 0.45, 0.33, 0.62);
+  B.box('wood', 0, 0, 0.11, 0.11, 0.62, 1.4);                       // 柱
+  B.box('wood', 0, 0, 0.47, 0.06, 1.12, 2.24);                      // 札板
+  { const g = new THREE.PlaneGeometry(0.4, 1.0); g.translate(0, 1.68, 0.032); B.add('geba', g); }      // 正面
+  { const g = new THREE.PlaneGeometry(0.4, 1.0); g.rotateY(Math.PI); g.translate(0, 1.68, -0.032); B.add('geba', g); }   // 背面
+  // 小屋蓋：兩坡、屋脊沿 u（山牆朝前後）
+  const w = 0.29, d = 0.1, y0 = 2.22, h = 0.13;
+  B.quad('roof', [-w, -d, y0], [0, -d, y0 + h], [0, d, y0 + h], [-w, d, y0]);
+  B.quad('roof', [w, d, y0], [0, d, y0 + h], [0, -d, y0 + h], [w, -d, y0]);
+  B.mesh('roof', [[-w, -d, y0], [w, -d, y0], [0, -d, y0 + h]], [[0, 2, 1]]);
+  B.mesh('roof', [[-w, d, y0], [w, d, y0], [0, d, y0 + h]], [[0, 1, 2]]);
+}
+function gebaTexture() {                   // 札面「下乘」：白木底、墨書
+  const c = document.createElement('canvas'); c.width = 128; c.height = 320;
+  const x = c.getContext('2d'); x.fillStyle = '#e8d6b4'; x.fillRect(0, 0, 128, 320);
+  x.fillStyle = '#1d1712'; x.font = '900 86px "Noto Serif TC","PMingLiU",serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('下', 64, 92); x.fillText('乘', 64, 222);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
 // 寄棟（四坡），屋脊沿 x
 function yosemune(B, cx, cu, W, D, he, hr, mat = 'roof') {
   const w = W / 2, d = D / 2, rl = Math.max(0.2, w - d);
@@ -466,8 +490,7 @@ export function buildShrine() {
     B.box('stone', 0, 0, 1.15, 1.15, 0, 0.3); B.box('stone', 0, 0, 0.85, 0.85, 0.3, 0.6); B.box('stone', 0, 0, 0.46, 0.46, 0.6, 3.8); B.end(); }
   // 參道西側由外往內：石燈籠 → 揭示場 → 下乘札 → 第二鳥居（石燈籠照片、自參道正面看第二鳥居照片）
   B.begin('E').at(KEJIBA[0], KEJIBA[1], 0, 0); kejiba(B); B.end();   // 告示板朝參拜者走來的方向（背對第二鳥居）
-  { const q = [-3.0, TORII2_Y - 0.9]; B.begin('F').at(q[0], q[1], -Math.PI / 2, 0);
-    B.box('wood', 0, 0, 0.14, 0.14, 0, 1.8); B.box('white', 0, -0.1, 0.4, 0.04, 0.9, 1.75); B.end(); }
+  B.begin('F').at(GEBA[0], GEBA[1], 0, 0); gebafuda(B); B.end();   // 下乘札：揭示場與參道之間、與揭示場同排，札面朝參拜者
   // 手水舍（位置推估：石燈籠照片中在鳥居內側）
   B.begin('W').at(-8.0, TORII2_Y + 5.6, Math.PI / 2, LV.T1);
   [[-1.1, -0.75], [1.1, -0.75], [1.1, 0.75], [-1.1, 0.75]].forEach(([x, u]) => B.box('wood', x, u, 0.18, 0.18, 0, 2.3));
@@ -751,6 +774,7 @@ export function buildShrine() {
   // 天井：朝下的面只受地面反光，略加自發光以免室內一片漆黑
   mats.chochin = new THREE.MeshLambertMaterial({ map: chochinTexture(), emissive: 0x2a2620, side: THREE.DoubleSide });
   mats.kamon = new THREE.MeshLambertMaterial({ map: kamonTexture(), side: THREE.DoubleSide });
+  mats.geba = new THREE.MeshLambertMaterial({ map: gebaTexture(), side: THREE.FrontSide });
   mats.kamonStone = new THREE.MeshLambertMaterial({ map: kamonTexture('#d9d5cb', '#8a8478'), side: THREE.DoubleSide });
   mats.ceil = new THREE.MeshLambertMaterial({ color: COLORS.wood, emissive: 0x3e3022, side: THREE.DoubleSide });
   const group = B.build(mats);
