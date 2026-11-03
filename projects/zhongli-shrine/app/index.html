@@ -80,10 +80,11 @@
   .slider2.show { display:block; }
   .slider2 .lab { display:flex; justify-content:space-between; font-size:12px; color:#7a7262; margin-bottom:2px; }
   .slider2 input { width:100%; accent-color:var(--accent); height:28px; }
-  .thumb { display:none; margin-top:10px; gap:10px; align-items:center; }
-  .thumb.show { display:flex; }
-  .thumb img { width:84px; height:63px; object-fit:cover; border-radius:8px; }
-  .thumb span { font-size:13px; color:#4a463d; }
+  .thumbs { display:none; margin-top:10px; gap:10px; overflow-x:auto; scrollbar-width:none; }
+  .thumbs.show { display:flex; }
+  .thumbs figure { flex:0 0 112px; margin:0; cursor:zoom-in; }
+  .thumbs img { width:112px; height:75px; object-fit:cover; border-radius:8px; display:block; }
+  .thumbs figcaption { font-size:11px; line-height:1.35; color:#6b6454; margin-top:3px; }
   #tour .row { margin-top:12px; }
   .note { font-size:11px; color:#9a917d; margin-top:8px; text-align:center; }
 
@@ -158,7 +159,7 @@
     <button id="view3d">立體</button>
     <button id="histBtn">史料</button>
     <button id="scaleBtn">比例尺</button>
-    <button class="main" id="startTour">▶ 五站導覽</button>
+    <button class="main" id="startTour">▶ 六站導覽</button>
   </div>
   <div class="legend">
     <span><i style="background:var(--gone)"></i>已消失</span>
@@ -177,7 +178,7 @@
     <div class="lab"><span>◀ 老照片</span><span>3D 模型 ▶</span></div>
     <input id="fade" type="range" min="0" max="100" value="0" aria-label="老照片與模型的透明度">
   </div>
-  <div class="thumb" id="thumb"><img id="thumbImg" alt="現況照片"><span>點照片放大看現況</span></div>
+  <div class="thumbs" id="thumbs"></div>
   <div class="row"><button id="prev" style="flex:0 0 30%">上一站</button><button class="main" id="next">下一站</button></div>
   <div class="note">模型依配置圖與老照片推估，非測繪復原</div>
 </div>

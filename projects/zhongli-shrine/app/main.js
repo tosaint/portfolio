@@ -25,46 +25,60 @@ const HAIDEN_PHOTO = {
   axes: {"x": [1.0, -0.002, -0.0033], "y": [0.0021, 0.9997, 0.0258], "z": [0.0033, -0.0258, 0.9997]},
 };
 
+// 六站導覽：照走進神社的順序。有反求相機的站（photo）可拖滑桿與老照片疊合；
+// 其他站以接近照片的角度、人眼高度觀看，老照片以縮圖呈現（點開放大）。座標為公尺世界座標。
+const CR = '三森久子捐贈，壢中校史館藏';
 const STOPS = [
   {
-    title: '從中正路走進神社',
-    text: '中壢神社 1939 年 10 月 15 日鎮座，面朝中壢市區。參拜道從中正路的第一鳥居進入，中途轉向，一路通往深處的社殿。',
-    now: '半透明的是已經消失的神社。1947 年這裡撥給中壢中學，神社建築陸續被拆除，今天是中壢高中的校園。',
-    eye: [-150, 95, 40], target: [-10, 0, -8],
-    pins: [['B1', '第一鳥居'], ['L', '神馬'], ['P', '拜殿'], ['@photo', '📷 老照片拍攝點']]
+    title: '第一鳥居：從中正路進來',
+    text: '參拜道從中正路的第一鳥居進入。鳥居是鋼筋水泥造、外覆洗石子，兩旁各立一座石燈籠。照片是 1950 年代它當中壢中學校門時拍的，柱上已掛上校名與標語。',
+    now: '1965 年正門遷到中央西路，這座鳥居改稱南大門，約 1988–89 年拆除。位置在今天中正路 740 巷口。',
+    eye: [-216, 1.6, 22.5], target: [-182, 4.5, 18.8],
+    pins: [['B1', '第一鳥居'], ['D3', '石燈籠'], ['D4', '石燈籠']],
+    thumbs: [['photos/torii1-school.jpg', '當校門時的第一鳥居（藍清水校長提供：劉金鐘家族、吳慕舉校長相片）']]
   },
   {
-    title: '鳥居與參道',
-    text: '第一鳥居後來成了學校的校門，1951 年掛上校名與校訓。當年報紙特別提到中壢神社「沒有燈籠」（除了必要的之外），石燈籠只有三對。',
-    now: '1965 年中央西路開通，正門遷走，這座鳥居改稱南大門，約 1988–89 年拆除。',
-    eye: [-214, 8, 10], target: [-150, 2, 34], m: true,   // 公尺：第一鳥居後方，順著 1947 航照的參道看
-    pins: [['B1', '第一鳥居'], ['D3', '石燈籠'], ['D1', '石燈籠']]
+    title: '第二鳥居：鎮座祭行列',
+    text: '1939 年 10 月 15 日鎮座祭，祭典行列穿過木造的第二鳥居走向拜殿。當年報紙特別提到中壢神社「沒有燈籠」（除了必要的之外），石燈籠只有三對。',
+    now: '第二鳥居大約在今天莊敬樓川堂附近，興建老樓時拆除。',
+    eye: [1.2, 1.6, 80], target: [0, 4.2, 30],
+    pins: [['B2', '第二鳥居'], ['P', '拜殿']],
+    thumbs: [['photos/torii2-festival.jpg', '鎮座祭行列穿過第二鳥居（' + CR + '）'], ['photos/torii2-side.jpg', '第二鳥居側面']]
   },
   {
-    title: '老照片的那一刻',
-    text: '你現在站在當年攝影師的位置。拖曳滑桿讓老照片和 3D 模型疊合：前方是神門與狛犬，後方是拜殿。當年報紙說，中壢神社的檜皮葺屋頂是「臺灣唯一」。',
-    now: '神門大約在今天熱食部門口附近；狛犬 1950 年移到了忠義祠。',
-    photo: HIST_PHOTO
+    title: '石燈籠與社務所',
+    text: '第二鳥居前的花崗岩石燈籠，火袋上刻著桐紋。後方是社號標與社務所，首任社掌三森淳男與夫人三森久子就住在這裡。',
+    now: '社務所戰後當過童軍團部、校史室，1980 年拆除改建自強館。木鳥居右前的一座石燈籠，今天仍在老樓轉角。',
+    eye: [-10, 1.6, 77], target: [14, 2.6, 58],
+    pins: [['D5', '石燈籠'], ['G', '社號標'], ['H', '社務所']],
+    thumbs: [['photos/lantern-torii2.jpg', '石燈籠，背景為社務所（' + CR + '）']]
   },
   {
-    title: '鎮座祭這天的拜殿',
-    text: '1939 年 10 月 15 日鎮座祭，從神門望向拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，拜殿掛著神紋幕與「中壢神社」燈籠。拖曳滑桿，看看 3D 拜殿和照片疊不疊得上。',
-    now: '這裡就是今天的陶然亭一帶。拜殿基座上曾蓋校舍，本殿基座上蓋了困學亭；1991 年興建陶然亭時，剩下的遺構全部拆除。',
-    photo: HAIDEN_PHOTO
+    title: '拜殿：「臺灣唯一」的檜皮葺',
+    text: '鎮座祭當天的拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，簷下掛著神紋幕與「中壢神社」燈籠。《臺灣日日新報》稱它的檜皮葺屋頂是「臺灣唯一」。拖曳滑桿，讓照片和 3D 疊合。',
+    now: '這裡就是今天的陶然亭一帶。拜殿基座上曾蓋校舍，1991 年興建陶然亭時遺構全部拆除。',
+    photo: HAIDEN_PHOTO,
+    thumbs: [['photos/haiden-priests.jpg', '鎮座祭神職合影（' + CR + '）']]
   },
   {
-    title: '神馬：從古留到今',
-    text: '銅製神馬原本立在神門前。神社其他建築都不在了，神馬是少數留下來的文物。',
-    now: '神馬在壢中遷入後被搬過好幾次，現在立在中央西路的正門。虛線是它從原位置到現在正門的距離。',
-    eye: [17, 7, 12], target: [4.86, 3.6, 3.99],
-    pins: [['L', '神馬（原位置）'], ['N', '神門']],
-    thumb: './assets/models/horse/current.jpg'
+    title: '本殿：最深處',
+    text: '本殿是流造，屋頂前坡長長伸出、蓋住木階，屋脊上有千木和 6 根鰹木，供奉豐受大神與北白川宮能久親王。照片中巫女站在高起的濡緣上。',
+    now: '本殿基座上後來蓋了困學亭（壢中亭），1991 年改建陶然亭時拆除。',
+    eye: [-13, 5.2, -7], target: [0, 4.6, -19.5],
+    pins: [['Q', '本殿'], ['P', '拜殿']],
+    thumbs: [['photos/honden.jpg', '本殿側面（' + CR + '）']]
+  },
+  {
+    title: '神門、狛犬與銅馬',
+    text: '你站在當年攝影師的位置，拖曳滑桿讓照片和 3D 疊合：神門前一對狛犬，門左側是銅馬。比對照片發現，鎮座祭當天的照片都看不到這座神門，它很可能是之後才增建的。',
+    now: '狛犬 1950 年移到忠義祠；銅馬搬過好幾次，現在立在中央西路正門。虛線是它從原位置到今天正門的距離。',
+    photo: HIST_PHOTO,
+    thumbs: [['photos/horse-komainu-gate.jpg', '銅馬、狛犬與神門'], ['photos/gate-postwar.jpg', '神門前合影（1940 年代）'], ['assets/models/horse/current.jpg', '今天的銅馬（中央西路正門）']]
   }
 ];
 
 // 以上座標都是原配置模型的單位；轉成公尺世界座標（見 site.js）
-// 第 4、5 站在內苑：跟著 1947 航照的內苑位置前移
-STOPS.forEach((s, i) => { if (s.m) return; if (!s.photo) { s.eye = modelToWorld(s.eye); s.target = modelToWorld(s.target); if (i >= 3) { s.eye[2] -= 13.2; s.target[2] -= 13.2; } } else { s.eye = s.photo.eye; s.target = s.photo.target; } });
+STOPS.forEach(s => { if (s.photo) { s.eye = s.photo.eye; s.target = s.photo.target; } });
 // 「今」模式下仍保持實心的構件（其餘變半透明）
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
@@ -290,7 +304,7 @@ function showPlacePins() {
   });
   const cam = document.createElement('div');
   cam.className = 'pin cam'; cam.innerHTML = '<span>📷 老照片</span>';
-  cam.onclick = () => startTour(STOPS.findIndex(s => s.photo));
+  cam.onclick = () => startTour(STOPS.findIndex(s => s.photo === HIST_PHOTO));
   pinBox.append(cam); pins.push({ el: cam, pos: new THREE.Vector3(...HIST_PHOTO.eye).add(new THREE.Vector3(0, 1.8, 0)) });
   addMePin();
 }
@@ -327,7 +341,7 @@ function openCard(p) {
   const imgs = (p.photo ? [`<img src="${p.photo}" alt="今日照片">`] : [])
     .concat((p.photos || []).map(s => `<img src="photos/${s}.jpg" alt="老照片：${p.title}">`))
     .concat(p.slides.map(s => `<img src="slides/${s}.jpg" alt="簡報：${p.title}">`)).join('')
-    + (p.photos ? '<small class="pcredit">老照片：三森久子捐贈，壢中校史館藏</small>' : '');
+    + (p.photos ? `<small class="pcredit">${p.id === 'torii1' ? '照片：藍清水校長提供（劉金鐘家族、吳慕舉校長相片）' : '老照片：三森久子捐贈，壢中校史館藏（部分翻拍自校內展示）'}</small>` : '');
   $('#cardBody').innerHTML = `
     <span class="tag" style="background:${KIND_COLOR[p.kind]}">${KIND_TEXT[p.kind]}</span>
     <h2>${p.title}</h2>
@@ -467,8 +481,14 @@ function go(i) {
   $('#prev').disabled = stopIndex === 0; $('#prev').style.opacity = stopIndex === 0 ? .4 : 1;
   $('#next').textContent = stopIndex === STOPS.length - 1 ? '結束導覽' : '下一站';
   $('#slider2').classList.toggle('show', !!s.photo);
-  $('#thumb').classList.toggle('show', !!s.thumb);
-  if (s.thumb) $('#thumbImg').src = s.thumb;
+  const th = $('#thumbs'); th.innerHTML = '';
+  (s.thumbs || []).forEach(([src, cap]) => {
+    const f = document.createElement('figure');
+    f.innerHTML = `<img src="${src}" alt="${esc(cap)}"><figcaption>${esc(cap)}</figcaption>`;
+    f.onclick = () => { $('#lightImg').src = src; $('#lightbox').classList.add('show'); };
+    th.append(f);
+  });
+  th.classList.toggle('show', !!(s.thumbs && s.thumbs.length));
   inPhoto = !!s.photo;
   showPhoto(false);
   curPhoto = s.photo || HIST_PHOTO;
@@ -492,7 +512,6 @@ $('#next').onclick = () => stopIndex === STOPS.length - 1 ? endTour() : go(stopI
 function showPhoto(on) { ['#photoLayer', '#shadeTop', '#shadeBot'].forEach(q => $(q).classList.toggle('show', on)); }
 function applyFade() { $('#photoImg').style.opacity = 1 - $('#fade').value / 100; }
 $('#fade').oninput = applyFade;
-$('#thumb').onclick = () => { $('#lightImg').src = $('#thumbImg').src; $('#lightbox').classList.add('show'); };
 // 照片站：左右拖曳畫面也能調整疊合
 let dragX = null;
 host.addEventListener('pointerdown', e => { if (inPhoto) dragX = e.clientX; });
