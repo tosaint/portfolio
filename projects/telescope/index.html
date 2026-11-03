@@ -82,7 +82,7 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
   .head, .text { grid-template-columns: 1fr; }
   .plan { justify-self: start; order: -1; }
 }
-/* Observing log: six videos in time order. Each picture is a YouTube link;
+/* Observing log: one lead video, then six in time order. Each picture is a YouTube link;
    the script below swaps it for a no-cookie player on this page. */
 .log { padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); margin-bottom: clamp(28px, 4vw, 48px); }
 .log h2 { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
@@ -95,6 +95,9 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
 .thumb .play { position: absolute; left: 10px; bottom: 8px; font: 400 11px var(--mono); color: #f3f1ec; opacity: .8; }
 .thumb:hover, .thumb:focus-visible { outline-color: var(--ink-2); }
 .thumb:hover .play { opacity: 1; }
+.videos .lead { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: clamp(14px, 2vw, 24px); align-items: end; }
+.videos .lead .what { font-size: clamp(18px, 2vw, 22px); }
+.videos .lead .when { margin-top: 0; }
 .player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .when { display: flex; justify-content: space-between; margin: 10px 0 2px; font: 400 12px var(--mono); letter-spacing: .04em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .what { margin: 0; font: 500 16px/1.5 var(--serif); }
@@ -102,9 +105,7 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
 .how { margin: 4px 0 2px; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
 .yt { font: 400 11px var(--mono); letter-spacing: .06em; color: var(--ink-3); text-decoration: none; }
 .yt:hover { color: var(--ink); text-decoration: underline; }
-.extra { margin: clamp(24px, 3vw, 36px) 0 0; padding-top: 14px; border-top: 1px dashed var(--rule); font-size: 13px; color: var(--ink-2); }
-.extra a { font: 400 11px var(--mono); color: var(--ink-3); }
-@media (max-width: 900px) { .videos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) { .videos { grid-template-columns: repeat(2, minmax(0, 1fr)); } .videos .lead { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .videos { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -197,70 +198,93 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
 
   <section class="log" aria-labelledby="log-h">
     <h2 id="log-h">觀測紀錄 · Observing log · 2014–2024</h2>
-    <p class="log-intro">十年來在中大壢中頂樓與操場的實際觀測。點縮圖就在這裡播放。<span lang="en">Ten years of observing on the school roof and sports field. Select a picture to play the video here.</span></p>
+    <p class="log-intro">十年來在校園頂樓、操場與高山上的實際觀測。點縮圖就在這裡播放。<span lang="en">Ten years of observing on the school roof, the sports field and in the mountains. Select a picture to play the video here.</span></p>
     <ol class="videos">
+      <li class="lead">
+        <a class="thumb" href="https://youtu.be/u8UHW8dmoCQ" data-video="u8UHW8dmoCQ" target="_blank" rel="noopener" aria-label="播放 2022.11.06 木星衝與土星環（01:37） · Play Jupiter at opposition, and Saturn’s rings">
+          <img src="https://i.ytimg.com/vi/u8UHW8dmoCQ/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
+          <span class="play" aria-hidden="true">▶</span>
+        </a>
+        <div class="cap">
+          <p class="when"><time datetime="2022-11-06">2022.11.06</time><span>01:37</span></p>
+          <p class="what">木星衝與土星環<span lang="en">Jupiter at opposition, and Saturn’s rings</span></p>
+          <p class="how">Vixen 折射鏡＋赤道儀＋手機目鏡攝影 · 中大壢中頂樓</p>
+          <a class="yt" href="https://youtu.be/u8UHW8dmoCQ" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        </div>
+      </li>
       <li>
         <a class="thumb" href="https://youtu.be/y-XOZoDavyA" data-video="y-XOZoDavyA" target="_blank" rel="noopener" aria-label="播放 2014.10.08 月全食（00:49） · Play Total lunar eclipse">
           <img src="https://i.ytimg.com/vi/y-XOZoDavyA/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
           <span class="play" aria-hidden="true">▶</span>
         </a>
-        <p class="when"><time datetime="2014-10-08">2014.10.08</time><span>00:49</span></p>
-        <p class="what">月全食<span lang="en">Total lunar eclipse</span></p>
-        <p class="how">折射鏡＋赤道儀＋Google Sky Map 平板定位 · 中大壢中頂樓</p>
-        <a class="yt" href="https://youtu.be/y-XOZoDavyA" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        <div class="cap">
+          <p class="when"><time datetime="2014-10-08">2014.10.08</time><span>00:49</span></p>
+          <p class="what">月全食<span lang="en">Total lunar eclipse</span></p>
+          <p class="how">折射鏡＋赤道儀＋Google Sky Map 平板定位 · 中大壢中頂樓</p>
+          <a class="yt" href="https://youtu.be/y-XOZoDavyA" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        </div>
       </li>
       <li>
         <a class="thumb" href="https://youtu.be/_l1Iec67WfQ" data-video="_l1Iec67WfQ" target="_blank" rel="noopener" aria-label="播放 2015.11.28 太陽黑子（含飛鳥凌日）（00:54） · Play Sunspots, with a bird crossing the sun">
           <img src="https://i.ytimg.com/vi/_l1Iec67WfQ/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
           <span class="play" aria-hidden="true">▶</span>
         </a>
-        <p class="when"><time datetime="2015-11-28">2015.11.28</time><span>00:54</span></p>
-        <p class="what">太陽黑子（含飛鳥凌日）<span lang="en">Sunspots, with a bird crossing the sun</span></p>
-        <p class="how">Sunspotter 木製太陽投影望遠鏡 · 中大壢中校園</p>
-        <a class="yt" href="https://youtu.be/_l1Iec67WfQ" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        <div class="cap">
+          <p class="when"><time datetime="2015-11-28">2015.11.28</time><span>00:54</span></p>
+          <p class="what">太陽黑子（含飛鳥凌日）<span lang="en">Sunspots, with a bird crossing the sun</span></p>
+          <p class="how">Sunspotter 木製太陽投影望遠鏡 · 中大壢中校園</p>
+          <a class="yt" href="https://youtu.be/_l1Iec67WfQ" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        </div>
       </li>
       <li>
         <a class="thumb" href="https://youtu.be/QzTuEb7zPUE" data-video="QzTuEb7zPUE" target="_blank" rel="noopener" aria-label="播放 2020.06.21 日環食（02:26） · Play Solar eclipse of 21 June">
           <img src="https://i.ytimg.com/vi/QzTuEb7zPUE/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
           <span class="play" aria-hidden="true">▶</span>
         </a>
-        <p class="when"><time datetime="2020-06-21">2020.06.21</time><span>02:26</span></p>
-        <p class="what">日環食<span lang="en">Solar eclipse of 21 June</span></p>
-        <p class="how">減光目視觀測＋Micro:bit 光感測器照度紀錄 · 中大壢中操場</p>
-        <a class="yt" href="https://youtu.be/QzTuEb7zPUE" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        <div class="cap">
+          <p class="when"><time datetime="2020-06-21">2020.06.21</time><span>02:26</span></p>
+          <p class="what">日環食<span lang="en">Solar eclipse of 21 June</span></p>
+          <p class="how">減光目視觀測＋Micro:bit 光感測器照度紀錄 · 中大壢中操場</p>
+          <a class="yt" href="https://youtu.be/QzTuEb7zPUE" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        </div>
       </li>
       <li>
         <a class="thumb" href="https://youtu.be/MAsnXe3v-4I" data-video="MAsnXe3v-4I" target="_blank" rel="noopener" aria-label="播放 2020.10.15 火星衝與土星（01:18） · Play Mars at opposition, and Saturn">
           <img src="https://i.ytimg.com/vi/MAsnXe3v-4I/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
           <span class="play" aria-hidden="true">▶</span>
         </a>
-        <p class="when"><time datetime="2020-10-15">2020.10.15</time><span>01:18</span></p>
-        <p class="what">火星衝與土星<span lang="en">Mars at opposition, and Saturn</span></p>
-        <p class="how">折射鏡＋赤道儀＋手機目鏡攝影 · 中大壢中頂樓</p>
-        <a class="yt" href="https://youtu.be/MAsnXe3v-4I" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
-      </li>
-      <li>
-        <a class="thumb" href="https://youtu.be/u8UHW8dmoCQ" data-video="u8UHW8dmoCQ" target="_blank" rel="noopener" aria-label="播放 2022.11.06 木星衝與土星環（01:37） · Play Jupiter at opposition, and Saturn’s rings">
-          <img src="https://i.ytimg.com/vi/u8UHW8dmoCQ/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
-          <span class="play" aria-hidden="true">▶</span>
-        </a>
-        <p class="when"><time datetime="2022-11-06">2022.11.06</time><span>01:37</span></p>
-        <p class="what">木星衝與土星環<span lang="en">Jupiter at opposition, and Saturn’s rings</span></p>
-        <p class="how">Vixen 折射鏡＋赤道儀＋手機目鏡攝影 · 中大壢中頂樓</p>
-        <a class="yt" href="https://youtu.be/u8UHW8dmoCQ" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        <div class="cap">
+          <p class="when"><time datetime="2020-10-15">2020.10.15</time><span>01:18</span></p>
+          <p class="what">火星衝與土星<span lang="en">Mars at opposition, and Saturn</span></p>
+          <p class="how">折射鏡＋赤道儀＋手機目鏡攝影 · 中大壢中頂樓</p>
+          <a class="yt" href="https://youtu.be/MAsnXe3v-4I" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        </div>
       </li>
       <li>
         <a class="thumb" href="https://youtu.be/Brz1IKPdpeE" data-video="Brz1IKPdpeE" target="_blank" rel="noopener" aria-label="播放 2022.11.08 月全食掩天王星（02:08） · Play Total lunar eclipse occulting Uranus">
           <img src="https://i.ytimg.com/vi/Brz1IKPdpeE/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
           <span class="play" aria-hidden="true">▶</span>
         </a>
-        <p class="when"><time datetime="2022-11-08">2022.11.08</time><span>02:08</span></p>
-        <p class="what">月全食掩天王星<span lang="en">Total lunar eclipse occulting Uranus</span></p>
-        <p class="how">多組折射鏡＋赤道儀（縮時紀錄） · 中大壢中頂樓</p>
-        <a class="yt" href="https://youtu.be/Brz1IKPdpeE" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        <div class="cap">
+          <p class="when"><time datetime="2022-11-08">2022.11.08</time><span>02:08</span></p>
+          <p class="what">月全食掩天王星<span lang="en">Total lunar eclipse occulting Uranus</span></p>
+          <p class="how">多組折射鏡＋赤道儀（縮時紀錄） · 中大壢中頂樓</p>
+          <a class="yt" href="https://youtu.be/Brz1IKPdpeE" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        </div>
+      </li>
+      <li>
+        <a class="thumb" href="https://youtu.be/UfKJVdoiE1E" data-video="UfKJVdoiE1E" target="_blank" rel="noopener" aria-label="播放 2024.09.18 高山星空導覽與 AI 校歌（01:52） · Play Night-sky tour in the mountains, with an AI school song">
+          <img src="https://i.ytimg.com/vi/UfKJVdoiE1E/hqdefault.jpg" width="480" height="360" alt="" loading="lazy">
+          <span class="play" aria-hidden="true">▶</span>
+        </a>
+        <div class="cap">
+          <p class="when"><time datetime="2024-09-18">2024.09.18</time><span>01:52</span></p>
+          <p class="what">高山星空導覽與 AI 校歌<span lang="en">Night-sky tour in the mountains, with an AI school song</span></p>
+          <p class="how">指星筆星座辨識＋裸眼觀測＋Suno AI · 合歡山卡爾小鎮</p>
+          <a class="yt" href="https://youtu.be/UfKJVdoiE1E" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a>
+        </div>
       </li>
     </ol>
-    <p class="extra">延伸 · 2024.09.18　營隊星空導覽與 AI 校歌（01:52）　<a href="https://youtu.be/UfKJVdoiE1E" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a></p>
   </section>
 
   <dl class="data">
