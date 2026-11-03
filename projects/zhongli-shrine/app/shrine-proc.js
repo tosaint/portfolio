@@ -46,7 +46,7 @@ export const DIMS = {
   H: '量體依 Tinkercad 粗模：主屋 15×9、屋脊 7.7 公尺，背後接宿舍（後棟）與小附屬屋；外觀依校史館照片；位置依 1947 航照',
   G: '依石燈籠照片背景',
   L: '3D 掃描＋現場實測',
-  G: '石造方柱、兩段台座，高約 3.8 公尺；正面「中壢神社」凹刻（字跡取自鎮座祭大提燈）',
+  G: '石造方柱、兩段台座，高約 3.8 公尺；正面「中壢神社」凹刻，滿佈柱身（字跡取自鎮座祭大提燈，縱向拉長）',
   F: '依 Tinkercad 模型：兩段石台座、方柱、札板「下乘」、小屋蓋，總高約 2.4 公尺',
   E: '依 Tinkercad 模型與石燈籠照片：石基座 2.8×1.5、木柵約 1 公尺、告示板 2×1.1、總高約 3 公尺',
 };
@@ -322,15 +322,16 @@ function noboriTexture() {                 // 幟：白布、照片描下的「�
   return t;
 }
 function shagoTexture() {                 // 社號標：燈籠墨跡做成石面凹刻（陰影＋亮邊＋刻底），石色底
-  const Wd = 152, Hd = 352, c = document.createElement('canvas'); c.width = Wd; c.height = Hd;
+  const Wd = 160, Hd = 1140, c = document.createElement('canvas'); c.width = Wd; c.height = Hd;
   const x = c.getContext('2d'); x.fillStyle = '#d9d5cb'; x.fillRect(0, 0, Wd, Hd);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
   const im = new Image();
   im.onload = () => {
     const tint = (col) => { const o = document.createElement('canvas'); o.width = Wd; o.height = Hd; const k = o.getContext('2d');
-      k.drawImage(im, 6, 6, Wd - 12, Hd - 12); k.globalCompositeOperation = 'source-in'; k.fillStyle = col; k.fillRect(0, 0, Wd, Hd); return o; };
-    x.drawImage(tint('#f2efe8'), 3, 4);        // 右下緣亮邊
-    x.drawImage(tint('#6e685c'), -3, -4);      // 左上緣深影
+      // 拉長到佔滿柱身，並把筆畫加粗一點（多次微移疊印），字勢較雄渾
+      for (const [dx, dy] of [[0, 0], [2, 0], [-2, 0], [0, 3], [0, -3]]) k.drawImage(im, 4 + dx, 10 + dy, Wd - 8, Hd - 20); k.globalCompositeOperation = 'source-in'; k.fillStyle = col; k.fillRect(0, 0, Wd, Hd); return o; };
+    x.drawImage(tint('#f2efe8'), 3, 5);        // 右下緣亮邊
+    x.drawImage(tint('#6e685c'), -3, -5);      // 左上緣深影
     x.drawImage(tint('#9d978a'), 0, 0);        // 刻底
     t.needsUpdate = true; onAsset();
   };
@@ -548,7 +549,7 @@ export function buildShrine() {
   [['D5', -9], ['D6', 9]].forEach(([id, x]) => { B.begin(id).at(x, TORII2_Y - 3.5, 0, 0); lantern(B); B.end(); });
   { const q = [SHAGO[0], SHAGO[1]]; B.begin('G').at(q[0], q[1], 0, 0);   // 社號標：參道東側、東石燈籠內側
     B.box('stone', 0, 0, 1.15, 1.15, 0, 0.3); B.box('stone', 0, 0, 0.85, 0.85, 0.3, 0.6); B.box('stone', 0, 0, 0.46, 0.46, 0.6, 3.8);
-    { const g = new THREE.PlaneGeometry(0.38, 0.88); g.translate(0, 2.85, 0.232); B.add('shago', g); }   // 「中壢神社」凹刻（朝參拜者走來的方向）
+    { const g = new THREE.PlaneGeometry(0.4, 2.85); g.translate(0, 2.22, 0.232); B.add('shago', g); }   // 「中壢神社」凹刻（朝參拜者走來的方向）
     B.end(); }
   // 參道西側由外往內：石燈籠 → 揭示場 → 下乘札 → 第二鳥居（石燈籠照片、自參道正面看第二鳥居照片）
   B.begin('E').at(KEJIBA[0], KEJIBA[1], 0, 0); kejiba(B); B.end();   // 告示板朝參拜者走來的方向（背對第二鳥居）
