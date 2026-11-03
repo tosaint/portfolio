@@ -208,6 +208,16 @@ function fadeSpotCards() {           // 拉近才顯示照片
 }
 
 let edgeMat = null, shadowPlane = null;
+function buildEdges() {   // 細輪廓線：讓屋簷、柱列、格子的層次更清楚（一次繪製）；首畫之後才算，不拖慢載入
+    const edges = [];
+    shrine.group.children.forEach(m => { if (!/gravel|path/.test(m.name)) edges.push(new THREE.EdgesGeometry(m.geometry, 28)); });
+    const n = edges.reduce((s, g) => s + g.attributes.position.array.length, 0), pos = new Float32Array(n);
+    let o = 0; edges.forEach(g => { pos.set(g.attributes.position.array, o); o += g.attributes.position.array.length; g.dispose(); });
+    const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const lm = new THREE.LineBasicMaterial({ color: 0x2b2118, transparent: true, opacity: 0.4 });
+    scene.add(new THREE.LineSegments(lg, lm)); edgeMat = lm; applyEra(); dirty = true;
+}
+
 function buildSpots() {
   addPreciseSpot(HIST_PHOTO, './assets/photo-study/historical-s.jpg', '神門照', 5);
   addPreciseSpot(HAIDEN_PHOTO, './assets/photo-study/haiden-front-s.jpg', '拜殿正面照', 3);
@@ -629,15 +639,6 @@ try {
   scene.add(shrine.group);
   fadeMats.push(...shrine.mats);
   shrine.group.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
-  // 細輪廓線：讓屋簷、柱列、格子的層次更清楚（一次繪製）
-  {
-    const edges = [];
-    shrine.group.children.forEach(m => { if (!/gravel|path/.test(m.name)) edges.push(new THREE.EdgesGeometry(m.geometry, 28)); });
-    const pos = []; edges.forEach(g => pos.push(...g.attributes.position.array));
-    const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    const lm = new THREE.LineBasicMaterial({ color: 0x2b2118, transparent: true, opacity: 0.4 });
-    scene.add(new THREE.LineSegments(lg, lm)); edgeMat = lm;
-  }
   // 陰影承接面：只顯示陰影、不遮住底圖
   shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(400, 400).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.34, transparent: true, depthWrite: false }));
   shadowPlane.position.set(0, groundH + 0.02, 20); shadowPlane.receiveShadow = true; shadowPlane.renderOrder = 0; scene.add(shadowPlane);
@@ -645,8 +646,9 @@ try {
   ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.3, qToLL, llToQ, north: NORTH_Q, order: -2 });   // 兩層地面隔開，遠看才不會互相穿插
   overlay = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.12, qToLL, llToQ, north: NORTH_Q, order: -1 });
   places = md.places.map(p => ({ ...p, pos: p.q || (p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng)) }));
-  loadHorseScan();
-  loadKomainu();
+  // 先畫出神社，再於空檔載入掃描模型與輪廓線，避免一開頁卡住
+  const later = f => (window.requestIdleCallback || (g => setTimeout(g, 120)))(f);
+  requestAnimationFrame(() => requestAnimationFrame(() => { later(buildEdges); later(loadHorseScan); later(loadKomainu); }));
   buildScaleAids();
   buildHorseLine();
   buildChips();
