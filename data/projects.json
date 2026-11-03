@@ -79,5 +79,21 @@
     "image": "projects/zhongli-shrine/img/axon.png",
     "image_style": "line",
     "link": "projects/zhongli-shrine/"
+  },
+  {
+    "title": "Telescope Lab",
+    "title_zh": "望遠鏡實境操作室",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "WebGL",
+      "HTML",
+      "JavaScript"
+    ],
+    "role": "Teaching design, 3D modelling, development",
+    "summary": "A browser-based 3D Dobsonian telescope for high school astronomy lessons. Students work through eight steps from the worksheet “How to Use a Telescope”: take off the cap, fit the eyepiece, find the sign across the courtyard, focus, see the inverted image, align the finder and change to high power. Each step is checked as it is done, and the panel folds away to leave the telescope in view.",
+    "image": "projects/telescope/img/line.svg",
+    "image_style": "line",
+    "link": "projects/telescope/"
   }
 ]

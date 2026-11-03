@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>望遠鏡實境操作室 · Telescope Lab</title>
+<meta name="description" content="A web 3D simulator for learning to use a Dobsonian telescope in eight steps, made for high school astronomy lessons. 在網頁上用 3D 模型練習杜布森望遠鏡的八個操作步驟。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+/* Same paper, ink and type as the portfolio. The line drawing follows the theme;
+   the photographs stay as they are. */
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --line-filter: none; --line-blend: multiply;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+} }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans);
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px));
+}
+a { color: inherit; }
+a:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top a:hover { color: var(--ink); }
+
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(56px, 10vw, 120px) clamp(40px, 6vw, 64px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spacing: .14em; text-wrap: balance; }
+.en-title { margin: 14px 0 0; font: 300 clamp(18px, 2vw, 24px)/1.4 var(--serif); color: var(--ink-2); letter-spacing: .02em; }
+.lede { margin: 26px 0 0; font-size: 14px; color: var(--ink-2); }
+.lede span { display: block; color: var(--ink-3); font-size: 13px; }
+
+.plan { margin: 0; justify-self: end; width: 100%; }
+.plan img { width: 100%; height: auto; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
+
+.enter { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--ink); border: 1px solid var(--ink); margin-bottom: clamp(40px, 6vw, 72px); }
+.enter a { display: block; background: var(--paper); padding: clamp(18px, 3vw, 28px); text-decoration: none; transition: background .2s; }
+.enter a:hover { background: var(--rule); }
+.enter b { display: block; font: 500 clamp(18px, 2vw, 22px)/1.4 var(--serif); letter-spacing: .1em; }
+.enter small { display: block; margin-top: 6px; font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.enter p { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); }
+.enter i { font-style: normal; float: right; font-family: var(--mono); }
+
+.text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.text h2 { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.text p { margin: 0 0 1em; }
+.text .en { color: var(--ink-2); font-size: .95em; }
+.text ol { margin: 0; padding-left: 1.3em; }
+.text li { margin-bottom: .5em; }
+
+/* Three photographs: one square, two upright, bottoms aligned */
+.gallery { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: clamp(12px, 2vw, 20px); align-items: end; margin: 0 0 clamp(28px, 4vw, 48px); padding-top: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.gallery figure { margin: 0; min-width: 0; }
+.gallery img { width: 100%; height: auto; display: block; }
+.gallery figcaption { margin-top: 10px; font: 400 12px/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+
+.data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; padding-top: clamp(24px, 4vw, 40px); border-top: 1px solid var(--rule); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+.data dd span { color: var(--ink-2); margin-left: .6em; }
+
+@media (max-width: 760px) {
+  .head, .text { grid-template-columns: 1fr; }
+  .plan { justify-self: start; order: -1; }
+  .gallery { grid-template-columns: 1fr 1fr; }
+  .gallery figure:first-child { grid-column: 1 / -1; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <span>Work 005 · 2026</span>
+</div></header>
+
+<main class="wrap">
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 005 · Web 3D · 2026</p>
+      <h1>望遠鏡<br>實境操作室</h1>
+      <p class="en-title">Telescope Lab</p>
+      <p class="lede">先在網頁上練一次，再到走廊用真的望遠鏡。<span>Practise once in the browser, then use the real telescope in the corridor.</span></p>
+    </div>
+    <figure class="plan"><img src="img/line.svg" alt="Side elevation line drawing of a Dobsonian telescope: the tube tilted upward on its round altitude bearing, the finder and eyepiece on top, the rocker box and ground board below, and a dotted sight line leaving the front of the tube"></figure>
+  </section>
+
+  <nav class="enter" aria-label="Open the work">
+    <a href="app/"><b>開啟 3D 操作 <i>→</i></b><small>Open the simulator</small><p>桌上型杜布森反射望遠鏡放在校園走廊，對面大樓掛著「百川文隱」的招牌。照操作面板的八個步驟：取下鏡筒蓋、裝目鏡、找招牌、調焦、觀察倒像、校正尋星鏡、換高倍目鏡。做完一步會自動檢核，再帶到下一步。iPad 與電腦都可以用。</p></a>
+  </nav>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>關於</h2>
+      <p>學生第一次操作望遠鏡，常卡在幾個固定的地方：忘了拿鏡筒蓋、目鏡沒鎖緊、用高倍率找不到目標、不知道為什麼影像是倒的、尋星鏡和主鏡看的不是同一個地方。這些在實際器材前要一個一個排隊問老師，上課時間大多花在等待。</p>
+      <p>這個作品把學習單〈望遠鏡怎麼用？〉的任務一做成網頁上的 3D 模擬。每個動作都有對應的變化：鏡筒蓋沒拿掉，主鏡視野就是黑的；調焦鈕一轉，字由模糊變清楚；換上 4 mm 目鏡，倍率變五倍、視野變小也變暗。兩個圓形視野都呈現上下左右顛倒的影像。鏡筒轉向太陽時，畫面會立刻遮蔽並跳出警告。</p>
+      <p>學生在課前或課後先練熟順序，實作時間就能留給真正的觀測。</p>
+    </div>
+    <div lang="en">
+      <h2>About</h2>
+      <p class="en">Students using a telescope for the first time get stuck in the same places: the dust cap is still on, the eyepiece is not locked, the target cannot be found at high power, the image is upside down, and the finder does not point where the main tube does. At the real instrument each of these becomes a queue for the teacher.</p>
+      <p class="en">This work turns the first task of the worksheet “How to Use a Telescope” into a 3D simulation in the browser. Every action has a visible result: with the cap on, the eyepiece view is black; turning the focuser brings the letters into focus; changing to the 4 mm eyepiece makes the image five times larger, the field smaller and the view darker. Both round views show the image turned upside down and left to right, as a real telescope does. If the tube swings toward the sun, both views are covered and a warning appears.</p>
+      <p class="en">Students practise the sequence before or after class, so lesson time is left for real observing.</p>
+    </div>
+  </section>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>八個步驟</h2>
+      <ol>
+        <li>取下鏡筒蓋。</li>
+        <li>插入 20 mm 目鏡，輕輕鎖緊固定螺絲。</li>
+        <li>任務 1a：推動鏡筒，讓主鏡對準「百川文隱」。</li>
+        <li>轉調焦鈕，讓字變清楚。</li>
+        <li>觀察倒像：字是上下左右都顛倒的。</li>
+        <li>任務 1b：只轉尋星鏡的螺絲，讓十字線對到主鏡看到的同一處。</li>
+        <li>鬆開螺絲換上 4 mm 目鏡，重新對準、對焦。</li>
+        <li>比較兩種目鏡的視野，並寫下觀察。</li>
+      </ol>
+    </div>
+    <div lang="en">
+      <h2>Eight steps</h2>
+      <ol class="en">
+        <li>Take off the dust cap.</li>
+        <li>Insert the 20 mm eyepiece and lock it gently.</li>
+        <li>Task 1a: push the tube until the main view finds the sign.</li>
+        <li>Turn the focuser until the letters are sharp.</li>
+        <li>Notice the image is upside down and reversed.</li>
+        <li>Task 1b: turn only the finder’s screws until its crosshair meets the same point.</li>
+        <li>Change to the 4 mm eyepiece, then centre and focus again.</li>
+        <li>Compare the two fields of view and write down what you saw.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>設計</h2>
+      <p>畫面只有兩個部分：佔滿螢幕的 3D 望遠鏡，和一個可以整個收合的操作面板。面板依序顯示現在這一步、要用的工具和兩個觀測視野；面板收合或展開時，望遠鏡的位置不會改變。模型上平常只標出這一步要動的零件。</p>
+      <p>這個版本是與 AI 助理（Claude、ChatGPT）來回修改的結果：第一版把選單浮在模型上，遮住了望遠鏡；第二版改成固定側欄，模型清楚了但面板收不起來；第三版合併成一個可收合的面板，並讓步驟完成後自動前進。</p>
+    </div>
+    <div lang="en">
+      <h2>Design</h2>
+      <p class="en">The screen has two parts: the telescope in 3D, filling the screen, and one control panel that folds away completely. The panel shows the current step, the tool it needs and the two views. Opening or closing it never moves the telescope. Only the part used in the current step is labelled on the model.</p>
+      <p class="en">The design went through rounds of review with AI assistants (Claude and ChatGPT). The first version floated menus over the model and hid the telescope; the second used a fixed side panel that kept the model clear but could not be closed; the third merged everything into one panel that folds away and moves on by itself when a step is done.</p>
+    </div>
+  </section>
+
+  <section class="gallery" aria-label="Photographs">
+    <figure>
+      <img src="img/science-fair.jpg" width="1400" height="1400" alt="Six people on a purple stage in front of the 63rd Taoyuan City Science Fair backdrop, holding signs that read 科學競賽, 桃園市第63屆科學展覽會 and 全校的希望" loading="lazy">
+      <figcaption>桃園市第 63 屆科學展覽會<br>63rd Taoyuan City Science Fair</figcaption>
+    </figure>
+    <figure>
+      <img src="img/tree-fair.jpg" width="1200" height="1600" alt="A teacher and four students at the 2025 Technology Exploration booth of the Kaohsiung Girls’ High School promotion centre, with posters on artificial intelligence and a laptop on the table" loading="lazy">
+      <figcaption>2025 科技探險趣 · 新興科技推廣中心展位<br>2025 Technology Exploration fair</figcaption>
+    </figure>
+    <figure>
+      <img src="img/night.jpg" width="1200" height="1600" alt="At night under a haloed moon, an observer lit by a red torch adjusts a white refractor on an equatorial mount and tripod" loading="lazy">
+      <figcaption>夜間觀測：紅光下操作赤道儀<br>Night observing by red light</figcaption>
+    </figure>
+  </section>
+
+  <dl class="data">
+    <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
+    <dt>Medium</dt><dd>WebGL, HTML, JavaScript</dd>
+    <dt>Model</dt><dd>130 mm / 650 mm 桌上型杜布森望遠鏡<span>Tabletop Dobsonian, 20 mm and 4 mm eyepieces, 6×30 finder</span></dd>
+    <dt>Devices</dt><dd>iPad Safari、電腦瀏覽器<span>iPad and desktop browsers, no installation</span></dd>
+    <dt>Worksheet</dt><dd>〈望遠鏡怎麼用？〉任務一<span>Task one of the worksheet “How to Use a Telescope”</span></dd>
+    <dt>Records</dt><dd>學習紀錄只存在學生的瀏覽器，可下載交給老師<span>Progress stays in the browser and can be downloaded for the teacher</span></dd>
+    <dt>Purpose</dt><dd>非營利教育用途<span>Non-commercial, for teaching</span></dd>
+    <dt>Note</dt><dd>器材外觀與光學為教學近似，不是實物掃描；太陽方向的警示只是教學提醒，不是真實的安全界線。<span>The instrument and optics are teaching approximations, not a scan of the real one. The sun warning is a reminder for teaching, not a real safety limit.</span></dd>
+  </dl>
+</main>
+</body>
+</html>
