@@ -78,7 +78,7 @@ scene.add(new THREE.HemisphereLight(0xfff9eb, 0x7c826e, 2.2));
 const sun = new THREE.DirectionalLight(0xfff4dd, 1.8);
 sun.position.set(-40, 80, 50);
 scene.add(sun);
-const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 3000);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.5, 3000);   // near 0.5：遠看時深度較精準
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI / 2 - 0.03;
@@ -208,7 +208,7 @@ function buildChips() {
   });
 }
 const CREDIT = {
-  aer1947: '1947.09.05 舊航照（47M7045／022）· 中研院 GIS 中心提供 · 標註：羅偉源',
+  aer1947: '1947.09.05 舊航照（47M7045／022）· 中研院 GIS 中心提供',
   am50k: '中央研究院 臺灣百年歷史地圖', jm25k: '中央研究院 臺灣百年歷史地圖',
 };
 async function setGround(id) {
@@ -482,8 +482,8 @@ try {
   scene.add(shrine.group);
   fadeMats.push(...shrine.mats);
   groundH = -0.05;      // 公尺：今日地面（外參道高度）
-  ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH, qToLL, llToQ, north: NORTH_Q, order: -2 });
-  overlay = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH + 0.03, qToLL, llToQ, north: NORTH_Q, order: -1 });
+  ground = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.3, qToLL, llToQ, north: NORTH_Q, order: -2 });   // 兩層地面隔開，遠看才不會互相穿插
+  overlay = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.12, qToLL, llToQ, north: NORTH_Q, order: -1 });
   places = md.places.map(p => ({ ...p, pos: p.q || (p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng)) }));
   loadHorseScan();
   buildScaleAids();
