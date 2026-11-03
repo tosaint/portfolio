@@ -432,7 +432,7 @@ function openCard(p) {
   $('#card').classList.add('open');
 }
 // 構件尺寸（公尺）：依老照片、銅馬掃描與參拜道實測推估
-const PLACE_OBJ = { gebafuda: 'F', kejiba: 'E', torii1: 'B1', torii2: 'B2', lantern: 'D6', office: 'H', gate: 'N', 'horse-old': 'L', 'horse-now': 'L', haiden: 'P', honden: 'Q' };
+const PLACE_OBJ = { shago: 'G', gebafuda: 'F', kejiba: 'E', torii1: 'B1', torii2: 'B2', lantern: 'D6', office: 'H', gate: 'N', 'horse-old': 'L', 'horse-now': 'L', haiden: 'P', honden: 'Q' };
 function boxOf(id) {
   if (id === 'L') return horseScan ? new THREE.Box3().setFromObject(horseScan) : null;
   return shrine?.boxes.get(id) || null;
