@@ -87,6 +87,7 @@ const STOPS = [
 
 // 以上座標都是原配置模型的單位；轉成公尺世界座標（見 site.js）
 STOPS.forEach(s => { if (s.photo) { s.eye = s.photo.eye; s.target = s.photo.target; } });
+// 拍攝點清單在場景建好後建立（見 buildSpots）
 // 「今」模式下仍保持實心的構件（其餘變半透明）
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
@@ -162,28 +163,58 @@ addEventListener('resize', resize);
 const ro = new ResizeObserver(resize);
 ro.observe($('#explore')); ro.observe($('#tour'));
 
-/* ---------- 老照片拍攝點（紅色視錐）---------- */
-const photoMarker = new THREE.Group();
-{
-  const eye = new THREE.Vector3(...HIST_PHOTO.eye), tgt = new THREE.Vector3(...HIST_PHOTO.target);
-  const tex = new THREE.TextureLoader().load('./assets/photo-study/historical-s.jpg',   // 視錐上的小圖用縮小版
-    () => { dirty = true; });
+/* ---------- 老照片拍攝點（預設關閉，按「📷 拍攝點」開啟）---------- */
+// 精確反求的照片：紅色視錐＋小照片（拉近到約 40 公尺內才淡入）；推估位置的照片：只有相機圖示與方向箭頭
+const photoMarker = new THREE.Group();   // 所有拍攝點的 3D 物件
+photoMarker.visible = false;
+const spotCards = [];                    // 需依距離淡入的照片
+const SPOTS = [];                        // { label, eye, stop, precise }
+function addPreciseSpot(P, small, label, stop) {
+  const eye = new THREE.Vector3(...P.eye), tgt = new THREE.Vector3(...P.target);
+  const tex = new THREE.TextureLoader().load(small, () => { dirty = true; });
   tex.colorSpace = THREE.SRGBColorSpace;
-  const dist = 7 * S_IN, hgt = 2 * dist * Math.tan(THREE.MathUtils.degToRad(HIST_PHOTO.fov / 2)), wid = hgt * HIST_PHOTO.aspect;
-  const card = new THREE.Mesh(new THREE.PlaneGeometry(wid, hgt), new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide }));
+  const dist = 6, hgt = 2 * dist * Math.tan(THREE.MathUtils.degToRad(P.fov / 2)), wid = hgt * P.aspect;
+  const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0, depthWrite: false });
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(wid, hgt), mat);
   card.position.copy(eye).addScaledVector(tgt.clone().sub(eye).normalize(), dist);
   card.lookAt(eye); card.updateMatrixWorld();
-  photoMarker.add(card);
-  const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => card.localToWorld(new THREE.Vector3(a * wid / 2, b * hgt / 2, 0)));
+  photoMarker.add(card); spotCards.push(card);
   const pts = [];
-  corners.forEach(c => pts.push(eye, c));
-  photoMarker.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xb23a2a })));
-  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 12), new THREE.MeshBasicMaterial({ color: 0xb23a2a }));
+  [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => card.localToWorld(new THREE.Vector3(a * wid / 2, b * hgt / 2, 0))).forEach((c, i, C) => pts.push(eye, c, c, C[(i + 1) % 4]));
+  photoMarker.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xb23a2a, transparent: true })));
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 12), new THREE.MeshBasicMaterial({ color: 0xb23a2a }));
   dot.position.copy(eye); photoMarker.add(dot);
-  scene.add(photoMarker);
+  SPOTS.push({ label, eye: eye.toArray(), stop, precise: true });
+}
+function addApproxSpot(eye, target, label, stop) {
+  const e = new THREE.Vector3(...eye), d = new THREE.Vector3(...target).sub(e); d.y = 0; d.setLength(4);
+  const tip = e.clone().add(d), side = new THREE.Vector3(-d.z, 0, d.x).setLength(0.9), back = d.clone().setLength(1.3);
+  const pts = [e, tip, tip, tip.clone().sub(back).add(side), tip, tip.clone().sub(back).sub(side)];
+  photoMarker.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0x8a6b45, transparent: true })));
+  SPOTS.push({ label, eye, stop, precise: false });
+}
+scene.add(photoMarker);
+let spotsOn = false;
+function setSpots(on) {
+  spotsOn = on; photoMarker.visible = on && !inPhoto;
+  const b = document.querySelector('#spotBtn'); if (b) b.classList.toggle('on', on);
+  if (!$('#tour').hidden) return;
+  showPlacePins(); dirty = true;
+  if (on) toast('紅色：可與 3D 疊合的照片；褐色箭頭：推估的拍攝方向。點相機進入導覽', 3600);
+}
+function fadeSpotCards() {           // 拉近才顯示照片
+  if (!photoMarker.visible) return;
+  spotCards.forEach(c => { const d = camera.position.distanceTo(c.position); c.material.opacity = THREE.MathUtils.clamp((45 - d) / 20, 0, 1) * (1 - 0.9 * eraT); });
 }
 
 let edgeMat = null, shadowPlane = null;
+function buildSpots() {
+  addPreciseSpot(HIST_PHOTO, './assets/photo-study/historical-s.jpg', '神門照', 5);
+  addPreciseSpot(HAIDEN_PHOTO, './assets/photo-study/haiden-front-s.jpg', '拜殿正面照', 3);
+  [[0, '南大門'], [1, '鎮座祭行列'], [2, '石燈籠'], [4, '本殿']].forEach(([i, l]) => addApproxSpot(STOPS[i].eye, STOPS[i].target, l, i));
+  addApproxSpot([-15, 1.6, 84], [2, 3, 55], '第二鳥居側面', 1);
+  addApproxSpot([-6.4, 1.6, 28.5], [-5.2, 2.2, 17.2], '銅馬合影', 5);
+}
 let shrine, ground, overlay, places = [], groundH = 0, histData = null, horseScan = null;
 
 /* ---------- 古 ↔ 今：神社模型的透明度 ---------- */
@@ -325,10 +356,12 @@ function showPlacePins() {
     el.onclick = e => { e.stopPropagation(); openCard(p); };
     pinBox.append(el); pins.push({ el, pos: worldOf(p) });
   });
-  const cam = document.createElement('div');
-  cam.className = 'pin cam'; cam.innerHTML = '<span>📷 老照片</span>';
-  cam.onclick = () => startTour(STOPS.findIndex(s => s.photo === HIST_PHOTO));
-  pinBox.append(cam); pins.push({ el: cam, pos: new THREE.Vector3(...HIST_PHOTO.eye).add(new THREE.Vector3(0, 1.8, 0)) });
+  if (spotsOn) SPOTS.forEach(sp => {
+    const cam = document.createElement('div');
+    cam.className = 'pin cam' + (sp.precise ? '' : ' approx'); cam.innerHTML = `<span>📷 ${sp.label}</span>`;
+    cam.onclick = e => { e.stopPropagation(); startTour(sp.stop); };
+    pinBox.append(cam); pins.push({ el: cam, pos: new THREE.Vector3(...sp.eye).add(new THREE.Vector3(0, 1.2, 0)) });
+  });
   addMePin();
 }
 function showStopPins(s) {
@@ -446,6 +479,7 @@ function flyToObj(id, dir) {
 }
 function buildViewChips() {
   const box = $('#viewChips');
+  const sb = document.createElement('button'); sb.id = 'spotBtn'; sb.textContent = '📷 拍攝點'; sb.onclick = () => setSpots(!spotsOn); box.append(sb);
   const top = document.createElement('button'); top.textContent = '全景'; top.onclick = () => flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov); box.append(top);
   VIEWS.forEach(([id, label, dir]) => { const b = document.createElement('button'); b.textContent = label; b.onclick = () => { closeCard(); flyToObj(id, dir); }; box.append(b); });
 }
@@ -483,7 +517,7 @@ function startTour(i = 0) {
 }
 function endTour() {
   inPhoto = false; showPhoto(false); camera.near = 0.5; camera.updateProjectionMatrix();
-  photoMarker.visible = true; controls.enabled = true;
+  photoMarker.visible = spotsOn; controls.enabled = true;
   $('#tour').hidden = true; $('#explore').hidden = false;
   showPlacePins();
   flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov);
@@ -518,7 +552,7 @@ function go(i) {
   curPhoto = s.photo || HIST_PHOTO;
   if (s.photo) { $('#photoImg').src = curPhoto.src; $('#photoLayer .frame').style.aspectRatio = String(curPhoto.aspect); resize(); }
   camera.near = 0.5; camera.updateProjectionMatrix();
-  photoMarker.visible = !s.photo;
+  photoMarker.visible = false;
   controls.enabled = !s.photo;
   flyTo(new THREE.Vector3(...s.eye), new THREE.Vector3(...s.target), s.photo ? photoFov() : baseFov, () => {
     if (s.photo) {
@@ -614,6 +648,7 @@ try {
   buildHorseLine();
   buildChips();
   buildViewChips();
+  buildSpots();
   setGround('photo');
   renderer.shadowMap.needsUpdate = true;
   $('#loading').style.opacity = 0;
@@ -642,6 +677,7 @@ renderer.setAnimationLoop(() => {
     if (k === 1) { const d = fly.done; fly = null; d && d(); }
     dirty = true;
   } else if (controls.enabled && controls.update()) dirty = true;
+  if (dirty) fadeSpotCards();
   if (!dirty) return;                  // 畫面沒變就不重畫：省電、不發燙
   dirty = false;
   renderer.render(scene, camera);
