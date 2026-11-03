@@ -7,6 +7,8 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 // 掃描物不用照片貼圖（顏色偏暗、與周圍風格不一），改成與建築一致的單色材質，只保留造形
 const flat = color => new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide });
+// 壓縮後的掃描檔沒有法線（normal），不補算的話很多手機／顯示卡會畫成全黑
+const fixNormals = m => { if (!m.geometry.attributes.normal) m.geometry.computeVertexNormals(); };
 const BRONZE = 0x6f5a3c, GRANITE = 0xd3cfc4;   // 銅馬（咖啡金黃的古銅，與白木、檜皮同一暖色系）、狛犬（花崗岩）
 import { createGround, GROUND_LAYERS } from './ground.js';
 import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
@@ -217,7 +219,7 @@ function loadHorseScan() {
     scan.rotation.y = -Math.PI / 2;      // 掃描檔馬頭朝 -z → 轉成朝 +x（神門方向）
     scan.position.set(HORSE.q[0], base - HOOF, -HORSE.q[1]);
     const clip = [new THREE.Plane(new THREE.Vector3(0, 1, 0), -(base - 0.03))];
-    scan.traverse(m => { if (m.isMesh) { m.material = flat(BRONZE); m.material.clippingPlanes = clip; m.castShadow = true; fadeMats.push(m.material); } });
+    scan.traverse(m => { if (m.isMesh) { fixNormals(m); m.material = flat(BRONZE); m.material.clippingPlanes = clip; m.castShadow = true; fadeMats.push(m.material); } });
     horseScan = scan; scene.add(scan); applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true;
   }, undefined, e => console.warn('銅馬掃描載入失敗', e));
 }
@@ -227,7 +229,7 @@ function loadHorseScan() {
 // 掃描只有一尊，另一尊以鏡像代替（原為阿吽一對，造形不同）。
 function loadKomainu() {
   gltf.load('./assets/komainu-scan-2.glb', g => {
-    g.scene.traverse(m => { if (m.isMesh) { m.material = flat(GRANITE); m.castShadow = true; fadeMats.push(m.material); } });
+    g.scene.traverse(m => { if (m.isMesh) { fixNormals(m); m.material = flat(GRANITE); m.castShadow = true; fadeMats.push(m.material); } });
     KOMA_POS.forEach(([x, y], i) => {
       const k = i ? g.scene : g.scene.clone();
       k.position.set(x, LV.T1 + KOMA_PED, -y);
