@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED } from './shrine-proc.js';
+import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED, HORSE } from './shrine-proc.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { createGround, GROUND_LAYERS } from './ground.js';
 import { S_IN, LEVEL, warpH, warpY, modelToWorld, qToLL, llToQ, NORTH_Q } from './site.js';
@@ -80,6 +80,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 let maxDPR = Math.min(devicePixelRatio, innerWidth > 900 ? 1.25 : 1.75);
 renderer.setPixelRatio(maxDPR);
 renderer.setClearColor(0xe9e6dc);
+renderer.localClippingEnabled = true;   // 銅馬掃描：切掉今日的台座
 host.append(renderer.domElement);
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xe9e6dc, 450, 1300);
@@ -175,11 +176,13 @@ function loadHorseScan() {
   new GLTFLoader().load('./assets/horse-scan.glb', g => {
     const scan = g.scene;
     // 銅馬老照片：馬身與玉垣平行、馬頭朝神門（中軸），站在神門左前方的玉垣外
-    // 銅馬合影照（昭和14年）：馬在神門左側、背靠玉垣，馬頭朝神門與狛犬；馬與左狛犬水平相距約 4–5 公尺
-    const q = [-7.6, GATE_Y - 2.6];
-    scan.rotation.y = -Math.PI / 2;      // 掃描檔馬頭朝 -z → 轉成朝 +x（中軸方向）
-    scan.position.set(q[0], LV.T1, -q[1]);
-    scan.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = false; fadeMats.push(m.material); } });
+    // 銅馬合影照（昭和14年）：馬在神門左側、背靠玉垣，馬頭朝神門與狛犬。
+    // 掃描檔含今日台座（馬蹄在掃描高度約 1.0 公尺處），切掉台座、放到程式建的 1939 年方形石座上
+    const HOOF = 1.0, base = LV.T1 + HORSE.ped;
+    scan.rotation.y = -Math.PI / 2;      // 掃描檔馬頭朝 -z → 轉成朝 +x（神門方向）
+    scan.position.set(HORSE.q[0], base - HOOF, -HORSE.q[1]);
+    const clip = [new THREE.Plane(new THREE.Vector3(0, 1, 0), -(base - 0.03))];
+    scan.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = false; m.material.clippingPlanes = clip; fadeMats.push(m.material); } });
     horseScan = scan; scene.add(scan); applyEra(); dirty = true;
   }, undefined, e => console.warn('銅馬掃描載入失敗', e));
 }
@@ -194,7 +197,7 @@ function loadKomainu() {
       const k = i ? g.scene : g.scene.clone();
       k.position.set(x, LV.T1 + KOMA_PED, -y);
       if (!i) k.scale.x = -1;                 // 左側鏡像
-      k.rotation.y = i ? 0.35 : -0.35;        // 略朝參道中央
+      k.rotation.y = i ? -Math.PI / 2 : Math.PI / 2;   // 兩尊都朝參道中央（相對而立）
       scene.add(k);
     });
     applyEra(); dirty = true;
