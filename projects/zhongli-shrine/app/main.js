@@ -61,7 +61,7 @@ STOPS.forEach((s, i) => { if (s.m) return; if (!s.photo) { s.eye = modelToWorld(
 // 「今」模式下仍保持實心的構件（其餘變半透明）
 const KIND_COLOR = { gone: '#b23a2a', moved: '#c48a1c', remain: '#2f6f4f' };
 const KIND_TEXT = { gone: '已消失', moved: '被搬走', remain: '還找得到' };
-const GROUND_ORDER = ['photo', 'emap', 'jm25k', 'am50k', 'off'];
+const GROUND_ORDER = ['photo', 'emap', 'aer1947', 'am50k', 'jm25k'];
 
 const $ = s => document.querySelector(s);
 const host = $('#view');
@@ -198,7 +198,7 @@ function buildChips() {
   GROUND_ORDER.forEach(id => {
     const b = document.createElement('button');
     b.dataset.id = id;
-    b.textContent = id === 'off' ? '無底圖' : GROUND_LAYERS[id].label;
+    b.textContent = GROUND_LAYERS[id].label;
     b.onclick = () => setGround(id);
     $('#groundChips').append(b);
   });
@@ -212,7 +212,7 @@ async function setGround(id) {
   if (!ok) { btn.classList.add('fail'); toast('這個底圖目前載不到'); }
   const on = ok && id !== 'off';
   dirty = true;
-  $('#credit').textContent = !on ? '' : id.startsWith('jm') || id.startsWith('am') ? '中央研究院 臺灣百年歷史地圖' : '© 內政部國土測繪中心';
+  $('#credit').textContent = !on ? '' : id === 'aer1947' ? '1947 航照（取自《壢中簡史與中壢神社》簡報）' : id.startsWith('jm') || id.startsWith('am') ? '中央研究院 臺灣百年歷史地圖' : '© 內政部國土測繪中心';
 }
 
 /* ---------- 神馬遷移虛線 ---------- */
