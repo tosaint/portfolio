@@ -506,7 +506,7 @@ export function buildShrine() {
   B.at(0, 0); B.box('gravel', -2, TORII2_Y - 8.5, 30, 15, -0.03, 0.02);              // 第二鳥居前廣場
   // 石板參拜道（實測寬 3.01 公尺）
   strip(B, [AX, -71], [AX, TORII2_Y - 1.7], 3.01, 0.04, 'path');
-  strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.5], 3.01, LV.T1 + 0.03, 'path');
+  strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.93], 3.01, LV.T1 + 0.03, 'path');
   strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.5], 9, LV.T1 + 0.015, 'gravel', false);   // 航照中的帶狀亮區
   strip(B, [AX, GATE_Y + 1.5], [AX, -11.7 + IN], 3.01, LV.T2 + 0.03, 'path');
 
@@ -577,8 +577,20 @@ export function buildShrine() {
   /* ---- 神門（四脚門、切妻造）＋狛犬 ---- */
   // 神門照片反求（以拜殿正面照定出的拜殿尺寸為比例尺）：屋頂寬約 7.1、簷高 2.75、屋脊 4.4 公尺
   B.begin('N').at(AX, GATE_Y, 0, LV.T2);
-  B.box('stone', 0, 0, 6.0, 3.0, -0.4, 0);                // 門下石敷
-  B.box('stone', 0, -2.0, 4.6, 1.0, -0.4, -0.2);          // 前台階
+  // 門前石壇（神門與狛犬照片）：寬闊的石敷平台，前緣兩段通長石階，兩端袖石；切石分縫
+  { const W = 7.6, u0 = -2.25, u1 = 1.7, H = 0.4, T = 0.34;
+    B.box('stone', 0, (u0 + u1) / 2, W, u1 - u0, -H, -0.02);                                   // 石壇本體
+    for (let x = -W / 2 + 0.95; x < W / 2; x += 0.95) B.box('dark', x, (u0 + u1) / 2, 0.015, u1 - u0, -0.021, -0.012);   // 敷石目地
+    for (let u = u0 + 0.9; u < u1; u += 0.9) B.box('dark', 0, u, W, 0.015, -0.021, -0.012);
+    B.box('stone', 0, u0 + 0.06, W, 0.12, -0.04, 0);                                          // 前緣の葛石
+    for (let k = 1; k <= 2; k++) {                                                          // 二段石階：各高 H/3、踏面 T
+      const ub = u0 - T * (k - 1), uf = u0 - T * k, top = -H * k / 3;
+      B.box('stone', 0, (uf + ub) / 2, W - 0.7, ub - uf, -H, top);
+      B.box('stone', 0, uf + 0.05, W - 0.7, 0.1, top - 0.03, top + 0.004);                   // 段鼻
+      for (let x = -W / 2 + 0.35 + 1.4; x < W / 2 - 0.35; x += 1.4) B.box('dark', x, (uf + ub) / 2, 0.015, ub - uf, top + 0.001, top + 0.006);
+    }
+    [-W / 2 + 0.175, W / 2 - 0.175].forEach(x => { B.box('stone', x, u0 - T, 0.35, 2 * T, -H, -0.02); B.box('stone', x, u0 - 2 * T + 0.05, 0.37, 0.1, -H, -H / 3 + 0.02); });   // 袖石
+  }
   // 戰後合影照（神門前）：中央開口兩側是縱格子壁，門上掛桐紋幕與紙垂
   [-1.55, 1.55].forEach(x => {
     B.cyl('wood', x, 0, 0.19, 0, 2.55, 12);                // 本柱
