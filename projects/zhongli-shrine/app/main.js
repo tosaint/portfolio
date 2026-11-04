@@ -539,8 +539,8 @@ function buildNight() {
   stars = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xdfe6ff, size: 1.6, sizeAttenuation: false, fog: false, transparent: true, opacity: 0.85 }));
   stars.visible = false; scene.add(stars);
   // 三處暖光：第二鳥居、神門、拜殿內（只在夜間開）
-  [[0, LV.T1 + 1.6, 63.4], [0, LV.T2 + 2.2, -GATE_Y + 1.5], [0, LV.T2 + 2.3, -6.5]].forEach(([x, y, z], i) => {
-    const L = new THREE.PointLight(0xffb867, 0, i === 2 ? 14 : 18, 1.6); L.position.set(x, y, z); L.visible = false; scene.add(L); glows.push(L);
+  [[0, LV.T1 + 1.6, 63.4], [0, LV.T2 + 2.2, -GATE_Y + 1.5], [0, LV.T2 + 2.3, -6.5], [30.6, 2.1, 51.4]].forEach(([x, y, z], i) => {   // 第 4 盞：社務所玄關
+    const L = new THREE.PointLight(0xffb867, 0, i >= 2 ? 12 : 18, 1.6); L.position.set(x, y, z); L.visible = false; scene.add(L); glows.push(L);
   });
 }
 function setNight(on) {
