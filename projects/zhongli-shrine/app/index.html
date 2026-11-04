@@ -151,7 +151,7 @@
   @supports not ((mask-image:url(x)) or (-webkit-mask-image:url(x))) { #loading b.brush::before { content:'中壢神社'; } #loading b.brush { background:none; width:auto; height:auto; } }
   #loading small { color:#b8ae98; }
   /* 夜間暗角：中央不變、四角約暗三成，像舞台的聚光 */
-  #vignette { position:fixed; inset:0; pointer-events:none; z-index:1; opacity:0; transition:opacity .6s;
+  #vignette { position:fixed; inset:0; pointer-events:none; z-index:1; opacity:0; transition:opacity .45s;
     background: radial-gradient(ellipse 75% 70% at 50% 42%, rgba(4,6,14,0) 45%, rgba(4,6,14,.36) 100%); }
   #vignette.show { opacity:1; }
 </style>
@@ -210,6 +210,6 @@
 <div id="toast"></div>
 <div id="loading"><b class="brush" aria-label="中壢神社"></b><small id="loadMsg">模型載入中…</small></div>
 
-<script type="module" src="./main.js?v=20261104q"></script>
+<script type="module" src="./main.js?v=20261104r"></script>
 </body>
 </html>

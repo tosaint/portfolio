@@ -262,7 +262,7 @@ function buildPines() {
     im.castShadow = true; scene.add(im);
   });
   trunkIM.castShadow = true; scene.add(trunkIM);
-  fadeMats.push(trunkMat, leafMat); applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true;
+  fadeMats.push(trunkMat, leafMat); applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true; later(warmNight);
 }
 function buildEdges() {   // 細輪廓線：讓屋簷、柱列、格子的層次更清楚（一次繪製）；首畫之後才算，不拖慢載入
     const edges = [];
@@ -318,7 +318,7 @@ function loadHorseScan() {
     scan.position.set(HORSE.q[0], base - HOOF, -HORSE.q[1]);
     const clip = [new THREE.Plane(new THREE.Vector3(0, 1, 0), -(base - 0.03))];
     scan.traverse(m => { if (m.isMesh) { fixNormals(m); m.material = flat(BRONZE); m.material.clippingPlanes = clip; m.castShadow = true; fadeMats.push(m.material); } });
-    horseScan = scan; scene.add(scan); applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true;
+    horseScan = scan; scene.add(scan); applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true; later(warmNight);
   }, undefined, e => console.warn('銅馬掃描載入失敗', e));
 }
 
@@ -335,7 +335,7 @@ function loadKomainu() {
       k.rotation.y = i ? -Math.PI / 2 : Math.PI / 2;   // 神門與狛犬照片：兩尊面向參道、隔著參道相對而視
       scene.add(k);
     });
-    applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true;
+    applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true; later(warmNight);
   }, undefined, e => console.warn('狛犬掃描載入失敗', e));
 }
 
@@ -608,7 +608,7 @@ function buildNight() {
   // [x, 地面高, z, 半徑, 所屬導覽站]
   POOLS = [[-197.2, 0, 26, 3.2, [0]], [-198.3, 0, 15.1, 3.2, [0]], [-96.3, 0, 51.7, 3, []], [-90.1, 0, 42.7, 3, []],
     [-2.9, LV.T1, 63.4, 2.6, [1]], [2.9, LV.T1, 63.4, 2.6, [1]], [-12, 0, 68.3, 3.4, [1, 2]], [12, 0, 68.3, 3.4, [1, 2]],
-    [30.2, 0.5, 48.7, 2.6, [2]], [30.2, 0.5, 54.1, 2.6, [2]], [0, LV.T1, 49.5, 6, [1, 2]],
+    [30.2, 0.5, 48.7, 2.6, [2]], [30.2, 0.5, 54.1, 2.6, [2]],
     [-2.25, LV.T1, 16.6, 3.4, [5]], [2.25, LV.T1, 16.6, 3.4, [5]], [0, LV.T1, 19.5, 5.5, [5]],
     [0, LV.T1, 0.8, 6.5, [3]], [0, LV.T2, -6.2, 4.5, [3, 4]]];
   pools = new THREE.InstancedMesh(new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2), pm, POOLS.length);
@@ -630,7 +630,7 @@ function updateFocus(snap) {
   spot.target.position.set(focusP.x, y, focusP.z);
   spot.position.set(focusP.x + dir.x, y + h, focusP.z + dir.z);
   spot.angle = Math.atan(r / h); spot.distance = h * 2.2;
-  spot.intensity = night ? near * (16 + d * 1.0) : 0;              // 約為上一版的三分之一
+  spot.intensity = nightK * near * (16 + d * 1.0);              // 約為上一版的三分之一
 }
 let POOLS = [], pools = null;
 // 夜間焦點：導覽中，當站的燈較亮、其他較暗；不在導覽時全部中等亮度
@@ -641,35 +641,60 @@ function nightFocus() {
   if (pools) { const col = new THREE.Color(); POOLS.forEach((p, i) => pools.setColorAt(i, col.setScalar(lvl(p[4])))); pools.instanceColor.needsUpdate = true; }
   dirty = true;
 }
-function setNight(on) {
-  night = on; const S = on ? NIGHT : DAY;
-  renderer.setClearColor(S.clear); scene.fog.color.set(S.clear); renderer.toneMappingExposure = S.exp;
-  hemi.color.set(S.hemiSky); hemi.groundColor.set(S.hemiGround); hemi.intensity = S.hemiI;
-  sun.color.set(S.sunC); sun.intensity = S.sunI; sun.position.set(...S.sunP);
+// 日夜切換：0.45 秒漸變（nightK 0→1），燈與光暈在白天關掉；夜間著色程式事先在閒置時編好（warmNight），切換不卡
+let nightK = 0, nightAnim = null;
+const later = f => (window.requestIdleCallback || (g => setTimeout(g, 120)))(f);
+const _ca = new THREE.Color(), _cb = new THREE.Color();
+const mix = (a, b, k) => _ca.set(a).lerp(_cb.set(b), k);
+function applyNightK(k) {
+  nightK = k; const D = DAY, N = NIGHT, L = (a, b) => a + (b - a) * k;
+  renderer.setClearColor(mix(D.clear, N.clear, k)); scene.fog.color.copy(_ca); renderer.toneMappingExposure = L(D.exp, N.exp);
+  hemi.color.copy(mix(D.hemiSky, N.hemiSky, k)); hemi.groundColor.copy(mix(D.hemiGround, N.hemiGround, k)); hemi.intensity = L(D.hemiI, N.hemiI);
+  sun.color.copy(mix(D.sunC, N.sunC, k)); sun.intensity = L(D.sunI, N.sunI);
   const M = shrine?.matsByName || {};
-  if (M.chochin) { M.chochin.emissive.set(on ? 0xffc27a : 0x2a2620); M.chochin.emissiveIntensity = 1; }
-  if (M.kamonStone) { M.kamonStone.emissive.set(on ? 0xffa24a : 0x000000); }
+  if (M.chochin) M.chochin.emissive.copy(mix(0x2a2620, 0xffc27a, k));
+  if (M.kamonStone) M.kamonStone.emissive.copy(mix(0x000000, 0xffa24a, k));
   // 夜裡碎石、石板地面壓暗一點，讓燈籠光暈成為焦點
-  ['gravel', 'path', 'slab'].forEach(k => { const m = M[k]; if (!m) return; m.userData.day ??= m.color.clone(); m.color.copy(m.userData.day).multiplyScalar(on ? 0.38 : 1); });
-  [ground, overlay].forEach(gd => gd && gd.mesh.material.color.set(on ? 0x3a4458 : 0xffffff));
-  if (edgeMat) edgeMat.color.set(on ? 0x05070c : 0x2b2118);
-  if (stars) stars.visible = on;
-  glows.forEach(L => { L.visible = on; L.intensity = on ? 9 * L.userData.k * L.userData.f : 0; });
-  if (pools) pools.visible = on; nightFocus();
-  if (spot) { spot.visible = on; updateFocus(true); }
+  ['gravel', 'path', 'slab'].forEach(n => { const m = M[n]; if (!m) return; m.userData.day ??= m.color.clone(); m.color.copy(m.userData.day).multiplyScalar(L(1, 0.38)); });
+  [ground, overlay].forEach(gd => gd && gd.mesh.material.color.copy(mix(0xffffff, 0x3a4458, k)));
+  if (edgeMat) edgeMat.color.copy(mix(0x2b2118, 0x05070c, k));
+  if (stars) stars.material.opacity = 0.8 * k;
+  flicker(performance.now()); updateFocus(true);
+  dirty = true;
+}
+function setLightsVisible(on) {
+  glows.forEach(L => L.visible = on); if (pools) pools.visible = on; if (spot) spot.visible = on; if (stars) stars.visible = on;
+}
+function warmNight() {                 // 閒置時先編好夜間（燈開著）的著色程式
+  if (!glows.length || nightK > 0) return;
+  setLightsVisible(true); try { renderer.compile(scene, camera); } catch (e) {} setLightsVisible(false);
+}
+function setNight(on) {
+  night = on; nightFocus();
+  if (on) setLightsVisible(true);
+  nightAnim = { from: nightK, to: on ? 1 : 0, start: performance.now(), ms: 450 };
   $('#vignette')?.classList.toggle('show', on);
   ['#nightBtn', '#nightBtn2'].forEach(q => $(q)?.classList.toggle('on', on));
-  renderer.shadowMap.needsUpdate = true; dirty = true;
+}
+function stepNight() {
+  const A = nightAnim, k = Math.min((performance.now() - A.start) / A.ms, 1), e = k * k * (3 - 2 * k);
+  applyNightK(A.from + (A.to - A.from) * e);
+  if (k === 1) {
+    nightAnim = null;
+    sun.position.set(...(A.to ? NIGHT : DAY).sunP); renderer.shadowMap.needsUpdate = true;   // 陰影只在結束時重算一次
+    if (!A.to) setLightsVisible(false);
+    dirty = true;
+  }
 }
 $('#nightBtn').onclick = () => setNight(!night);
 $('#nightBtn2').onclick = () => setNight(!night);
 function flicker(t) {                 // 提燈微閃：燭火般的不規則亮度
   const M = shrine?.matsByName; if (!M) return;
   const f = 0.88 + 0.08 * Math.sin(t * 0.0071) + 0.05 * Math.sin(t * 0.0193 + 1.3) + 0.03 * Math.sin(t * 0.047);
-  M.chochin.emissiveIntensity = f; glows.forEach((L, i) => L.intensity = 9 * L.userData.k * L.userData.f * (f + 0.04 * Math.sin(t * 0.011 + i)));
-  if (pools) pools.material.opacity = 0.5 * (0.9 + 0.1 * f);
+  M.chochin.emissiveIntensity = 1 + (f - 1) * nightK; glows.forEach((L, i) => L.intensity = nightK * 9 * L.userData.k * L.userData.f * (f + 0.04 * Math.sin(t * 0.011 + i)));
+  if (pools) pools.material.opacity = nightK * 0.5 * (0.9 + 0.1 * f);
   updateFocus(false);
-  if (stars) stars.material.opacity = 0.75 + 0.1 * Math.sin(t * 0.002);
+  if (stars) stars.material.opacity = nightK * (0.75 + 0.1 * Math.sin(t * 0.002));
 }
 
 /* ---------- 導覽模式 ---------- */
@@ -801,8 +826,7 @@ try {
   overlay = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.12, qToLL, llToQ, north: NORTH_Q, order: -1 });
   places = md.places.map(p => ({ ...p, pos: p.q || (p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng)) }));
   // 先畫出神社，再於空檔載入掃描模型與輪廓線，避免一開頁卡住
-  const later = f => (window.requestIdleCallback || (g => setTimeout(g, 120)))(f);
-  requestAnimationFrame(() => requestAnimationFrame(() => { later(buildEdges); later(buildPines); later(loadHorseScan); later(loadKomainu); }));
+  requestAnimationFrame(() => requestAnimationFrame(() => { later(buildEdges); later(buildPines); later(loadHorseScan); later(loadKomainu); later(warmNight); }));
   buildScaleAids();
   buildHorseLine();
   buildChips();
@@ -846,7 +870,8 @@ renderer.setAnimationLoop(() => {
     if (k === 1) { const d = fly.done; fly = null; d && d(); }
     dirty = true;
   } else if (controls.enabled && controls.update()) dirty = true;
-  if (night && (nightTick = !nightTick)) { flicker(performance.now()); dirty = true; }   // 夜間閃爍每兩格更新一次（約 30 fps），省電
+  if (nightAnim) stepNight();
+  else if (night && (nightTick = !nightTick)) { flicker(performance.now()); dirty = true; }   // 夜間閃爍每兩格更新一次（約 30 fps），省電
   if (dirty) fadeSpotCards();
   if (!dirty) return;                  // 畫面沒變就不重畫：省電、不發燙
   dirty = false;
