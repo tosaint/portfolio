@@ -701,6 +701,15 @@ try {
   buildHorseLine();
   buildChips();
   buildViewChips();
+  // 桌機：滑鼠滾輪轉成左右捲動、可拖曳捲動（手機原本就能用手指滑）
+  document.querySelectorAll('.chips').forEach(row => {
+    row.addEventListener('wheel', e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && row.scrollWidth > row.clientWidth) { row.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
+    let sx = 0, sl = 0, down = false, moved = false;
+    row.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') return; down = true; moved = false; sx = e.clientX; sl = row.scrollLeft; });
+    addEventListener('pointermove', e => { if (!down) return; const d = e.clientX - sx; if (Math.abs(d) > 4) { moved = true; row.classList.add('drag'); } row.scrollLeft = sl - d; });
+    addEventListener('pointerup', () => { if (!down) return; down = false; row.classList.remove('drag'); });
+    row.addEventListener('click', e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  });
   buildNight();
   buildSpots();
   setGround('photo');
