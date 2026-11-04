@@ -1007,6 +1007,8 @@ function office(B) {
   [-1, 1].forEach(sx => { B.cyl('wood', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.16, F - 0.15, 3.05, 12); B.box('wood', px + sx * (pw / 2 - 0.25), pu0 + 0.25, 0.42, 0.42, 2.95, 3.15); });
   B.box('wood', px, pu0 + 0.25, pw - 0.3, 0.22, 2.75, 2.95);                 // 虹梁
   B.box('dark', px, -D / 2 - 0.05, 1.8, 0.1, F, F + 2.3);                    // 入口門
+  B.box('dark', px, pu0 + 1.0, 0.04, 0.04, 2.45, 2.75);                       // 玄關吊燈（夜間亮起）
+  chochin(B, px, pu0 + 1.0, 1.95, 0.42, true);
   // 唐破風屋頂：橫向斷面中央隆起、兩端反翹，沿進深拉出
   const n = 16, W = pw + 1.0, he = 3.15, rise = 1.1;
   const hAt = t => he + rise * Math.pow(Math.cos(t * Math.PI / 2), 2) - 0.25 * t * t + 0.35 * Math.pow(t, 6);
