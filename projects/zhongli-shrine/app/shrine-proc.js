@@ -385,7 +385,7 @@ function shagoTexture() {                 // 社號標：燈籠墨跡做成石�
     x.drawImage(tint('#9d978a'), 0, 0);        // 刻底
     t.needsUpdate = true; onAsset();
   };
-  im.src = './assets/chochin-text.png';
+  im.src = './assets/chochin-text-2.png';
   return t;
 }
 function gebaTexture() {                   // 札面「下乘」：白木底、墨書
@@ -1095,7 +1095,7 @@ function chochinTexture() {             // 提燈：竹骨橫紋、一面紋章�
   // 文字（圓周 1/4 處，直書；與紋章相隔 90°）：粗筆
   x.fillStyle = ink; x.font = '900 46px "Noto Serif TC","PMingLiU",serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
   '中壢神社'.split('').forEach((ch, i) => x.fillText(ch, W * 0.25, 46 + i * 54));
-  // 實際字跡：從老照片燈籠描下的「中壢神社」墨跡（assets/chochin-text.png），載入後取代上面的暫用字
+  // 實際字跡：從老照片燈籠描下的「中壢神社」墨跡（assets/chochin-text-2.png），載入後取代上面的暫用字
   const inkImg = new Image();
   inkImg.onload = () => {
     const tw = 80, th = 214, tx = W * 0.25 - tw / 2, ty = 22;
@@ -1105,7 +1105,7 @@ function chochinTexture() {             // 提燈：竹骨橫紋、一面紋章�
     x.drawImage(inkImg, tx, ty, tw, th);
     t.needsUpdate = true; onAsset();
   };
-  inkImg.src = './assets/chochin-text.png';
+  inkImg.src = './assets/chochin-text-2.png';
   return t;
 }
 function plaqueTexture() {              // 扁額「中壢神社」（白底黑字、深色框）

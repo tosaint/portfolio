@@ -169,11 +169,11 @@ ro.observe($('#explore')); ro.observe($('#tour'));
 const photoMarker = new THREE.Group();   // 所有拍攝點的 3D 物件
 photoMarker.visible = false;
 const spotCards = [];                    // 需依距離淡入的照片
-const SPOTS = [];                        // { label, eye, stop, precise }
+const SPOTS = [], lazySpotTex = [];                        // { label, eye, stop, precise }
 function addPreciseSpot(P, small, label, stop) {
   const eye = new THREE.Vector3(...P.eye), tgt = new THREE.Vector3(...P.target);
-  const tex = new THREE.TextureLoader().load(small, () => { dirty = true; });
-  tex.colorSpace = THREE.SRGBColorSpace;
+  const tex = new THREE.Texture(); tex.colorSpace = THREE.SRGBColorSpace;   // 拍攝點打開時才下載照片（見 setSpots）
+  lazySpotTex.push([tex, small]);
   const dist = 6, hgt = 2 * dist * Math.tan(THREE.MathUtils.degToRad(P.fov / 2)), wid = hgt * P.aspect;
   const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide, transparent: true, opacity: 0, depthWrite: false });
   const card = new THREE.Mesh(new THREE.PlaneGeometry(wid, hgt), mat);
@@ -198,6 +198,7 @@ scene.add(photoMarker);
 let spotsOn = false;
 function setSpots(on) {
   spotsOn = on; photoMarker.visible = on && !inPhoto;
+  if (on) lazySpotTex.splice(0).forEach(([t, src]) => new THREE.ImageLoader().load(src, im => { t.image = im; t.needsUpdate = true; dirty = true; }));
   const b = document.querySelector('#spotBtn'); if (b) b.classList.toggle('on', on);
   if (!$('#tour').hidden) return;
   showPlacePins(); dirty = true;
@@ -525,7 +526,7 @@ $('#orbitBtn').onclick = () => setOrbit(!controls.autoRotate);
 controls.addEventListener('start', () => { if (controls.autoRotate) setOrbit(false); });
 
 /* ---------- 夜間：深藍天色、月光、提燈與石燈籠火袋透出暖光，星空與提燈微閃 ---------- */
-let night = false, stars = null, glows = [];
+let nightTick = false, night = false, stars = null, glows = [];
 const DAY = { clear: 0xeef0ec, hemiSky: 0xf4f7ff, hemiGround: 0x8a7d62, hemiI: 1.3, sunC: 0xffe9c8, sunI: 2.9, sunP: [-55, 70, 40], exp: 1.15 };
 const NIGHT = { clear: 0x0d1526, hemiSky: 0x5d6f9c, hemiGround: 0x1d1a16, hemiI: 0.42, sunC: 0xa9bde6, sunI: 0.55, sunP: [40, 80, -30], exp: 1.05 };
 function buildNight() {
@@ -740,7 +741,7 @@ renderer.setAnimationLoop(() => {
     if (k === 1) { const d = fly.done; fly = null; d && d(); }
     dirty = true;
   } else if (controls.enabled && controls.update()) dirty = true;
-  if (night) { flicker(performance.now()); dirty = true; }
+  if (night && (nightTick = !nightTick)) { flicker(performance.now()); dirty = true; }   // 夜間閃爍每兩格更新一次（約 30 fps），省電
   if (dirty) fadeSpotCards();
   if (!dirty) return;                  // 畫面沒變就不重畫：省電、不發燙
   dirty = false;
