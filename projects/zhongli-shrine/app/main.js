@@ -582,7 +582,7 @@ controls.addEventListener('start', () => { if (controls.autoRotate) setOrbit(fal
 /* ---------- 夜間：深藍天色、月光、提燈與石燈籠火袋透出暖光，星空與提燈微閃 ---------- */
 let nightTick = false, night = false, stars = null, glows = [];
 const DAY = { clear: 0xeef0ec, hemiSky: 0xf4f7ff, hemiGround: 0x8a7d62, hemiI: 1.3, sunC: 0xffe9c8, sunI: 2.9, sunP: [-55, 70, 40], exp: 1.15 };
-const NIGHT = { clear: 0x0d1526, hemiSky: 0x5d6f9c, hemiGround: 0x1d1a16, hemiI: 0.42, sunC: 0xa9bde6, sunI: 0.55, sunP: [40, 80, -30], exp: 1.05 };
+const NIGHT = { clear: 0x0d1526, hemiSky: 0x5d6f9c, hemiGround: 0x1d1a16, hemiI: 0.36, sunC: 0xa9bde6, sunI: 0.55, sunP: [40, 80, -30], exp: 1.05 };
 function buildNight() {
   // 星星：遠方天球上的點
   const n = 700, pos = new Float32Array(n * 3);
@@ -593,9 +593,37 @@ function buildNight() {
   stars = new THREE.Points(g, new THREE.PointsMaterial({ color: 0xdfe6ff, size: 1.6, sizeAttenuation: false, fog: false, transparent: true, opacity: 0.85 }));
   stars.visible = false; scene.add(stars);
   // 三處暖光：第二鳥居、神門、拜殿內（只在夜間開）
-  [[0, LV.T1 + 1.6, 63.4], [0, LV.T2 + 2.2, -GATE_Y + 1.5], [0, LV.T2 + 2.3, -6.5], [30.2, 1.9, 48.7], [30.2, 1.9, 54.1]].forEach(([x, y, z], i) => {   // 第 4、5 盞：社務所玄關左右
-    const L = new THREE.PointLight(0xffb867, 0, i >= 2 ? 12 : 18, 1.6); L.position.set(x, y, z); L.visible = false; scene.add(L); glows.push(L);
+  // [x, y, z, 距離, 強度, 所屬導覽站]：最後兩盞是拜殿、神門正面的淡淡補光（像被燈籠照亮）
+  [[0, LV.T1 + 1.6, 63.4, 18, 1, [1]], [0, LV.T2 + 2.2, -GATE_Y + 1.5, 18, 1, [5]], [0, LV.T2 + 2.3, -6.5, 12, 1, [3, 4]], [30.2, 1.9, 48.7, 12, 1, [2]], [30.2, 1.9, 54.1, 12, 1, [2]],
+   [0, 4.2, 5.5, 17, 0.45, [3]], [0, 3.4, 21, 13, 0.4, [5]]].forEach(([x, y, z, d, k, st]) => {
+    const L = new THREE.PointLight(0xffb867, 0, d, 1.6); L.position.set(x, y, z); L.visible = false; L.userData = { k, st, f: 1 }; scene.add(L); glows.push(L);
   });
+  // 燈籠下的地面光暈：一張徑向漸層貼圖、一次繪製（InstancedMesh），加法混色
+  const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
+  const gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gr.addColorStop(0, 'rgba(255,196,120,1)'); gr.addColorStop(0.35, 'rgba(255,170,90,.55)'); gr.addColorStop(1, 'rgba(255,150,70,0)');
+  x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const pm = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.5, fog: false });
+  // [x, 地面高, z, 半徑, 所屬導覽站]
+  POOLS = [[-197.2, 0, 26, 3.2, [0]], [-198.3, 0, 15.1, 3.2, [0]], [-96.3, 0, 51.7, 3, []], [-90.1, 0, 42.7, 3, []],
+    [-2.9, LV.T1, 63.4, 2.6, [1]], [2.9, LV.T1, 63.4, 2.6, [1]], [-12, 0, 68.3, 3.4, [1, 2]], [12, 0, 68.3, 3.4, [1, 2]],
+    [30.2, 0.5, 48.7, 2.6, [2]], [30.2, 0.5, 54.1, 2.6, [2]], [0, LV.T1, 49.5, 6, [1, 2]],
+    [-2.25, LV.T1, 16.6, 3.4, [5]], [2.25, LV.T1, 16.6, 3.4, [5]], [0, LV.T1, 19.5, 5.5, [5]],
+    [0, LV.T1, 0.8, 6.5, [3]], [0, LV.T2, -6.2, 4.5, [3, 4]]];
+  pools = new THREE.InstancedMesh(new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2), pm, POOLS.length);
+  const m4 = new THREE.Matrix4();
+  POOLS.forEach(([px, py, pz, r], i) => { m4.makeScale(r, 1, r).setPosition(px, py + 0.04, pz); pools.setMatrixAt(i, m4); pools.setColorAt(i, new THREE.Color(1, 1, 1)); });
+  pools.renderOrder = 2; pools.visible = false; pools.frustumCulled = false; scene.add(pools);
+}
+let POOLS = [], pools = null;
+// 夜間焦點：導覽中，當站的燈較亮、其他較暗；不在導覽時全部中等亮度
+function nightFocus() {
+  const touring = !$('#tour').hidden, cur = stopIndex;
+  const lvl = st => !touring ? 0.85 : st.includes(cur) ? 1.25 : 0.4;
+  glows.forEach(L => { L.userData.f = lvl(L.userData.st); });
+  if (pools) { const col = new THREE.Color(); POOLS.forEach((p, i) => pools.setColorAt(i, col.setScalar(lvl(p[4])))); pools.instanceColor.needsUpdate = true; }
+  dirty = true;
 }
 function setNight(on) {
   night = on; const S = on ? NIGHT : DAY;
@@ -605,10 +633,13 @@ function setNight(on) {
   const M = shrine?.matsByName || {};
   if (M.chochin) { M.chochin.emissive.set(on ? 0xffc27a : 0x2a2620); M.chochin.emissiveIntensity = 1; }
   if (M.kamonStone) { M.kamonStone.emissive.set(on ? 0xffa24a : 0x000000); }
+  // 夜裡碎石、石板地面壓暗一點，讓燈籠光暈成為焦點
+  ['gravel', 'path', 'slab'].forEach(k => { const m = M[k]; if (!m) return; m.userData.day ??= m.color.clone(); m.color.copy(m.userData.day).multiplyScalar(on ? 0.38 : 1); });
   [ground, overlay].forEach(gd => gd && gd.mesh.material.color.set(on ? 0x3a4458 : 0xffffff));
   if (edgeMat) edgeMat.color.set(on ? 0x05070c : 0x2b2118);
   if (stars) stars.visible = on;
-  glows.forEach(L => { L.visible = on; L.intensity = on ? 9 : 0; });
+  glows.forEach(L => { L.visible = on; L.intensity = on ? 9 * L.userData.k * L.userData.f : 0; });
+  if (pools) pools.visible = on; nightFocus();
   ['#nightBtn', '#nightBtn2'].forEach(q => $(q)?.classList.toggle('on', on));
   renderer.shadowMap.needsUpdate = true; dirty = true;
 }
@@ -617,7 +648,8 @@ $('#nightBtn2').onclick = () => setNight(!night);
 function flicker(t) {                 // 提燈微閃：燭火般的不規則亮度
   const M = shrine?.matsByName; if (!M) return;
   const f = 0.88 + 0.08 * Math.sin(t * 0.0071) + 0.05 * Math.sin(t * 0.0193 + 1.3) + 0.03 * Math.sin(t * 0.047);
-  M.chochin.emissiveIntensity = f; glows.forEach((L, i) => L.intensity = 9 * (f + 0.04 * Math.sin(t * 0.011 + i)));
+  M.chochin.emissiveIntensity = f; glows.forEach((L, i) => L.intensity = 9 * L.userData.k * L.userData.f * (f + 0.04 * Math.sin(t * 0.011 + i)));
+  if (pools) pools.material.opacity = 0.5 * (0.9 + 0.1 * f);
   if (stars) stars.material.opacity = 0.75 + 0.1 * Math.sin(t * 0.002);
 }
 
@@ -634,7 +666,7 @@ function endTour() {
   inPhoto = false; showPhoto(false); camera.near = 0.5; camera.updateProjectionMatrix();
   photoMarker.visible = spotsOn; controls.enabled = true;
   $('#tour').hidden = true; $('#explore').hidden = false;
-  showPlacePins();
+  showPlacePins(); nightFocus();
   flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov);
   window.history.replaceState(null, '', location.pathname);
 }
@@ -677,7 +709,7 @@ function go(i) {
       camera.fov = photoFov(); camera.near = curPhoto.near || 0.5; camera.updateProjectionMatrix();   // 面板高度可能在飛行途中改變，最後再算一次
       dirty = true; $('#fade').value = 0; showPhoto(true); applyFade(); }
   });
-  showStopPins(s);
+  showStopPins(s); nightFocus();
   window.history.replaceState(null, '', '#stop-' + (stopIndex + 1));
 }
 $('#prev').onclick = () => go(stopIndex - 1);
@@ -811,4 +843,4 @@ renderer.setAnimationLoop(() => {
   updatePins();
 });
 
-window.__app = { renderer, scene, startTour, endTour, go, setGround, camera, controls, get shrine() { return shrine; }, get ground() { return ground; } };
+window.__app = { renderer, scene, startTour, endTour, go, setGround, setNight: v => setNight(v), camera, controls, get shrine() { return shrine; }, get ground() { return ground; } };
