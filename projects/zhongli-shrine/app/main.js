@@ -582,7 +582,7 @@ controls.addEventListener('start', () => { if (controls.autoRotate) setOrbit(fal
 /* ---------- 夜間：深藍天色、月光、提燈與石燈籠火袋透出暖光，星空與提燈微閃 ---------- */
 let nightTick = false, night = false, stars = null, glows = [];
 const DAY = { clear: 0xeef0ec, hemiSky: 0xf4f7ff, hemiGround: 0x8a7d62, hemiI: 1.3, sunC: 0xffe9c8, sunI: 2.9, sunP: [-55, 70, 40], exp: 1.15 };
-const NIGHT = { clear: 0x0d1526, hemiSky: 0x5d6f9c, hemiGround: 0x1d1a16, hemiI: 0.36, sunC: 0xa9bde6, sunI: 0.55, sunP: [40, 80, -30], exp: 1.05 };
+const NIGHT = { clear: 0x0d1526, hemiSky: 0x5d6f9c, hemiGround: 0x1d1a16, hemiI: 0.36, sunC: 0xa9bde6, sunI: 0.55, sunP: [-55, 70, 40], exp: 1.05 };   // 月光方向同日光，切換時陰影不跳
 function buildNight() {
   // 星星：遠方天球上的點
   const n = 700, pos = new Float32Array(n * 3);
@@ -637,8 +637,8 @@ let POOLS = [], pools = null;
 function nightFocus() {
   const touring = !$('#tour').hidden, cur = stopIndex;
   const lvl = st => !touring ? 0.85 : st.includes(cur) ? 1.6 : 0.3;
-  glows.forEach(L => { L.userData.f = lvl(L.userData.st); });
-  if (pools) { const col = new THREE.Color(); POOLS.forEach((p, i) => pools.setColorAt(i, col.setScalar(lvl(p[4])))); pools.instanceColor.needsUpdate = true; }
+  glows.forEach(L => { L.userData.ft = lvl(L.userData.st); });
+  POOLS.forEach(p => p.ft = lvl(p[4]));
   dirty = true;
 }
 // 日夜切換：0.45 秒漸變（nightK 0→1），燈與光暈在白天關掉；夜間著色程式事先在閒置時編好（warmNight），切換不卡
@@ -690,6 +690,9 @@ $('#nightBtn').onclick = () => setNight(!night);
 $('#nightBtn2').onclick = () => setNight(!night);
 function flicker(t) {                 // 提燈微閃：燭火般的不規則亮度
   const M = shrine?.matsByName; if (!M) return;
+  // 焦點亮度慢慢靠向目標（約 0.5 秒），換站時不會一下子跳亮
+  glows.forEach(L => { if (L.userData.ft !== undefined) L.userData.f += (L.userData.ft - L.userData.f) * 0.12; });
+  if (pools) { let ch = false; POOLS.forEach((p, i) => { p.f ??= 0.85; if (p.ft !== undefined && Math.abs(p.ft - p.f) > 0.002) { p.f += (p.ft - p.f) * 0.12; pools.setColorAt(i, _cb.setScalar(p.f)); ch = true; } }); if (ch) pools.instanceColor.needsUpdate = true; }
   const f = 0.88 + 0.08 * Math.sin(t * 0.0071) + 0.05 * Math.sin(t * 0.0193 + 1.3) + 0.03 * Math.sin(t * 0.047);
   M.chochin.emissiveIntensity = 1 + (f - 1) * nightK; glows.forEach((L, i) => L.intensity = nightK * 9 * L.userData.k * L.userData.f * (f + 0.04 * Math.sin(t * 0.011 + i)));
   if (pools) pools.material.opacity = nightK * 0.5 * (0.9 + 0.1 * f);
@@ -805,7 +808,7 @@ function nearest() {
 }
 
 /* ---------- 相機飛行與主迴圈 ---------- */
-let fly = null, dirty = true, slow = 0, fast = 0, lastFrame = 0;
+let fly = null, dirty = true, slow = 0, fast = 0, lastTick = 0, renderedPrev = false, dprChanges = 0;
 function flyTo(eye, target, fov, done) {
   fly = { p0: camera.position.clone(), t0: controls.target.clone(), f0: camera.fov, p1: eye, t1: target, f1: fov, start: performance.now(), ms: 1300, done };
 }
@@ -859,6 +862,16 @@ if (hashStop) startTour(hashStop - 1);
 else { showPlacePins(); flyTo(new THREE.Vector3(...HOME.eye), new THREE.Vector3(...HOME.target), baseFov); }
 
 renderer.setAnimationLoop(() => {
+  // 依「連續兩格都有重畫」時的畫格間隔調解析度（夜間每兩格才重畫一次，不能拿重畫間隔來判斷）。
+  // 解析度要在重畫「之前」改，否則畫布被清空會閃一下；升降有次數上限，避免來回跳。
+  const now = performance.now(), tick = now - lastTick; lastTick = now;
+  if (renderedPrev && tick < 200) {
+    const pr = renderer.getPixelRatio();
+    slow = tick > 28 ? slow + 1 : Math.max(0, slow - 1);
+    if (slow > 12 && pr > 0.75 && dprChanges < 6) { renderer.setPixelRatio(Math.max(0.75, pr - 0.25)); slow = 0; fast = 0; dprChanges++; dirty = true; }
+    else if (tick < 18 && pr < maxDPR && ++fast > 360 && dprChanges < 6) { renderer.setPixelRatio(Math.min(maxDPR, pr + 0.25)); fast = 0; dprChanges++; dirty = true; }
+  }
+  renderedPrev = false;
   if (fly) {
     const k = Math.min((performance.now() - fly.start) / fly.ms, 1);
     const e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
@@ -875,15 +888,7 @@ renderer.setAnimationLoop(() => {
   if (dirty) fadeSpotCards();
   if (!dirty) return;                  // 畫面沒變就不重畫：省電、不發燙
   dirty = false;
-  renderer.render(scene, camera);
-  // 依實際畫格間隔調解析度：連續重畫時若常超過約 28 毫秒（不到 35 fps）就降低，持續順暢再慢慢升回上限
-  const now = performance.now(), dt = now - lastFrame, pr = renderer.getPixelRatio();
-  if (dt < 200) {
-    slow = dt > 28 ? slow + 1 : Math.max(0, slow - 1);
-    if (slow > 8 && pr > 0.75) { renderer.setPixelRatio(Math.max(0.75, pr - 0.25)); slow = 0; fast = 0; }
-    else if (dt < 18 && pr < maxDPR && ++fast > 240) { renderer.setPixelRatio(Math.min(maxDPR, pr + 0.25)); fast = 0; }
-  }
-  lastFrame = now;
+  renderer.render(scene, camera); renderedPrev = true;
   updatePins();
 });
 
