@@ -243,6 +243,29 @@
    ]
   },
   {
+   "id": "komainu",
+   "q": [
+    3.2,
+    -19.3
+   ],
+   "kind": "moved",
+   "title": "狛犬",
+   "short": "狛犬",
+   "past": "神門前、參道左右的一對花崗岩狛犬，面向參道、隔著參道相對而視。台座刻有「昭和十四年十月」與「奉獻」。",
+   "change": "1950 年移入忠義祠。",
+   "now": "中壢後火車站附近的義民廟（忠義祠）前",
+   "slides": [],
+   "photos": [
+    "gate-komainu",
+    "komainu-now",
+    "komainu-base",
+    "komainu-front"
+   ],
+   "src": [
+    "deck"
+   ]
+  },
+  {
    "id": "horse-old",
    "plan": [
     4.86,

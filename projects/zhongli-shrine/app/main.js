@@ -79,7 +79,7 @@ const STOPS = [
   {
     title: '神門、狛犬與銅馬',
     text: '你站在當年攝影師的位置，拖曳滑桿讓照片和 3D 疊合：神門前一對狛犬，門左側是銅馬。比對照片發現，鎮座祭當天的照片都看不到這座神門，它很可能是之後才增建的。',
-    now: '狛犬 1950 年移到忠義祠；銅馬搬過好幾次，現在立在中央西路正門。虛線是它從原位置到今天正門的距離。',
+    now: '狛犬 1950 年移到中壢後火車站附近的義民廟（忠義祠），至今仍在；銅馬搬過好幾次，現在立在中央西路正門。虛線是它從原位置到今天正門的距離。',
     photo: HIST_PHOTO,
     thumbs: [['photos/horse-komainu-gate.jpg', '銅馬、狛犬與神門'], ['photos/gate-postwar.jpg', '神門前合影（1940 年代）'], ['assets/models/horse/current.jpg', '今天的銅馬（中央西路正門）']]
   }
@@ -277,7 +277,7 @@ function loadKomainu() {
       const k = i ? g.scene : g.scene.clone();
       k.position.set(x, LV.T1 + KOMA_PED, -y);
       if (!i) k.scale.x = -1;                 // 左側鏡像
-      k.rotation.y = 0;                       // 與神門同向：背對神門、面朝參道來的方向
+      k.rotation.y = i ? -Math.PI / 2 : Math.PI / 2;   // 神門與狛犬照片：兩尊面向參道、隔著參道相對而視
       scene.add(k);
     });
     applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true;
@@ -433,7 +433,7 @@ function openCard(p) {
   $('#card').classList.add('open');
 }
 // 構件尺寸（公尺）：依老照片、銅馬掃描與參拜道實測推估
-const PLACE_OBJ = { shago: 'G', gebafuda: 'F', kejiba: 'E', torii1: 'B1', torii2: 'B2', lantern: 'D6', office: 'H', gate: 'N', 'horse-old': 'L', 'horse-now': 'L', haiden: 'P', honden: 'Q' };
+const PLACE_OBJ = { komainu: 'K', shago: 'G', gebafuda: 'F', kejiba: 'E', torii1: 'B1', torii2: 'B2', lantern: 'D6', office: 'H', gate: 'N', 'horse-old': 'L', 'horse-now': 'L', haiden: 'P', honden: 'Q' };
 function boxOf(id) {
   if (id === 'L') return horseScan ? new THREE.Box3().setFromObject(horseScan) : null;
   return shrine?.boxes.get(id) || null;
