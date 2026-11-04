@@ -889,7 +889,7 @@ $('safeDirection').onclick=()=>perform('safe');
 function download(name,text,type){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000)}
 
 /* ---------- 繳交紀錄：Apps Script 網頁 → 設定的收件網址 → 下載檔案 ---------- */
-const RECORD_ENDPOINT=''; // 放在 Cloudflare／GitHub 網站時：貼上 Apps Script 網頁應用程式網址（結尾為 /exec），紀錄就會寫進 Google 試算表
+const RECORD_ENDPOINT='https://script.google.com/macros/s/AKfycbxnRLpY4NnsyzI5GnMHOrPKD_mAe_DJBYbilMTc5jljh_ntFZ92pLV2oEELYfEFXSxE/exec'; // 放在 Cloudflare／GitHub 網站時：貼上 Apps Script 網頁應用程式網址（結尾為 /exec），紀錄就會寫進 Google 試算表
 const PREVIEW_ONLY=false;
 const OPTS={inv:['和肉眼一樣','只有上下顛倒','只有左右顛倒','上下左右都顛倒']};
 const hasGAS=()=>typeof google!=='undefined'&&!!(google.script&&google.script.run);
