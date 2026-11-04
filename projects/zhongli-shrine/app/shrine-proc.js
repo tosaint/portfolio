@@ -566,7 +566,7 @@ export function buildShrine() {
   plat(B, { x0: -WAIST, x1: WAIST, y0: TORII2_Y - 0.4, y1: GATE_Y - 10.5 }, 0, LV.T1);   // 腰身
   plat(B, { x0: -16, x1: 16, y0: GATE_Y - 11, y1: 30 }, 0, LV.T1);                     // 神門前＋內苑周圍
   // 社務所前：與地面同高的碎石區，沿社務所四周留約 3 公尺
-  B.at(0, 0); B.box('gravel', 30, -51.4, 46, 22, -0.03, 0.025);
+  B.at(0, 0); B.box('gravel', 30, (TORII2_Y - 0.35 - 40.4) / 2, 46, -40.4 - (TORII2_Y - 0.35), -0.03, 0.025);   // 南緣貼齊鳥居前廣場，社號標與長旗後方不留縫
   // 內苑：屋根付玉垣以內
   const T2 = { x0: -13.1, x1: 13.1, y0: GATE_Y, y1: -1.0 + IN };   // 神門照片反求：轉角距中軸 13 公尺
   plat(B, T2, LV.T1, LV.T2);
@@ -956,7 +956,7 @@ export function treeOK(x, y, m = 1.5) {
   if (inR(-WAIST, WAIST, TORII2_Y - 0.4, GATE_Y - 10.5)) return false;        // 腰身
   if (inR(-16, 16, GATE_Y - 11, 30)) return false;                            // 神門前＋內苑
   if (inR(-20, 20, TORII2_Y - 16, TORII2_Y)) return false;                    // 鳥居前廣場
-  if (inR(7, 53, -62.4, -40.4)) return false;                                 // 社務所
+  if (inR(7, 53, TORII2_Y - 0.4, -40.4)) return false;                                 // 社務所
   for (const [px, py] of APPROACH_PTS) if ((px - x) ** 2 + (py - y) ** 2 < (6 + m) ** 2) return false;   // 外參道
   return true;
 }

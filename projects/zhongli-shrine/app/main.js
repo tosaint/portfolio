@@ -227,18 +227,26 @@ function buildPines() {
   const trunkMat = new THREE.MeshLambertMaterial({ color: 0x5b4a3b }), leafMat = new THREE.MeshLambertMaterial({ color: 0x34492f, flatShading: true });
   const trees = [];
   const add = (x, y, h) => { if (treeOK(x, y)) trees.push([x, y, h]); };
-  // 外參道兩側：沿參道每 4 公尺左右各 1–2 棵高松
-  const P = approachPts();
-  for (let i = 0; i < P.length - 1; i += 2) {
-    const [ax, ay] = P[i], [bx, by] = P[i + 1], l = Math.hypot(bx - ax, by - ay) || 1, nx = -(by - ay) / l, ny = (bx - ax) / l;
-    for (const sd of [-1, 1]) for (let k = 0; k < 2; k++) { const o = 7.5 + rnd() * 14; add(ax + nx * o * sd + (rnd() - 0.5) * 3, ay + ny * o * sd + (rnd() - 0.5) * 3, rnd() < 0.8 ? 8 + rnd() * 6 : 3 + rnd() * 2); }
+  // 外參道：兩側各一排高聳黑松（每 8–12 公尺一棵），越接近第二鳥居越稀，避免擋住視線
+  const P = approachPts(), seg = [0]; for (let i = 1; i < P.length; i++) seg.push(seg[i - 1] + Math.hypot(P[i][0] - P[i - 1][0], P[i][1] - P[i - 1][1]));
+  const Ltot = seg[seg.length - 1];
+  for (const sd of [-1, 1]) for (let d = 6 + rnd() * 4; d < Ltot; d += 8 + rnd() * 4) {
+    const f = d / Ltot; if (f > 0.55 && rnd() < (f - 0.55) / 0.33) continue;
+    let i = seg.findIndex(v => v >= d); i = Math.max(1, i);
+    const [ax, ay] = P[i - 1], [bx, by] = P[i], l = Math.hypot(bx - ax, by - ay) || 1, nx = -(by - ay) / l, ny = (bx - ax) / l, o = 8 + rnd() * 2.2;
+    add(ax + nx * o * sd, ay + ny * o * sd, 10 + rnd() * 4);
   }
-  // 神社四周：隨機散佈，靠近鋪面處多種小松
-  for (let i = 0; i < 1600 && trees.length < 430; i++) {
-    const x = -40 + rnd() * 95, y = -88 + rnd() * 122;
-    const nearPave = !treeOK(x, y, 6);
-    add(x, y, nearPave && rnd() < 0.6 ? 2.5 + rnd() * 2.5 : 7 + rnd() * 7);
-  }
+  // 拜殿、本殿周圍：背面最密、兩側稍疏；靠近玉垣多小松、外圍高松
+  const ring = (x0, x1, y0, y1, n) => { for (let k = 0; k < n; k++) {
+    const x = x0 + rnd() * (x1 - x0), y = y0 + rnd() * (y1 - y0), dist = Math.min(Math.abs(Math.abs(x) - 16), Math.abs(y - 30));
+    add(x, y, dist < 5 && rnd() < 0.5 ? 2.5 + rnd() * 2.5 : 8 + rnd() * 6);
+  } };
+  ring(-34, 34, 31.5, 50, 70);          // 本殿背面
+  ring(-32, -17.5, -12, 31, 26);        // 西側
+  ring(17.5, 32, -12, 31, 26);          // 東側
+  // 零星點綴：社務所背後、腰身兩側近神門、鳥居前廣場角落
+  [[56, -46, 9], [57, -55, 12], [55, -60, 4], [-11, -33, 11], [-12, -40, 3.5], [11, -34, 3], [12.5, -29, 12], [-23, -77, 9], [23.5, -79, 4], [-22, -60, 11]]
+    .forEach(([x, y, h]) => add(x, y, h * (0.9 + rnd() * 0.2)));
   const groups = [[], []]; trees.forEach((t, i) => groups[i % 2].push(t));
   const m4 = new THREE.Matrix4(), q4 = new THREE.Quaternion(), e = new THREE.Euler();
   const trunkIM = new THREE.InstancedMesh(trunk, trunkMat, trees.length);
