@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED, HORSE, setOnAsset } from './shrine-proc.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED, HORSE, setOnAsset, treeOK, approachPts } from './shrine-proc.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 // 掃描檔已用 meshopt 壓縮、只留顏色貼圖；材質改成 Lambert，手機算得比較輕
@@ -210,6 +211,51 @@ function fadeSpotCards() {           // 拉近才顯示照片
 }
 
 let edgeMat = null, shadowPlane = null;
+/* ---------- 黑松：大小錯落，實例化繪製（樹幹一次、兩種樹冠各一次） ---------- */
+function buildPines() {
+  let r = 20261104; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
+  // 單位樹：樹幹 0→0.62（微彎由實例傾斜表現），樹冠為數層扁平雲團（黑松的層狀輪廓）
+  const trunk = new THREE.CylinderGeometry(0.016, 0.03, 0.66, 5, 1, true); trunk.translate(0, 0.33, 0);
+  const crown = variant => {
+    const parts = [];
+    const tiers = variant ? [[0.5, 0.28, 0.1, 0.05], [0.66, 0.22, -0.08, 0.02], [0.8, 0.17, 0.06, -0.04], [0.93, 0.11, 0, 0]]
+                          : [[0.58, 0.24, -0.12, 0.04], [0.74, 0.2, 0.1, -0.05], [0.9, 0.13, -0.02, 0.03]];
+    tiers.forEach(([y, w, dx, dz]) => { const g = new THREE.IcosahedronGeometry(1, 0); g.scale(w, w * 0.38, w * 0.85); g.translate(dx, y, dz); parts.push(g.toNonIndexed()); });
+    return mergeGeometries(parts);
+  };
+  const crowns = [crown(0), crown(1)];
+  const trunkMat = new THREE.MeshLambertMaterial({ color: 0x5b4a3b }), leafMat = new THREE.MeshLambertMaterial({ color: 0x34492f, flatShading: true });
+  const trees = [];
+  const add = (x, y, h) => { if (treeOK(x, y)) trees.push([x, y, h]); };
+  // 外參道兩側：沿參道每 4 公尺左右各 1–2 棵高松
+  const P = approachPts();
+  for (let i = 0; i < P.length - 1; i += 2) {
+    const [ax, ay] = P[i], [bx, by] = P[i + 1], l = Math.hypot(bx - ax, by - ay) || 1, nx = -(by - ay) / l, ny = (bx - ax) / l;
+    for (const sd of [-1, 1]) for (let k = 0; k < 2; k++) { const o = 7.5 + rnd() * 14; add(ax + nx * o * sd + (rnd() - 0.5) * 3, ay + ny * o * sd + (rnd() - 0.5) * 3, rnd() < 0.8 ? 8 + rnd() * 6 : 3 + rnd() * 2); }
+  }
+  // 神社四周：隨機散佈，靠近鋪面處多種小松
+  for (let i = 0; i < 1600 && trees.length < 430; i++) {
+    const x = -40 + rnd() * 95, y = -88 + rnd() * 122;
+    const nearPave = !treeOK(x, y, 6);
+    add(x, y, nearPave && rnd() < 0.6 ? 2.5 + rnd() * 2.5 : 7 + rnd() * 7);
+  }
+  const groups = [[], []]; trees.forEach((t, i) => groups[i % 2].push(t));
+  const m4 = new THREE.Matrix4(), q4 = new THREE.Quaternion(), e = new THREE.Euler();
+  const trunkIM = new THREE.InstancedMesh(trunk, trunkMat, trees.length);
+  let n = 0;
+  groups.forEach((g, gi) => {
+    const im = new THREE.InstancedMesh(crowns[gi], leafMat, g.length);
+    g.forEach(([x, y, h], k) => {
+      e.set((rnd() - 0.5) * 0.18, rnd() * Math.PI * 2, (rnd() - 0.5) * 0.18); q4.setFromEuler(e);
+      const sxz = h * (0.75 + rnd() * 0.35);
+      m4.compose(new THREE.Vector3(x, groundH, -y), q4, new THREE.Vector3(sxz, h, sxz));
+      im.setMatrixAt(k, m4); trunkIM.setMatrixAt(n++, m4);
+    });
+    im.castShadow = true; scene.add(im);
+  });
+  trunkIM.castShadow = true; scene.add(trunkIM);
+  fadeMats.push(trunkMat, leafMat); applyEra(); renderer.shadowMap.needsUpdate = true; dirty = true;
+}
 function buildEdges() {   // 細輪廓線：讓屋簷、柱列、格子的層次更清楚（一次繪製）；首畫之後才算，不拖慢載入
     const edges = [];
     shrine.group.children.forEach(m => { if (!/gravel|path/.test(m.name)) edges.push(new THREE.EdgesGeometry(m.geometry, 28)); });
@@ -697,7 +743,7 @@ try {
   places = md.places.map(p => ({ ...p, pos: p.q || (p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng)) }));
   // 先畫出神社，再於空檔載入掃描模型與輪廓線，避免一開頁卡住
   const later = f => (window.requestIdleCallback || (g => setTimeout(g, 120)))(f);
-  requestAnimationFrame(() => requestAnimationFrame(() => { later(buildEdges); later(loadHorseScan); later(loadKomainu); }));
+  requestAnimationFrame(() => requestAnimationFrame(() => { later(buildEdges); later(buildPines); later(loadHorseScan); later(loadKomainu); }));
   buildScaleAids();
   buildHorseLine();
   buildChips();

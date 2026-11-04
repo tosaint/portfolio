@@ -22,6 +22,7 @@ export const LV = {
 // 航照可辨認：參道帶狀亮區沿中軸從第二鳥居延伸到一道暗帶（神門與屋根付玉垣）＝ q.y 約 −15；
 // 暗帶後方的亮方塊是內苑（砂利）；第二鳥居在帶狀區前端 q.y 約 −62～−68。
 // 神門到拜殿的距離（21 公尺）則用神門照片反求的結果。
+export const WAIST = 7;              // 腰身：參道兩側各 7 公尺
 export const GATE_Y = -15.0;          // 神門（內苑前緣）
 // 銅馬（昭和 14 年合影照）：神門左側玉垣前，低矮方形石座，馬頭朝神門
 export const HORSE = { q: [-7.6, GATE_Y - 2.6], ped: 0.9 };
@@ -559,8 +560,13 @@ export function buildShrine() {
   B.at(0, 0);
   // 前庭（第二鳥居後到本殿區）：配置圖中的大平台（含社務所）
   // 前庭：1947 航照中為第二鳥居到內苑之間的帶狀空地，兩側是松林，故只鋪中軸兩側約 16 公尺
-  const T1 = { x0: -16, x1: 16, y0: TORII2_Y - 0.4, y1: 30 };
-  plat(B, T1, 0, LV.T1);
+  // 前庭平台改為「腰身」形（2026-11-04）：第二鳥居到神門之間只沿參道兩側各 7 公尺，
+  // 神門前起展開包住內苑；兩側留給松林（1947 航照：中間亮帶、兩側深色樹林）
+  const T1 = { x0: -WAIST, x1: WAIST, y0: TORII2_Y - 0.4, y1: 30 };
+  plat(B, { x0: -WAIST, x1: WAIST, y0: TORII2_Y - 0.4, y1: GATE_Y - 10.5 }, 0, LV.T1);   // 腰身
+  plat(B, { x0: -16, x1: 16, y0: GATE_Y - 11, y1: 30 }, 0, LV.T1);                     // 神門前＋內苑周圍
+  // 社務所前：與地面同高的碎石區，沿社務所四周留約 3 公尺
+  B.at(0, 0); B.box('gravel', 30, -51.4, 46, 22, -0.03, 0.025);
   // 內苑：屋根付玉垣以內
   const T2 = { x0: -13.1, x1: 13.1, y0: GATE_Y, y1: -1.0 + IN };   // 神門照片反求：轉角距中軸 13 公尺
   plat(B, T2, LV.T1, LV.T2);
@@ -570,6 +576,7 @@ export function buildShrine() {
 
   // 外參道（第一鳥居 → 第二鳥居）：依 1947 年航照描出的參拜道走向（見 APPROACH）
   const curve = approachCurve();
+  APPROACH_PTS = curve.getSpacedPoints(160).map(v => [v.x, v.z]);
   const L = curve.getLength(), n = Math.ceil(L / 3);
   const pts = curve.getSpacedPoints(n).map(v => [v.x, v.z]);
   for (let i = 0; i < pts.length - 1; i++) strip(B, pts[i], pts[i + 1], 8, 0.02, 'gravel');
@@ -580,7 +587,7 @@ export function buildShrine() {
       if (b.z > TORII2_Y - 16 && b.x > -18) continue;   // 進入第二鳥居前廣場後不再設緣石
       strip(B, [a.x + nx, a.z + nz], [b.x + nx, b.z + nz], 0.16, 0.06, 'stone', false);
     } }
-  B.at(0, 0); B.box('gravel', -2, TORII2_Y - 8.5, 30, 15, -0.03, 0.02);              // 第二鳥居前廣場
+  B.at(0, 0); B.box('gravel', 0, (TORII2_Y - 0.35 + TORII2_Y - 16) / 2, 40, 15.65, -0.03, 0.02);   // 第二鳥居前廣場：左右對稱各 20 公尺，北緣貼齊平台
   // 石板參拜道（實測寬 3.01 公尺）
   strip(B, [AX, -71], [AX, TORII2_Y - 1.7], 3.01, 0.04, 'path');
   strip(B, [AX, TORII2_Y - 0.4], [AX, GATE_Y - 2.93], 3.01, LV.T1 + 0.03, 'path');
@@ -632,7 +639,7 @@ export function buildShrine() {
   B.begin('E').at(KEJIBA[0], KEJIBA[1], 0, 0); kejiba(B); B.end();   // 告示板朝參拜者走來的方向（背對第二鳥居）
   B.begin('F').at(GEBA[0], GEBA[1], 0, 0); gebafuda(B); B.end();   // 下乘札：揭示場與參道之間、與揭示場同排，札面朝參拜者
   // 手水舍（位置推估：石燈籠照片中在鳥居內側）
-  B.begin('W').at(-8.0, TORII2_Y + 5.6, Math.PI / 2, LV.T1);
+  B.begin('W').at(-5.2, TORII2_Y + 5.6, Math.PI / 2, LV.T1);
   [[-1.1, -0.75], [1.1, -0.75], [1.1, 0.75], [-1.1, 0.75]].forEach(([x, u]) => B.box('wood', x, u, 0.18, 0.18, 0, 2.3));
   B.box('stone', 0, 0, 1.4, 0.7, 0, 0.75);
   kirizuma(B, 0, 0, 3.4, 1.4, 1.4, 2.3, 3.25, true, 0.08);   // 懸山（切妻造）
@@ -648,10 +655,10 @@ export function buildShrine() {
   { const q = [37.8, -51.4]; B.begin('H').at(q[0], q[1], Math.PI / 2, 0); office(B); B.end(); }
   // 社務所前的鋪面：玄關前前庭＋斜向步道，接到第二鳥居前廣場（依 1947 航照的亮色開闊地）
   // 直線大道：玄關正前方筆直往西接到參拜道，寬 3.6 公尺；上前庭平台處設三段石階
-  strip(B, [30.5, -51.4], [16.6, -51.4], 3.6, 0.04, 'path');
-  B.at(16.0, -51.4, -Math.PI / 2, 0); steps(B, 0, -0.6, 4.2, LV.T1, 3, 0.2);
+  strip(B, [30.5, -51.4], [WAIST + 0.6, -51.4], 3.6, 0.04, 'path');
+  B.at(WAIST, -51.4, -Math.PI / 2, 0); steps(B, 0, -0.6, 4.2, LV.T1, 3, 0.2);
   [-2.25, 2.25].forEach(x => B.box('stone', x, 0, 0.3, 1.2, 0, LV.T1 + 0.05));
-  strip(B, [16.0, -51.4], [1.5, -51.4], 3.6, LV.T1 + 0.03, 'path');
+  strip(B, [WAIST, -51.4], [1.5, -51.4], 3.6, LV.T1 + 0.03, 'path');
 
   /* ---- 神門（四脚門、切妻造）＋狛犬 ---- */
   // 神門照片反求（以拜殿正面照定出的拜殿尺寸為比例尺）：屋頂寬約 7.1、簷高 2.75、屋脊 4.4 公尺
@@ -941,7 +948,18 @@ export function buildShrine() {
 // 中段略向東弧出，約在拜殿前 70 公尺處接上神社中軸，再直行到第二鳥居。
 const NANDAMEN = [24.961157, 121.208661];
 const AIR_PX = [[850, 1195], [835, 1150], [830, 1000], [850, 900], [885, 800], [897, 700], [885, 620], [860, 590]];
-let APPROACH = null;
+let APPROACH = null, APPROACH_PTS = [];
+export const approachPts = () => APPROACH_PTS;
+// 樹木可否種在此處（q 座標）：避開所有鋪面、建築與外參道
+export function treeOK(x, y, m = 1.5) {
+  const inR = (x0, x1, y0, y1) => x > x0 - m && x < x1 + m && y > y0 - m && y < y1 + m;
+  if (inR(-WAIST, WAIST, TORII2_Y - 0.4, GATE_Y - 10.5)) return false;        // 腰身
+  if (inR(-16, 16, GATE_Y - 11, 30)) return false;                            // 神門前＋內苑
+  if (inR(-20, 20, TORII2_Y - 16, TORII2_Y)) return false;                    // 鳥居前廣場
+  if (inR(7, 53, -62.4, -40.4)) return false;                                 // 社務所
+  for (const [px, py] of APPROACH_PTS) if ((px - x) ** 2 + (py - y) ** 2 < (6 + m) ** 2) return false;   // 外參道
+  return true;
+}
 function approachCurve() {
   const a = [650, 600], qb = llToQ(...NANDAMEN);
   const za = { re: 850 - a[0], im: -(1195 - a[1]) };
