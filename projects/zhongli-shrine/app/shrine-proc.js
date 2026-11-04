@@ -42,7 +42,7 @@ export const DIMS = {
   B2: '依鎮座祭鳥居照片：以台階與人身高為比例，柱距約 4 公尺',
   N: '依神門與狛犬照片反求（以拜殿尺寸為比例尺）；格子壁、桐紋幕依戰後神門前合影。鎮座祭（1939）照片中看不到神門，推測為後來增建',
   P: '依拜殿正面照（自神門往拜殿）：以參拜道實測寬 3.01 公尺為比例，相機與尺寸聯合反求，誤差約 5 像素；深度依神門照片',
-  Q: '依本殿歷史照片：流造檜皮葺、前簷延伸為向拜、千木與鰹木 6 根、高床與三面高欄；以巫女身高約 1.5 公尺為比例',
+  Q: '依本殿歷史照片：流造檜皮葺（厚簷口、簷端上翹）、前簷延伸為向拜與弓形手挾、二軒垂木、破風懸魚、千木與鰹木 6 根、高床（床下兩道貫）與三面高欄、擬寶珠；以巫女身高約 1.5 公尺為比例',
   D6: '依石燈籠照片：三層台座、竿、中台、火袋、笠、寶珠',
   H: '量體依 Tinkercad 粗模：主屋 15×9、屋脊 7.7 公尺，背後接宿舍（後棟）與小附屬屋；外觀依校史館照片；位置依 1947 航照',
   G: '依石燈籠照片背景',
@@ -893,26 +893,57 @@ export function buildShrine() {
   const ue = -4.75, heF = Fh + 1.55;
   [-1.35, 1.35].forEach(x => { B.box('wood', x, ue + 0.35, 0.22, 0.22, Fd - 0.2, heF - 0.15); B.box('wood', x, ue + 0.35, 0.3, 0.3, Fd - 0.3, Fd - 0.1); });
   B.box('wood', 0, ue + 0.35, 3.1, 0.24, heF - 0.45, heF - 0.15);     // 向拜虹梁
-  [-1.35, 1.35].forEach(x => B.box('wood', x, (ue + 0.35 - 1.5) / 2, 0.16, Math.abs(ue + 0.35 + 1.5), heF - 0.35, heF - 0.15));   // 手挾（海老虹梁）
-  // 屋頂：流造。前坡長而反曲（凹弧）、延伸到向拜；後坡短。檜皮葺，簷口厚約 0.35 公尺
-  const W = 3.15, ur = 0.3, hr = Fh + 4.3, ub = 2.75, heB = Fh + 2.3, T = 0.35, N = 10;
-  const prof = (u0, h0, n) => Array.from({ length: n + 1 }, (_, i) => { const s = i / n; return [ur + (u0 - ur) * s, hr - (hr - h0) * Math.pow(s, 0.72)]; });
-  const front = prof(ue, heF, N), back = prof(ub, heB, 6);
-  for (const P of [front, back]) {
-    for (let i = 0; i < P.length - 1; i++) {
-      const [ua, ya] = P[i], [ub2, yb] = P[i + 1];
-      const lift = i === P.length - 2 ? 0.12 : 0;       // 簷端微反
-      B.quad('roof', [-W, ua, ya], [W, ua, ya], [W, ub2, yb + lift], [-W, ub2, yb + lift]);
-      B.quad('dark', [-W + 0.2, ua, ya - T], [W - 0.2, ua, ya - T], [W - 0.2, ub2, yb - T + lift], [-W + 0.2, ub2, yb - T + lift]);   // 軒裏
-      [-W, W].forEach(x => B.quad('wood', [x, ua, ya + 0.05], [x, ub2, yb + 0.05 + lift], [x, ub2, yb - T - 0.05 + lift], [x, ua, ya - T - 0.05]));   // 破風板
-    }
-    const [ul, yl] = P[P.length - 1];
-    B.quad('wood', [-W, ul, yl + 0.12], [W, ul, yl + 0.12], [W, ul, yl - T + 0.12], [-W, ul, yl - T + 0.12]);   // 簷口（淡色檜皮斷面）
-    // 垂木（軒裏的白色木口列）
-    for (let x = -W + 0.25; x < W; x += 0.32) B.box('white', x, ul + (ul < 0 ? 0.25 : -0.25), 0.1, 0.1, yl - T - 0.02, yl - T + 0.08);
+  // 手挾（海老虹梁）：向拜柱頭彎上、接到身舍柱，照片中為弓形的雕花木
+  [-1.35, 1.35].forEach(x => {
+    const c = new THREE.QuadraticBezierCurve3(new THREE.Vector3(x, heF - 0.3, -(ue + 0.35)), new THREE.Vector3(x, heF + 0.55, -(-2.9)), new THREE.Vector3(x * 1.2, Fh + 1.95, -(-1.5)));
+    B.add('wood', new THREE.TubeGeometry(c, 8, 0.08, 5, false));
+    B.box('wood', x, ue + 0.35, 0.3, 0.3, heF - 0.5, heF - 0.3);   // 柱頭斗
+  });
+  // 床下：柱間兩道貫（照片中高床下的橫木）
+  for (const y of [0.95, 1.4]) {
+    [-2.35, 2.35].forEach(u => B.box('wood', 0, u, 5.2, 0.08, y, y + 0.12));
+    [-2.55, 2.55].forEach(x => B.box('wood', x, 0, 0.08, 4.8, y, y + 0.12));
   }
-  // 山牆（妻）：板壁三角
-  [-1.85, 1.85].forEach(x => B.mesh('wood', [[x, -1.5, Fh + 2.35], [x, ur, hr - 0.4], [x, 1.5, Fh + 2.35]], [[0, 1, 2]]));
+  // 登高欄親柱與濡緣轉角的擬寶珠（照片中銅色寶珠）
+  [[-0.85, -4.4, Fd + 0.95], [0.85, -4.4, Fd + 0.95], [-2.65, -2.45, Fh + 0.88], [2.65, -2.45, Fh + 0.88]].forEach(([x, u, y]) => {
+    B.cyl('dark', x, u, 0.08, y, y + 0.12, 8); B.cyl('dark', x, u, 0.055, y + 0.12, y + 0.24, 8, 0.015);
+  });
+  // 屋頂：流造檜皮葺。前坡長而反曲、延伸蓋過木階成向拜；簷端明顯上翹，兩側轉角再微翹（照片中前簷的弧線）。
+  // 簷口為厚檜皮（約 0.38 公尺，上暗下淡兩層），破風板外張，二軒的白色垂木木口兩列
+  const W = 3.15, ur = 0.3, hr = Fh + 4.3, ub = 2.75, heB = Fh + 2.3, T = 0.38, NX = 10;
+  const yAt = (h0, s, x) => hr - (hr - h0) * Math.pow(s, 0.7) + 0.42 * Math.pow(s, 5) + 0.34 * s * s * Math.pow(Math.abs(x) / W, 3);
+  for (const [u0, h0, n] of [[ue, heF, 12], [ub, heB, 7]]) {
+    const P = (i, j) => { const sv = i / n, x = -W + 2 * W * j / NX; return [x, ur + (u0 - ur) * sv, yAt(h0, sv, x)]; };
+    const dn = (q, k = 1) => [q[0], q[1], q[2] - T * k];
+    for (let i = 0; i < n; i++) for (let j = 0; j < NX; j++) {
+      const A = P(i, j), Bq = P(i, j + 1), C = P(i + 1, j + 1), D = P(i + 1, j);
+      B.quad('roof', A, Bq, C, D);
+      B.quad('dark', dn(A), dn(Bq), dn(C), dn(D));                        // 軒裏
+    }
+    for (const sx of [-1, 1]) for (let i = 0; i < n; i++) {               // 破風板：下端外張
+      const j = sx < 0 ? 0 : NX, A = P(i, j), C = P(i + 1, j), fa = 0.04 + 0.1 * Math.pow(i / n, 3), fc = 0.04 + 0.1 * Math.pow((i + 1) / n, 3);
+      const xa = A[0] + sx * fa, xc = C[0] + sx * fc;
+      B.quad('wood', [xa, A[1], A[2] + 0.06], [xc, C[1], C[2] + 0.06], [xc, C[1], C[2] - T - 0.04], [xa, A[1], A[2] - T - 0.04]);
+    }
+    for (let j = 0; j < NX; j++) {                                         // 簷口斷面
+      const A = P(n, j), Bq = P(n, j + 1);
+      B.quad('roof', A, Bq, dn(Bq, 0.45), dn(A, 0.45));
+      B.quad('wood', dn(A, 0.45), dn(Bq, 0.45), dn(Bq), dn(A));
+    }
+    const L = Math.abs(u0 - ur), sg = Math.sign(u0);
+    for (let x = -W + 0.24; x < W - 0.1; x += 0.3) {                      // 二軒垂木木口
+      const y1 = yAt(h0, 1 - 0.25 / L, x) - T, y2 = yAt(h0, 1 - 0.7 / L, x) - T;
+      B.box('white', x, u0 - sg * 0.25, 0.09, 0.09, y1 - 0.11, y1 - 0.02);
+      B.box('white', x, u0 - sg * 0.7, 0.09, 0.09, y2 - 0.3, y2 - 0.2);
+    }
+  }
+  // 山牆（妻）：板壁三角、虹梁與大瓶束，破風頂端懸魚
+  [-1.85, 1.85].forEach(x => {
+    B.mesh('wood', [[x, -1.5, Fh + 2.35], [x, ur, hr - 0.4], [x, 1.5, Fh + 2.35]], [[0, 1, 2]]);
+    B.box('wood', x * 1.02, 0, 0.12, 3.2, Fh + 2.5, Fh + 2.72);           // 虹梁
+    B.box('wood', x * 1.02, ur, 0.14, 0.26, Fh + 2.72, hr - 0.55);       // 大瓶束
+  });
+  [-1, 1].forEach(sx => gegyo(B, sx * (W + 0.14), ur, hr - 0.02, 1.15));
   B.box('roof', 0, ur, 2 * W + 0.3, 0.55, hr - 0.1, hr + 0.3);           // 箱棟
   // 千木（兩端交叉，外削）與鰹木 6 根（歷史照片可數）
   [-W, W].forEach(x => {
