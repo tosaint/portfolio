@@ -144,7 +144,14 @@ dialog .small-note{font-size:12px;color:var(--muted);border-top:1px solid var(--
 .submit-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 12px}
 .submit-form label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
 .submit-form input{font-size:16px;padding:9px 10px;border:1px solid #b8cec1;border-radius:8px;background:#fff;min-width:0;width:100%}
-.submit-form .action-row,.submit-summary,.submit-status{grid-column:1/-1}
+.submit-form .action-row,.submit-summary,.submit-status,.submit-form .full{grid-column:1/-1}
+.role-pick{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;border:1px solid #b8cec1;border-radius:10px;overflow:hidden}
+.role-pick label{flex-direction:row;justify-content:center;align-items:center;gap:6px;font-size:14px;color:var(--ink);padding:9px 6px;cursor:pointer}
+.role-pick input{width:auto;margin:0;accent-color:var(--accent)}.role-pick label:has(input:checked){background:#e1f2eb;font-weight:600}
+.suffix{display:flex;align-items:center;gap:6px}.suffix span{font-size:13px;color:var(--muted);white-space:nowrap}
+.submit-form.visitor .stu,.submit-form:not(.visitor) .vis{display:none}
+.form-note{grid-column:1/-1;font-size:12px;color:var(--muted);margin:-2px 0 0}
+.card-mail{font-size:13px;color:var(--accent);margin:0 0 8px}
 .submit-summary{font-size:13px!important;background:var(--accent-l);border-radius:8px;padding:8px 10px;margin:0}
 .submit-status{font-size:13px!important;margin:0;min-height:20px;color:var(--accent)}
 .submit-status.err{color:#9b3b2b}
@@ -231,16 +238,21 @@ dialog .small-note{font-size:12px;color:var(--muted);border-top:1px solid var(--
 
 <dialog id="submitDialog"><button class="dialog-close" data-close="submitDialog" aria-label="關閉">×</button><div class="eyebrow">繳交學習紀錄</div><h2 id="submitTitle">送出到老師的紀錄表</h2>
 <form id="submitForm" class="submit-form" novalidate>
-<label for="stClass">班級<input id="stClass" maxlength="10" inputmode="numeric" autocomplete="off" placeholder="例：201"></label>
-<label for="stSeat">座號<input id="stSeat" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="例：07"></label>
-<label for="stName">姓名<input id="stName" maxlength="20" autocomplete="off"></label>
-<label for="stGroup">組別<input id="stGroup" maxlength="10" autocomplete="off" placeholder="可不填"></label>
+<div class="role-pick" role="radiogroup" aria-label="身分"><label><input type="radio" name="role" value="student" checked>本校學生</label><label><input type="radio" name="role" value="visitor">校外訪客</label></div>
+<label class="stu" for="stClass">班級<input id="stClass" maxlength="10" inputmode="numeric" autocomplete="off" placeholder="例：201"></label>
+<label class="stu" for="stSeat">座號<input id="stSeat" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="例：07"></label>
+<label class="stu" for="stName">姓名<input id="stName" maxlength="20" autocomplete="off"></label>
+<label class="stu" for="stGroup">組別<input id="stGroup" maxlength="10" autocomplete="off" placeholder="可不填"></label>
+<label class="stu full" for="stSid">學號（完成卡寄到學校信箱）<span class="suffix"><input id="stSid" maxlength="20" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="例：1120123"><span>@clhs.tyc.edu.tw</span></span></label>
+<label class="vis" for="vName">稱呼<input id="vName" maxlength="20" autocomplete="nickname"></label>
+<label class="vis full" for="vEmail">Email<input id="vEmail" type="email" maxlength="80" autocomplete="email" autocapitalize="off" spellcheck="false"></label>
+<p class="form-note vis">Email 只用來寄送完成卡。</p>
 <p id="submitSummary" class="submit-summary"></p>
 <p id="submitStatus" class="submit-status" role="status"></p>
 <div class="action-row"><button type="button" id="downloadJson">下載 JSON</button><button type="submit" class="primary" id="sendRecord">送出紀錄</button><button type="button" class="primary" id="cardFromSubmit" hidden>產生我的完成卡</button></div>
 </form><p class="small-note" id="submitNote"></p></dialog>
 
-<dialog id="cardDialog"><button class="dialog-close" data-close="cardDialog" aria-label="關閉">×</button><div class="eyebrow">完成卡</div><h2>存成手機桌布</h2><img id="cardImg" alt="杜布森望遠鏡觀測任務完成卡"><div class="action-row"><button id="cardShare" class="primary">分享／儲存影像</button></div><p class="small-note">iPhone／iPad：長按圖片 →「加入照片」，再到「照片」設為桌布。電腦：按上面的按鈕下載。</p></dialog>
+<dialog id="cardDialog"><button class="dialog-close" data-close="cardDialog" aria-label="關閉">×</button><div class="eyebrow">完成卡</div><h2>存成手機桌布</h2><p id="cardMail" class="card-mail" hidden></p><img id="cardImg" alt="杜布森望遠鏡觀測任務完成卡"><div class="action-row"><button id="cardShare" class="primary">分享／儲存影像</button></div><p class="small-note">iPhone／iPad：長按圖片 →「加入照片」，再到「照片」設為桌布。電腦：按上面的按鈕下載。</p></dialog>
 <dialog id="resetDialog"><h2>換下一位同學？</h2><p>會清除這台裝置上的操作紀錄、作答和姓名。需要保留時，請先按「繳交」。</p><div class="action-row"><button data-close="resetDialog">取消</button><button id="confirmReset" class="primary">清除並重新練習</button></div></dialog>
 <noscript>本模擬器需要啟用 JavaScript 與 WebGL。</noscript>
 <script>/* Miniature WebGL scene engine. Original implementation for this teaching build.
@@ -354,11 +366,12 @@ return {V,I,mul,tr,rot,scale,transform,inverse,perspective,look,Node,box,cylinde
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id),D=Math.PI/180,{V,Node}=G3D,root=new Node();
-const VERSION='2.5',KEY='lizhong-dobsonian-v25';
+const VERSION='2.6',KEY='lizhong-dobsonian-v26';const SCHOOL_DOMAIN='clhs.tyc.edu.tw';
 const INIT={az:-6,alt:8,cap:true,ep:null,lock:0,focus:12,fx:1.7,fy:-1.15};
 const EP={20:{focus:38,mag:32.5,fov:50/32.5},4:{focus:66,mag:162.5,fov:50/162.5}};
 const newId=()=>{try{return crypto.randomUUID()}catch(_){return Date.now().toString(36)+Math.random().toString(36).slice(2,10)}};
-let student={cls:'',seat:'',name:'',group:''},sessionId=newId();
+const EMPTY_STUDENT={role:'student',cls:'',seat:'',name:'',group:'',sid:'',email:''};
+let student={...EMPTY_STUDENT},sessionId=newId();
 let eyeShot=null,submitted=null,checkCode='';
 let S={...INIT},history={},answers={inv:null,q2:null,q1:''},events=[],started=new Date().toISOString();
 let selection=null,hover=null,taskIndex=0,menuOpen=false,labelsOn=false,sensitivity='mid',hintLevel=0;
@@ -403,11 +416,11 @@ function restore(){try{let raw=localStorage.getItem(KEY);if(!raw)return;let x=JS
  answers={inv:[0,1,2,3].includes(x.answers?.inv)?x.answers.inv:null,q2:[0,1,2].includes(x.answers?.q2)?x.answers.q2:null,q1:String(x.answers?.q1||'').slice(0,3000)};
  events=Array.isArray(x.events)?x.events.slice(-2000):[];started=String(x.started||started);
  epSequence={removed20:!!x.epSequence?.removed20,inserted4:!!x.epSequence?.inserted4};
- for(let k of ['cls','seat','name','group'])student[k]=String(x.student?.[k]||'').slice(0,20);
+ for(let k of ['cls','seat','name','group','sid'])student[k]=String(x.student?.[k]||'').slice(0,20);student.email=String(x.student?.email||'').slice(0,80);student.role=x.student?.role==='visitor'?'visitor':'student';
  if(typeof x.sessionId==='string'&&x.sessionId)sessionId=x.sessionId.slice(0,60);
 
  if(typeof x.checkCode==='string'&&/^TL-[A-Z0-9]{4}$/.test(x.checkCode))checkCode=x.checkCode;
- if(x.submitted&&typeof x.submitted.code==='string')submitted={code:String(x.submitted.code),completed:+x.submitted.completed||0,channel:String(x.submitted.channel||''),at:String(x.submitted.at||'')};
+ if(x.submitted&&typeof x.submitted.code==='string')submitted={code:String(x.submitted.code),completed:+x.submitted.completed||0,channel:String(x.submitted.channel||''),at:String(x.submitted.at||''),mailed:String(x.submitted.mailed||'')};
  }catch(_){storageOK=false}}
 restore();
 const mat=(color,more={})=>({color,...more});
@@ -884,7 +897,7 @@ $('collapseViews').onclick=()=>setViews(!viewsOpen);
 $('listBtn').onclick=()=>setList(!listOpen);
 $('helpBtn').onclick=()=>$('helpDialog').showModal();$('restartBtn').onclick=()=>$('resetDialog').showModal();
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
-$('confirmReset').onclick=()=>{S={...INIT};history={};answers={inv:null,q2:null,q1:''};events=[];stable={};epSequence={removed20:false,inserted4:false};started=new Date().toISOString();student={cls:'',seat:'',name:'',group:''};sessionId=newId();checkCode=newCheckCode();submitted=null;eyeShot=null;try{localStorage.removeItem(KEY+'-eye')}catch(_){};animation=null;sunBlocked=false;savedOverview=null;$('resetDialog').close();changed('restart');goStep(0,false);overview();save();notify('已清除，可以換下一位同學。')};
+$('confirmReset').onclick=()=>{S={...INIT};history={};answers={inv:null,q2:null,q1:''};events=[];stable={};epSequence={removed20:false,inserted4:false};started=new Date().toISOString();student={...EMPTY_STUDENT};sessionId=newId();checkCode=newCheckCode();submitted=null;eyeShot=null;try{localStorage.removeItem(KEY+'-eye')}catch(_){};animation=null;sunBlocked=false;savedOverview=null;$('resetDialog').close();changed('restart');goStep(0,false);overview();save();notify('已清除，可以換下一位同學。')};
 $('safeDirection').onclick=()=>perform('safe');
 function download(name,text,type){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000)}
 
@@ -906,26 +919,50 @@ function downloadRecord(rec){download(`telescope-${rec.student.cls||'class'}-${r
 function setStatus(t,err){$('submitStatus').textContent=t;$('submitStatus').classList.toggle('err',!!err)}
 $('reportBtn').onclick=()=>{
  save();const ch=channel(),n=Object.keys(history).length,cloud=ch==='gas'||ch==='endpoint';
- $('stClass').value=student.cls;$('stSeat').value=student.seat;$('stName').value=student.name;$('stGroup').value=student.group;
+ $('stClass').value=student.cls;$('stSeat').value=student.seat;$('stName').value=student.name;$('stGroup').value=student.group;$('stSid').value=student.sid;
+ $('vName').value=student.role==='visitor'?student.name:'';$('vEmail').value=student.role==='visitor'?student.email:'';
+ document.querySelector(`#submitForm input[name=role][value=${student.role}]`).checked=true;applyRole();
  $('submitTitle').textContent=cloud?'送出到老師的紀錄表':ch==='preview'?'預覽版不會送出紀錄':'下載學習紀錄';
  $('submitSummary').textContent=`目前完成 ${n}/${TASKS.length} 步。${cloud?'可以先送出，完成更多步驟後再送一次，老師看最新一筆。':''}`;
- $('submitNote').textContent=cloud?'紀錄寫入老師的 Google 試算表，只包含班級、座號、姓名、組別與操作結果。':ch==='preview'?'這是預覽連結，紀錄不會送出。正式上課請使用老師提供的網址。':'這個網址沒有連到老師的試算表，送出會改成下載 JSON 檔，請上傳到 Google Classroom。';
+ $('submitNote').textContent=cloud?'紀錄寫入老師的 Google 試算表。六步全部完成時，完成卡會寄到你的信箱。':ch==='preview'?'這是預覽連結，紀錄不會送出。正式上課請使用老師提供的網址。':'這個網址沒有連到老師的試算表，送出會改成下載 JSON 檔，請上傳到 Google Classroom。';
  $('sendRecord').textContent=ch==='file'?'下載紀錄':'送出紀錄';$('sendRecord').disabled=ch==='preview';
  $('downloadJson').hidden=!cloud;$('cardFromSubmit').hidden=true;$('sendRecord').hidden=false;setStatus('');$('submitDialog').showModal();
 };
 $('downloadJson').onclick=()=>downloadRecord(buildRecord());
-$('submitForm').addEventListener('submit',e=>{
+const roleNow=()=>document.querySelector('#submitForm input[name=role]:checked').value;
+function applyRole(){$('submitForm').classList.toggle('visitor',roleNow()==='visitor');setStatus('')}
+document.querySelectorAll('#submitForm input[name=role]').forEach(r=>r.onchange=applyRole);
+$('submitForm').addEventListener('submit',async e=>{
  e.preventDefault();
- student={cls:$('stClass').value.trim(),seat:$('stSeat').value.trim(),name:$('stName').value.trim(),group:$('stGroup').value.trim()};save();
- if(!student.cls||!student.seat||!student.name){setStatus('請填寫班級、座號和姓名。',true);return}
- const rec=buildRecord(),ch=channel(),btn=$('sendRecord');
- const done=(ok,msg)=>{btn.disabled=false;log('submit',{ok,channel:ch});
+ const role=roleNow(),v=id=>$(id).value.trim();
+ student=role==='visitor'?{...EMPTY_STUDENT,role,name:v('vName'),email:v('vEmail').toLowerCase()}
+  :{...EMPTY_STUDENT,role,cls:v('stClass'),seat:v('stSeat'),name:v('stName'),group:v('stGroup'),sid:v('stSid').replace(/@.*$/,'')};
+ if(role==='student')student.email=student.sid?`${student.sid.toLowerCase()}@${SCHOOL_DOMAIN}`:'';
+ save();
+ if(role==='student'){
+  if(!student.cls||!student.seat||!student.name){setStatus('請填寫班級、座號和姓名。',true);return}
+  if(!/^[A-Za-z0-9._-]{3,20}$/.test(student.sid)){setStatus('請填寫學號（學校信箱 @ 前面那一段）。',true);return}
+ }else{
+  if(!student.name){setStatus('請填寫稱呼。',true);return}
+  if(!/^[^\s@<>,;"']+@[^\s@<>,;"']+\.[a-z]{2,}$/.test(student.email)){setStatus('請填寫正確的 Email。',true);return}
+ }
+ const rec=buildRecord(),ch=channel(),btn=$('sendRecord'),cloud=ch==='gas'||ch==='endpoint';
+ btn.disabled=true;
+ let cv=null;
+ if(cloud&&rec.completed===TASKS.length&&!(submitted&&submitted.mailed===rec.checkCode)){
+  setStatus('正在產生完成卡…');
+  try{if(!eyeShot)captureEye();cv=await makeCard(cardData(rec.checkCode));rec.card=cv.toDataURL('image/jpeg',.85)}catch(_){cv=null}
+ }
+ const done=(ok,msg)=>{btn.disabled=false;log('submit',{ok,channel:ch,card:!!rec.card});
   const time=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
   setStatus(ok?(msg||`已送出（${time}），完成 ${rec.completed}/${TASKS.length} 步。`):`送出失敗：${msg||'請檢查網路後再試一次'}`,!ok);
-  if(ok){submitted={code:rec.checkCode,completed:rec.completed,channel:ch,at:rec.submittedAt};save();syncFinish();
-   if(rec.completed===TASKS.length){setStatus(`${msg||'已送出（'+time+'）'}　檢核碼 ${rec.checkCode}`);$('cardFromSubmit').hidden=false;$('sendRecord').hidden=true}
-   notify(msg||'紀錄已送出到老師的試算表。')}};
- btn.disabled=true;setStatus('傳送中…');
+  if(!ok)return;
+  submitted={code:rec.checkCode,completed:rec.completed,channel:ch,at:rec.submittedAt,mailed:rec.card?rec.checkCode:(submitted&&submitted.mailed===rec.checkCode?rec.checkCode:'')};save();syncFinish();
+  if(rec.completed===TASKS.length){
+   setStatus(`${msg||'已送出（'+time+'）'}　檢核碼 ${rec.checkCode}`);$('cardFromSubmit').hidden=false;$('sendRecord').hidden=true;
+   if(cv){openCard(cv);return}}
+  notify(msg||'紀錄已送出到老師的試算表。')};
+ setStatus('傳送中…');
  if(ch==='gas')google.script.run.withSuccessHandler(()=>done(true)).withFailureHandler(err=>done(false,err&&err.message)).saveRecord(rec);
  else if(ch==='endpoint')fetch(RECORD_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(rec)}).then(()=>done(true)).catch(err=>done(false,err&&err.message));
  else if(ch==='file'){downloadRecord(rec);done(true,'已下載紀錄檔，請上傳到 Google Classroom。')}
@@ -946,13 +983,13 @@ function captureEye(){ // 把主鏡視野以較高解析度畫一次，留給完
   eyeShot=$('eyeView').toDataURL('image/jpeg',.88);r.resize(320,320);opticsDirty=true;
   try{localStorage.setItem(KEY+'-eye',eyeShot)}catch(_){}}catch(_){}
 }
-function cardData(){
+function cardData(codeArg){
  const ans=events.filter(e=>e.type==='answer'&&e.question==='inv'),d=new Date();
  const pad=n=>String(n).padStart(2,'0');
- return {cls:`${student.cls||'—'}－${student.seat||'—'}`,date:`${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`,
+ return {cls:student.role==='visitor'?'訪客':`${student.cls||'—'}－${student.seat||'—'}`,date:`${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`,
   done:Object.keys(history).length,total:TASKS.length,
   minutes:Math.max(1,Math.round((Date.now()-Date.parse(started))/60000)),hints:events.filter(e=>e.type==='hint').length,
-  invFirst:!!ans.length&&ans[0].choice===3,code:submitted&&submitted.channel!=='preview'?submitted.code:''};
+  invFirst:!!ans.length&&ans[0].choice===3,code:codeArg!==undefined?codeArg:submitted&&submitted.channel!=='preview'?submitted.code:''};
 }
 const cardLoad=src=>new Promise((ok,no)=>{if(!src)return ok(null);const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src});
 function cardRng(seed){return()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646}}
@@ -1031,17 +1068,19 @@ function syncFinish(){
  $('finNote').textContent=preview?'預覽版不會送出紀錄，完成卡沒有檢核碼。':ok?`已繳交 · 檢核碼 ${submitted.code}`:'先按「繳交紀錄」，送出成功後就能產生完成卡。';
 }
 let cardURL=null;
-async function openCard(){
+async function openCard(ready){
  const btn=$('finCard');btn.disabled=true;const old=btn.textContent;btn.textContent='產生中…';
  try{if(!eyeShot)captureEye();
-  const cv=await makeCard(cardData());const url=cv.toDataURL('image/png');
+  const cv=ready instanceof HTMLCanvasElement?ready:await makeCard(cardData());const url=cv.toDataURL('image/png');
+  const mailed=submitted&&submitted.mailed&&submitted.mailed===submitted.code&&student.email;
+  $('cardMail').hidden=!mailed;$('cardMail').textContent=mailed?`完成卡已寄往 ${student.email}，幾分鐘內沒收到請告訴老師（也請看看垃圾郵件）。`:'';
   $('cardImg').src=url;cardURL=url;cardBlob=null;cv.toBlob(b=>cardBlob=b,'image/png');
   if($('submitDialog').open)$('submitDialog').close();$('cardDialog').showModal();log('card',{code:submitted?.code||''})}
  catch(err){notify('完成卡產生失敗：'+(err&&err.message||err))}
  finally{btn.textContent=old;syncFinish()}
 }
 let cardBlob=null;
-const cardName=()=>`望遠鏡完成卡-${student.cls||'class'}-${student.seat||'seat'}.png`;
+const cardName=()=>student.role==='visitor'?`望遠鏡完成卡-${checkCode}.png`:`望遠鏡完成卡-${student.cls||'class'}-${student.seat||'seat'}.png`;
 $('finCard').onclick=openCard;$('cardFromSubmit').onclick=openCard;
 $('finSubmit').onclick=()=>$('reportBtn').click();
 $('cardShare').onclick=async()=>{
