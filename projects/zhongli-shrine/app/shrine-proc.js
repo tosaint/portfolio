@@ -231,6 +231,42 @@ function kirizuma(B, cx, cu, W, Df, Db, he, hr, alongX = true, lift = 0.2, heB =
     [-d, d].forEach(u => B.mesh('dark', [[cx - Df, cu + u, he], [cx, cu + u, hr], [cx + Db, cu + u, heB]], [[0, 1, 2]]));
   }
 }
+// 神門屋頂（神門與狛犬照片）：檜皮葺切妻、照り屋根（凹曲面、簷端反翹），厚簷口、白木垂木列、
+// 反り破風板＋懸魚、箱棟與鬼板。屋脊沿 x；W 為半長（含懸出）、D 為半深
+function gateRoof(B) {
+  const W = 3.75, D = 3.05, hr = 4.45, he = 2.72, N = 8, T = 0.3;
+  const Y = t => hr - (hr - he) * Math.pow(t, 0.68) + 0.1 * Math.pow(t, 7);   // 凹曲面＋簷端微翹
+  const xw = t => W + 0.12 * Math.pow(t, 3);                                   // 屋面兩端隨簷外展
+  for (const sg of [-1, 1]) for (let i = 0; i < N; i++) {
+    const t0 = i / N, t1 = (i + 1) / N, u0 = sg * D * t0, u1 = sg * D * t1, y0 = Y(t0), y1 = Y(t1), a0 = xw(t0), a1 = xw(t1);
+    const q = [[-a0, u0, y0], [a0, u0, y0], [a1, u1, y1], [-a1, u1, y1]];
+    sg > 0 ? B.quad('roof', q[0], q[1], q[2], q[3]) : B.quad('roof', q[1], q[0], q[3], q[2]);
+    const r = [[-a0 + 0.25, u0, y0 - T], [a0 - 0.25, u0, y0 - T], [a1 - 0.25, u1, y1 - T], [-a1 + 0.25, u1, y1 - T]];
+    sg > 0 ? B.quad('dark', r[3], r[2], r[1], r[0]) : B.quad('dark', r[2], r[3], r[0], r[1]);    // 軒裏
+    for (const sx of [-1, 1]) {                                                                // 反り破風板（白木、下緣跟著屋面）
+      const x0 = sx * (a0 + 0.02), x1 = sx * (a1 + 0.02);
+      B.quad('wood', [x0, u0, y0 + 0.06], [x1, u1, y1 + 0.06], [x1, u1, y1 - T - 0.1], [x0, u0, y0 - T - 0.1]);
+    }
+  }
+  for (const sg of [-1, 1]) {                                                                  // 簷口：厚茅負＋淡色檜皮斷面
+    const u = sg * D, y = Y(1), a = xw(1);
+    B.quad('wood', [-a, u, y + 0.08], [a, u, y + 0.08], [a, u, y - T + 0.02], [-a, u, y - T + 0.02]);
+    for (let x = -a + 0.3; x < a - 0.2; x += 0.3) B.box('white', x, u - sg * 0.18, 0.08, 0.08, y - T - 0.06, y - T + 0.02);   // 垂木の木口
+  }
+  B.box('roof', 0, 0, 2 * W + 0.15, 0.42, hr - 0.05, hr + 0.32);                              // 箱棟
+  B.box('dark', 0, 0, 2 * W + 0.17, 0.44, hr + 0.18, hr + 0.24);                               // 棟の帯
+  for (const sx of [-1, 1]) {
+    B.box('dark', sx * (W + 0.05), 0, 0.2, 0.6, hr - 0.1, hr + 0.55);                         // 鬼板
+    B.box('dark', sx * (W + 0.05), 0, 0.22, 0.9, hr + 0.38, hr + 0.52);
+    gegyo(B, sx * (W + 0.05), 0, hr - 0.05);                                                  // 懸魚
+  }
+  // 妻飾：破風下的三角板壁＋虹梁
+  for (const sx of [-1, 1]) {
+    const x = sx * 3.05;
+    B.mesh('panel', [[x, -1.3, 2.8], [x, 0, hr - 0.35], [x, 1.3, 2.8]], [[0, 1, 2]]);
+    B.box('wood', x, 0, 0.12, 2.6, 2.8, 2.95);
+  }
+}
 // 懸魚：切妻（懸山）山牆頂端、破風板交會處垂下的裝飾板（神門照片可見）。x 為山牆面位置
 function gegyo(B, x, cu, ytop, k = 1) {
   B.box('wood', x, cu, 0.07, 0.3 * k, ytop - 0.42 * k, ytop);
@@ -580,14 +616,11 @@ export function buildShrine() {
   // 門前石壇（神門與狛犬照片）：寬闊的石敷平台，前緣兩段通長石階，兩端袖石；切石分縫
   { const W = 7.6, u0 = -2.25, u1 = 1.7, H = 0.4, T = 0.34;
     B.box('stone', 0, (u0 + u1) / 2, W, u1 - u0, -H, -0.02);                                   // 石壇本體
-    for (let x = -W / 2 + 0.95; x < W / 2; x += 0.95) B.box('dark', x, (u0 + u1) / 2, 0.015, u1 - u0, -0.021, -0.012);   // 敷石目地
-    for (let u = u0 + 0.9; u < u1; u += 0.9) B.box('dark', 0, u, W, 0.015, -0.021, -0.012);
     B.box('stone', 0, u0 + 0.06, W, 0.12, -0.04, 0);                                          // 前緣の葛石
     for (let k = 1; k <= 2; k++) {                                                          // 二段石階：各高 H/3、踏面 T
       const ub = u0 - T * (k - 1), uf = u0 - T * k, top = -H * k / 3;
       B.box('stone', 0, (uf + ub) / 2, W - 0.7, ub - uf, -H, top);
       B.box('stone', 0, uf + 0.05, W - 0.7, 0.1, top - 0.03, top + 0.004);                   // 段鼻
-      for (let x = -W / 2 + 0.35 + 1.4; x < W / 2 - 0.35; x += 1.4) B.box('dark', x, (uf + ub) / 2, 0.015, ub - uf, top + 0.001, top + 0.006);
     }
     [-W / 2 + 0.175, W / 2 - 0.175].forEach(x => { B.box('stone', x, u0 - T, 0.35, 2 * T, -H, -0.02); B.box('stone', x, u0 - 2 * T + 0.05, 0.37, 0.1, -H, -H / 3 + 0.02); });   // 袖石
   }
@@ -611,8 +644,7 @@ export function buildShrine() {
   [-1.3, -0.65, 0, 0.65, 1.3].forEach(x => B.box('white', x, -0.2, 0.08, 0.02, 1.95, 2.2));   // 紙垂
   [-2.4, -1.2, 0, 1.2, 2.4].forEach(x => { B.box('wood', x, 0, 0.32, 0.32, 2.55, 2.68); B.box('wood', x, 0, 0.7, 0.18, 2.68, 2.78); });   // 斗栱
   B.box('dark', 0, 0, 5.4, 2.4, 2.55, 2.75);    // 斗栱帶
-  kirizuma(B, 0, 0, 7.1, 3.0, 3.0, 2.75, 4.3, true, 0.15);
-  [-3.55, 3.55].forEach(x => gegyo(B, x, 0, 4.2));          // 懸魚（神門照片：山牆頂端可見）
+  gateRoof(B);
   // 鎮座祭裝飾（神門前合影）：簷下深色垂幕（垂弧）、門前左右懸掛大提燈
   for (let i = 0; i < 10; i++) {
     const x0 = -3.2 + 6.4 * i / 10, m = x0 + 0.32, sag = 0.4 * Math.sin(Math.PI * ((m + 3.2) % 3.2) / 3.2);
