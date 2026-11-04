@@ -615,12 +615,31 @@ function buildNight() {
   const m4 = new THREE.Matrix4();
   POOLS.forEach(([px, py, pz, r], i) => { m4.makeScale(r, 1, r).setPosition(px, py + 0.04, pz); pools.setMatrixAt(i, m4); pools.setColorAt(i, new THREE.Color(1, 1, 1)); });
   pools.renderOrder = 2; pools.visible = false; pools.frustumCulled = false; scene.add(pools);
+  // 跟著視線走的聚光：畫面中央看的點，斜上方一盞暖色柔邊聚光燈＋地面一圈大光暈；拉近光圈小而集中，拉遠大而淡
+  spot = new THREE.SpotLight(0xffc48a, 0, 0, 0.5, 1, 1.2); spot.visible = false; scene.add(spot, spot.target);
+  focusPool = new THREE.Mesh(new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2), pm.clone());
+  focusPool.material.opacity = 0.32; focusPool.renderOrder = 2; focusPool.visible = false; scene.add(focusPool);
+}
+let spot = null, focusPool = null; const focusP = new THREE.Vector3();
+const groundAt = (x, z) => treeOK(x, -z, 0) ? 0.03 : LV.T1 + 0.04;   // 平台（神社範圍）上 0.5 公尺，外面貼地
+function updateFocus(snap) {
+  if (!spot) return;
+  const t = controls.target, d = camera.position.distanceTo(t);
+  if (snap) focusP.copy(t); else focusP.lerp(t, 0.18);
+  const r = THREE.MathUtils.clamp(d * 0.34, 9, 40), y = groundAt(focusP.x, focusP.z);
+  spot.target.position.set(focusP.x, y, focusP.z);
+  const h = THREE.MathUtils.clamp(d * 0.6, 24, 75), dir = camera.position.clone().sub(t).setY(0).normalize().multiplyScalar(h * 0.35);
+  spot.position.set(focusP.x + dir.x, y + h, focusP.z + dir.z);
+  spot.angle = Math.atan(r / h); spot.distance = h * 2.2;
+  spot.intensity = night ? THREE.MathUtils.clamp(40 + d * 3.2, 50, 260) : 0;    // 遠看時面積大，強度跟著提高
+  focusPool.position.set(focusP.x, y + 0.01, focusP.z); focusPool.scale.set(r * 0.9, 1, r * 0.9);
+  focusPool.material.opacity = THREE.MathUtils.clamp(0.42 - d / 600, 0.12, 0.38);
 }
 let POOLS = [], pools = null;
 // 夜間焦點：導覽中，當站的燈較亮、其他較暗；不在導覽時全部中等亮度
 function nightFocus() {
   const touring = !$('#tour').hidden, cur = stopIndex;
-  const lvl = st => !touring ? 0.85 : st.includes(cur) ? 1.25 : 0.4;
+  const lvl = st => !touring ? 0.85 : st.includes(cur) ? 1.6 : 0.3;
   glows.forEach(L => { L.userData.f = lvl(L.userData.st); });
   if (pools) { const col = new THREE.Color(); POOLS.forEach((p, i) => pools.setColorAt(i, col.setScalar(lvl(p[4])))); pools.instanceColor.needsUpdate = true; }
   dirty = true;
@@ -640,6 +659,8 @@ function setNight(on) {
   if (stars) stars.visible = on;
   glows.forEach(L => { L.visible = on; L.intensity = on ? 9 * L.userData.k * L.userData.f : 0; });
   if (pools) pools.visible = on; nightFocus();
+  if (spot) { spot.visible = focusPool.visible = on; updateFocus(true); }
+  $('#vignette')?.classList.toggle('show', on);
   ['#nightBtn', '#nightBtn2'].forEach(q => $(q)?.classList.toggle('on', on));
   renderer.shadowMap.needsUpdate = true; dirty = true;
 }
@@ -650,6 +671,7 @@ function flicker(t) {                 // 提燈微閃：燭火般的不規則亮
   const f = 0.88 + 0.08 * Math.sin(t * 0.0071) + 0.05 * Math.sin(t * 0.0193 + 1.3) + 0.03 * Math.sin(t * 0.047);
   M.chochin.emissiveIntensity = f; glows.forEach((L, i) => L.intensity = 9 * L.userData.k * L.userData.f * (f + 0.04 * Math.sin(t * 0.011 + i)));
   if (pools) pools.material.opacity = 0.5 * (0.9 + 0.1 * f);
+  updateFocus(false);
   if (stars) stars.material.opacity = 0.75 + 0.1 * Math.sin(t * 0.002);
 }
 
