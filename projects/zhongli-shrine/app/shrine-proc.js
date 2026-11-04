@@ -318,19 +318,32 @@ function kejiba(B) {
   B.box('wood', 0, 0, 2.12, 0.08, 0.98, 2.2);
   B.box('white', 0, -0.045, 1.98, 0.02, 1.04, 2.14);
   for (let k = 0; k < 7; k++) B.box('grey', -0.72 + k * 0.24, -0.06, 0.025, 0.005, 1.25, 1.95);   // 墨書（示意）
-  const W = 1.62, D = 1.05, he = 2.42, hr = 2.92, N = 6, Y = t => hr - (hr - he) * Math.pow(t, 0.62);
+  // 屋頂（石燈籠照片）：檜皮葺切妻、斷面為「起り」接「照り」的 S 形，簷端反翹；厚簷口、垂木木口；
+  // 山牆端破風板沿 S 形彎曲，中央掛大型懸魚；箱棟兩端鬼板帶鰭
+  const W = 1.66, D = 1.12, he = 2.4, hr = 3.0, N = 8, T = 0.14;
+  const Y = t => hr - (hr - he) * (t < 0.3 ? 0.55 * Math.pow(t / 0.3, 1.6) * 0.3 / 0.55 * 0.55 : 0.3 + 0.7 * Math.pow((t - 0.3) / 0.7, 0.75)) + 0.06 * Math.pow(t, 6);
+  const xw = t => W + 0.06 * Math.pow(t, 3);
   for (const sg of [-1, 1]) for (let k = 0; k < N; k++) {
-    const t0 = k / N, t1 = (k + 1) / N, u0 = sg * D * t0, u1 = sg * D * t1, y0 = Y(t0), y1 = Y(t1);
-    const q = [[-W, u0, y0], [W, u0, y0], [W, u1, y1], [-W, u1, y1]];
+    const t0 = k / N, t1 = (k + 1) / N, u0 = sg * D * t0, u1 = sg * D * t1, y0 = Y(t0), y1 = Y(t1), a0 = xw(t0), a1 = xw(t1);
+    const q = [[-a0, u0, y0], [a0, u0, y0], [a1, u1, y1], [-a1, u1, y1]];
     sg > 0 ? B.quad('roof', q[0], q[1], q[2], q[3]) : B.quad('roof', q[1], q[0], q[3], q[2]);
-    B.quad('dark', [-W, u1, y1], [W, u1, y1], [W, u1, y1 - 0.08], [-W, u1, y1 - 0.08]);
-    for (const x of [-W - 0.02, W + 0.02]) B.quad('wood', [x, u0, y0 + 0.04], [x, u1, y1 + 0.04], [x, u1, y1 - 0.12], [x, u0, y0 - 0.12]);
+    const r = [[-a0 + 0.1, u0, y0 - T], [a0 - 0.1, u0, y0 - T], [a1 - 0.1, u1, y1 - T], [-a1 + 0.1, u1, y1 - T]];
+    sg > 0 ? B.quad('dark', r[3], r[2], r[1], r[0]) : B.quad('dark', r[2], r[3], r[0], r[1]);
+    for (const sx of [-1, 1]) B.quad('wood', [sx * (a0 + 0.02), u0, y0 + 0.04], [sx * (a1 + 0.02), u1, y1 + 0.04], [sx * (a1 + 0.02), u1, y1 - T - 0.08], [sx * (a0 + 0.02), u0, y0 - T - 0.08]);
   }
-  B.box('roof', 0, 0, 2 * W + 0.1, 0.22, hr - 0.02, hr + 0.14);
+  for (const sg of [-1, 1]) {
+    const u = sg * D, y = Y(1), a = xw(1);
+    B.quad('wood', [-a, u, y + 0.04], [a, u, y + 0.04], [a, u, y - T], [-a, u, y - T]);
+    for (let x = -a + 0.14; x < a - 0.1; x += 0.16) B.box('white', x, u - sg * 0.08, 0.04, 0.04, y - T - 0.03, y - T + 0.01);
+  }
+  B.box('roof', 0, 0, 2 * W + 0.1, 0.22, hr - 0.02, hr + 0.16);                 // 箱棟
+  B.box('dark', 0, 0, 2 * W + 0.12, 0.24, hr + 0.08, hr + 0.11);
   [-1, 1].forEach(sx => {
-    B.box('dark', sx * (W + 0.02), 0, 0.14, 0.26, hr - 0.05, hr + 0.24);
-    const g = new THREE.BoxGeometry(0.1, 0.32, 0.1); g.rotateZ(-sx * 0.6); g.translate(sx * (W + 0.1), hr + 0.26, 0); B.add('roof', g);
-    gegyo(B, sx * (W + 0.03), 0, hr - 0.05, 0.42);
+    const x = sx * (W + 0.03);
+    B.box('dark', x, 0, 0.12, 0.3, hr - 0.06, hr + 0.3);                         // 鬼板
+    B.mesh('dark', [[x, -0.15, hr + 0.3], [x, 0.15, hr + 0.3], [x - sx * 0.02, 0.3, hr + 0.48], [x - sx * 0.02, -0.3, hr + 0.48]], [[0, 1, 2], [0, 2, 3]]);   // 鰭
+    gegyo(B, x, 0, hr - 0.08, 0.6);                                              // 懸魚（較大）
+    B.mesh('panel', [[sx * 1.2, -0.55, 2.42], [sx * 1.2, 0, hr - 0.15], [sx * 1.2, 0.55, 2.42]], [[0, 1, 2]]);   // 妻壁
   });
 }
 // 下乘札（Tinkercad 模型，總高 43 單位 → 約 2.4 公尺）：兩段石台座、方柱、白木札板「下乘」、小切妻屋蓋。-u 為札面
@@ -436,25 +449,52 @@ const sq = (B, y0, y1, w0, w1) => {                   // 方形斷面的錐台�
   const g = new THREE.CylinderGeometry(w1 / Math.SQRT2, w0 / Math.SQRT2, y1 - y0, 4, 1);
   g.rotateY(Math.PI / 4); g.translate(0, (y0 + y1) / 2, 0); B.add('stone', g);
 };
-function lantern(B, s = 1) {
-  sq(B, 0, 0.32 * s, 2.3 * s, 2.2 * s);               // 基壇三層
-  sq(B, 0.32 * s, 0.58 * s, 1.75 * s, 1.68 * s);
-  sq(B, 0.58 * s, 0.88 * s, 1.4 * s, 1.34 * s);
-  // 竿：方形斷面、四面內凹的沙漏形（石燈籠特寫照：下寬、腰細、上略寬）
-  const wq = t => t < 0.45 ? 0.56 + 0.8 * Math.pow(1 - t / 0.45, 2) : 0.56 + 0.36 * Math.pow((t - 0.45) / 0.55, 2);
-  for (let i = 0; i < 8; i++) { const t0 = i / 8, t1 = (i + 1) / 8; sq(B, (0.88 + 1.07 * t0) * s, (0.88 + 1.07 * t1) * s, wq(t0) * s, wq(t1) * s); }
-  sq(B, 1.95 * s, 2.06 * s, 0.95 * s, 1.1 * s);        // 斗栱
-  sq(B, 2.06 * s, 2.3 * s, 1.28 * s, 1.24 * s);        // 中台
-  sq(B, 2.3 * s, 2.78 * s, 0.76 * s, 0.76 * s);        // 火袋
-  for (let k = 0; k < 4; k++) {                          // 火袋四面：菊桔梗社紋浮雕
-    const g = new THREE.PlaneGeometry(0.42 * s, 0.42 * s); g.translate(0, 2.54 * s, 0.385 * s); g.rotateY(k * Math.PI / 2); B.add('kamonStone', g);
+// 石燈籠的笠：方形四注、照り（凹曲）面、四隅反り上がり、薄い軒先（石燈籠特寫照）。w0 簷半寬、y0 簷底高、h 高
+function lanternRoof(B, w0, y0, h, s) {
+  const N = 6, ring = t => {                       // t=0 簷端、1 頂部；每圈 8 點（四隅＋四邊中點）
+    const w = w0 * (1 - 0.78 * Math.pow(t, 0.8)), y = y0 + 0.07 * s + h * (1 - Math.pow(1 - t, 1.9));
+    const lift = 0.24 * s * Math.pow(1 - t, 2.5);
+    return [[w, w, y + lift], [0, w * 1.0, y], [-w, w, y + lift], [-w, 0, y], [-w, -w, y + lift], [0, -w, y], [w, -w, y + lift], [w, 0, y]];
+  };
+  const R = []; for (let i = 0; i <= N; i++) R.push(ring(i / N));
+  for (let i = 0; i < N; i++) for (let k = 0; k < 8; k++) {
+    const a = R[i][k], b = R[i][(k + 1) % 8], c = R[i + 1][(k + 1) % 8], d = R[i + 1][k];
+    B.quad('stone', [a[0], a[1], a[2]], [b[0], b[1], b[2]], [c[0], c[1], c[2]], [d[0], d[1], d[2]]);
   }
-  sq(B, 2.78 * s, 2.86 * s, 1.95 * s, 1.95 * s);       // 笠：薄簷＋反翹
-  sq(B, 2.86 * s, 3.12 * s, 1.85 * s, 0.55 * s);
-  [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(([a, c]) => B.box('stone', a * 0.92 * s, c * 0.92 * s, 0.18 * s, 0.18 * s, 2.8 * s, 2.98 * s));   // 蕨手般的翹角
-  sq(B, 3.12 * s, 3.24 * s, 0.4 * s, 0.32 * s);        // 請花
-  B.cyl('stone', 0, 0, 0.17 * s, 3.24 * s, 3.56 * s, 10, 0.1 * s);   // 寶珠
-  B.cyl('stone', 0, 0, 0.04 * s, 3.56 * s, 3.62 * s, 6, 0.02 * s);
+  // 軒先の厚み（薄い縁）と軒裏
+  const E = R[0];
+  for (let k = 0; k < 8; k++) { const a = E[k], b = E[(k + 1) % 8];
+    B.quad('stone', [b[0], b[1], b[2]], [a[0], a[1], a[2]], [a[0], a[1], a[2] - 0.07 * s], [b[0], b[1], b[2] - 0.07 * s]);
+    B.mesh('stone', [[0, 0, y0 + 0.01], [b[0], b[1], b[2] - 0.07 * s], [a[0], a[1], a[2] - 0.07 * s]], [[0, 1, 2]]); }
+}
+function lantern(B, s = 1) {
+  sq(B, 0, 0.24 * s, 2.45 * s, 2.3 * s);              // 地覆（下窄上寬的斜面基礎，切石積）
+  sq(B, 0.24 * s, 0.5 * s, 2.3 * s, 2.25 * s);        // 基壇三層
+  sq(B, 0.5 * s, 0.76 * s, 1.8 * s, 1.74 * s);
+  sq(B, 0.76 * s, 1.0 * s, 1.42 * s, 1.36 * s);
+  // 竿：方形斷面、四面內凹的沙漏形（下部大きく裾広がり、腰細、上部やや広がる）
+  const wq = t => t < 0.5 ? 0.5 + 0.9 * Math.pow(1 - t / 0.5, 2.2) : 0.5 + 0.3 * Math.pow((t - 0.5) / 0.5, 2);
+  for (let i = 0; i < 10; i++) { const t0 = i / 10, t1 = (i + 1) / 10; sq(B, (1.0 + 0.95 * t0) * s, (1.0 + 0.95 * t1) * s, wq(t0) * s, wq(t1) * s); }
+  // 竿頂の節と斗栱：一圈小方塊（照片中竿頂與中台下的齒狀突起）
+  sq(B, 1.95 * s, 2.0 * s, 0.86 * s, 0.86 * s);
+  for (const [w, y, n] of [[0.86, 2.0, 3], [1.12, 2.08, 4]]) for (let k = 0; k < 4; k++) for (let j = 0; j < n; j++) {
+    const f = (j + 0.5) / n * 2 - 1, g = new THREE.BoxGeometry(0.11 * s, 0.08 * s, 0.11 * s);
+    g.translate(f * w / 2 * s * 0.8, (y + 0.04) * s, w / 2 * s); g.rotateY(k * Math.PI / 2); B.add('stone', g);
+  }
+  sq(B, 2.0 * s, 2.08 * s, 0.9 * s, 1.05 * s);
+  sq(B, 2.08 * s, 2.14 * s, 1.15 * s, 1.24 * s);       // 中台下段
+  sq(B, 2.14 * s, 2.32 * s, 1.3 * s, 1.3 * s);         // 中台
+  sq(B, 2.32 * s, 2.36 * s, 0.92 * s, 0.86 * s);
+  sq(B, 2.36 * s, 2.82 * s, 0.8 * s, 0.8 * s);         // 火袋
+  for (let k = 0; k < 4; k++) {                          // 火袋四面：菊桔梗社紋浮雕（方形彫り込み）
+    const g = new THREE.PlaneGeometry(0.5 * s, 0.38 * s); g.translate(0, 2.6 * s, 0.405 * s); g.rotateY(k * Math.PI / 2); B.add('kamonStone', g);
+  }
+  sq(B, 2.82 * s, 2.86 * s, 0.86 * s, 0.86 * s);
+  lanternRoof(B, 1.02 * s, 2.86 * s, 0.36 * s, s);      // 笠
+  sq(B, 3.28 * s, 3.34 * s, 0.36 * s, 0.3 * s);        // 露盤
+  B.cyl('stone', 0, 0, 0.1 * s, 3.34 * s, 3.42 * s, 10, 0.07 * s);   // 請花
+  { const g = new THREE.SphereGeometry(0.15 * s, 12, 8); g.scale(1, 1.05, 1); g.translate(0, 3.57 * s, 0); B.add('stone', g); }   // 宝珠
+  B.cyl('stone', 0, 0, 0.035 * s, 3.71 * s, 3.77 * s, 6, 0.01 * s);
 }
 function kasugaLantern(B) {
   B.box('stone', 0, 0, 0.6, 0.6, 0, 0.2);
