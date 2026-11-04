@@ -369,7 +369,7 @@ const PARTS={
  focus:{name:'調焦鈕',short:'調焦鈕',desc:'拖曳旋鈕改變目鏡位置，觀察影像由模糊變清楚。這不是改變主鏡的焦長。',task:3,
   hints:['先確認主鏡視野裡有目標，再調焦。','清晰後繼續轉，影像會再次模糊；請找到最清楚的位置。','左右拖曳旋鈕粗調，再用 ± 按鈕微調。']},
  tube:{name:'鏡筒與指向',short:'推動鏡筒',desc:'拖曳鏡筒：左右調方位、上下調仰角。放開立即停止；空白處拖曳只改變觀看角度。',task:2,
-  hints:['目標是對面大樓的「百川文隱」招牌。','先用「粗」把鏡筒轉向大樓，再用「細」微調。尋星鏡尚未校正時不能當作準確指引。','可在主鏡圓形視野內拖曳，讓看到的目標跟著手指移動。']},
+  hints:['目標是對面大樓的「中壢高中」招牌。','先用「粗」把鏡筒轉向大樓，再用「細」微調。尋星鏡尚未校正時不能當作準確指引。','可在主鏡圓形視野內拖曳，讓看到的目標跟著手指移動。']},
  finder:{name:'尋星鏡與校正螺絲',short:'尋星鏡',desc:'先讓主鏡目標置中，再只調尋星鏡螺絲。十字線固定，背景目標會隨光軸調整而移動。',task:5,
   hints:['主鏡與尋星鏡的中心，現在看的是同一處嗎？','校正時先保持主鏡不動。拖曳圓形視野會移動整支望遠鏡，不是校正。','用左右／上下螺絲，把主鏡中心的同一目標移到尋星鏡十字線交點。']},
  'finder-x':{name:'尋星鏡左右螺絲',short:'左右校正',desc:'左右拖曳螺絲調整尋星鏡水平方向。主鏡與鏡筒不會跟著移動。',task:5},
@@ -418,7 +418,7 @@ function building(x,z,w,h,d,rotation=0){let b=box(w,h,d,mat('#ded8c9',{texture:f
 building(5,-110,46,26,12);building(-55,-130,34,22,14,.35);building(53,-95,30,17,12,-.35);building(-15,-260,70,35,18);
 const TARGET=[6,10,-103.6];
 box(2.9,.95,.26,mat('#4f4338'),environment,[6,10,-103.85]);
-add(G3D.plane(2.6,.76),mat('#ffffff',{texture:signTexture('百川文隱'),unlit:true}),environment,TARGET);
+add(G3D.plane(2.6,.76),mat('#ffffff',{texture:signTexture('中壢高中'),unlit:true}),environment,TARGET);
 add(G3D.plane(2.7,.7),mat('#ffffff',{texture:signTexture('圖 書 館','#425961','#e4eadb'),unlit:true}),environment,[-5,3,-103.6]);
 box(3,.9,.26,mat('#3c4a4f'),environment,[-5,3,-103.85]);
 for(let [x,z,h] of [[-14,-40,5],[-6,-62,7],[18,-48,5],[26,-70,6],[-25,-80,5],[34,-43,7]]){
@@ -668,7 +668,7 @@ TASKS.forEach((t,i)=>{
 function renderQuestions(){
  const area=$('questionArea');area.innerHTML='';area.hidden=taskIndex!==4;if(area.hidden)return;
  const which='inv';
- const question=which==='inv'?'主鏡視野裡的「百川文隱」看起來怎樣？':'Q2：哪一組看到比較多建築物（視野最大）？';
+ const question=which==='inv'?'主鏡視野裡的「中壢高中」看起來怎樣？':'Q2：哪一組看到比較多建築物（視野最大）？';
  const opts=which==='inv'?['和肉眼一樣','只有上下顛倒','只有左右顛倒','上下左右都顛倒']:['主鏡＋20 mm','主鏡＋4 mm','一樣大'];
  const h=document.createElement('h3');h.textContent=question;area.appendChild(h);
  const choices=document.createElement('div');choices.className='quiz-choices';
