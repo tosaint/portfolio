@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>中壢神社 導覽紀念御守</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&display=swap">
+<style>
+  :root { --paper:#f6f2ea; --ink:#2b2a27; --ink2:#5f5a52; --red:#8f2a2a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:400 15px/1.7 "Noto Serif TC", serif; }
+  main { max-width: 440px; margin: 0 auto; padding: 24px 20px 48px; display:flex; flex-direction:column; gap:16px; align-items:center; }
+  h1 { margin:0; font-size:20px; font-weight:600; letter-spacing:.12em; }
+  p { margin:0; }
+  .note { font-size:13px; color:var(--ink2); text-align:center; }
+  #card { width:100%; max-width:390px; aspect-ratio: 390 / 844; display:block; border-radius:14px; box-shadow:0 8px 28px rgba(60,40,20,.18); background:#eee8dc; }
+  .btns { display:flex; gap:10px; width:100%; max-width:390px; }
+  .btns a { flex:1; min-height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:15px; }
+  .primary { background:var(--ink); color:var(--paper); }
+  .ghost { border:1.5px solid var(--ink); color:var(--ink); }
+  .err { color:var(--red); text-align:center; }
+</style>
+</head>
+<body>
+<main>
+  <h1>導覽紀念御守</h1>
+  <img id="card" alt="你的中壢神社導覽紀念御守桌布">
+  <p class="note" id="hint">手機：長按圖片，選「加入照片」或「儲存圖片」，就能設成桌布。</p>
+  <div class="btns">
+    <a class="primary" id="dl" href="#" download="中壢神社御守.png">下載桌布</a>
+    <a class="ghost" href="../app/">回到神社</a>
+  </div>
+  <p class="note">中壢神社 古今對照 · 照片：三森久子捐贈，壢中校史館藏<br>當代教育活動紀念品，非宗教物件</p>
+</main>
+<script>
+// 御守桌布：資料放在網址 # 後（base64url 的 JSON：n 暱稱、w 祝福語、no 編號、d 日期），不會送到伺服器。
+// 圖在瀏覽器裡用 canvas 畫，輸出 1080×2338（約 9:19.5，常見手機比例）的 PNG。
+const W = 1080, H = 2338, K = W / 390;            // 設計稿以 390×844 為單位
+function readData() {
+  try {
+    let s = location.hash.slice(1).replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    const bytes = Uint8Array.from(atob(s), c => c.charCodeAt(0));
+    const o = JSON.parse(new TextDecoder().decode(bytes));
+    return { n: String(o.n || '').slice(0, 8), w: String(o.w || '').slice(0, 20), no: String(o.no || ''), d: String(o.d || '') };
+  } catch (e) { return null; }
+}
+const img = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+
+function drawKamon(x, r, ink, paper) {
+  x.strokeStyle = ink; x.lineJoin = 'round';
+  const Rf = r * 0.78, pr = r * 0.235;
+  x.lineWidth = r * 0.045;
+  const pc = i => { const a = (i + 0.5) / 12 * Math.PI * 2; return [Math.cos(a) * Rf, Math.sin(a) * Rf]; };
+  for (let i = 0; i < 12; i++) { x.beginPath(); x.arc(...pc(i), pr, 0, Math.PI * 2); x.stroke(); }
+  x.fillStyle = paper;
+  for (let i = 0; i < 12; i++) { x.beginPath(); x.arc(...pc(i), pr - x.lineWidth / 2, 0, Math.PI * 2); x.fill(); }
+  x.beginPath(); x.arc(0, 0, Rf, 0, Math.PI * 2); x.fill();
+  const h = Rf * Math.sin(Math.PI / 12), rx = Rf * Math.cos(Math.PI / 12) + Math.sqrt(Math.max(0, pr * pr - h * h));
+  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; x.beginPath(); x.moveTo(Math.cos(a) * r * 0.64, Math.sin(a) * r * 0.64); x.lineTo(Math.cos(a) * rx, Math.sin(a) * rx); x.stroke(); }
+  for (let i = 0; i < 12; i++) { const a = (i + 0.5) / 12 * Math.PI * 2, [cx, cy] = pc(i); const d = Math.acos(Math.min(1, (rx * rx - Rf * Rf - pr * pr) / (-2 * Rf * pr)));
+    x.beginPath(); x.arc(cx, cy, pr, a - (Math.PI - d), a + (Math.PI - d)); x.stroke(); }
+  const Rt = r * 0.62, Rn = r * 0.5, tip = i => -Math.PI / 2 + i / 5 * Math.PI * 2, nb = i => tip(i) + Math.PI / 5;
+  const P = (a, rr) => [Math.cos(a) * rr, Math.sin(a) * rr];
+  x.lineWidth = r * 0.085; x.beginPath();
+  for (let i = 0; i < 5; i++) {
+    const n0 = P(nb(i - 1), Rn), t = P(tip(i), Rt), n1 = P(nb(i), Rn);
+    const mid = (a, b, k) => [(a[0] + b[0]) / 2 * k, (a[1] + b[1]) / 2 * k], c0 = mid(n0, t, 1.12), c1 = mid(t, n1, 1.12);
+    if (!i) x.moveTo(...n0);
+    x.quadraticCurveTo(...c0, ...t); x.quadraticCurveTo(...c1, ...n1);
+  }
+  x.closePath(); x.stroke();
+  x.lineWidth = r * 0.05;
+  for (let i = 0; i < 5; i++) { x.beginPath(); x.moveTo(...P(nb(i), r * 0.13)); x.lineTo(...P(nb(i), Rn)); x.stroke(); }
+  x.beginPath(); x.arc(0, 0, r * 0.11, 0, Math.PI * 2); x.stroke();
+  for (let i = 0; i < 5; i++) { x.beginPath(); x.moveTo(...P(tip(i), r * 0.13)); x.lineTo(...P(tip(i), r * 0.2)); x.stroke(); }
+}
+function rrect(x, X, Y, w, h, rt, rb) {
+  x.beginPath(); x.moveTo(X + rt, Y); x.lineTo(X + w - rt, Y); x.arcTo(X + w, Y, X + w, Y + rt, rt);
+  x.lineTo(X + w, Y + h - rb); x.arcTo(X + w, Y + h, X + w - rb, Y + h, rb); x.lineTo(X + rb, Y + h);
+  x.arcTo(X, Y + h, X, Y + h - rb, rb); x.lineTo(X, Y + rt); x.arcTo(X, Y, X + rt, Y, rt); x.closePath();
+}
+// 直書：一字一格；標點（，。、）放在格子右上
+function vtext(x, s, cx, y0, size, step, color, weight) {
+  x.fillStyle = color; x.font = `${weight} ${size}px "Noto Serif TC", serif`; x.textAlign = 'center'; x.textBaseline = 'middle';
+  [...s].forEach((ch, i) => {
+    const y = y0 + step * i + step / 2;
+    if ('，。、'.includes(ch)) x.fillText(ch, cx + size * 0.35, y - size * 0.3); else x.fillText(ch, cx, y);
+  });
+}
+async function render(data) {
+  await document.fonts.load('600 40px "Noto Serif TC"'); await document.fonts.load('400 40px "Noto Serif TC"');
+  const [axon, callig] = await Promise.all([img('../img/axon-core.png'), img('callig.png')]);
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.scale(K, K);
+  x.fillStyle = '#f6f2ea'; x.fillRect(0, 0, 390, 844);
+  // 背景：中軸線稿（淡）
+  x.save(); x.globalAlpha = 0.55; x.globalCompositeOperation = 'multiply';
+  const aw = 510, ah = aw * axon.height / axon.width; x.drawImage(axon, -60, 844 - 70 - ah, aw, ah); x.restore();
+  // 直書文字欄寬：暱稱一欄；祝福語超過 15 字分兩欄
+  const wish = data.w, wCols = wish.length > 15 ? 2 : 1, colW = 30, textW = colW + 14 + wCols * 29;
+  const rowW = 170 + 28 + textW, X0 = (390 - rowW) / 2, PX = X0, PY = 152;
+  // 御守本體
+  x.save(); x.shadowColor = 'rgba(80,20,20,0.25)'; x.shadowBlur = 22; x.shadowOffsetY = 8;
+  rrect(x, PX, PY, 170, 280, 50, 10); x.fillStyle = '#8f2a2a'; x.fill(); x.restore();
+  rrect(x, PX + 8.75, PY + 8.75, 152.5, 262.5, 44, 5); x.strokeStyle = '#f0e3c6'; x.lineWidth = 1.5; x.stroke();
+  // 繩結
+  x.save(); x.translate(PX + 85 - 55, 110); x.scale(110 / 120, 58 / 64); x.strokeStyle = '#f0e3c6'; x.lineWidth = 5; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(60, 40); x.bezierCurveTo(34, 40, 28, 6, 48, 6); x.bezierCurveTo(58, 6, 60, 22, 60, 30); x.bezierCurveTo(60, 22, 62, 6, 72, 6); x.bezierCurveTo(92, 6, 86, 40, 60, 40); x.stroke();
+  x.fillStyle = '#f0e3c6'; x.beginPath(); x.arc(60, 40, 8, 0, Math.PI * 2); x.fill();
+  x.beginPath(); x.moveTo(54, 46); x.lineTo(46, 64); x.moveTo(66, 46); x.lineTo(74, 64); x.stroke(); x.restore();
+  // 社紋（白線、朱底）
+  x.save(); x.translate(PX + 85, PY + 8 + 24 + 24); drawKamon(x, 24 * 0.78, '#f6efe2', '#8f2a2a'); x.restore();
+  // 書法「中壢神社」
+  const cw = 60, chh = cw * callig.height / callig.width; x.drawImage(callig, PX + 85 - cw / 2, PY + 8 + 24 + 48 + 12, cw, chh);
+  // 暱稱（右欄）與祝福語（往左）
+  const tx = PX + 170 + 28, nameCx = tx + textW - colW / 2;
+  vtext(x, data.n || '　', nameCx, 144, 24, 27.8, '#2b2a27', 600);
+  const per = wCols === 2 ? Math.ceil(wish.length / 2) : wish.length;
+  for (let k = 0; k < wCols; k++) vtext(x, wish.slice(k * per, (k + 1) * per), nameCx - colW / 2 - 14 - 14.5 - k * 29, 178, 15, 17.6, '#4a453d', 400);
+  // 下方：活動名稱與編號
+  x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+  x.fillStyle = '#8f2a2a'; x.font = '400 12px "Noto Serif TC", serif'; x.letterSpacing = '3.6px'; x.fillText('導覽紀念　御守', 195, 786);
+  x.fillStyle = '#5f5a52'; x.font = '400 11px "Noto Serif TC", serif'; x.letterSpacing = '1.1px';
+  x.fillText([data.no && 'No.' + data.no, data.d, '中壢神社 古今對照'].filter(Boolean).join('　'), 195, 806);
+  return c.toDataURL('image/png');
+}
+addEventListener('hashchange', () => location.reload());
+(async () => {
+  const data = readData();
+  if (!data || !data.n) { document.getElementById('hint').textContent = '這個連結少了資料。請用信裡的「領取我的御守」按鈕開啟。'; document.getElementById('hint').className = 'note err'; return; }
+  const url = await render(data);
+  document.getElementById('card').src = url;
+  document.getElementById('dl').href = url;
+})();
+</script>
+</body>
+</html>
