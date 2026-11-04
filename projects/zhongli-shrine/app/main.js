@@ -4,6 +4,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED, HORSE, setOnAsset, treeOK, approachPts } from './shrine-proc.js?v=20261104t';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { LANTERN_API } from './lantern-config.js?v=1';
 // 掃描檔已用 meshopt 壓縮、只留顏色貼圖；材質改成 Lambert，手機算得比較輕
 const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 // 掃描物不用照片貼圖（顏色偏暗、與周圍風格不一），改成與建築一致的單色材質，只保留造形
@@ -658,6 +659,7 @@ function applyNightK(k) {
   ['gravel', 'path', 'slab'].forEach(n => { const m = M[n]; if (!m) return; m.userData.day ??= m.color.clone(); m.color.copy(m.userData.day).multiplyScalar(L(1, 0.38)); });
   [ground, overlay].forEach(gd => gd && gd.mesh.material.color.copy(mix(0xffffff, 0x3a4458, k)));
   if (edgeMat) edgeMat.color.copy(mix(0x2b2118, 0x05070c, k));
+  if (lanMat) { lanMat.emissive.copy(mix(0x3a3328, 0xffc27a, k)); lanMat.emissiveIntensity = 1; }
   if (stars) stars.material.opacity = 0.8 * k;
   flicker(performance.now()); updateFocus(true);
   dirty = true;
@@ -688,6 +690,93 @@ function stepNight() {
 }
 $('#nightBtn').onclick = () => setNight(!night);
 $('#nightBtn2').onclick = () => setNight(!night);
+/* ---------- 心願燈籠：完成三處實地踏查、審核通過者，點在外參道兩側 ----------
+   資料來自 Apps Script（?type=lantern）；全部燈籠只算 3 次繪製（柱、燈身、上下口），夜間燈身發光。
+   點一下燈籠（找螢幕上最近的一盞）看暱稱與祈願；網址 #lantern-0012 會直接飛到那一盞。 */
+let lanMat = null, lanSlots = [], lanGlow = null;
+async function loadLanterns() {
+  const api = new URLSearchParams(location.search).get('lanapi') || LANTERN_API;
+  if (!api) return;
+  let items = [];
+  try { const r = await fetch(api + (/[?&]type=/.test(api) || api.endsWith('.json') ? '' : (api.includes('?') ? '&' : '?') + 'type=lantern')); items = (await r.json()).items || []; } catch (e) { return; }
+  if (!items.length) return;
+  buildLanterns(items);
+  const m = location.hash.match(/lantern-(\d+)/); if (m) focusLantern(m[1]);
+}
+function buildLanterns(items) {
+  const P = approachPts().map(([x, y]) => new THREE.Vector2(x, -y)), seg = [0];
+  for (let i = 1; i < P.length; i++) seg.push(seg[i - 1] + P[i].distanceTo(P[i - 1]));
+  const L = seg[seg.length - 1], at = d => { let i = Math.max(1, seg.findIndex(v => v >= d)); const t = (d - seg[i - 1]) / (seg[i] - seg[i - 1] || 1);
+    return { p: P[i - 1].clone().lerp(P[i], t), dir: P[i].clone().sub(P[i - 1]).normalize() }; };
+  const avoid = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'B1'].map(id => shrine.boxes.get(id)).filter(Boolean).map(b => { const c = b.getCenter(new THREE.Vector3()); return new THREE.Vector2(c.x, c.z); });
+  const slots = [];
+  for (let d = 14; d < L - 14 && slots.length < items.length; d += 1.7) {      // 左右交錯，同側約 3.4 公尺一盞
+    const side = slots.length % 2 ? 1 : -1, { p, dir } = at(d), n = new THREE.Vector2(-dir.y, dir.x).multiplyScalar(side);
+    const q = p.clone().addScaledVector(n, 5.0);
+    if (avoid.some(a => a.distanceTo(q) < 2.2)) continue;
+    slots.push({ x: q.x, z: q.y, face: Math.atan2(-n.x, -n.y) });
+  }
+  const N = Math.min(slots.length, items.length); if (!N) return;
+  // 一盞：木柱 1.9 公尺＋朝參道的橫木，下掛圓燈籠
+  const post = mergeGeometries([new THREE.BoxGeometry(0.08, 1.9, 0.08).translate(0, 0.95, 0), new THREE.BoxGeometry(0.06, 0.06, 0.5).translate(0, 1.86, 0.22)]);
+  const prof = [[0.08, 0], [0.15, 0.05], [0.17, 0.14], [0.17, 0.28], [0.15, 0.37], [0.08, 0.42]].map(([r, h]) => new THREE.Vector2(r, h));
+  const body = new THREE.LatheGeometry(prof, 10).translate(0, 1.3, 0.42);
+  const caps = mergeGeometries([new THREE.CylinderGeometry(0.085, 0.085, 0.05, 10).translate(0, 1.3, 0.42), new THREE.CylinderGeometry(0.085, 0.085, 0.05, 10).translate(0, 1.72, 0.42),
+                                new THREE.CylinderGeometry(0.006, 0.006, 0.12, 4).translate(0, 1.79, 0.42)]);
+  lanMat = new THREE.MeshLambertMaterial({ color: 0xf5e6c4, emissive: 0x3a3328 });
+  const meshes = [[post, new THREE.MeshLambertMaterial({ color: 0x6b4a2f })], [body, lanMat], [caps, new THREE.MeshLambertMaterial({ color: 0x1d1814 })]]
+    .map(([g, m]) => new THREE.InstancedMesh(g, m, N));
+  const m4 = new THREE.Matrix4(), qt = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), one = new THREE.Vector3(1, 1, 1);
+  lanSlots = [];
+  for (let i = 0; i < N; i++) {
+    const s = slots[i], y = groundH; qt.setFromAxisAngle(up, s.face); m4.compose(new THREE.Vector3(s.x, y, s.z), qt, one);
+    meshes.forEach(me => me.setMatrixAt(i, m4));
+    const lp = new THREE.Vector3(0, 1.51, 0.42).applyQuaternion(qt).add(new THREE.Vector3(s.x, y, s.z));
+    lanSlots.push({ ...items[i], pos: lp });
+  }
+  meshes.forEach(me => { me.instanceMatrix.needsUpdate = true; me.computeBoundingSphere(); scene.add(me); fadeMats.push(me.material); });
+  applyNightK(nightK); applyEra(); dirty = true;
+  addLanternChip();
+}
+function addLanternChip() {
+  const box = $('#viewChips'); if (!box || $('#lanChip')) return;
+  const b = document.createElement('button'); b.id = 'lanChip'; b.textContent = '心願燈籠';
+  b.onclick = () => { closeCard(); if (!night) setNight(true); const a = lanSlots[0].pos, z = lanSlots[lanSlots.length - 1].pos;
+    flyTo(a.clone().lerp(z, 0.5).add(new THREE.Vector3(-30, 26, 28)), a.clone().lerp(z, 0.55), baseFov); };
+  box.append(b);
+}
+function openLantern(L) {
+  $('#cardBody').innerHTML = `<span class="tag" style="background:#8f2a2a">心願燈籠</span><h2>No.${esc(L.no)}　${esc(L.n || '')}</h2>` +
+    (L.w ? `<p class="lead">「${esc(L.w)}」</p>` : '') +
+    `<p>完成銅馬、拜殿前地磚遺跡、義民廟狛犬三處實地踏查，點亮於 ${esc(L.d || '')}。</p>` +
+    `<p class="caveat">心願燈籠為當代教育活動的參與創作，並非中壢神社原有的設施。</p>`;
+  $('#card').scrollTop = 0; $('#card').classList.add('open');
+}
+function focusLantern(no) {
+  const L = lanSlots.find(l => l.no === no || l.no === ('000' + no).slice(-4)); if (!L) return;
+  if (!night) setNight(true);
+  if (!lanGlow) {
+    const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,210,140,1)'); g.addColorStop(1, 'rgba(255,170,80,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+    lanGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
+    lanGlow.material.opacity = 0.75; lanGlow.scale.set(0.95, 0.95, 1); scene.add(lanGlow);
+  }
+  lanGlow.position.copy(L.pos);
+  const back = new THREE.Vector3(0, 0, 0); { const i = lanSlots.indexOf(L), o = lanSlots[Math.min(lanSlots.length - 1, i + 2)] || L; back.copy(L.pos).sub(o.pos).setY(0).normalize(); }
+  const eye = L.pos.clone().addScaledVector(back.lengthSq() ? back : new THREE.Vector3(1, 0, 0), 7).add(new THREE.Vector3(0, 1.2, 0));
+  flyTo(eye, L.pos.clone(), baseFov, () => openLantern(L));
+}
+renderer.domElement.addEventListener('click', e => {
+  if (!lanSlots.length || inPhoto) return;
+  const r = renderer.domElement.getBoundingClientRect(), v = new THREE.Vector3();
+  let best = null, bd = 30 * 30;
+  for (const L of lanSlots) {
+    v.copy(L.pos).project(camera); if (v.z > 1) continue;
+    const sx = (v.x + 1) / 2 * r.width, sy = (1 - v.y) / 2 * r.height, dd = (sx - (e.clientX - r.left)) ** 2 + (sy - (e.clientY - r.top)) ** 2;
+    if (dd < bd && camera.position.distanceTo(L.pos) < 80) { bd = dd; best = L; }
+  }
+  if (best) openLantern(best);
+});
 function flicker(t) {                 // 提燈微閃：燭火般的不規則亮度
   const M = shrine?.matsByName; if (!M) return;
   // 焦點亮度慢慢靠向目標（約 0.5 秒），換站時不會一下子跳亮
@@ -829,7 +918,7 @@ try {
   overlay = createGround(scene, { bounds: { x0: -280, x1: 220, y0: -300, y1: 200 }, height: groundH - 0.12, qToLL, llToQ, north: NORTH_Q, order: -1 });
   places = md.places.map(p => ({ ...p, pos: p.q || (p.plan ? warpH(p.plan) : llToQ(p.lat, p.lng)) }));
   // 先畫出神社，再於空檔載入掃描模型與輪廓線，避免一開頁卡住
-  requestAnimationFrame(() => requestAnimationFrame(() => { later(buildEdges); later(buildPines); later(loadHorseScan); later(loadKomainu); later(warmNight); }));
+  requestAnimationFrame(() => requestAnimationFrame(() => { later(buildEdges); later(buildPines); later(loadHorseScan); later(loadKomainu); later(loadLanterns); later(warmNight); }));
   buildScaleAids();
   buildHorseLine();
   buildChips();
