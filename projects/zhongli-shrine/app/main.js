@@ -50,7 +50,7 @@ const STOPS = [
     title: '第二鳥居：鎮座祭行列',
     text: '1939 年 10 月 15 日鎮座祭，祭典行列穿過木造的第二鳥居走向拜殿。當年報紙特別提到中壢神社「沒有燈籠」（除了必要的之外），石燈籠只有三對。',
     now: '第二鳥居大約在今天莊敬樓川堂附近，興建老樓時拆除。',
-    eye: [1.2, 1.6, 80], target: [0, 4.2, 30],
+    eye: [1.5, 1.7, 96], target: [0, 4.5, 40], fov: 58,   // 退後、廣角：鳥居、兩側燈籠與長旗一起入鏡
     pins: [['B2', '第二鳥居'], ['P', '拜殿']],
     thumbs: [['photos/torii2-festival.jpg', '鎮座祭行列穿過第二鳥居（' + CR + '）'], ['photos/torii2-side.jpg', '第二鳥居側面']]
   },
@@ -58,16 +58,16 @@ const STOPS = [
     title: '石燈籠與社務所',
     text: '第二鳥居前的花崗岩石燈籠，火袋上刻著桐紋。後方是社號標與社務所，首任社掌三森淳男與夫人三森久子就住在這裡。',
     now: '社務所戰後當過童軍團部、校史室，1980 年拆除改建自強館。木鳥居右前的一座石燈籠，今天仍在老樓轉角。',
-    eye: [-10, 1.6, 77], target: [14, 2.6, 58],
+    eye: [-15, 1.6, 84], target: [12, 2.8, 58],
     pins: [['D5', '石燈籠'], ['G', '社號標'], ['H', '社務所']],
     thumbs: [['photos/lantern-torii2.jpg', '石燈籠，背景為社務所（' + CR + '）']]
   },
   {
     title: '拜殿：「臺灣唯一」的檜皮葺',
-    text: '鎮座祭當天的拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，簷下掛著神紋幕與「中壢神社」燈籠。《臺灣日日新報》稱它的檜皮葺屋頂是「臺灣唯一」。拖曳滑桿，讓照片和 3D 疊合。',
+    text: '鎮座祭當天的拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，簷下掛著神紋幕與「中壢神社」燈籠。《臺灣日日新報》稱它的檜皮葺屋頂是「臺灣唯一」。點下方照片可放大，和 3D 對照。',
     now: '這裡就是今天的陶然亭一帶。拜殿基座上曾蓋校舍，1991 年興建陶然亭時遺構全部拆除。',
-    photo: HAIDEN_PHOTO,
-    thumbs: [['photos/haiden-priests.jpg', '鎮座祭神職合影（' + CR + '）'], ['photos/haiden-in-guests.jpg', '拜殿內：來賓列座，四周掛御簾、垂釣燈籠'], ['photos/haiden-in-miko.jpg', '拜殿內：神職與巫女'], ['photos/haiden-wedding.jpg', '拜殿前婚禮合影：板扉開啟、兩側格子戸、中央鈴緒']]
+    eye: [0, 1.9, 14.4], target: [0, 5.2, -6],    // 進神門後望拜殿（照片放在縮圖）
+    thumbs: [['assets/photo-study/haiden-front.jpg', '鎮座祭當天的拜殿正面（' + CR + '）'], ['photos/haiden-priests.jpg', '鎮座祭神職合影（' + CR + '）'], ['photos/haiden-in-guests.jpg', '拜殿內：來賓列座，四周掛御簾、垂釣燈籠'], ['photos/haiden-in-miko.jpg', '拜殿內：神職與巫女'], ['photos/haiden-wedding.jpg', '拜殿前婚禮合影：板扉開啟、兩側格子戸、中央鈴緒']]
   },
   {
     title: '本殿：最深處',
@@ -79,10 +79,10 @@ const STOPS = [
   },
   {
     title: '神門、狛犬與銅馬',
-    text: '你站在當年攝影師的位置，拖曳滑桿讓照片和 3D 疊合：神門前一對狛犬，門左側是銅馬。比對照片發現，鎮座祭當天的照片都看不到這座神門，它很可能是之後才增建的。',
+    text: '你站在當年攝影師的位置附近：神門前一對狛犬，門左側是銅馬。比對照片發現，鎮座祭當天的照片都看不到這座神門，它很可能是之後才增建的。',
     now: '狛犬 1950 年移到中壢後火車站附近的義民廟（忠義祠），至今仍在；銅馬搬過好幾次，現在立在中央西路正門。虛線是它從原位置到今天正門的距離。',
-    photo: HIST_PHOTO,
-    thumbs: [['photos/horse-komainu-gate.jpg', '銅馬、狛犬與神門'], ['photos/gate-postwar.jpg', '神門前合影（1940 年代）'], ['assets/models/horse/current.jpg', '今天的銅馬（中央西路正門）']]
+    eye: [13.5, 1.8, 31], target: [-2, 3.2, 15],   // 接近神門照的拍攝角度，稍退稍廣
+    thumbs: [['assets/photo-study/historical.jpg', '神門、狛犬與銅馬（' + CR + '）'], ['photos/horse-komainu-gate.jpg', '銅馬、狛犬與神門'], ['photos/gate-postwar.jpg', '神門前合影（1940 年代）'], ['assets/models/horse/current.jpg', '今天的銅馬（中央西路正門）']]
   }
 ];
 
@@ -243,9 +243,9 @@ function buildPines() {
   } };
   ring(-34, 34, 31.5, 50, 70);          // 本殿背面
   ring(-32, -17.5, -12, 31, 26);        // 西側
-  ring(17.5, 32, -12, 31, 26);          // 東側
+  ring(17.5, 32, 2, 31, 20);           // 東側
   // 零星點綴：社務所背後、腰身兩側近神門、鳥居前廣場角落
-  [[56, -46, 9], [57, -55, 12], [55, -60, 4], [-11, -33, 11], [-12, -40, 3.5], [11, -34, 3], [12.5, -29, 12], [-23, -77, 9], [23.5, -79, 4], [-22, -60, 11]]
+  [[56, -46, 9], [57, -55, 12], [55, -60, 4], [-11, -33, 11], [-12, -40, 3.5], [-23, -77, 9], [23.5, -79, 4], [-22, -60, 11]]
     .forEach(([x, y, h]) => add(x, y, h * (0.9 + rnd() * 0.2)));
   const groups = [[], []]; trees.forEach((t, i) => groups[i % 2].push(t));
   const m4 = new THREE.Matrix4(), q4 = new THREE.Quaternion(), e = new THREE.Euler();
@@ -669,7 +669,7 @@ function go(i) {
   camera.near = 0.5; camera.updateProjectionMatrix();
   photoMarker.visible = false;
   controls.enabled = !s.photo;
-  flyTo(new THREE.Vector3(...s.eye), new THREE.Vector3(...s.target), s.photo ? photoFov() : baseFov, () => {
+  flyTo(new THREE.Vector3(...s.eye), new THREE.Vector3(...s.target), s.photo ? photoFov() : (s.fov ? Math.max(s.fov, baseFov) : baseFov), () => {
     if (s.photo) {
       // 用反求出的相機軸向（含些微傾斜），而不是單純 lookAt
       const A = curPhoto.axes;
