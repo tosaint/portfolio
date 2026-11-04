@@ -87,10 +87,26 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 .data dd span { color: var(--ink-2); margin-left: .6em; }
 
 .enter.one { grid-template-columns: 1fr; }
+.stops { list-style: none; margin: 0; padding: 0; counter-reset: st; }
+.stop { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 48px); padding-block: clamp(24px, 4vw, 44px); border-top: 1px solid var(--rule); }
+.stop .pics { position: relative; margin: 0; }
+.stop .old { width: 100%; height: auto; display: block; }
+.stop .three { position: absolute; right: -10px; bottom: -14px; width: 36%; height: auto; border: 3px solid var(--paper); box-shadow: 0 2px 10px rgba(0,0,0,.18); display: block; }
+.stop figcaption { margin-top: 10px; padding-right: 38%; font-size: 12px; line-height: 1.5; color: var(--ink-3); }
+.stop .no { font: 400 11px var(--mono); letter-spacing: .16em; color: var(--ink-3); margin: 0 0 6px; }
+.stop h3 { margin: 0 0 10px; font: 500 clamp(20px, 2.2vw, 24px)/1.4 var(--serif); letter-spacing: .06em; }
+.stop p { margin: 0 0 .8em; }
+.stop .now { font-size: 14px; color: var(--ink-2); padding-left: 12px; border-left: 2px solid var(--rule); }
+.stop .en { font-size: 13px; color: var(--ink-3); }
+.inner { margin: clamp(24px, 4vw, 48px) 0; }
+.inner img { width: 100%; height: auto; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
+.inner figcaption { margin-top: 8px; font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
 @media (max-width: 760px) {
   .head, .text { grid-template-columns: 1fr; }
   .plan { justify-self: start; order: -1; }
   .enter { grid-template-columns: 1fr; }
+  .stop { grid-template-columns: 1fr; }
+  .stop .three { right: 8px; }
 }
 </style>
 </head>
@@ -108,28 +124,23 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
       <p class="en-title">Zhongli Shrine, Then and Now</p>
       <p class="lede">1939 年的神社，今天的中壢高中。<span>A shrine of 1939, on the ground of today’s Zhongli Senior High School.</span></p>
     </div>
-    <figure class="plan"><img src="img/axon-2.png" alt="Axonometric line drawing of the reconstructed shrine: the gate with its stone lions and bronze horse in front, the worship hall with curved irimoya roof and bracket sets, the nagare-style main sanctuary with chigi and katsuogi behind, all inside a roofed wooden fence"></figure>
+    <figure class="plan"><img src="img/axon-3.png" width="1600" height="877" alt="Axonometric line drawing of the whole shrine as reconstructed: the second torii with lanterns, banner and shrine-name stone at the front, the shrine office to the right, and the gate, worship hall and main sanctuary inside the fence at the back"></figure>
   </section>
 
   <nav class="enter one" aria-label="Open the work">
-    <a href="app/"><b>開啟古今對照 <i>→</i></b><small>Open the then-and-now view</small><p>3D 神社立在今天的航照上。拖動「古 ↔ 今」滑桿讓神社淡出，看它落在今天校園的哪裡；點地點看後來的變化，或跟著六站導覽，從第一鳥居一路走到本殿與神門，每站對照一張老照片。在校園裡按「我在哪」，可以看到自己站在哪座殿上。</p></a>
+    <a href="app/"><b>開啟古今對照 <i>→</i></b><small>Open the then-and-now view</small><p>3D 神社立在今天的航照上。拖動「古 ↔ 今」滑桿看它落在今天校園的哪裡，或跟著六站導覽，從第一鳥居一路走到神門。在校園裡按「我在哪」，可以看到自己站在哪座殿上。</p></a>
   </nav>
-
-  <figure class="photo">
-    <img src="img/historical.jpg" width="1600" height="1067" alt="Sepia photograph of the shrine soon after completion: the tower gate with a curved roof and a stone lion in front, a wooden fence with a small roof, the large worship hall behind and young pine trees held up by poles" loading="lazy">
-    <figcaption>中壢神社落成後不久 · The shrine soon after completion<br>三森久子捐贈，壢中校史館藏；亦見<a href="https://www.kanagawa-u.ac.jp/research/digitalarchive/">神奈川大學數位典藏</a> · Donated by Mimori Hisako, Zhongli Senior High School History Room</figcaption>
-  </figure>
 
   <section class="text">
     <div lang="zh-Hant">
       <h2>關於</h2>
       <p>中壢神社於 1939 年 10 月 15 日鎮座，面朝中壢市區。1947 年這塊地撥給中壢中學，神社建築在之後幾十年間陸續被拆除或改建：鳥居成了校門，拜殿與本殿的基座上蓋了校舍和亭子，最後在 1991 年改建陶然亭時全部消失。今天還留在校園裡的，只有神馬、一座石燈籠，以及親師樓後方一小段參拜道和圍牆基座。</p>
-      <p>這個作品把散落的史料放回同一個空間：以「戲說壢中 CLHS+Minecraft 創世神」計畫中學生以 Tinkercad 建立的模型為起點，再依壢中校史館藏的老照片反推每座建築的尺寸，以 three.js 重新建構整座神社，對位到今天的地圖上，讓「當年在這裡的是什麼」可以直接在校園裡看見。</p>
+      <p>這個作品把老照片、1947 年航照與學生的模型放回同一個空間，在今天的校園上重現當年的神社。</p>
     </div>
     <div lang="en">
       <h2>About</h2>
       <p class="en">The Zhongli Shrine was consecrated on 15 October 1939, facing the town. In 1947 the land was given to Zhongli Middle School, and over the next decades the shrine was taken apart: the torii became the school gate, classrooms and pavilions were built on the platforms of the halls, and the last remains went in 1991 when the Taoran Pavilion was built. Only the bronze horse, one stone lantern and a short piece of the approach path and fence base are still on the campus.</p>
-      <p class="en">This work puts the scattered records back into one space. Tinkercad models made by students in the school’s CLHS+Minecraft project are assembled into the shrine’s layout and placed on today’s map, so you can see, standing on the campus, what used to be there.</p>
+      <p class="en">This work brings the old photographs, a 1947 aerial photo and students’ models back into one space, on today’s campus.</p>
     </div>
   </section>
 
@@ -137,10 +148,10 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <div lang="zh-Hant">
       <h2>怎麼看</h2>
       <ol>
-        <li>打開<a href="app/">古今對照</a>，拖動底部的「古 ↔ 今」滑桿，神社會逐漸淡出，露出今天的校園。</li>
-        <li>紅點是已消失的建築，黃點是被搬走的文物，綠點是還找得到的遺構。點一下看它後來變成什麼。</li>
-        <li>底圖可以換成今日地圖、1921 日治地形圖或 1944 美軍地圖。</li>
-        <li>按「六站導覽」，從第一鳥居走到神門，每站附老照片；第四站（拜殿）與第六站（神門）會帶你到照片的拍攝位置，讓照片和模型疊在一起。</li>
+        <li>打開<a href="app/">古今對照</a>，拖動「古 ↔ 今」滑桿，神社淡出，露出今天的校園。</li>
+        <li>紅點是已消失的建築，黃點是被搬走的文物，綠點是還找得到的遺構，點一下看它後來變成什麼。</li>
+        <li>底圖可換成 1947 航照、1944 美軍地圖、1921 日治地形圖或今日地圖。</li>
+        <li>「六站導覽」從第一鳥居走到神門；「環繞」「夜間」換個方式看神社。</li>
         <li>在中壢高中校園裡按「我在哪」，走近遺址時畫面會提示。</li>
       </ol>
     </div>
@@ -149,12 +160,107 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
       <ol class="en">
         <li>Open the <a href="app/">then-and-now view</a> and drag the slider: the shrine fades and today’s campus shows through.</li>
         <li>Red marks buildings that are gone, yellow marks objects that were moved, green marks remains you can still find.</li>
-        <li>The ground can be today’s aerial photo, today’s map, the 1921 Japanese-era map or the 1944 US Army map.</li>
-        <li>The five-stop tour takes you to where the old photograph was taken and lines it up with the model.</li>
+        <li>The ground can be the 1947 aerial photo, the 1944 US Army map, the 1921 Japanese-era map or today’s map.</li>
+        <li>The six-stop tour walks from the first torii to the gate; orbit and night views show the shrine another way.</li>
         <li>On the campus, “where am I” shows your position and tells you when you are near a site.</li>
       </ol>
     </div>
   </section>
+
+  <section aria-labelledby="tourh">
+    <p class="eyebrow" id="tourh" style="margin:clamp(24px,4vw,40px) 0 0">六站導覽 · Six stops</p>
+    <ol class="stops">
+    <li class="stop">
+      <figure class="pics">
+        <img class="old" src="app/photos/torii1-school.jpg" alt="當校門時的第一鳥居。藍清水校長提供：劉金鐘家族、吳慕舉校長相片" loading="lazy">
+        <img class="three" src="img/tour-1.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
+        <figcaption>當校門時的第一鳥居。藍清水校長提供：劉金鐘家族、吳慕舉校長相片<br>小圖：3D 復原</figcaption>
+      </figure>
+      <div>
+        <p class="no">STOP 1 / 6</p>
+        <h3>第一鳥居：從中正路進來</h3>
+        <p>參拜道從中正路的第一鳥居進入。鳥居是鋼筋水泥造、外覆洗石子，兩旁各立一座石燈籠。照片是 1950 年代它當中壢中學校門時拍的，柱上已掛上校名與標語。</p>
+        <p class="now">今天：1965 年正門遷到中央西路，這座鳥居改稱南大門，約 1988–89 年拆除。位置在今天中正路 740 巷口。</p>
+        <p class="en">The first torii on Zhongzheng Road, later the school gate, removed c. 1988–89.</p>
+      </div>
+    </li>
+    <li class="stop">
+      <figure class="pics">
+        <img class="old" src="app/photos/torii2-festival.jpg" alt="1939 年鎮座祭，行列穿過第二鳥居。三森久子捐贈，壢中校史館藏" loading="lazy">
+        <img class="three" src="img/tour-2.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
+        <figcaption>1939 年鎮座祭，行列穿過第二鳥居。三森久子捐贈，壢中校史館藏<br>小圖：3D 復原</figcaption>
+      </figure>
+      <div>
+        <p class="no">STOP 2 / 6</p>
+        <h3>第二鳥居：鎮座祭行列</h3>
+        <p>1939 年 10 月 15 日鎮座祭，祭典行列穿過木造的第二鳥居走向拜殿。當年報紙特別提到中壢神社「沒有燈籠」（除了必要的之外），石燈籠只有三對。</p>
+        <p class="now">今天：第二鳥居大約在今天莊敬樓川堂附近，興建老樓時拆除。</p>
+        <p class="en">The consecration procession passes the wooden second torii, 15 October 1939.</p>
+      </div>
+    </li>
+    <li class="stop">
+      <figure class="pics">
+        <img class="old" src="app/photos/lantern-torii2.jpg" alt="第二鳥居前的石燈籠，背景為社務所。三森久子捐贈，壢中校史館藏" loading="lazy">
+        <img class="three" src="img/tour-3.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
+        <figcaption>第二鳥居前的石燈籠，背景為社務所。三森久子捐贈，壢中校史館藏<br>小圖：3D 復原</figcaption>
+      </figure>
+      <div>
+        <p class="no">STOP 3 / 6</p>
+        <h3>石燈籠與社務所</h3>
+        <p>第二鳥居前的花崗岩石燈籠，火袋上刻著桐紋。後方是社號標與社務所，首任社掌三森淳男與夫人三森久子就住在這裡。</p>
+        <p class="now">今天：社務所戰後當過童軍團部、校史室，1980 年拆除改建自強館。木鳥居右前的一座石燈籠，今天仍在老樓轉角。</p>
+        <p class="en">A granite lantern and the shrine office, where the first priest and his wife lived. One lantern survives on the campus.</p>
+      </div>
+    </li>
+    <li class="stop">
+      <figure class="pics">
+        <img class="old" src="app/assets/photo-study/haiden-front.jpg" alt="鎮座祭當天的拜殿正面。三森久子捐贈，壢中校史館藏" loading="lazy">
+        <img class="three" src="img/tour-4.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
+        <figcaption>鎮座祭當天的拜殿正面。三森久子捐贈，壢中校史館藏<br>小圖：3D 復原</figcaption>
+      </figure>
+      <div>
+        <p class="no">STOP 4 / 6</p>
+        <h3>拜殿：「臺灣唯一」的檜皮葺</h3>
+        <p>鎮座祭當天的拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，簷下掛著神紋幕與「中壢神社」燈籠。《臺灣日日新報》稱它的檜皮葺屋頂是「臺灣唯一」。</p>
+        <p class="now">今天：這裡就是今天的陶然亭一帶。拜殿基座上曾蓋校舍，1991 年興建陶然亭時遺構全部拆除。</p>
+        <p class="en">The worship hall on consecration day; the newspaper called its cypress-bark roof the only one in Taiwan.</p>
+      </div>
+    </li>
+    <li class="stop">
+      <figure class="pics">
+        <img class="old" src="app/photos/haiden-in-honden.jpg" alt="自拜殿內望本殿：扁額、水引幕、幣殿與本殿木階。三森久子捐贈，壢中校史館藏" loading="lazy">
+        <img class="three" src="img/tour-5.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
+        <figcaption>自拜殿內望本殿：扁額、水引幕、幣殿與本殿木階。三森久子捐贈，壢中校史館藏<br>小圖：3D 復原</figcaption>
+      </figure>
+      <div>
+        <p class="no">STOP 5 / 6</p>
+        <h3>本殿：最深處</h3>
+        <p>從拜殿內往裡看：頭上是「中壢神社」扁額與織紋的水引幕，穿過幣殿，盡頭是本殿的木階與白色御帳，祭主正在階前奉仕。本殿是流造，供奉豐受大神與北白川宮能久親王。</p>
+        <p class="now">今天：本殿基座上後來蓋了困學亭（壢中亭），1991 年改建陶然亭時拆除。</p>
+        <p class="en">Looking from inside the worship hall to the main sanctuary.</p>
+      </div>
+    </li>
+    <li class="stop">
+      <figure class="pics">
+        <img class="old" src="img/historical.jpg" alt="神門、狛犬與銅馬。三森久子捐贈，壢中校史館藏；亦見神奈川大學數位典藏" loading="lazy">
+        <img class="three" src="img/tour-6.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
+        <figcaption>神門、狛犬與銅馬。三森久子捐贈，壢中校史館藏；亦見神奈川大學數位典藏<br>小圖：3D 復原</figcaption>
+      </figure>
+      <div>
+        <p class="no">STOP 6 / 6</p>
+        <h3>神門、狛犬與銅馬</h3>
+        <p>神門前一對狛犬隔著參道相對，門左側是銅馬。鎮座祭當天的照片都看不到這座神門，它很可能是之後才增建的。</p>
+        <p class="now">今天：狛犬 1950 年移到中壢後火車站附近的義民廟（忠義祠），至今仍在；銅馬搬過好幾次，現在立在中央西路正門。</p>
+        <p class="en">The gate, the pair of stone lions and the bronze horse. The lions are now at the Yimin Temple; the horse stands at the school gate.</p>
+      </div>
+    </li>
+    </ol>
+  </section>
+
+  <figure class="inner">
+    <img src="img/axon-inner.png" width="1600" height="1070" alt="Line drawing of the inner precinct: the gate with stone lions and bronze horse, the worship hall with its curved roof and side wings, and the main sanctuary with crossed finials, inside a roofed fence" loading="lazy">
+    <figcaption>內苑：神門、拜殿與本殿（3D 復原線稿） · The inner precinct</figcaption>
+  </figure>
 
   <figure class="photo">
     <img src="app/assets/models/horse/current.jpg" width="966" height="724" alt="The bronze horse today, painted grey-brown on a white plinth in front of the school buildings" loading="lazy">
@@ -196,29 +302,6 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 
   <section class="text">
     <div lang="zh-Hant">
-      <h2>照片比對：神門是後來增建的嗎？</h2>
-      <p>3D 復原時，把老照片逐張對到模型上（以參拜道實測寬 3.01 公尺為比例尺反求拍攝位置），發現照片分成兩組：<b>1939 年 10 月鎮座祭當天</b>拍的照片，中軸上都看不到神門；看得到神門的照片，則都沒有祭典場面。</p>
-      <div class="pgrid">
-        <figure class="no"><img src="app/photos/torii2-festival.jpg" alt="鎮座祭行列穿過第二鳥居" loading="lazy"><figcaption>鎮座祭行列：穿過第二鳥居，後方直接是石階、木柵與拜殿</figcaption></figure>
-        <figure class="no"><img src="app/photos/torii2-side.jpg" alt="第二鳥居側面" loading="lazy"><figcaption>第二鳥居側面：狛犬立在鳥居內側石階旁，不見神門</figcaption></figure>
-        <figure class="no"><img src="app/assets/photo-study/haiden-front.jpg" alt="鎮座祭拜殿正面" loading="lazy"><figcaption>拜殿正面（來賓帳篷）：反求拍攝點距石階約 29 公尺，前方無遮擋</figcaption></figure>
-        <figure class="yes"><img src="app/photos/gate.jpg" alt="神門與狛犬" loading="lazy"><figcaption>神門與狛犬，後方為拜殿（拍攝年代未知）</figcaption></figure>
-        <figure class="yes"><img src="app/photos/horse-komainu-gate.jpg" alt="銅馬合影" loading="lazy"><figcaption>銅馬合影：馬在神門左側，狛犬立在門柱前</figcaption></figure>
-        <figure class="yes"><img src="app/photos/gate-postwar.jpg" alt="神門前合影" loading="lazy"><figcaption>神門前合影：格子壁、桐紋幕（服裝看來為 1940 年代）</figcaption></figure>
-      </div>
-      <p style="font-size:12px;color:var(--ink-3)">照片：三森久子捐贈，壢中校史館藏；銅馬合影與神門前合影翻拍自校內展示。</p>
-      <p>紅框為看不到神門的照片，綠框為看得到神門的照片。鎮座祭那幾張的拍攝位置，正好落在配置圖上神門所在的位置附近；若當時已有神門，應該會擋在畫面正中央。狛犬的位置也不同：鎮座祭時在第二鳥居內側，其他照片中則在神門前。</p>
-      <p><b>暫定推論：</b>神門與屋根付玉垣的正面，是鎮座之後才增建，狛犬也隨之移到門前。3D 模型呈現的是增建後的配置。</p>
-      <p class="en" style="color:var(--ink-3)">待查證：銅馬說明牌寫此照為「昭和十四年（1939）初落成時」，與上述推論不一致，可能是說明牌年代較籠統；也還沒有找到神門興建年代的文獻。如有資料，歡迎指正。</p>
-    </div>
-    <div lang="en">
-      <h2>Was the gate added later?</h2>
-      <p class="en">Matching the old photographs to the model splits them into two groups. The photographs taken at the consecration in October 1939 show no gate on the axis: the procession walks through the second torii straight to the steps and the worship hall, and the photographer of the frontal view stood where the plan puts the gate. Every photograph that does show the gate has no ceremony in it. The working reading is that the gate and the front of the fence were added after 1939 and the stone lions moved in front of it; the model shows that later layout. One caption dates a gate photograph to 1939, so this is still open.</p>
-    </div>
-  </section>
-
-  <section class="text">
-    <div lang="zh-Hant">
       <h2>參考資料</h2>
       <ol class="refs">
         <li>羅偉源，中壢神社配置考證（手繪配置圖）：各建物相對位置的依據</li>
@@ -230,6 +313,9 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
         <li>鎮座祭老照片：三森久子捐贈，壢中校史館藏</li>
         <li><a href="https://www.kanagawa-u.ac.jp/research/digitalarchive/">神奈川大學數位典藏</a>「<a href="https://www.i-repository.net/il/meta_pub/G0000723kaigaijinja_4828">海外神社（跡地）に関するデータベース</a>」</li>
         <li>簡報《壢中簡史與中壢神社》</li>
+        <li>1947.09.05 舊航照（任務編號 47M7045、照片編號 022），臺灣早期舊航照影像查詢系統，中研院 GIS 中心提供</li>
+        <li>南大門（原第一鳥居）照片：藍清水校長提供，劉金鐘家族、吳慕舉校長相片</li>
+        <li>狛犬現況：中壢義民廟（忠義祠）；銅馬現況：壢中中央西路正門</li>
       </ol>
     </div>
     <div lang="en">
@@ -240,7 +326,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 
   <dl class="data">
     <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
-    <dt>Medium</dt><dd>three.js（依老照片程式建構）；初版 Tinkercad<span>Built in code from old photographs; first version in Tinkercad</span></dd>
+    <dt>Medium</dt><dd>three.js；初版 Tinkercad<span>Web 3D; first version in Tinkercad</span></dd>
     <dt>Base maps</dt><dd>內政部國土測繪中心 航照與電子地圖<span>NLSC aerial photo and e-map</span></dd>
     <dt>Aerial 1947</dt><dd>1947.09.05 舊航照，任務編號 47M7045、照片編號 022（中壢市區），臺灣早期舊航照影像查詢系統；原圖由中研院 GIS 中心提供<span>1947 aerial photo, mission 47M7045, frame 022, courtesy of the Academia Sinica GIS Center</span></dd>
     <dt>Old maps</dt><dd>中央研究院 臺灣百年歷史地圖<span>Academia Sinica, Taiwan historical maps</span></dd>
@@ -251,9 +337,9 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <dt>Front hall</dt><dd>神社前殿：羅○翎、鄭○軒、邱○捷</dd>
     <dt>Torii, path</dt><dd>鳥居參道：周○航、張○丞、梁○安</dd>
     <dt>First torii</dt><dd>南大門（原第一鳥居）照片：藍清水校長提供，劉金鐘家族、吳慕舉校長相片<span>Photograph courtesy of Principal Lan Ching-shui, from the Liu Chin-chung family and Principal Wu Mu-chü</span></dd>
+    <dt>Scans</dt><dd>狛犬、銅馬為現存實物 3D 掃描<span>Stone lion and bronze horse are 3D scans of the surviving pieces</span></dd>
     <dt>Photos</dt><dd>三森久子捐贈，壢中校史館藏<span>Donated by Mimori Hisako, school history room</span></dd>
     <dt>Purpose</dt><dd>非營利教育用途，希望讓大家更重視自己生活周遭的歷史。<span>Non-commercial, for education and local history.</span></dd>
-    <dt>Scale</dt><dd>以公尺呈現。拜殿尺寸由正面照反推（參拜道實測寬 3.01 公尺＝約 8 塊 38×78 公分石板）；神門、狛犬、玉垣與各建築距離由神門照片反推（以拜殿為比例尺，同時解出拍攝位置，疊合誤差約 13 像素）；銅馬為 3D 掃描（連台座高 3.10 公尺）；神社中軸依殘段實測方位 308°。<span>In metres. The worship hall is sized from a frontal photo using the measured 3.01 m path; the gate, guardian lions, fence and distances are solved from the gate photo, with the hall as the scale.</span></dd>
     <dt>Note</dt><dd>模型依配置圖、老照片與少數實測推估，並非測繪復原；照片沒拍到的部分（如拜殿深度、本殿背面、社務所）為推估；位置誤差約 5–20 公尺，高程為手機量測（約 ±3 公尺）。<span>An estimate from the plan, old photographs and a few site measurements, not a survey.</span></dd>
   </dl>
 </main>
