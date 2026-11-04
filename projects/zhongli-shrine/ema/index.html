@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>中壢神社 心願繪馬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap">
+<style>
+  :root { --paper:#efeadf; --ink:#2b2a27; --ink2:#5f5a52; --red:#8f2a2a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:400 15px/1.7 "Noto Serif TC", serif; }
+  main { max-width: 600px; margin: 0 auto; padding: 24px 16px 48px; display:flex; flex-direction:column; gap:14px; align-items:center; }
+  h1 { margin:0; font-size:20px; font-weight:600; letter-spacing:.12em; }
+  p { margin:0; }
+  .note { font-size:13px; color:var(--ink2); text-align:center; }
+  canvas { width:100%; max-width:560px; height:auto; display:block; }
+  .btns { display:flex; flex-wrap:wrap; gap:10px; width:100%; max-width:560px; }
+  .btns a, .btns button { flex:1 1 140px; min-height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; text-decoration:none; font:inherit; font-size:15px; cursor:pointer; }
+  .primary { background:var(--ink); color:var(--paper); border:none; }
+  .ghost { border:1.5px solid var(--ink); color:var(--ink); background:transparent; }
+  .err { color:var(--red); }
+</style>
+</head>
+<body>
+<main>
+  <h1>心願繪馬</h1>
+  <canvas id="ema" aria-label="你的心願繪馬"></canvas>
+  <p class="note" id="side">背面：你的祈願與考證合格章</p>
+  <div class="btns">
+    <button class="ghost" id="flip" type="button">翻到正面</button>
+    <a class="primary" id="dl" href="#" download="中壢神社繪馬.png">下載這一面</a>
+  </div>
+  <div class="btns">
+    <a class="ghost" id="wall" href="wall.html">到繪馬牆找我的繪馬</a>
+    <a class="ghost" href="../app/">回到神社</a>
+  </div>
+  <p class="note">中壢神社 古今對照 · 心願繪馬為當代教育活動的參與創作，非宗教物件</p>
+</main>
+<script type="module">
+import { drawFront, drawBack, readHash } from './ema.js';
+addEventListener('hashchange', () => location.reload());
+const d = readHash(), cv = document.getElementById('ema');
+let front = false;
+async function show() {
+  await (front ? drawFront : drawBack)(cv, d);
+  document.getElementById('dl').href = cv.toDataURL('image/png');
+  document.getElementById('flip').textContent = front ? '翻到背面' : '翻到正面';
+  document.getElementById('side').textContent = front ? '正面：中壢神社中軸彩繪' : '背面：你的祈願與考證合格章';
+}
+if (!d || !d.no) {
+  const s = document.getElementById('side'); s.textContent = '這個連結少了資料。請用信裡的「領取我的繪馬」按鈕開啟。'; s.className = 'note err';
+} else {
+  document.getElementById('wall').href = 'wall.html?no=' + encodeURIComponent(d.no);
+  document.getElementById('flip').onclick = () => { front = !front; show(); };
+  show();
+}
+</script>
+</body>
+</html>
