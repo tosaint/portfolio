@@ -8,7 +8,7 @@
 <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.core.js">
 <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js">
 <link rel="modulepreload" href="./shrine-proc.js">
-<link rel="preload" as="image" href="./assets/chochin-text.png">
+<link rel="preload" as="image" href="./assets/chochin-text-2.png">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 <style>
@@ -147,7 +147,7 @@
   #loading b { font-size:24px; letter-spacing:.3em; }
   /* 載入畫面：用燈籠上描下的「中壢神社」墨跡當遮罩，填成紙色（與燈籠共用同一張圖，之後載入燈籠時直接取用快取） */
   #loading b.brush { width:66px; height:154px; background:var(--paper);
-    -webkit-mask:url(./assets/chochin-text.png) center/contain no-repeat; mask:url(./assets/chochin-text.png) center/contain no-repeat; }
+    -webkit-mask:url(./assets/chochin-text-2.png) center/contain no-repeat; mask:url(./assets/chochin-text-2.png) center/contain no-repeat; }
   @supports not ((mask-image:url(x)) or (-webkit-mask-image:url(x))) { #loading b.brush::before { content:'中壢神社'; } #loading b.brush { background:none; width:auto; height:auto; } }
   #loading small { color:#b8ae98; }
 </style>
@@ -205,6 +205,6 @@
 <div id="toast"></div>
 <div id="loading"><b class="brush" aria-label="中壢神社"></b><small id="loadMsg">模型載入中…</small></div>
 
-<script type="module" src="./main.js?v=20261104e"></script>
+<script type="module" src="./main.js?v=20261104g"></script>
 </body>
 </html>
