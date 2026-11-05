@@ -4,7 +4,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { buildShrine, LV, DIMS, GATE_Y, KOMA_POS, KOMA_PED, HORSE, setOnAsset, treeOK, approachPts } from './shrine-proc.js?v=20261104t';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { LANTERN_API } from './lantern-config.js?v=1';
+import { LANTERN_API } from './lantern-config.js?v=2';
 // 掃描檔已用 meshopt 壓縮、只留顏色貼圖；材質改成 Lambert，手機算得比較輕
 const gltf = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 // 掃描物不用照片貼圖（顏色偏暗、與周圍風格不一），改成與建築一致的單色材質，只保留造形
@@ -821,6 +821,7 @@ function go(i) {
   renderStopText();
   $('#prev').disabled = stopIndex === 0; $('#prev').style.opacity = stopIndex === 0 ? .4 : 1;
   $('#next').textContent = stopIndex === STOPS.length - 1 ? '結束導覽' : '下一站';
+  $('#giftLink').style.display = stopIndex === STOPS.length - 1 ? 'block' : 'none';
   $('#slider2').classList.toggle('show', !!s.photo);
   const th = $('#thumbs'); th.innerHTML = '';
   (s.thumbs || []).forEach(([src, cap]) => {
