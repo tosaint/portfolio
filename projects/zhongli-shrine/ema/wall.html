@@ -57,7 +57,7 @@
 </dialog>
 <script type="module">
 import { drawFront, drawBack } from './ema.js';
-import { EMA_API } from './config.js';
+import { EMA_API } from './config.js?v=2';
 const api = new URLSearchParams(location.search).get('api') || EMA_API;
 const mine = new URLSearchParams(location.search).get('no');
 const wall = document.getElementById('wall');
