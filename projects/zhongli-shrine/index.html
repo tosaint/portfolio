@@ -101,6 +101,52 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 .inner { margin: clamp(24px, 4vw, 48px) 0; }
 .inner img { width: 100%; height: auto; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
 .inner figcaption { margin-top: 8px; font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+
+/* 參與：領取紀念 */
+.part { padding-block: clamp(28px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.part .intro { max-width: 640px; margin: 0 0 22px; }
+.pcards { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; }
+.pcard { border:1px solid var(--rule); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+.pcard .step { font:400 11px var(--mono); letter-spacing:.16em; color:#9a3b30; }
+.pcard h3 { margin:0; font:500 21px/1.4 var(--serif); letter-spacing:.1em; }
+.pcard p { margin:0; font-size:15px; }
+.pcard .how { color:var(--ink-2); font-size:14px; }
+.pcard .count { color:#9a3b30; font-size:14px; font-weight:500; min-height:1.5em; }
+.pcard .go { margin-top:auto; min-height:46px; border-radius:12px; border:none; background:var(--ink); color:var(--paper); font:inherit; font-size:15px; cursor:pointer; }
+.pcard .sub { min-height:44px; border-radius:12px; border:1.5px solid var(--ink); color:var(--ink); display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:15px; }
+.pcard .alt { font-size:12px; color:var(--ink-3); text-align:center; }
+.pfig { position:relative; margin:-20px -20px 4px; height:280px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.pfig .tag { position:absolute; top:10px; left:10px; font:400 11px var(--mono); letter-spacing:.16em; background:rgba(43,42,39,.72); color:#f6f2ea; padding:2px 8px; border-radius:6px; }
+.f-omamori { background:#e9e2d2; } .f-ema { background:#efeadf; gap:8px; padding:0 12px; } .f-lan { background:#0d1526; }
+.phone { width:122px; border:6px solid #2b2a27; border-radius:22px; overflow:hidden; box-shadow:0 10px 24px rgba(40,30,20,.25); }
+.phone img, .f-ema img { display:block; width:100%; height:auto; }
+.f-ema .front { width:64%; } .f-ema .back { width:34%; align-self:flex-end; margin-bottom:40px; }
+.f-lan .wide { width:100%; height:100%; object-fit:cover; display:block; }
+.f-lan .close { position:absolute; right:10px; bottom:10px; width:104px; height:104px; border-radius:10px; border:2px solid #f3d38f; object-fit:cover; }
+.part .fine { margin-top:18px; font-size:13px; color:var(--ink-2); }
+#pDlg { border:none; padding:0; border-radius:18px; width:min(560px, 100vw); max-height:min(88vh, 900px); background:var(--paper); color:var(--ink); }
+#pDlg::backdrop { background:rgba(20,18,15,.6); }
+#pDlg .p-top { position:sticky; top:0; z-index:1; display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:var(--paper); border-bottom:1px solid var(--rule); }
+#pDlg .p-top h2 { margin:0; font:500 18px var(--serif); letter-spacing:.1em; }
+#pDlg .p-x { width:44px; height:44px; border:none; background:none; font-size:22px; color:var(--ink); cursor:pointer; }
+#pBody { padding:6px 18px 22px; overflow:auto; max-height:calc(min(88vh, 900px) - 74px); }
+.p-q { border:none; margin:16px 0 0; padding:0; }
+.p-q legend, .p-lab { display:block; font-weight:500; font-size:15px; margin-bottom:6px; padding:0; }
+.p-hint { margin:0 0 6px; font-size:13px; color:var(--ink-2); }
+.p-intro { margin-top:14px; }
+.p-q input:not([type=radio]), .p-q textarea { width:100%; box-sizing:border-box; min-height:46px; border:1px solid var(--rule); border-radius:10px; padding:10px 12px; font:inherit; font-size:16px; background:transparent; color:var(--ink); }
+.p-hp { position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
+.p-opts { display:flex; flex-direction:column; gap:6px; }
+.p-opts label, .p-scale label { display:flex; align-items:center; gap:10px; min-height:44px; padding:0 12px; border:1px solid var(--rule); border-radius:10px; cursor:pointer; font-size:15px; }
+.p-opts label:has(input:checked), .p-scale label:has(input:checked) { border-color:var(--ink); background:rgba(127,120,105,.12); }
+.p-scale { display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; color:var(--ink-2); }
+.p-scale label { padding:0 10px; color:var(--ink); }
+.p-two { display:flex; gap:10px; } .p-two label { flex:1; display:flex; flex-direction:column; gap:4px; font-size:14px; }
+.p-err { color:#b23a2a; min-height:1.4em; margin:14px 0 0; font-size:14px; }
+.p-send { width:100%; min-height:48px; margin-top:8px; border:none; border-radius:12px; background:var(--ink); color:var(--paper); font:inherit; font-size:16px; cursor:pointer; }
+.p-send:disabled { opacity:.6; }
+.p-done { padding:20px 0 4px; } .p-done h3 { margin:0 0 8px; font:500 20px var(--serif); } .p-done a { color:#9a3b30; }
+@media (max-width: 600px) { #pDlg { width:100vw; max-width:100vw; margin:auto 0 0; border-radius:18px 18px 0 0; max-height:92vh; } #pBody { max-height:calc(92vh - 74px); } }
 @media (max-width: 760px) {
   .head, .text { grid-template-columns: 1fr; }
   .plan { justify-self: start; order: -1; }
@@ -257,6 +303,48 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     </ol>
   </section>
 
+  <section class="part" id="participate" aria-labelledby="parth">
+    <p class="eyebrow" id="parth" style="margin:0 0 10px">參與 · Take part</p>
+    <p class="intro">走完六站導覽之後，可以依自己想投入的程度領取三種紀念，每一種都是獨立的，不必全部完成。直接在這裡填寫、送出，紀念會寄到你的信箱。</p>
+    <div class="pcards">
+      <section class="pcard">
+        <figure class="pfig f-omamori"><span class="tag">示意</span><div class="phone"><img src="gifts/img/omamori.jpg" width="400" height="866" alt="導覽紀念御守手機桌布範例：朱紅御守上有社紋與書法「中壢神社」，旁邊直書暱稱「生活科技」與一句話" loading="lazy"></div></figure>
+        <span class="step">看過 · 約 3 分鐘</span>
+        <h3>導覽紀念御守</h3>
+        <p>寫下導覽心得與一句想留給這個地方的話，就會收到一張印著你名字的御守手機桌布。</p>
+        <p class="count" id="cOmamori"></p>
+        <button class="go" type="button" data-open="omamori">填寫導覽心得</button>
+        <a class="alt" href="https://docs.google.com/forms/d/e/1FAIpQLSegihXvWg-kDtl1ZFdxltcRa1j3n1lGzHzPlWD_In4IrEpafw/viewform" target="_blank" rel="noopener">改用 Google 表單填寫</a>
+      </section>
+      <section class="pcard">
+        <figure class="pfig f-ema"><span class="tag">示意</span><img class="front" src="gifts/img/ema-front.jpg" width="700" height="615" alt="心願繪馬正面範例：木牌上畫著中壢神社中軸彩繪與書法「中壢神社」" loading="lazy"><img class="back" src="gifts/img/ema-back.jpg" width="420" height="369" alt="心願繪馬背面範例：直書祈願、暱稱「生活科技」與朱色「考證合格」章" loading="lazy"></figure>
+        <span class="step">看懂 · 10 題考證</span>
+        <h3>心願繪馬</h3>
+        <p>題目都出自六站導覽，答對 6 題就能領取心願繪馬。同意公開的話，會掛上繪馬牆。</p>
+        <p class="count" id="cEma"></p>
+        <button class="go" type="button" data-open="ema">參加考證測驗</button>
+        <a class="sub" href="ema/wall.html">看繪馬牆</a>
+        <a class="alt" href="https://docs.google.com/forms/d/e/1FAIpQLSdblN4vAAiCYv-s0G9C2uKw4vh2WyyKPoghw-3vcUsyK7c6-A/viewform" target="_blank" rel="noopener">改用 Google 表單填寫</a>
+      </section>
+      <section class="pcard">
+        <figure class="pfig f-lan"><span class="tag">示意</span><img class="wide" src="gifts/img/lantern-wide.jpg" width="900" height="630" alt="夜間 3D 外參道兩側的燈籠架，一排排燈籠亮著" loading="lazy"><img class="close" src="gifts/img/lantern-close.jpg" width="320" height="320" alt="近看一盞燈籠，上面直書暱稱「生活科技」" loading="lazy"></figure>
+        <span class="step">走過 · 三處實地踏查</span>
+        <h3>心願燈籠</h3>
+        <p>親自到銅馬（中央西路正門）、拜殿前的地磚遺跡、義民廟（忠義祠）的狛犬拍照，並量一塊地磚的大小。老師確認後，你的燈籠會點亮在 3D 神社的外參道。</p>
+        <p class="count" id="cLan"></p>
+        <button class="go" type="button" data-open="lantern">上傳踏查紀錄</button>
+        <a class="sub" href="app/">到 3D 參道看燈籠</a>
+        <a class="alt" href="https://docs.google.com/forms/d/e/1FAIpQLScPXhoP4CTn6RUJwKJg8LqFI6lfYDHIAFvp7Q-zRbn3GVgpHw/viewform" target="_blank" rel="noopener">改用 Google 表單填寫</a>
+      </section>
+    </div>
+    <p class="fine">御守、繪馬、燈籠都是當代教育活動的參與創作，不是宗教物件，也不是中壢神社原有的設施。公開與否由你自己選擇；繪馬牆上不適當的內容老師會撤下，燈籠經老師確認後點亮。Email 只用來寄送紀念，不會公開。</p>
+  </section>
+  <dialog id="pDlg" aria-labelledby="pTitle">
+    <div class="p-top"><h2 id="pTitle"></h2><button class="p-x" id="pClose" type="button" aria-label="關閉">✕</button></div>
+    <div id="pBody"></div>
+  </dialog>
+
+
   <figure class="photo">
     <img src="app/assets/models/horse/current.jpg" width="966" height="724" alt="The bronze horse today, painted grey-brown on a white plinth in front of the school buildings" loading="lazy">
     <figcaption>神馬今日 · The bronze horse today</figcaption>
@@ -338,5 +426,6 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <dt>Note</dt><dd>模型依配置圖、老照片與少數實測推估，並非測繪復原；照片沒拍到的部分（如拜殿深度、本殿背面、社務所）為推估；位置誤差約 5–20 公尺，高程為手機量測（約 ±3 公尺）。<span>An estimate from the plan, old photographs and a few site measurements, not a survey.</span></dd>
   </dl>
 </main>
+<script type="module" src="participate/participate.js?v=1"></script>
 </body>
 </html>
