@@ -814,7 +814,7 @@ function addLanternChip() {
 function openLantern(L) {
   $('#cardBody').innerHTML = `<span class="tag" style="background:#8f2a2a">心願燈籠</span><h2>No.${esc(L.no)}　${esc(L.n || '')}</h2>` +
     (L.w ? `<p class="lead">「${esc(L.w)}」</p>` : '') +
-    `<p>完成銅馬、拜殿前地磚遺跡、義民廟狛犬三處實地踏查，點亮於 ${esc(L.d || '')}。</p>` +
+    (L.t ? `<p>由老師代為點亮，${esc(L.d || '')}。</p>` : `<p>完成銅馬、拜殿前地磚遺跡、義民廟狛犬三處實地踏查，點亮於 ${esc(L.d || '')}。</p>`) +
     `<p class="caveat">心願燈籠為當代教育活動的參與創作，並非中壢神社原有的設施。</p>`;
   $('#card').scrollTop = 0; $('#card').classList.add('open');
 }
