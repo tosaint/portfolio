@@ -703,38 +703,104 @@ async function loadLanterns() {
   buildLanterns(items);
   const m = location.hash.match(/lantern-(\d+)/); if (m) focusLantern(m[1]);
 }
+// 名字字卡：所有暱稱寫在同一張貼圖（每格 40×120 像素、直書），燈籠面向參道的那一面取自己那一格
+const CELL_W = 40, CELL_H = 120, ATLAS_W = 2048, ATLAS_COLS = Math.floor(ATLAS_W / CELL_W);
+function nameAtlas(items) {
+  const rows = Math.max(1, Math.ceil(items.length / ATLAS_COLS)), H = rows * CELL_H;
+  const c = document.createElement('canvas'); c.width = ATLAS_W; c.height = H; const x = c.getContext('2d');
+  x.fillStyle = '#1c1410'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  items.forEach((it, i) => {
+    const ch = [...(it.n || '')]; if (!ch.length) return;
+    const col = i % ATLAS_COLS, row = Math.floor(i / ATLAS_COLS), fs = Math.min(34, Math.floor((CELL_H - 8) / ch.length));
+    x.font = `600 ${fs}px "Noto Serif TC", "Songti TC", serif`;
+    const y0 = row * CELL_H + (CELL_H - fs * ch.length) / 2 + fs / 2;
+    ch.forEach((k, j) => x.fillText(k, col * CELL_W + CELL_W / 2, y0 + j * fs));
+  });
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; t.generateMipmaps = true;
+  return { tex: t, rows, H };
+}
 function buildLanterns(items) {
   const P = approachPts().map(([x, y]) => new THREE.Vector2(x, -y)), seg = [0];
   for (let i = 1; i < P.length; i++) seg.push(seg[i - 1] + P[i].distanceTo(P[i - 1]));
-  const L = seg[seg.length - 1], at = d => { let i = Math.max(1, seg.findIndex(v => v >= d)); const t = (d - seg[i - 1]) / (seg[i] - seg[i - 1] || 1);
-    return { p: P[i - 1].clone().lerp(P[i], t), dir: P[i].clone().sub(P[i - 1]).normalize() }; };
+  const L = seg[seg.length - 1], at = d => { let i = seg.findIndex(v => v >= d); i = i < 0 ? P.length - 1 : Math.max(1, i); const t = (d - seg[i - 1]) / (seg[i] - seg[i - 1] || 1);
+    return { p: P[i - 1].clone().lerp(P[i], Math.min(1, Math.max(0, t))), dir: P[i].clone().sub(P[i - 1]).normalize() }; };
   const avoid = ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'B1'].map(id => shrine.boxes.get(id)).filter(Boolean).map(b => { const c = b.getCenter(new THREE.Vector3()); return new THREE.Vector2(c.x, c.z); });
-  const slots = [];
-  for (let d = 14; d < L - 14 && slots.length < items.length; d += 1.7) {      // 左右交錯，同側約 3.4 公尺一盞
-    const side = slots.length % 2 ? 1 : -1, { p, dir } = at(d), n = new THREE.Vector2(-dir.y, dir.x).multiplyScalar(side);
-    const q = p.clone().addScaledVector(n, 5.0);
+  const faceOf = n => Math.atan2(-n.x, -n.y);              // 讓局部 +z 朝向參道中線
+  const sorted = items.slice().sort((a, b) => Number(a.no) - Number(b.no));
+  const postItems = sorted.filter(it => it.p), rackItems = sorted.filter(it => !it.p);
+  // 立柱：參道旁 5.0 公尺，左右交錯，同側約 3.4 公尺一盞
+  const postSlots = [];
+  for (let d = 14; d < L - 14 && postSlots.length < postItems.length; d += 1.7) {
+    const side = postSlots.length % 2 ? 1 : -1, { p, dir } = at(d), n = new THREE.Vector2(-dir.y, dir.x).multiplyScalar(side), q = p.clone().addScaledVector(n, 5.0);
     if (avoid.some(a => a.distanceTo(q) < 2.2)) continue;
-    slots.push({ x: q.x, z: q.y, face: Math.atan2(-n.x, -n.y) });
+    postSlots.push({ x: q.x, z: q.y, face: faceOf(n) });
   }
-  const N = Math.min(slots.length, items.length); if (!N) return;
-  // 一盞：木柱 1.9 公尺＋朝參道的橫木，下掛圓燈籠
-  const post = mergeGeometries([new THREE.BoxGeometry(0.08, 1.9, 0.08).translate(0, 0.95, 0), new THREE.BoxGeometry(0.06, 0.06, 0.5).translate(0, 1.86, 0.22)]);
+  // 燈籠架：參道旁 6.8 公尺、立柱後方；每架 5.4 公尺、上下 2 層、每層 6 盞（間距 0.9 公尺）；左右兩側交替往第二鳥居方向排
+  const BAY = 5.4, PER = 6, TIERS = [1.62, 2.42], bays = [];
+  const need = Math.ceil(rackItems.length / (PER * TIERS.length));
+  for (let d = 14; d + BAY < L - 14 && bays.length < need; d += BAY) for (const side of [-1, 1]) {
+    if (bays.length >= need) break;
+    const a0 = at(d), a1 = at(d + BAY), n0 = new THREE.Vector2(-a0.dir.y, a0.dir.x).multiplyScalar(side), n1 = new THREE.Vector2(-a1.dir.y, a1.dir.x).multiplyScalar(side);
+    const q0 = a0.p.clone().addScaledVector(n0, 6.8), q1 = a1.p.clone().addScaledVector(n1, 6.8);
+    if (avoid.some(a => a.distanceTo(q0) < 1.6 || a.distanceTo(q1) < 1.6)) continue;
+    const t = q1.clone().sub(q0), len = t.length(); t.normalize();
+    const toPath = new THREE.Vector2(-t.y, t.x); if (toPath.dot(n0) > 0) toPath.negate();   // 朝參道
+    bays.push({ q0, t, len, ang: Math.atan2(-t.y, t.x), face: faceOf(toPath.clone().negate()) });
+  }
+  const rackSlots = [];
+  bays.forEach(b => TIERS.forEach(h => { for (let k = 0; k < PER; k++) { const q = b.q0.clone().addScaledVector(b.t, (k + 0.5) * b.len / PER); rackSlots.push({ x: q.x, z: q.y, y: h, face: b.face }); } }));
+  const placed = [];
+  postItems.slice(0, postSlots.length).forEach((it, i) => placed.push({ it, s: postSlots[i], post: true }));
+  rackItems.slice(0, rackSlots.length).forEach((it, i) => placed.push({ it, s: rackSlots[i], post: false }));
+  const N = placed.length; if (!N) return;
+  // 造型（簡化）：六角燈身＋上下黑口；立柱與燈籠架分開兩個網格
   const prof = [[0.08, 0], [0.15, 0.05], [0.17, 0.14], [0.17, 0.28], [0.15, 0.37], [0.08, 0.42]].map(([r, h]) => new THREE.Vector2(r, h));
-  const body = new THREE.LatheGeometry(prof, 10).translate(0, 1.3, 0.42);
-  const caps = mergeGeometries([new THREE.CylinderGeometry(0.085, 0.085, 0.05, 10).translate(0, 1.3, 0.42), new THREE.CylinderGeometry(0.085, 0.085, 0.05, 10).translate(0, 1.72, 0.42),
-                                new THREE.CylinderGeometry(0.006, 0.006, 0.12, 4).translate(0, 1.79, 0.42)]);
+  const body = new THREE.LatheGeometry(prof, 6, -Math.PI / 6);      // 一個平面正對 +z（寫名字的那一面）
+  const caps = mergeGeometries([new THREE.CylinderGeometry(0.085, 0.085, 0.05, 6).translate(0, 0, 0), new THREE.CylinderGeometry(0.085, 0.085, 0.05, 6).translate(0, 0.42, 0),
+                                new THREE.CylinderGeometry(0.006, 0.006, 0.14, 3).translate(0, 0.51, 0)]);
+  const atlas = nameAtlas(placed.map(p => p.it));
   lanMat = new THREE.MeshLambertMaterial({ color: 0xf5e6c4, emissive: 0x3a3328 });
-  const meshes = [[post, new THREE.MeshLambertMaterial({ color: 0x6b4a2f })], [body, lanMat], [caps, new THREE.MeshLambertMaterial({ color: 0x1d1814 })]]
-    .map(([g, m]) => new THREE.InstancedMesh(g, m, N));
-  const m4 = new THREE.Matrix4(), qt = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), one = new THREE.Vector3(1, 1, 1);
-  lanSlots = [];
-  for (let i = 0; i < N; i++) {
-    const s = slots[i], y = groundH; qt.setFromAxisAngle(up, s.face); m4.compose(new THREE.Vector3(s.x, y, s.z), qt, one);
-    meshes.forEach(me => me.setMatrixAt(i, m4));
-    const lp = new THREE.Vector3(0, 1.51, 0.42).applyQuaternion(qt).add(new THREE.Vector3(s.x, y, s.z));
-    lanSlots.push({ ...items[i], pos: lp });
-  }
-  meshes.forEach(me => { me.instanceMatrix.needsUpdate = true; me.computeBoundingSphere(); scene.add(me); fadeMats.push(me.material); });
+  lanMat.defines = { USE_UV: '' };
+  lanMat.onBeforeCompile = sh => {
+    sh.uniforms.uAtlas = { value: atlas.tex }; sh.uniforms.uCell = { value: new THREE.Vector2(CELL_W / ATLAS_W, CELL_H / atlas.H) };
+    sh.vertexShader = 'attribute vec2 aCell;\nvarying vec2 vCell;\n' + sh.vertexShader.replace('#include <uv_vertex>', '#include <uv_vertex>\n  vCell = aCell;');
+    sh.fragmentShader = 'uniform sampler2D uAtlas;\nuniform vec2 uCell;\nvarying vec2 vCell;\n' + sh.fragmentShader
+      .replace('#include <map_fragment>', `#include <map_fragment>
+  float inkA = 0.0;
+  float fu = vUv.x * 6.0;
+  if (fu < 1.0 && vUv.y > 0.12 && vUv.y < 0.88) {
+    vec2 st = vec2(fu, (vUv.y - 0.12) / 0.76);
+    inkA = texture2D(uAtlas, vCell + st * uCell).a;
+    diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.09, 0.06, 0.04), inkA);
+  }`)
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n  totalEmissiveRadiance *= (1.0 - 0.88 * inkA);');
+  };
+  const cell = new Float32Array(N * 2);
+  placed.forEach((p, i) => { const col = i % ATLAS_COLS, row = Math.floor(i / ATLAS_COLS); cell[i * 2] = col * CELL_W / ATLAS_W; cell[i * 2 + 1] = 1 - (row + 1) * CELL_H / atlas.H; });
+  body.setAttribute('aCell', new THREE.InstancedBufferAttribute(cell, 2));
+  const bodyM = new THREE.InstancedMesh(body, lanMat, N), capM = new THREE.InstancedMesh(caps, new THREE.MeshLambertMaterial({ color: 0x1d1814 }), N);
+  const wood = new THREE.MeshLambertMaterial({ color: 0x8a6a48 });            // 素木色
+  const nPost = placed.filter(p => p.post).length;
+  const postG = mergeGeometries([new THREE.BoxGeometry(0.08, 1.9, 0.08).translate(0, 0.95, 0), new THREE.BoxGeometry(0.06, 0.06, 0.5).translate(0, 1.86, 0.22)]);
+  const postM = nPost ? new THREE.InstancedMesh(postG, wood, nPost) : null;
+  // 一架：兩端立柱、頂部笠木、兩層橫木（局部 x 沿參道）
+  const bayG = l => mergeGeometries([new THREE.BoxGeometry(0.1, 2.75, 0.1).translate(0, 1.375, 0), new THREE.BoxGeometry(0.1, 2.75, 0.1).translate(l, 1.375, 0),
+    new THREE.BoxGeometry(l + 0.4, 0.09, 0.16).translate(l / 2, 2.78, 0), ...TIERS.map(h => new THREE.BoxGeometry(l, 0.06, 0.06).translate(l / 2, h + 0.06, 0))]);
+  const rackM = bays.length ? new THREE.InstancedMesh(bayG(BAY), wood, bays.length) : null;
+  const m4 = new THREE.Matrix4(), qt = new THREE.Quaternion(), up = new THREE.Vector3(0, 1, 0), one = new THREE.Vector3(1, 1, 1), y0 = groundH;
+  lanSlots = []; let pi = 0;
+  placed.forEach((p, i) => {
+    const s = p.s; qt.setFromAxisAngle(up, s.face);
+    let lp;
+    if (p.post) {
+      m4.compose(new THREE.Vector3(s.x, y0, s.z), qt, one); postM.setMatrixAt(pi++, m4);
+      lp = new THREE.Vector3(0, 1.3, 0.42).applyQuaternion(qt).add(new THREE.Vector3(s.x, y0, s.z));
+    } else lp = new THREE.Vector3(s.x, y0 + s.y - 0.58, s.z);
+    m4.compose(lp, qt, one); bodyM.setMatrixAt(i, m4); capM.setMatrixAt(i, m4);
+    lanSlots.push({ ...p.it, pos: lp.clone().add(new THREE.Vector3(0, 0.21, 0)), face: s.face });
+  });
+  bays.forEach((b, i) => { m4.compose(new THREE.Vector3(b.q0.x, y0, b.q0.y), qt.setFromAxisAngle(up, b.ang), new THREE.Vector3(b.len / BAY, 1, 1)); rackM.setMatrixAt(i, m4); });
+  [bodyM, capM, postM, rackM].filter(Boolean).forEach(me => { me.instanceMatrix.needsUpdate = true; me.computeBoundingSphere(); scene.add(me); fadeMats.push(me.material); });
   applyNightK(nightK); applyEra(); dirty = true;
   addLanternChip();
 }
@@ -762,8 +828,9 @@ function focusLantern(no) {
     lanGlow.material.opacity = 0.75; lanGlow.scale.set(0.95, 0.95, 1); scene.add(lanGlow);
   }
   lanGlow.position.copy(L.pos);
-  const back = new THREE.Vector3(0, 0, 0); { const i = lanSlots.indexOf(L), o = lanSlots[Math.min(lanSlots.length - 1, i + 2)] || L; back.copy(L.pos).sub(o.pos).setY(0).normalize(); }
-  const eye = L.pos.clone().addScaledVector(back.lengthSq() ? back : new THREE.Vector3(1, 0, 0), 7).add(new THREE.Vector3(0, 1.2, 0));
+  // 從參道上、正對燈籠寫名字的那一面看過去（稍微斜一點，看得到左右鄰居）
+  const f = new THREE.Vector3(Math.sin(L.face), 0, Math.cos(L.face)), side = new THREE.Vector3(f.z, 0, -f.x);
+  const eye = L.pos.clone().addScaledVector(f, 3.2).addScaledVector(side, 1.0).setY(groundH + 1.6);
   flyTo(eye, L.pos.clone(), baseFov, () => openLantern(L));
 }
 renderer.domElement.addEventListener('click', e => {
