@@ -4,6 +4,7 @@ import { EMA_QS } from './questions.js?v=1';
 import { OMAMORI_API } from '../gifts/config.js?v=1';
 import { EMA_API } from '../ema/config.js?v=2';
 import { LANTERN_API } from '../app/lantern-config.js?v=2';
+import { drawFront, drawBack } from '../ema/ema.js?v=3';
 
 const STOPS = ['第一鳥居：從中正路進來', '第二鳥居：鎮座祭行列', '石燈籠與社務所', '拜殿：「臺灣唯一」的檜皮葺', '本殿：最深處', '神門、狛犬與銅馬'];
 const $ = (s, r = document) => r.querySelector(s);
@@ -46,7 +47,7 @@ const FORMS = {
       field('是否同意把繪馬掛上公開的繪馬牆？', radios('publish', ['不公開，只要我自己的繪馬', '只公開暱稱', '暱稱與祈願都公開'])),
     payload: f => ({ answers: Object.fromEntries(EMA_QS.map(q => [q.id, (f.elements['q' + q.id] || {}).value || ''])) }),
     done: r => r.passed
-      ? `<h3>考證合格！答對 ${r.got} / ${r.total} 題</h3><p>你的心願繪馬已經寄到信箱。選擇公開的話，幾分鐘內會掛上<a href="ema/wall.html">繪馬牆</a>。</p>`
+      ? `<h3>考證合格！答對 ${r.got} / ${r.total} 題</h3><p>你的心願繪馬已經寄到信箱。選擇公開的話，幾分鐘內會掛上<a href="#ema-wall" data-wall>繪馬牆</a>。</p>`
       : `<h3>差一點！答對 ${r.got} / ${r.total} 題</h3><p>答對 ${r.pass || 6} 題就能領取繪馬。題目都在<a href="app/">六站導覽</a>裡，找到答案後再試一次（同一個 Email 一小時後可以再送）。</p>`,
   },
   lantern: {
@@ -129,6 +130,46 @@ document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click'
 $('#pClose').onclick = () => dlg.close();
 dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
 if (location.hash === '#participate-omamori' || location.hash === '#participate-ema' || location.hash === '#participate-lantern') open(location.hash.split('-')[1]);
+
+// ---- 繪馬牆（在說明頁內打開）：#ema-wall 或 #ema-wall-0128（自己那片排第一、亮紅框）----
+const wDlg = $('#wDlg'), wall = $('#wWall'), wList = $('#wList'), wOne = $('#wOne'), big = $('#wBig');
+let wAll = [], wMine = '', wCur = null, wFront = false, wLoaded = false;
+const perRow = () => wall.clientWidth >= 900 ? 6 : wall.clientWidth >= 520 ? 4 : 3;
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); drawBack(e.target, e.target._d, 0.9, true); } }), { root: wall, rootMargin: '200px' });
+function wRender(list) {
+  wall.innerHTML = ''; const n = perRow();
+  for (let i = 0; i < list.length; i += n) {
+    const rack = document.createElement('div'); rack.className = 'w-rack';
+    const row = document.createElement('div'); row.className = 'w-row'; row.style.setProperty('--n', n);
+    list.slice(i, i + n).forEach(d => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'w-ema' + (d.no === wMine ? ' me' : '');
+      b.setAttribute('aria-label', `No.${d.no} ${d.n || ''} ${d.w || ''}`);
+      const c = document.createElement('canvas'); c.dataset.base = 'ema/'; c._d = d; b.append(c); io.observe(c);
+      b.onclick = () => wShow(d); row.append(b);
+    });
+    rack.append(row); wall.append(rack);
+  }
+  if (!list.length) wall.innerHTML = `<p class="p-hint">${wAll.length ? '找不到符合的繪馬。' : (wLoaded ? '繪馬牆還沒有繪馬。' : '讀取中…')}</p>`;
+}
+function wShow(d) { wCur = d; wFront = false; big.dataset.base = 'ema/'; drawBack(big, d, 2); $('#wFlip').textContent = '翻到正面'; wList.hidden = true; wOne.hidden = false; }
+$('#wFlip').onclick = () => { wFront = !wFront; (wFront ? drawFront : drawBack)(big, wCur, 2); $('#wFlip').textContent = wFront ? '翻到背面' : '翻到正面'; };
+$('#wBack').onclick = () => { wOne.hidden = true; wList.hidden = false; };
+$('#wClose').onclick = () => wDlg.close();
+wDlg.addEventListener('click', e => { if (e.target === wDlg) wDlg.close(); });
+wDlg.addEventListener('close', () => { if (/^#ema-wall/.test(location.hash)) history.replaceState(null, '', location.pathname + '#participate'); });
+$('#wQ').oninput = e => { const q = e.target.value.trim(); wRender(q ? wAll.filter(d => (d.no || '').includes(q) || (d.n || '').includes(q)) : wAll); };
+async function openWall(no = '') {
+  wMine = no; wOne.hidden = true; wList.hidden = false; $('#wQ').value = '';
+  wDlg.showModal(); wRender([]);
+  try { const r = await fetch(EMA_API); wAll = (await r.json()).items || []; } catch (e) { wAll = []; wall.innerHTML = '<p class="p-hint">繪馬牆暫時讀不到資料，請稍後再試。</p>'; return; }
+  wLoaded = true;
+  $('#wCount').textContent = wAll.length ? `共 ${wAll.length} 片` : '';
+  if (wMine) { const i = wAll.findIndex(d => d.no === wMine); if (i > 0) wAll.unshift(...wAll.splice(i, 1)); }
+  wRender(wAll);
+}
+document.addEventListener('click', e => { const a = e.target.closest('[data-wall]'); if (!a) return; e.preventDefault(); if (dlg.open) dlg.close(); openWall(); });
+const fromHash = () => { const m = location.hash.match(/^#ema-wall(?:-(\d+))?$/); if (m) openWall(m[1] || ''); };
+addEventListener('hashchange', fromHash); fromHash();
 
 // ---- 即時人數（讀不到或 0 就不顯示）----
 const get = async (u, f) => { try { const r = await fetch(u); return f(await r.json()); } catch (e) { return null; } };
