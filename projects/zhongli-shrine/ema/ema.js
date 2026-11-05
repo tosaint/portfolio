@@ -1,12 +1,16 @@
 // 心願繪馬：正面（彩繪）與背面（祈願＋考證合格章）以 canvas 繪製。
 // 單位為設計稿的 560×480，S 倍輸出。資料 { n 暱稱, w 祈願, no 編號, d 日期, s 分數(如 "8/10") }
 export const EMA_W = 560, EMA_H = 480;
+const FIXED_TEXT = '心願繪馬中壢神社考證合格題No.0123456789 /';
+// 網路字型依字元分段載入：畫之前先指定要用到的字，否則 canvas 會先用系統字
+const fontsFor = d => Promise.all([document.fonts.load('400 22px "LXGW WenKai TC"', (d.w || '') + (d.n || '') + '　').catch(() => {}),
+  document.fonts.load('400 12px "Noto Serif TC"', FIXED_TEXT + (d.d || '')).catch(() => {}), document.fonts.load('900 22px "Noto Serif TC"', '考證合格').catch(() => {})]);
 const PL = { x: 50, y: 75, w: 460, h: 360 };          // 木牌外框
 const loadImg = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
 let assets = null;
 export async function loadAssets(base = './') {
   if (!assets) assets = Promise.all([loadImg(base + 'callig-ink.png'), loadImg(base + '../img/axon-core.png'), loadImg(base + 'kamon-ink.png'),
-    document.fonts.load('600 30px "Noto Serif TC"'), document.fonts.load('400 30px "LXGW WenKai TC"').catch(() => {})])
+    document.fonts.load('600 30px "Noto Serif TC"', FIXED_TEXT)])
     .then(([callig, axon, kamon]) => ({ callig, axon, kamon }));
   return assets;
 }
@@ -29,7 +33,7 @@ const hand = (size, w = 400) => `${w} ${size}px "LXGW WenKai TC", "Noto Serif TC
 const serif = (size, w = 400) => `${w} ${size}px "Noto Serif TC", serif`;
 
 export async function drawFront(canvas, d, S = 2.5, clear = false) {
-  const A = await loadAssets(canvas.dataset.base || './');
+  const A = await loadAssets(canvas.dataset.base || './'); await fontsFor(d);
   canvas.width = EMA_W * S; canvas.height = EMA_H * S; const x = canvas.getContext('2d'); x.setTransform(S, 0, 0, S, 0, 0);
   board(x, '#9c7445', '#dcc093', clear ? null : '#efeadf', 'rgba(70,50,25,0.25)');
   const cw = 50; x.drawImage(A.callig, 84, 171, cw, cw * A.callig.height / A.callig.width);
@@ -48,7 +52,7 @@ function vcol(x, s, cx, y0, size, step, font, color) {
   [...s].forEach((ch, i) => { const y = y0 + step * i + step / 2; if ('，。、！？'.includes(ch)) x.fillText(ch, cx + size * 0.3, y - size * 0.25); else x.fillText(ch, cx, y); });
 }
 export async function drawBack(canvas, d, S = 2.5, clear = false) {
-  const A = await loadAssets(canvas.dataset.base || './');
+  const A = await loadAssets(canvas.dataset.base || './'); await fontsFor(d);
   canvas.width = EMA_W * S; canvas.height = EMA_H * S; const x = canvas.getContext('2d'); x.setTransform(S, 0, 0, S, 0, 0);
   board(x, '#8a6438', '#e3c99c', clear ? null : '#efeadf', 'rgba(70,50,25,0.25)');
   // 社紋（右上）

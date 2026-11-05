@@ -92,7 +92,9 @@ function vtext(x, s, cx, y0, size, step, color, weight) {
   });
 }
 async function render(data) {
-  await document.fonts.load('600 40px "Noto Serif TC"'); await document.fonts.load('400 40px "Noto Serif TC"');
+  // 網路字型依字元分段載入：先指定要畫的字，否則 canvas 會先用系統字
+  const txt = (data.n || '') + (data.w || '') + '導覽紀念御守中壢神社古今對照No.0123456789　' + (data.d || '');
+  await Promise.all([document.fonts.load('600 40px "Noto Serif TC"', txt), document.fonts.load('400 40px "Noto Serif TC"', txt)]).catch(() => {});
   const [axon, callig] = await Promise.all([img('../img/axon-core.png'), img('callig.png')]);
   const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
   x.scale(K, K);
