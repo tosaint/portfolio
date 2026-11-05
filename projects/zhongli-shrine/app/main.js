@@ -44,6 +44,7 @@ const STOPS = [
     text: '參拜道從中正路的第一鳥居進入。鳥居是鋼筋水泥造、外覆洗石子，兩旁各立一座石燈籠。照片是 1950 年代它當中壢中學校門時拍的，柱上已掛上校名與標語。',
     now: '1965 年正門遷到中央西路，這座鳥居改稱南大門，約 1988–89 年拆除。位置在今天中正路 740 巷口。',
     eye: [-216, 1.6, 22.5], target: [-182, 4.5, 18.8],
+    focus: [-195, 3.2, 20.1, 6],   // 夜間主光打在：第一鳥居與兩座石燈籠
     pins: [['B1', '第一鳥居'], ['D3', '石燈籠'], ['D4', '石燈籠']],
     thumbs: [['photos/torii1-school.jpg', '當校門時的第一鳥居（藍清水校長提供：劉金鐘家族、吳慕舉校長相片）']]
   },
@@ -51,7 +52,8 @@ const STOPS = [
     title: '第二鳥居：鎮座祭行列',
     text: '1939 年 10 月 15 日鎮座祭，祭典行列穿過木造的第二鳥居走向拜殿。當年報紙特別提到中壢神社「沒有燈籠」（除了必要的之外），石燈籠只有三對。',
     now: '第二鳥居大約在今天莊敬樓川堂附近，興建老樓時拆除。',
-    eye: [1.5, 1.7, 96], target: [0, 4.5, 40], fov: 58,   // 退後、廣角：鳥居、兩側燈籠與長旗一起入鏡
+    eye: [1.5, 1.7, 96], target: [0, 4.5, 40], fov: 58,
+    focus: [0, 3.4, 65, 6],        // 第二鳥居與兩側石燈籠   // 退後、廣角：鳥居、兩側燈籠與長旗一起入鏡
     pins: [['B2', '第二鳥居'], ['P', '拜殿']],
     thumbs: [['photos/torii2-festival.jpg', '鎮座祭行列穿過第二鳥居（' + CR + '）'], ['photos/torii2-side.jpg', '第二鳥居側面']]
   },
@@ -60,6 +62,7 @@ const STOPS = [
     text: '第二鳥居前的花崗岩石燈籠，火袋上刻著桐紋。後方是社號標與社務所，首任社掌三森淳男與夫人三森久子就住在這裡。',
     now: '社務所戰後當過童軍團部、校史室，1980 年拆除改建自強館。木鳥居右前的一座石燈籠，今天仍在老樓轉角。',
     eye: [-15, 1.6, 84], target: [12, 2.8, 58],
+    focus: [11, 2.2, 66.5, 4.5],   // 石燈籠與社號標
     pins: [['D5', '石燈籠'], ['G', '社號標'], ['H', '社務所']],
     thumbs: [['photos/lantern-torii2.jpg', '石燈籠，背景為社務所（' + CR + '）']]
   },
@@ -67,14 +70,16 @@ const STOPS = [
     title: '拜殿：「臺灣唯一」的檜皮葺',
     text: '鎮座祭當天的拜殿：石板參拜道直通石階，兩旁搭起帳篷、坐滿來賓，簷下掛著神紋幕與「中壢神社」燈籠。《臺灣日日新報》稱它的檜皮葺屋頂是「臺灣唯一」。點下方照片可放大，和 3D 對照。',
     now: '這裡就是今天的陶然亭一帶。拜殿基座上曾蓋校舍，1991 年興建陶然亭時遺構全部拆除。',
-    eye: [0, 1.9, 14.4], target: [0, 5.2, -6],    // 進神門後望拜殿（照片放在縮圖）
+    eye: [0, 1.9, 14.4], target: [0, 5.2, -6],
+    focus: [0, 3.8, -2.5, 8],      // 拜殿正面    // 進神門後望拜殿（照片放在縮圖）
     thumbs: [['assets/photo-study/haiden-front.jpg', '鎮座祭當天的拜殿正面（' + CR + '）'], ['photos/haiden-priests.jpg', '鎮座祭神職合影（' + CR + '）'], ['photos/haiden-in-guests.jpg', '拜殿內：來賓列座，四周掛御簾、垂釣燈籠'], ['photos/haiden-in-miko.jpg', '拜殿內：神職與巫女'], ['photos/haiden-wedding.jpg', '拜殿前婚禮合影：板扉開啟、兩側格子戸、中央鈴緒']]
   },
   {
     title: '本殿：最深處',
     text: '從拜殿內往裡看：頭上是「中壢神社」扁額與織紋的水引幕，穿過幣殿，盡頭是本殿的木階與白色御帳，祭主正在階前奉仕。本殿是流造，供奉豐受大神與北白川宮能久親王。',
     now: '本殿基座上後來蓋了困學亭（壢中亭），1991 年改建陶然亭時拆除。',
-    eye: [0.3, 3.4, -4.2], target: [0, 3.5, -19.8],    // 拜殿內、站在御簾後，朝本殿看（拜殿內部照片）
+    eye: [0.3, 3.4, -4.2], target: [0, 3.5, -19.8],
+    focus: [0, 3.6, -17.5, 4],     // 本殿木階    // 拜殿內、站在御簾後，朝本殿看（拜殿內部照片）
     pins: [['Q', '本殿']],
     thumbs: [['photos/haiden-in-honden.jpg', '自拜殿內望本殿：扁額「中壢神社」、水引幕、幣殿與本殿木階（' + CR + '）'], ['photos/honden.jpg', '本殿側面（' + CR + '）']]
   },
@@ -82,7 +87,8 @@ const STOPS = [
     title: '神門、狛犬與銅馬',
     text: '你站在當年攝影師的位置附近：神門前一對狛犬，門左側是銅馬。比對照片發現，鎮座祭當天的照片都看不到這座神門，它很可能是之後才增建的。',
     now: '狛犬 1950 年移到中壢後火車站附近的義民廟（忠義祠），至今仍在；銅馬搬過好幾次，現在立在中央西路正門。虛線是它從原位置到今天正門的距離。',
-    eye: [13.5, 1.8, 31], target: [-2, 3.2, 15],   // 接近神門照的拍攝角度，稍退稍廣
+    eye: [13.5, 1.8, 31], target: [-2, 3.2, 15],
+    focus: [-2.5, 2, 17.5, 6.5],   // 神門、狛犬與銅馬   // 接近神門照的拍攝角度，稍退稍廣
     thumbs: [['assets/photo-study/historical.jpg', '神門、狛犬與銅馬（' + CR + '）'], ['photos/horse-komainu-gate.jpg', '銅馬、狛犬與神門'], ['photos/gate-postwar.jpg', '神門前合影（1940 年代）'], ['assets/models/horse/current.jpg', '今天的銅馬（中央西路正門）']]
   }
 ];
@@ -102,7 +108,8 @@ const toast = (t, ms = 2600) => { const e = $('#toast'); e.textContent = t; e.st
 /* ---------- 場景 ---------- */
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 // 解析度：大螢幕（桌機）畫素多，上限放低；之後依實際畫格時間自動再調（見主迴圈）
-let maxDPR = Math.min(devicePixelRatio, innerWidth > 900 ? 1.25 : 1.5);
+let maxDPR = Math.min(devicePixelRatio, innerWidth > 900 ? 1.25 : 1.75);
+const minDPR = Math.min(maxDPR, innerWidth > 900 ? 0.75 : 1);
 renderer.setPixelRatio(maxDPR);
 renderer.setClearColor(0xeef0ec);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;   // 色彩對比更自然鮮明
@@ -619,19 +626,35 @@ function buildNight() {
   // 跟著視線的淡淡暖光：只有拉近時才慢慢浮現，像被燈籠映亮的一層暖意（不另畫地面光暈）
   spot = new THREE.SpotLight(0xffc48a, 0, 0, 0.6, 1, 1.2); spot.visible = false; scene.add(spot, spot.target);
 }
-let spot = null; const focusP = new THREE.Vector3();
+let spot = null, spotI = 0; const focusP = new THREE.Vector3(), _fv = new THREE.Vector3();
 const groundAt = (x, z) => treeOK(x, -z, 0) ? 0.03 : LV.T1 + 0.04;   // 平台（神社範圍）上 0.5 公尺，外面貼地
 function updateFocus(snap) {
   if (!spot) return;
-  const t = controls.target, d = camera.position.distanceTo(t);
-  if (snap) focusP.copy(t); else focusP.lerp(t, 0.07);            // 慢慢跟上，看不出在追鏡頭
-  const near = 1 - THREE.MathUtils.smoothstep(d, 28, 70);         // 距離 28 公尺內全強度、70 公尺外為 0
-  const y = groundAt(focusP.x, focusP.z), h = THREE.MathUtils.clamp(d * 0.7, 26, 60), r = THREE.MathUtils.clamp(d * 0.5, 13, 30);
-  const dir = camera.position.clone().sub(t).setY(0).normalize().multiplyScalar(h * 0.35);
-  spot.target.position.set(focusP.x, y, focusP.z);
-  spot.position.set(focusP.x + dir.x, y + h, focusP.z + dir.z);
-  spot.angle = Math.atan(r / h); spot.distance = h * 2.2;
-  spot.intensity = nightK * near * (16 + d * 1.0);              // 約為上一版的三分之一
+  const F = !$('#tour').hidden && STOPS[stopIndex]?.focus;
+  let ti;
+  if (F) {
+    // 導覽中：主光打在這一站的主角上（從鏡頭這一側的斜上方照過去，邊緣柔和）
+    _fv.set(F[0], F[1], F[2]);
+    if (snap) focusP.copy(_fv); else focusP.lerp(_fv, 0.08);
+    const R = F[3], dir = camera.position.clone().sub(focusP).setY(0).normalize();
+    spot.target.position.copy(focusP);
+    spot.position.copy(focusP).addScaledVector(dir, R * 1.7 + 7).add(_fv.set(0, R * 1.0 + 6, 0));   // 仰角約 35°，正面也照得到
+    const dist = spot.position.distanceTo(focusP);
+    spot.angle = Math.atan(R * 1.2 / dist); spot.distance = dist * 2.4;
+    ti = nightK * 1.6 * Math.pow(dist, 1.2);
+  } else {
+    const t = controls.target, d = camera.position.distanceTo(t);
+    if (snap) focusP.copy(t); else focusP.lerp(t, 0.07);            // 慢慢跟上，看不出在追鏡頭
+    const near = 1 - THREE.MathUtils.smoothstep(d, 28, 70);         // 距離 28 公尺內全強度、70 公尺外為 0
+    const y = groundAt(focusP.x, focusP.z), h = THREE.MathUtils.clamp(d * 0.7, 26, 60), r = THREE.MathUtils.clamp(d * 0.5, 13, 30);
+    const dir = camera.position.clone().sub(t).setY(0).normalize().multiplyScalar(h * 0.35);
+    spot.target.position.set(focusP.x, y, focusP.z);
+    spot.position.set(focusP.x + dir.x, y + h, focusP.z + dir.z);
+    spot.angle = Math.atan(r / h); spot.distance = h * 2.2;
+    ti = nightK * near * (16 + d * 1.0);
+  }
+  spotI = snap ? ti : spotI + (ti - spotI) * 0.1;                 // 換站時亮度慢慢移過去
+  spot.intensity = spotI;
 }
 let POOLS = [], pools = null;
 // 夜間焦點：導覽中，當站的燈較亮、其他較暗；不在導覽時全部中等亮度
@@ -640,11 +663,13 @@ function nightFocus() {
   const lvl = st => !touring ? 0.85 : st.includes(cur) ? 1.6 : 0.3;
   glows.forEach(L => { L.userData.ft = lvl(L.userData.st); });
   POOLS.forEach(p => p.ft = lvl(p[4]));
+  lanFT = touring ? 0.55 : 1;                // 導覽時心願燈籠稍暗，主角更清楚
   dirty = true;
 }
 // 日夜切換：0.45 秒漸變（nightK 0→1），燈與光暈在白天關掉；夜間著色程式事先在閒置時編好（warmNight），切換不卡
 let nightK = 0, nightAnim = null;
-const later = f => (window.requestIdleCallback || (g => setTimeout(g, 120)))(f);
+let busyUntil = 0; const busy = (ms = 1500) => { busyUntil = Math.max(busyUntil, performance.now() + ms); };
+const later = f => (window.requestIdleCallback || (g => setTimeout(g, 120)))(() => { busy(); f(); busy(); });
 const _ca = new THREE.Color(), _cb = new THREE.Color();
 const mix = (a, b, k) => _ca.set(a).lerp(_cb.set(b), k);
 function applyNightK(k) {
@@ -659,7 +684,7 @@ function applyNightK(k) {
   ['gravel', 'path', 'slab'].forEach(n => { const m = M[n]; if (!m) return; m.userData.day ??= m.color.clone(); m.color.copy(m.userData.day).multiplyScalar(L(1, 0.38)); });
   [ground, overlay].forEach(gd => gd && gd.mesh.material.color.copy(mix(0xffffff, 0x3a4458, k)));
   if (edgeMat) edgeMat.color.copy(mix(0x2b2118, 0x05070c, k));
-  if (lanMat) { lanMat.emissive.copy(mix(0x3a3328, 0xffc27a, k)); lanMat.emissiveIntensity = 1; }
+  if (lanMat) { lanMat.emissive.copy(mix(0x3a3328, 0xffc27a, k)); lanMat.emissiveIntensity = 1 + (lanF - 1) * k; }
   if (stars) stars.material.opacity = 0.8 * k;
   flicker(performance.now()); updateFocus(true);
   dirty = true;
@@ -672,7 +697,7 @@ function warmNight() {                 // 閒置時先編好夜間（燈開著�
   setLightsVisible(true); try { renderer.compile(scene, camera); } catch (e) {} setLightsVisible(false);
 }
 function setNight(on) {
-  night = on; nightFocus();
+  night = on; nightFocus(); busy(2000);
   if (on) setLightsVisible(true);
   nightAnim = { from: nightK, to: on ? 1 : 0, start: performance.now(), ms: 450 };
   $('#vignette')?.classList.toggle('show', on);
@@ -693,14 +718,14 @@ $('#nightBtn2').onclick = () => setNight(!night);
 /* ---------- 心願燈籠：完成三處實地踏查、審核通過者，點在外參道兩側 ----------
    資料來自 Apps Script（?type=lantern）；全部燈籠只算 3 次繪製（柱、燈身、上下口），夜間燈身發光。
    點一下燈籠（找螢幕上最近的一盞）看暱稱與祈願；網址 #lantern-0012 會直接飛到那一盞。 */
-let lanMat = null, lanSlots = [], lanGlow = null;
+let lanMat = null, lanSlots = [], lanGlow = null, lanF = 1, lanFT = 1;
 async function loadLanterns() {
   const api = new URLSearchParams(location.search).get('lanapi') || LANTERN_API;
   if (!api) return;
   let items = [];
   try { const r = await fetch(api + (/[?&]type=/.test(api) || api.endsWith('.json') ? '' : (api.includes('?') ? '&' : '?') + 'type=lantern')); items = (await r.json()).items || []; } catch (e) { return; }
   if (!items.length) return;
-  buildLanterns(items);
+  busy(); buildLanterns(items); busy(2500);
   const m = location.hash.match(/lantern-(\d+)/); if (m) focusLantern(m[1]);
 }
 // 名字字卡：所有暱稱寫在同一張貼圖（每格 40×120 像素、直書），燈籠面向參道的那一面取自己那一格
@@ -852,6 +877,7 @@ function flicker(t) {                 // 提燈微閃：燭火般的不規則亮
   const f = 0.88 + 0.08 * Math.sin(t * 0.0071) + 0.05 * Math.sin(t * 0.0193 + 1.3) + 0.03 * Math.sin(t * 0.047);
   M.chochin.emissiveIntensity = 1 + (f - 1) * nightK; glows.forEach((L, i) => L.intensity = nightK * 9 * L.userData.k * L.userData.f * (f + 0.04 * Math.sin(t * 0.011 + i)));
   if (pools) pools.material.opacity = nightK * 0.5 * (0.9 + 0.1 * f);
+  lanF += (lanFT - lanF) * 0.12; if (lanMat) lanMat.emissiveIntensity = 1 + (lanF - 1) * nightK;
   updateFocus(false);
   if (stars) stars.material.opacity = nightK * (0.75 + 0.1 * Math.sin(t * 0.002));
 }
@@ -1004,6 +1030,7 @@ try {
   buildSpots();
   setGround('photo');
   renderer.shadowMap.needsUpdate = true;
+  busy(5000);
   $('#loading').style.opacity = 0;
   setTimeout(() => $('#loading').remove(), 500);
 } catch (e) {
@@ -1022,11 +1049,13 @@ renderer.setAnimationLoop(() => {
   // 依「連續兩格都有重畫」時的畫格間隔調解析度（夜間每兩格才重畫一次，不能拿重畫間隔來判斷）。
   // 解析度要在重畫「之前」改，否則畫布被清空會閃一下；升降有次數上限，避免來回跳。
   const now = performance.now(), tick = now - lastTick; lastTick = now;
-  if (renderedPrev && tick < 200) {
+  // 載入、編譯著色程式、日夜切換時（busy）的慢格不算數，否則一開頁就被降成模糊、之後也很難升回來
+  if (renderedPrev && tick < 200 && now > busyUntil) {
     const pr = renderer.getPixelRatio();
-    slow = tick > 28 ? slow + 1 : Math.max(0, slow - 1);
-    if (slow > 12 && pr > 0.75 && dprChanges < 6) { renderer.setPixelRatio(Math.max(0.75, pr - 0.25)); slow = 0; fast = 0; dprChanges++; dirty = true; }
-    else if (tick < 18 && pr < maxDPR && ++fast > 360 && dprChanges < 6) { renderer.setPixelRatio(Math.min(maxDPR, pr + 0.25)); fast = 0; dprChanges++; dirty = true; }
+    slow = tick > 30 ? slow + 1 : Math.max(0, slow - 1);
+    fast = tick < 20 ? fast + 1 : 0;
+    if (slow > 15 && pr > minDPR && dprChanges < 6) { renderer.setPixelRatio(Math.max(minDPR, pr - 0.25)); slow = 0; fast = 0; dprChanges++; dirty = true; }
+    else if (pr < maxDPR && fast > 120 && dprChanges < 6) { renderer.setPixelRatio(Math.min(maxDPR, pr + 0.25)); fast = 0; dprChanges++; dirty = true; }
   }
   renderedPrev = false;
   if (fly) {
