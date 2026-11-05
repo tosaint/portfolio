@@ -103,7 +103,10 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 .inner figcaption { margin-top: 8px; font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
 
 /* 參與：領取紀念 */
-.part { padding-block: clamp(28px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.part { padding-block: clamp(28px, 5vw, 56px); border-top: 1px solid var(--rule); scroll-margin-top: 56px; }
+.wprev { margin-top:22px; padding:18px 18px 10px; border:1px solid var(--rule); border-radius:16px; }
+.wprev h3 { margin:0 0 4px; font:500 19px var(--serif); letter-spacing:.1em; display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
+.wprev h3 button { font:inherit; font-size:14px; letter-spacing:0; color:#9a3b30; background:none; border:none; cursor:pointer; min-height:44px; }
 .part .intro { max-width: 640px; margin: 0 0 22px; }
 .pcards { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; }
 .pcard { border:1px solid var(--rule); border-radius:16px; padding:20px; display:flex; flex-direction:column; gap:10px; overflow:hidden; }
@@ -237,7 +240,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <ol class="stops">
     <li class="stop">
       <figure class="pics">
-        <img class="old" src="app/photos/torii1-school.jpg" alt="當校門時的第一鳥居。藍清水校長提供：劉金鐘家族、吳慕舉校長相片" loading="lazy">
+        <img class="old" src="app/photos/torii1-school.jpg" alt="當校門時的第一鳥居。藍清水校長提供：劉金鐘家族、吳慕舉校長相片" width="859" height="575" loading="lazy">
         <img class="three" src="img/tour-1.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
         <figcaption>當校門時的第一鳥居。藍清水校長提供：劉金鐘家族、吳慕舉校長相片<br>小圖：3D 復原</figcaption>
       </figure>
@@ -251,7 +254,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     </li>
     <li class="stop">
       <figure class="pics">
-        <img class="old" src="app/photos/torii2-festival.jpg" alt="1939 年鎮座祭，行列穿過第二鳥居。三森久子捐贈，壢中校史館藏" loading="lazy">
+        <img class="old" src="app/photos/torii2-festival.jpg" alt="1939 年鎮座祭，行列穿過第二鳥居。三森久子捐贈，壢中校史館藏" width="1400" height="934" loading="lazy">
         <img class="three" src="img/tour-2.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
         <figcaption>1939 年鎮座祭，行列穿過第二鳥居。三森久子捐贈，壢中校史館藏<br>小圖：3D 復原</figcaption>
       </figure>
@@ -265,7 +268,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     </li>
     <li class="stop">
       <figure class="pics">
-        <img class="old" src="app/photos/lantern-torii2.jpg" alt="第二鳥居前的石燈籠，背景為社務所。三森久子捐贈，壢中校史館藏" loading="lazy">
+        <img class="old" src="app/photos/lantern-torii2.jpg" alt="第二鳥居前的石燈籠，背景為社務所。三森久子捐贈，壢中校史館藏" width="1400" height="932" loading="lazy">
         <img class="three" src="img/tour-3.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
         <figcaption>第二鳥居前的石燈籠，背景為社務所。三森久子捐贈，壢中校史館藏<br>小圖：3D 復原</figcaption>
       </figure>
@@ -279,7 +282,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     </li>
     <li class="stop">
       <figure class="pics">
-        <img class="old" src="app/assets/photo-study/haiden-front.jpg" alt="鎮座祭當天的拜殿正面。三森久子捐贈，壢中校史館藏" loading="lazy">
+        <img class="old" src="app/assets/photo-study/haiden-front.jpg" alt="鎮座祭當天的拜殿正面。三森久子捐贈，壢中校史館藏" width="1800" height="1003" loading="lazy">
         <img class="three" src="img/tour-4.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
         <figcaption>鎮座祭當天的拜殿正面。三森久子捐贈，壢中校史館藏<br>小圖：3D 復原</figcaption>
       </figure>
@@ -293,7 +296,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     </li>
     <li class="stop">
       <figure class="pics">
-        <img class="old" src="app/photos/haiden-in-honden.jpg" alt="自拜殿內望本殿：扁額、水引幕、幣殿與本殿木階。三森久子捐贈，壢中校史館藏" loading="lazy">
+        <img class="old" src="app/photos/haiden-in-honden.jpg" alt="自拜殿內望本殿：扁額、水引幕、幣殿與本殿木階。三森久子捐贈，壢中校史館藏" width="1400" height="933" loading="lazy">
         <img class="three" src="img/tour-5.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
         <figcaption>自拜殿內望本殿：扁額、水引幕、幣殿與本殿木階。三森久子捐贈，壢中校史館藏<br>小圖：3D 復原</figcaption>
       </figure>
@@ -307,7 +310,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     </li>
     <li class="stop">
       <figure class="pics">
-        <img class="old" src="img/historical.jpg" alt="神門、狛犬與銅馬。三森久子捐贈，壢中校史館藏；亦見神奈川大學數位典藏" loading="lazy">
+        <img class="old" src="img/historical.jpg" alt="神門、狛犬與銅馬。三森久子捐贈，壢中校史館藏；亦見神奈川大學數位典藏" width="1600" height="1067" loading="lazy">
         <img class="three" src="img/tour-6.jpg" width="900" height="600" alt="同一處的 3D 復原畫面" loading="lazy">
         <figcaption>神門、狛犬與銅馬。三森久子捐贈，壢中校史館藏；亦見神奈川大學數位典藏<br>小圖：3D 復原</figcaption>
       </figure>
@@ -355,6 +358,10 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
         <a class="sub" href="app/">到 3D 參道看燈籠</a>
         <a class="alt" href="https://docs.google.com/forms/d/e/1FAIpQLScPXhoP4CTn6RUJwKJg8LqFI6lfYDHIAFvp7Q-zRbn3GVgpHw/viewform" target="_blank" rel="noopener">改用 Google 表單填寫</a>
       </section>
+    </div>
+    <div class="wprev" id="wprev">
+      <h3>心願繪馬牆 <button type="button" data-wall>看全部繪馬 →</button></h3>
+      <div id="wPrevWall"><p class="p-hint">讀取中…</p></div>
     </div>
     <p class="fine">御守、繪馬、燈籠都是當代教育活動的參與創作，不是宗教物件，也不是中壢神社原有的設施。公開與否由你自己選擇；繪馬牆上不適當的內容老師會撤下，燈籠經老師確認後點亮。Email 只用來寄送紀念，不會公開。</p>
   </section>
@@ -460,6 +467,6 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <dt>Note</dt><dd>模型依配置圖、老照片與少數實測推估，並非測繪復原；照片沒拍到的部分（如拜殿深度、本殿背面、社務所）為推估；位置誤差約 5–20 公尺，高程為手機量測（約 ±3 公尺）。<span>An estimate from the plan, old photographs and a few site measurements, not a survey.</span></dd>
   </dl>
 </main>
-<script type="module" src="participate/participate.js?v=2"></script>
+<script type="module" src="participate/participate.js?v=3"></script>
 </body>
 </html>
