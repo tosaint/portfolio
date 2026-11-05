@@ -149,6 +149,7 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
 .p-send { width:100%; min-height:48px; margin-top:8px; border:none; border-radius:12px; background:var(--ink); color:var(--paper); font:inherit; font-size:16px; cursor:pointer; }
 .p-send:disabled { opacity:.6; }
 .p-done { padding:20px 0 4px; } .p-done h3 { margin:0 0 8px; font:500 20px var(--serif); } .p-done a { color:#9a3b30; }
+.p-done .p-url { word-break:break-all; font:13px var(--mono); } .p-copy { font:inherit; font-size:14px; padding:8px 16px; margin:0 0 12px; border:1px solid var(--rule); border-radius:999px; background:transparent; color:var(--ink); cursor:pointer; }
 @media (max-width: 600px) { #pDlg { width:100vw; max-width:100vw; margin:auto 0 0; border-radius:18px 18px 0 0; max-height:92vh; } #pBody { max-height:calc(92vh - 74px); } }
 #wDlg { border:none; padding:0; border-radius:18px; width:min(1000px, 100vw); max-height:min(90vh, 1000px); background:var(--paper); color:var(--ink); }
 #wDlg::backdrop { background:rgba(20,18,15,.6); }
@@ -467,6 +468,6 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     <dt>Note</dt><dd>模型依配置圖、老照片與少數實測推估，並非測繪復原；照片沒拍到的部分（如拜殿深度、本殿背面、社務所）為推估；位置誤差約 5–20 公尺，高程為手機量測（約 ±3 公尺）。<span>An estimate from the plan, old photographs and a few site measurements, not a survey.</span></dd>
   </dl>
 </main>
-<script type="module" src="participate/participate.js?v=3"></script>
+<script type="module" src="participate/participate.js?v=4"></script>
 </body>
 </html>
