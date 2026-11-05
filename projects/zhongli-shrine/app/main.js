@@ -724,10 +724,12 @@ async function loadLanterns() {
   if (!api) return;
   let items = [];
   try { const r = await fetch(api + (/[?&]type=/.test(api) || api.endsWith('.json') ? '' : (api.includes('?') ? '&' : '?') + 'type=lantern')); items = (await r.json()).items || []; } catch (e) { return; }
-  if (!items.length) return;
+  const m = location.hash.match(/lantern-(\d+)/);
+  if (!items.length) { if (m) toast('這盞燈籠還在等老師確認，點亮後打開同一個網址就看得到', 5000); return; }
   busy(); buildLanterns(items); busy(2500);
-  const m = location.hash.match(/lantern-(\d+)/); if (m) focusLantern(m[1]);
+  if (m) focusLantern(m[1]);
 }
+addEventListener('hashchange', () => { const m = location.hash.match(/lantern-(\d+)/); if (m && lanSlots.length) focusLantern(m[1]); });
 // 名字字卡：所有暱稱寫在同一張貼圖（每格 40×120 像素、直書），燈籠面向參道的那一面取自己那一格
 const CELL_W = 40, CELL_H = 120, ATLAS_W = 2048, ATLAS_COLS = Math.floor(ATLAS_W / CELL_W);
 function nameAtlas(items) {
@@ -833,8 +835,28 @@ function addLanternChip() {
   const box = $('#viewChips'); if (!box || $('#lanChip')) return;
   const b = document.createElement('button'); b.id = 'lanChip'; b.textContent = '心願燈籠';
   b.onclick = () => { closeCard(); if (!night) setNight(true); const a = lanSlots[0].pos, z = lanSlots[lanSlots.length - 1].pos;
-    flyTo(a.clone().lerp(z, 0.5).add(new THREE.Vector3(-30, 26, 28)), a.clone().lerp(z, 0.55), baseFov); };
+    flyTo(a.clone().lerp(z, 0.5).add(new THREE.Vector3(-30, 26, 28)), a.clone().lerp(z, 0.55), baseFov, openLanternFinder); };
   box.append(b);
+}
+// 找我的燈籠：輸入暱稱或編號，點結果就飛過去（老師新增的、自己填表的都找得到）
+function openLanternFinder() {
+  $('#cardBody').innerHTML = `<span class="tag" style="background:#8f2a2a">心願燈籠</span><h2>找我的燈籠</h2>` +
+    `<p>外參道已點亮 ${lanSlots.length} 盞。輸入暱稱或燈籠編號：</p>` +
+    `<input id="lanQ" type="search" enterkeyhint="search" autocomplete="off" placeholder="例如：生活科技、0012" aria-label="暱稱或燈籠編號" ` +
+    `style="width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border:1px solid #cfc6b4;border-radius:10px;background:#fffdf8;margin:4px 0 10px">` +
+    `<div id="lanRes"></div><p class="caveat">剛送出的燈籠要等老師確認後才會點亮。</p>`;
+  const q = $('#lanQ'), res = $('#lanRes');
+  const show = () => {
+    const s = q.value.trim(), d = s.replace(/^no\.?\s*/i, '');
+    if (!s) { res.innerHTML = ''; return; }
+    const hits = lanSlots.filter(L => (L.n || '').includes(s) || (/^\d+$/.test(d) && Number(L.no) === Number(d))).slice(0, 20);
+    res.innerHTML = hits.length
+      ? hits.map(L => `<button type="button" data-no="${esc(L.no)}" style="display:block;width:100%;text-align:left;font:inherit;padding:10px 12px;margin:0 0 6px;border:0;border-radius:10px;background:#efe7d6;color:inherit">No.${esc(L.no)}　${esc(L.n || '')}</button>`).join('')
+      : '<p>找不到這盞燈籠。換個寫法試試，或確認老師是否已經點亮。</p>';
+  };
+  q.addEventListener('input', show);
+  res.addEventListener('click', e => { const b = e.target.closest('button[data-no]'); if (b) { closeCard(); focusLantern(b.dataset.no); } });
+  $('#card').scrollTop = 0; $('#card').classList.add('open');
 }
 function openLantern(L) {
   $('#cardBody').innerHTML = `<span class="tag" style="background:#8f2a2a">心願燈籠</span><h2>No.${esc(L.no)}　${esc(L.n || '')}</h2>` +
@@ -844,7 +866,8 @@ function openLantern(L) {
   $('#card').scrollTop = 0; $('#card').classList.add('open');
 }
 function focusLantern(no) {
-  const L = lanSlots.find(l => l.no === no || l.no === ('000' + no).slice(-4)); if (!L) return;
+  const L = lanSlots.find(l => l.no === no || Number(l.no) === Number(no));
+  if (!L) { toast('這盞燈籠還在等老師確認，點亮後打開同一個網址就看得到', 5000); return; }
   if (!night) setNight(true);
   if (!lanGlow) {
     const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);

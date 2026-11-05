@@ -67,7 +67,12 @@ const FORMS = {
       for (const k of ['horse', 'tile', 'koma']) photos[k] = await shrinkKeepExif(f.elements['ph_' + k].files[0]);
       return { photos, tileL: f.elements.tileL.value, tileW: f.elements.tileW.value };
     },
-    done: () => '<h3>已收到你的踏查紀錄！</h3><p>老師確認後，你的燈籠就會點亮在 3D 神社的外參道，到時候會寄信通知你。</p>',
+    done: r => !r.no ? '<h3>已收到你的踏查紀錄！</h3><p>老師確認後，你的燈籠就會點亮在 3D 神社的外參道，到時候會寄信通知你。</p>'
+      : !r.pub ? `<h3>已收到你的踏查紀錄！</h3><p>你的燈籠是 <b>No.${esc(r.no)}</b>。你選了不公開，所以它不會出現在公開的 3D 神社裡。</p>`
+      : `<h3>已收到你的踏查紀錄！</h3><p>你的燈籠是 <b>No.${esc(r.no)}</b>。老師確認後就會點亮在外參道，到時候會寄信通知你。</p>` +
+        `<p>點亮後，用這個網址就能看到你的燈籠（先存起來）：<br><a class="p-url" href="${esc(r.url)}">${esc(r.url)}</a></p>` +
+        `<button type="button" class="p-copy" data-url="${esc(r.url)}">複製網址</button>` +
+        `<p class="p-hint">也可以在 3D 神社點「心願燈籠」，輸入暱稱或編號找到它。</p>`,
   },
 };
 
@@ -121,6 +126,8 @@ function open(kind) {
       if (!r.ok) throw new Error(r.msg || '送出失敗');
       box.innerHTML = `<div class="p-done">${F.done(r)}<button type="button" class="p-send" id="pClose2">關閉</button></div>`;
       $('#pClose2').onclick = () => dlg.close();
+      box.querySelector('.p-copy')?.addEventListener('click', async e => { const t = e.currentTarget;
+        try { await navigator.clipboard.writeText(t.dataset.url); t.textContent = '已複製'; } catch (x) { t.textContent = '請長按上面的網址複製'; } });
       refreshCounts();
     } catch (x) { err.textContent = x.message || '送出失敗，請稍後再試'; btn.disabled = false; btn.textContent = '送出'; }
   });
