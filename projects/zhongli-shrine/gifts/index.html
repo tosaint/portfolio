@@ -25,6 +25,19 @@
   .sub { border:1.5px solid var(--ink); color:var(--ink); }
   .note { margin-top:26px; font-size:13px; color:var(--ink2); }
   .note a { color:var(--red); }
+  .fig { position:relative; margin:-20px -20px 4px; border-radius:16px 16px 0 0; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .fig img { display:block; }
+  .tag { position:absolute; top:10px; left:10px; font-size:11px; letter-spacing:.2em; background:rgba(43,42,39,.72); color:#f6f2ea; padding:2px 8px; border-radius:6px; }
+  .f-omamori { background:#e9e2d2; height:300px; }
+  .phone { width:128px; border:6px solid #2b2a27; border-radius:22px; overflow:hidden; box-shadow:0 10px 24px rgba(40,30,20,.25); }
+  .phone img { width:100%; height:auto; }
+  .f-ema { background:#efeadf; height:300px; gap:8px; padding:0 12px; }
+  .f-ema .front { width:64%; height:auto; }
+  .f-ema .back { width:34%; height:auto; align-self:flex-end; margin-bottom:46px; }
+  .f-lan { background:#0d1526; height:300px; }
+  .f-lan .wide { width:100%; height:100%; object-fit:cover; }
+  .f-lan .close { position:absolute; right:10px; bottom:10px; width:108px; height:108px; border-radius:10px; border:2px solid #f3d38f; object-fit:cover; }
+  .count { font-size:14px !important; color:var(--red); font-weight:600; min-height:1.5em; }
 </style>
 </head>
 <body>
@@ -33,29 +46,46 @@
   <p class="lede">走完中壢神社的六站導覽之後，可以依自己想投入的程度，領取三種紀念。每一種都是獨立的，不必全部完成。</p>
   <div class="cards">
     <section class="card">
+      <figure class="fig f-omamori"><span class="tag">示意</span><div class="phone"><img src="img/omamori.jpg" width="400" height="866" alt="導覽紀念御守手機桌布範例：朱紅御守上有社紋與書法「中壢神社」，旁邊直書暱稱「生活科技」與一句話" loading="lazy"></div></figure>
       <span class="step">看過 ・ 約 3 分鐘</span>
       <h2>導覽紀念御守</h2>
       <p>寫下導覽心得與一句想留給這個地方的話，就會收到一張印著你名字的御守手機桌布。</p>
       <p class="how">用學校帳號填寫，桌布寄到學校信箱。</p>
+      <p class="count" id="cOmamori"></p>
       <a class="go" href="https://docs.google.com/forms/d/e/1FAIpQLSegihXvWg-kDtl1ZFdxltcRa1j3n1lGzHzPlWD_In4IrEpafw/viewform">填寫導覽心得</a>
     </section>
     <section class="card">
+      <figure class="fig f-ema"><span class="tag">示意</span><img class="front" src="img/ema-front.jpg" width="700" height="615" alt="心願繪馬正面範例：木牌上畫著中壢神社中軸彩繪與書法「中壢神社」" loading="lazy"><img class="back" src="img/ema-back.jpg" width="420" height="369" alt="心願繪馬背面範例：直書祈願、暱稱「生活科技」與朱色「考證合格」章" loading="lazy"></figure>
       <span class="step">看懂 ・ 10 題考證</span>
       <h2>心願繪馬</h2>
       <p>題目都出自六站導覽。答對 6 題就能領取心願繪馬，同意公開的話，會直接掛上繪馬牆。</p>
       <p class="how">沒過可以回導覽找答案，再考一次。</p>
+      <p class="count" id="cEma"></p>
       <a class="go" href="https://docs.google.com/forms/d/e/1FAIpQLSdblN4vAAiCYv-s0G9C2uKw4vh2WyyKPoghw-3vcUsyK7c6-A/viewform">參加考證測驗</a>
       <a class="sub" href="../ema/wall.html">看繪馬牆</a>
     </section>
     <section class="card">
+      <figure class="fig f-lan"><span class="tag">示意</span><img class="wide" src="img/lantern-wide.jpg" width="900" height="630" alt="夜間 3D 外參道兩側的燈籠架，一排排燈籠亮著" loading="lazy"><img class="close" src="img/lantern-close.jpg" width="320" height="320" alt="近看一盞燈籠，上面直書暱稱「生活科技」" loading="lazy"></figure>
       <span class="step">走過 ・ 三處實地踏查</span>
       <h2>心願燈籠</h2>
       <p>親自到銅馬（中央西路正門）、拜殿前的地磚遺跡、義民廟（忠義祠）的狛犬拍照，並量一塊地磚的大小。審核後，你的燈籠會點亮在 3D 神社的外參道。</p>
       <p class="how">請在白天結伴前往義民廟，拍照時保持安靜與禮貌。</p>
+      <p class="count" id="cLan"></p>
       <a class="go" href="https://docs.google.com/forms/d/e/1FAIpQLScPXhoP4CTn6RUJwKJg8LqFI6lfYDHIAFvp7Q-zRbn3GVgpHw/viewform">上傳踏查紀錄</a>
+      <a class="sub" href="../app/" id="lanView">到 3D 參道看燈籠</a>
     </section>
   </div>
   <p class="note">御守、繪馬、燈籠都是當代教育活動的參與創作，不是宗教物件，也不是中壢神社原有的設施。公開與否由你自己選擇；繪馬牆上不適當的內容老師會撤下，燈籠則經老師審核後點亮。<br><a href="../app/">回到中壢神社</a></p>
 </main>
+<script type="module">
+// 即時人數：讀三個 Apps Script 的資料（讀不到就不顯示）
+import { OMAMORI_API } from './config.js?v=1';
+import { EMA_API } from '../ema/config.js?v=2';
+import { LANTERN_API } from '../app/lantern-config.js?v=2';
+const get = async (u, f) => { try { const r = await fetch(u); return f(await r.json()); } catch (e) { return null; } };
+get(OMAMORI_API, j => j.count).then(n => { if (n) document.getElementById('cOmamori').textContent = `已有 ${n} 人領取御守`; });
+get(EMA_API, j => (j.items || []).length).then(n => { if (n) document.getElementById('cEma').textContent = `繪馬牆上已有 ${n} 片繪馬`; });
+get(LANTERN_API + '?type=lantern', j => (j.items || []).length).then(n => { if (n) document.getElementById('cLan').textContent = `外參道已點亮 ${n} 盞燈籠`; });
+</script>
 </body>
 </html>
