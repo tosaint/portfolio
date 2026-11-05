@@ -148,7 +148,7 @@ dialog .small-note{font-size:12px;color:var(--muted);border-top:1px solid var(--
 .role-pick{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;border:1px solid #b8cec1;border-radius:10px;overflow:hidden}
 .role-pick label{flex-direction:row;justify-content:center;align-items:center;gap:6px;font-size:14px;color:var(--ink);padding:9px 6px;cursor:pointer}
 .role-pick input{width:auto;margin:0;accent-color:var(--accent)}.role-pick label:has(input:checked){background:#e1f2eb;font-weight:600}
-.suffix{display:flex;align-items:center;gap:6px}.suffix span{font-size:13px;color:var(--muted);white-space:nowrap}
+.suffix{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}.suffix input{flex:1 1 130px}.suffix span{font-size:13px;color:var(--muted);white-space:nowrap}
 .submit-form.visitor .stu,.submit-form:not(.visitor) .vis{display:none}
 .form-note{grid-column:1/-1;font-size:12px;color:var(--muted);margin:-2px 0 0}
 .card-mail{font-size:13px;color:var(--accent);margin:0 0 8px}
@@ -243,7 +243,7 @@ dialog .small-note{font-size:12px;color:var(--muted);border-top:1px solid var(--
 <label class="stu" for="stSeat">座號<input id="stSeat" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="例：07"></label>
 <label class="stu" for="stName">姓名<input id="stName" maxlength="20" autocomplete="off"></label>
 <label class="stu" for="stGroup">組別<input id="stGroup" maxlength="10" autocomplete="off" placeholder="可不填"></label>
-<label class="stu full" for="stSid">學號（完成卡寄到學校信箱）<span class="suffix"><input id="stSid" maxlength="20" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="例：1120123"><span>@clhs.tyc.edu.tw</span></span></label>
+<label class="stu full" for="stSid">學號（完成卡寄到學校信箱）<span class="suffix"><input id="stSid" maxlength="20" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="例：1120123"><span>@student.clhs.tyc.edu.tw</span></span></label>
 <label class="vis" for="vName">稱呼<input id="vName" maxlength="20" autocomplete="nickname"></label>
 <label class="vis full" for="vEmail">Email<input id="vEmail" type="email" maxlength="80" autocomplete="email" autocapitalize="off" spellcheck="false"></label>
 <p class="form-note vis">Email 只用來寄送完成卡。</p>
@@ -366,7 +366,7 @@ return {V,I,mul,tr,rot,scale,transform,inverse,perspective,look,Node,box,cylinde
 (()=>{
 'use strict';
 const $=id=>document.getElementById(id),D=Math.PI/180,{V,Node}=G3D,root=new Node();
-const VERSION='2.6',KEY='lizhong-dobsonian-v26';const SCHOOL_DOMAIN='clhs.tyc.edu.tw';
+const VERSION='2.6',KEY='lizhong-dobsonian-v26';const SCHOOL_DOMAIN='student.clhs.tyc.edu.tw';
 const INIT={az:-6,alt:8,cap:true,ep:null,lock:0,focus:12,fx:1.7,fy:-1.15};
 const EP={20:{focus:38,mag:32.5,fov:50/32.5},4:{focus:66,mag:162.5,fov:50/162.5}};
 const newId=()=>{try{return crypto.randomUUID()}catch(_){return Date.now().toString(36)+Math.random().toString(36).slice(2,10)}};
