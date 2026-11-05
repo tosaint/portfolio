@@ -133,11 +133,13 @@ if (location.hash === '#participate-omamori' || location.hash === '#participate-
 
 // ---- 繪馬牆（在說明頁內打開）：#ema-wall 或 #ema-wall-0128（自己那片排第一、亮紅框）----
 const wDlg = $('#wDlg'), wall = $('#wWall'), wList = $('#wList'), wOne = $('#wOne'), big = $('#wBig');
-let wAll = [], wMine = '', wCur = null, wFront = false, wLoaded = false;
+let wAll = [], wMine = '', wCur = null, wFront = false, wLoaded = false, wFetch = null;
+const loadWall = () => wFetch || (wFetch = fetch(EMA_API).then(r => r.json()).then(j => j.items || []));
 const perRow = () => wall.clientWidth >= 900 ? 6 : wall.clientWidth >= 520 ? 4 : 3;
-const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); drawBack(e.target, e.target._d, 0.9, true); } }), { root: wall, rootMargin: '200px' });
-function wRender(list) {
-  wall.innerHTML = ''; const n = perRow();
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); drawBack(e.target, e.target._d, 0.9, true); } }), { rootMargin: '200px' });
+function wRender(list, host = wall, max = Infinity) {
+  host.innerHTML = ''; const n = host === wall ? perRow() : (host.clientWidth >= 700 ? 6 : 3);
+  list = list.slice(0, max === Infinity ? list.length : Math.max(n, Math.floor(max / n) * n));
   for (let i = 0; i < list.length; i += n) {
     const rack = document.createElement('div'); rack.className = 'w-rack';
     const row = document.createElement('div'); row.className = 'w-row'; row.style.setProperty('--n', n);
@@ -145,11 +147,11 @@ function wRender(list) {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'w-ema' + (d.no === wMine ? ' me' : '');
       b.setAttribute('aria-label', `No.${d.no} ${d.n || ''} ${d.w || ''}`);
       const c = document.createElement('canvas'); c.dataset.base = 'ema/'; c._d = d; b.append(c); io.observe(c);
-      b.onclick = () => wShow(d); row.append(b);
+      b.onclick = () => { if (host !== wall) { openWall(); setTimeout(() => wShow(d), 50); } else wShow(d); }; row.append(b);
     });
-    rack.append(row); wall.append(rack);
+    rack.append(row); host.append(rack);
   }
-  if (!list.length) wall.innerHTML = `<p class="p-hint">${wAll.length ? '找不到符合的繪馬。' : (wLoaded ? '繪馬牆還沒有繪馬。' : '讀取中…')}</p>`;
+  if (!list.length) host.innerHTML = `<p class="p-hint">${wAll.length ? '找不到符合的繪馬。' : (wLoaded ? '繪馬牆還沒有繪馬，通過考證測驗就能掛上第一片。' : '讀取中…')}</p>`;
 }
 function wShow(d) { wCur = d; wFront = false; big.dataset.base = 'ema/'; drawBack(big, d, 2); $('#wFlip').textContent = '翻到正面'; wList.hidden = true; wOne.hidden = false; }
 $('#wFlip').onclick = () => { wFront = !wFront; (wFront ? drawFront : drawBack)(big, wCur, 2); $('#wFlip').textContent = wFront ? '翻到背面' : '翻到正面'; };
@@ -161,7 +163,7 @@ $('#wQ').oninput = e => { const q = e.target.value.trim(); wRender(q ? wAll.filt
 async function openWall(no = '') {
   wMine = no; wOne.hidden = true; wList.hidden = false; $('#wQ').value = '';
   wDlg.showModal(); wRender([]);
-  try { const r = await fetch(EMA_API); wAll = (await r.json()).items || []; } catch (e) { wAll = []; wall.innerHTML = '<p class="p-hint">繪馬牆暫時讀不到資料，請稍後再試。</p>'; return; }
+  try { wAll = (await loadWall()).slice(); } catch (e) { wAll = []; wFetch = null; wall.innerHTML = '<p class="p-hint">繪馬牆暫時讀不到資料，請稍後再試。</p>'; return; }
   wLoaded = true;
   $('#wCount').textContent = wAll.length ? `共 ${wAll.length} 片` : '';
   if (wMine) { const i = wAll.findIndex(d => d.no === wMine); if (i > 0) wAll.unshift(...wAll.splice(i, 1)); }
@@ -179,3 +181,14 @@ function refreshCounts() {
   get(LANTERN_API + '?type=lantern', j => (j.items || []).length).then(n => { if (n) $('#cLan').textContent = `外參道已點亮 ${n} 盞燈籠`; });
 }
 refreshCounts();
+
+// 說明頁上直接展示最新幾片繪馬（點一片會打開繪馬牆並放大）
+const prev = $('#wPrevWall');
+loadWall().then(items => { wLoaded = true; wAll = items.slice(); wRender(items, prev, 6); })
+  .catch(() => { wFetch = null; prev.innerHTML = '<p class="p-hint">繪馬牆暫時讀不到資料，請稍後再試。</p>'; });
+
+// 從導覽第六站跳過來（#participate）時，圖片載入後版面會變高，等載完再對齊一次
+if (location.hash === '#participate') {
+  const align = () => $('#participate').scrollIntoView({ block: 'start' });
+  addEventListener('load', () => { align(); setTimeout(align, 400); });
+}
