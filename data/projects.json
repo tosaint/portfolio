@@ -95,5 +95,21 @@
     "image": "projects/telescope/img/line.svg",
     "image_style": "line",
     "link": "projects/telescope/"
+  },
+  {
+    "title": "clhs4bar",
+    "title_zh": "壢馬",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "SVG",
+      "JavaScript",
+      "Paper card"
+    ],
+    "role": "Teaching design, mechanism design, development",
+    "summary": "A four-bar linkage dressed as a horse, made for a high school mechanism lesson. Students change the four bar lengths in the browser, watch whether the crank can still turn, then print a 1:1 sheet to draw and cut their own figure.",
+    "image": "projects/clhs4bar/img/line.svg",
+    "image_style": "line",
+    "link": "projects/clhs4bar/"
   }
 ]
