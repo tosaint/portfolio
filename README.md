@@ -31,7 +31,7 @@ projects/seen-through/ research page: Seen Through, with the 3D study in model/
 projects/architecture-app/ work page: how the site and the final project were made with AI;
                        handout.html is the one-page A4 handout with QR codes
 projects/zhongli-shrine/ work page: 中壢神社 古今對照; the 3D view on today's aerial photo is in app/
-projects/telescope/     work page: 望遠鏡實境操作室 Telescope Lab; the 3D simulator is in app/
+projects/telescope/     work page: 望遠鏡實境操作室 Telescope Lab; the simulator (sim.html) opens over the page at #sim, app/ only redirects there
 projects/clhs4bar/      work page: 壢馬 clhs4bar, a four-bar linkage horse; explanation, simulator and
                        three questions on one page, worksheet.pdf is the A4 folded worksheet
 images/                other images
