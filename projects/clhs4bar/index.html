@@ -156,8 +156,12 @@ svg[data-mode="paths"] .p-back { fill: none; }
 .checks { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; }
 .checks input { accent-color: var(--accent); }
 .fine { font-size: 12px; color: var(--ink-2); margin: 0; }
-.sheets { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
-.sheets[hidden] { display: none; }
+.ws { border-top: 1px solid var(--rule); padding-block: clamp(24px, 5vw, 56px); }
+.ws-bar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.ws-bar .fine { font-size: 13px; max-width: 70ch; }
+a.btn { text-decoration: none; display: inline-block; }
+.fine a { color: inherit; }
+.sheets { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
 .sheets > p { margin: 0; color: var(--ink-2); font-size: 14px; }
 .sheets figure { margin: 0; display: flex; flex-direction: column; gap: 6px; }
 .sheets figcaption { font: 400 12px/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
@@ -198,8 +202,8 @@ svg[data-mode="paths"] .p-back { fill: none; }
 @page { size: A4 landscape; margin: 0; }
 @media print {
   body { padding: 0; background: #fff; }
-  .top, main > *:not(#sim), #sim > *:not(.sheets), .sheets > p, .sheets figcaption { display: none !important; }
-  .wrap { max-width: none; } .sim { padding: 0; border: 0; position: static; }
+  .top, main > *:not(#ws), #ws > *:not(.sheets), .sheets figcaption { display: none !important; }
+  .wrap { max-width: none; } .ws { padding: 0; border: 0; }
   .sheets { display: block !important; margin: 0; }
   .sheet { break-inside: avoid; } .sheet + .sheet { break-before: page; }
   .sheet svg { width: 297mm; height: 210mm; border: 0; }
@@ -246,7 +250,7 @@ svg[data-mode="paths"] .p-back { fill: none; }
 
   <nav class="enter" aria-label="Open the work">
     <a href="#sim"><b>開始操作 <i>↓</i></b><small>Go to the simulator</small><p>調整四根桿長，看馬的動作怎麼變、什麼時候卡住。接著有三題，勾了答案畫面就會回應。</p></a>
-    <a href="worksheet.pdf"><b>下載學習單 <i>↓</i></b><small>Worksheet · PDF · A4</small><p>A4 雙面，對折成 A5。外側是壢馬的裁切版，內側只有 1 公分的格子和孔位，畫自己的造型。</p></a>
+    <a href="#ws"><b>看學習單 <i>↓</i></b><small>Worksheet · A4 · 1:1</small><p>A4 雙面，對折成 A5。外側是壢馬的裁切版，內側只有 1 公分的格子和孔位，畫自己的造型。可以下載標準版，或列印你改過桿長的版本。</p></a>
   </nav>
 
   <section class="text">
@@ -360,15 +364,9 @@ svg[data-mode="paths"] .p-back { fill: none; }
         </div>
         <div class="group">
           <h3>學習單 · Worksheet</h3>
-          <div class="btns"><button class="btn" id="btn-ws" type="button">列印學習單</button><button class="btn" id="btn-prev" type="button">看學習單預覽</button></div>
-          <p class="fine" id="print-note">紙張選 A4 橫向、縮放 100%（實際大小）、邊界無；雙面列印選短邊翻面。孔位會跟著上面的桿長。</p>
+          <p class="fine">桿長改了，學習單的孔位也會跟著改。<a href="#ws">看下面的學習單 ↓</a></p>
         </div>
       </div>
-    </div>
-    <div class="sheets" id="sheets" hidden>
-      <p>一張 A4 橫向、1:1，雙面列印後對折成 A5。上方 4 公分正反面都不放零件，裁切前先留下來。</p>
-      <figure class="sheet"><figcaption>第 1 面（外側）：壢馬裁切版。右半是封面，左半是封底</figcaption><div id="sh-out"></div></figure>
-      <figure class="sheet"><figcaption>第 2 面（內側跨頁）：只有格子和孔位，畫自己的造型</figcaption><div id="sh-in"></div></figure>
     </div>
   </section>
 
@@ -392,6 +390,22 @@ svg[data-mode="paths"] .p-back { fill: none; }
         <div class="opts"><button type="button" data-v="7.5" aria-pressed="false">7.5 cm　擺最大</button><button type="button" data-v="4" aria-pressed="false">4 cm　折衷</button><button type="button" data-v="2" aria-pressed="false">2 cm　保守</button></div>
         <p class="fb" aria-live="polite"></p>
       </div>
+    </div>
+  </section>
+
+  <section class="ws" id="ws">
+    <div class="sim-head">
+      <h2>學習單 · Worksheet</h2>
+      <p>一張 A4 橫向、1:1，雙面列印後對折成 A5。<span>One A4 sheet, 1:1, printed on both sides and folded to A5.</span></p>
+    </div>
+    <div class="ws-bar">
+      <div class="btns"><a class="btn primary" href="worksheet.pdf">下載標準版（11 / 8 / 11 / 1）</a><button class="btn" id="btn-ws" type="button">列印目前桿長的版本</button></div>
+      <p class="fine" id="ws-state"></p>
+      <p class="fine" id="print-note">列印時紙張選 A4 橫向、縮放 100%（實際大小）、邊界無；雙面列印選短邊翻面。上方 4 公分正反面都不放零件，裁切前先留下來。</p>
+    </div>
+    <div class="sheets" id="sheets">
+      <figure class="sheet"><figcaption>第 1 面（外側）：壢馬裁切版。右半是封面，左半是封底<br>Side 1, outside: the horse, ready to cut</figcaption><div id="sh-out"></div></figure>
+      <figure class="sheet"><figcaption>第 2 面（內側跨頁）：只有格子和孔位，畫自己的造型<br>Side 2, inside: grid and holes only, for your own figure</figcaption><div id="sh-in"></div></figure>
     </div>
   </section>
 
@@ -557,6 +571,11 @@ function drawParts(s,full){
   return o;
 }
 
+const isCustom=s=>['a','b','c','d'].some(k=>Math.abs(s[k]-DEF[k])>1e-9);
+// 桿長不是標準值時，在保留帶下方印一行，批改時一眼看得出來
+function customTag(s,x){if(!isCustom(s))return '';const t=`自訂桿長　曲柄 ${n1(s.a)}・連桿 ${n1(s.b)}・搖桿 ${n1(s.c)}・固定桿 ${n1(s.d)} cm`;
+  return `<rect x="${x-2}" y="${STRIP+4}" width="${f2(t.length*2.95+6)}" height="7" fill="#fff" stroke="${INK}" stroke-width="0.2"/>`+T(x+1,STRIP+8.8,t,{size:2.9,weight:500});}
+
 /* ───── 第 1 面：外側。右半封面（標題＋壢馬前半身）、左半封底；整面是壢馬裁切版 ───── */
 function sheetOutside(s){
   const id='o';let o=sheetOpen(id)+gridMM(FOLD,STRIP,true)+drawParts(s,true);
@@ -582,7 +601,7 @@ function sheetOutside(s){
   let fx=cx;const fy=35.5;
   for(const [lb,w] of [['班級',20],['座號',14],['姓名',32]]){o+=T(fx,fy,lb,{size:3.2,weight:500});o+=L(fx+8,fy+0.8,fx+8+w,fy+0.8,0.25);fx+=8+w+4;}
   o+=`<rect x="264" y="15" width="24" height="21" fill="none" stroke="${INK}" stroke-width="0.25"/>`+T(276,13,'教師確認',{size:2.6,anchor:'middle',fill:MID});
-  o+=`<rect x="8" y="${STRIP+4}" width="52" height="7" fill="#fff"/>`+T(10,STRIP+9,'壢馬　裁切版',{size:3.6,font:SERIF,weight:700,ls:0.3});
+  o+=`<rect x="8" y="${STRIP+4}" width="52" height="7" fill="#fff"/>`+T(10,STRIP+9,'壢馬　裁切版',{size:3.6,font:SERIF,weight:700,ls:0.3})+customTag(s,66);
   return o+'</svg>';
 }
 
@@ -596,6 +615,7 @@ function sheetInside(s){
   const rules=[['十字孔位不能移動','兩孔的距離就是桿長。'],['輪廓畫在虛線圈外','離孔中心至少 4 mm，才不會裂。'],['前、後半身在 B 重疊','同一支圖釘穿過兩片的 B 孔。']];
   rules.forEach((ru,i)=>{const x=92+i*68;o+=T(x,19.5,String(i+1),{size:9,font:SERIF,weight:700})+T(x+8,15.5,ru[0],{size:3.4,weight:700})+T(x+8,20.5,ru[1],{size:2.8,fill:MID});});
   o+=`<circle cx="96" cy="30" r="${RING}" fill="none" stroke="${INK}" stroke-width="0.2" stroke-dasharray="0.8 0.6"/>`+L(93.4,30,98.6,30,0.2)+L(96,27.4,96,32.6,0.2)+`<circle cx="96" cy="30" r="1" fill="none" stroke="${INK}" stroke-width="0.3"/>`;
+  o+=customTag(s,10);
   o+=T(103,31,'孔位與保護圈',{size:2.8,fill:MID})+L(134,30,142,30,0.2,INK,'stroke-dasharray="1.6 1.2"')+T(145,31,'孔距（桿長）',{size:2.8,fill:MID});
   return o+'</svg>';
 }
@@ -666,7 +686,8 @@ function rebuild(){
   sheetsDirty=true;draw();
 }
 function buildSheets(){
-  $('sh-out').innerHTML=sheetOutside(st.s,st.tp);$('sh-in').innerHTML=sheetInside(st.s);sheetsDirty=false;
+  $('sh-out').innerHTML=sheetOutside(st.s);$('sh-in').innerHTML=sheetInside(st.s);
+  $('ws-state').textContent=isCustom(st.s)?`現在顯示的是自訂桿長：曲柄 ${n1(st.s.a)}、連桿 ${n1(st.s.b)}、搖桿 ${n1(st.s.c)}、固定桿 ${n1(st.s.d)} cm。孔位已經跟著移動，壢馬的輪廓不變。`:'現在顯示的是標準桿長 11 / 8 / 11 / 1 cm，和下載的 PDF 相同。在模擬器裡改桿長，這裡的孔位會跟著移動。';sheetsDirty=false;
 }
 let prev=0;
 function tick(t){
@@ -713,13 +734,12 @@ stage.addEventListener('pointerup',endDrag);stage.addEventListener('pointercance
 
 // 列印：預覽框架裡瀏覽器會擋列印，放到自己的網站後可用
 $('btn-ws').addEventListener('click',()=>{if(sheetsDirty)buildSheets();window.print();});
-$('btn-prev').addEventListener('click',()=>{const sh=$('sheets');sh.hidden=!sh.hidden;$('btn-prev').textContent=sh.hidden?'看學習單預覽':'收起預覽';if(!sh.hidden)sh.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});});
 // 展開成滿版，再按一次或按 Esc 收回
 function setFull(v){$('sim').classList.toggle('full',v);document.documentElement.classList.toggle('noscroll',v);$('btn-full').textContent=v?'收回 ✕':'展開 ⤢';$('btn-full').setAttribute('aria-pressed',v);}
 $('btn-full').addEventListener('click',()=>setFull(!$('sim').classList.contains('full')));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')setFull(false);});
 let framed=false;try{framed=window.self!==window.top;}catch(e){framed=true;}
-if(framed)$('print-note').textContent='這個預覽視窗會擋住列印，放到自己的網站後按鈕才有作用。按「看學習單預覽」可以直接看 1:1 版面。';
+if(framed)$('print-note').textContent='這個預覽視窗會擋住列印和下載，放到自己的網站後才有作用。';
 
 rebuild();buildSheets();setPlaying(st.playing);requestAnimationFrame(tick);
 
