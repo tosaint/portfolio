@@ -25,6 +25,8 @@ style.css              all styling, light and dark themes
 main.js                reads the JSON files and renders the page
 data/profile.json      name, quote, about text, education, contact
 data/projects.json     one entry per work
+data/course.json       course schedule, one block per semester
+projects/index.html    course schedule page (reads course.json)
 projects/gchair/       work page: 高音譜椅 Gchair (photos + line drawing)
 projects/water-echo/   work page: 水聲木 Water's Echo in Wood
 projects/seen-through/ research page: Seen Through, with the 3D study in model/
@@ -68,6 +70,8 @@ No framework, build step or template is used. The site is plain HTML, CSS and Ja
 - `size`, `award` and `role` are optional. `award` can also be a list, for more than one award.
 - `"image_style": "line"` shows the image as a line drawing on the paper: its white background disappears, and in the dark theme the lines turn light. Leave it out for an ordinary photo.
 - Add `"hidden": true` to keep an entry in the file but leave it off the page.
+
+**Add a semester to the course schedule.** Add a new block at the top of `semesters` in `data/course.json`. The first block is shown open; older ones fold to a line.
 
 **Edit the CV or about text.** Change `data/profile.json`. Education entries can have a short `note`, such as research interests.
 

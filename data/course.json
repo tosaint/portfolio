@@ -1,0 +1,178 @@
+{
+  "teacher": "余致賢",
+  "semesters": [
+    {
+      "id": "115-1",
+      "course": "生活科技",
+      "course_en": "Living Technology",
+      "weeks": [
+        {
+          "week": 1,
+          "unit": "科技生活",
+          "unit_en": "Technology and Life",
+          "zh": "科技故事、前測",
+          "en": "Stories of technology; pre-test",
+          "points": 4,
+          "calc": "2 + 2"
+        },
+        {
+          "week": 2,
+          "unit": "智控機電",
+          "unit_en": "Smart Control",
+          "zh": "Arduino：微控制器",
+          "en": "The microcontroller",
+          "points": 4,
+          "calc": "2 + 2"
+        },
+        {
+          "week": 3,
+          "unit": "智控機電",
+          "unit_en": "Smart Control",
+          "zh": "Arduino：紅綠燈",
+          "en": "Traffic light",
+          "points": 6,
+          "calc": "2 + 4"
+        },
+        {
+          "week": 4,
+          "unit": "智控機電",
+          "unit_en": "Smart Control",
+          "zh": "Arduino：按鈕＋伺服馬達",
+          "en": "Button and servo",
+          "points": 4,
+          "calc": "2 + 2"
+        },
+        {
+          "week": 5,
+          "unit": "智控機電",
+          "unit_en": "Smart Control",
+          "zh": "Arduino：超音波＋伺服馬達",
+          "en": "Ultrasonic sensor and servo",
+          "points": 5,
+          "calc": "2 + 3"
+        },
+        {
+          "week": 6,
+          "unit": "學習歷程",
+          "unit_en": "Portfolio",
+          "zh": "學習歷程檔案（一）",
+          "en": "Portfolio 1",
+          "points": 2
+        },
+        {
+          "week": 7,
+          "unit": "連桿機械",
+          "unit_en": "Linkages",
+          "zh": "MotionGen：四連桿、四足獸、六足獸、連桿設計",
+          "en": "Four-bar, quadruped, hexapod, linkage design",
+          "points": 8,
+          "calc": "2 × 4"
+        },
+        {
+          "week": 8,
+          "unit": "連桿機械",
+          "unit_en": "Linkages",
+          "zh": "MotionGen：仿生獸、撲翼機、曲柄滑塊、仿生鳥",
+          "en": "Strandbeest, ornithopter, slider-crank, bionic bird",
+          "points": 8,
+          "calc": "2 × 4"
+        },
+        {
+          "week": 9,
+          "unit": "科技生活",
+          "unit_en": "Technology and Life",
+          "zh": "紀錄片《造山者》",
+          "en": "Documentary: A Chip Odyssey",
+          "points": 2
+        },
+        {
+          "week": 10,
+          "unit": "機構建模",
+          "unit_en": "3D Modelling",
+          "zh": "Onshape：積木、旋轉體",
+          "en": "Building block, revolved solid",
+          "points": 4,
+          "calc": "2 + 2"
+        },
+        {
+          "week": 11,
+          "unit": "機構建模",
+          "unit_en": "3D Modelling",
+          "zh": "Onshape：桌椅、12 個三視圖",
+          "en": "Table and chair; 12 three-view drawings",
+          "points": 14,
+          "calc": "2 + 12"
+        },
+        {
+          "week": 12,
+          "unit": "學習歷程",
+          "unit_en": "Portfolio",
+          "zh": "學習歷程檔案（二）",
+          "en": "Portfolio 2",
+          "points": 2
+        },
+        {
+          "week": 13,
+          "unit": "機構建模",
+          "unit_en": "3D Modelling",
+          "zh": "Onshape：TT 馬達、伺服馬達、超音波",
+          "en": "TT motor, servo, ultrasonic sensor",
+          "points": 5
+        },
+        {
+          "week": 14,
+          "unit": "機構建模",
+          "unit_en": "3D Modelling",
+          "zh": "Onshape：四連桿模擬",
+          "en": "Four-bar simulation",
+          "points": 10
+        },
+        {
+          "week": 15,
+          "unit": "連桿機械",
+          "unit_en": "Linkages",
+          "zh": "連桿實作：草稿",
+          "en": "Linkage build: sketch",
+          "points": 5,
+          "link": "clhs4bar/"
+        },
+        {
+          "week": 16,
+          "unit": "連桿機械",
+          "unit_en": "Linkages",
+          "zh": "連桿實作：製作",
+          "en": "Linkage build: making",
+          "points": 5,
+          "link": "clhs4bar/"
+        },
+        {
+          "week": 17,
+          "unit": "連桿機械",
+          "unit_en": "Linkages",
+          "zh": "連桿實作：製作",
+          "en": "Linkage build: making",
+          "points": 5,
+          "link": "clhs4bar/"
+        },
+        {
+          "week": 18,
+          "unit": "學習歷程",
+          "unit_en": "Portfolio",
+          "zh": "學習歷程檔案（三）",
+          "en": "Portfolio 3",
+          "points": 2
+        }
+      ],
+      "extra": [
+        {
+          "unit": "課程參與",
+          "unit_en": "Participation",
+          "zh": "準時",
+          "en": "On time",
+          "points": 15
+        }
+      ],
+      "total": 110
+    }
+  ]
+}
