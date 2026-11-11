@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>115-1 生活科技教學進度</title>
+<meta name="description" content="余致賢老師 115-1 生活科技教學進度。Weekly course schedule, Living Technology.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500&family=Noto+Serif+TC:wght@300;400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<link rel="stylesheet" href="../style.css?v=20261111b">
+<style>
+/* Course schedule: one semester per block, newest open; older semesters fold to a line.
+   Rows are a grid, not a table, so they restack on a phone. */
+.course-head { padding-block: clamp(48px, 9vw, 104px) clamp(32px, 5vw, 56px); display: grid; gap: 14px; }
+.course-head h1 { margin: 0; font: 300 clamp(26px, 3.6vw, 42px)/1.35 var(--zh); letter-spacing: .08em; text-wrap: balance; }
+.course-head h1 span { white-space: nowrap; }
+.course-head p { margin: 0; font: 400 13px var(--mono); letter-spacing: .08em; color: var(--ink-2); }
+.sem { border-top: 1px solid var(--ink); }
+.sem + .sem { margin-top: 32px; }
+.sem > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-block: 12px; font: 400 13px var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+.sem > summary::-webkit-details-marker { display: none; }
+.sem > summary span { color: var(--ink-2); letter-spacing: .04em; text-transform: none; }
+.sem > summary::after { content: "+"; color: var(--ink-2); }
+.sem[open] > summary::after { content: "–"; }
+.rows { margin: 0; padding: 0; list-style: none; }
+.row, .rows-head { display: grid; grid-template-columns: 56px 190px minmax(0, 1fr) 132px; gap: 4px 24px; align-items: baseline; padding-block: 13px; border-bottom: 1px solid var(--hair); }
+.rows-head { font: 400 11.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); padding-block: 8px; }
+.row .w { font: 400 13px var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.row .u { font-size: 14px; }
+.row .u small, .row .c small { display: block; font: 400 12.5px/1.5 var(--sans); color: var(--ink-2); }
+.row .c { font-size: 15.5px; text-wrap: pretty; }
+.row .c a { text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 4px; }
+.row .c a:hover { text-decoration-color: var(--ink); }
+.row .p, .rows-head .p { text-align: right; }
+.row .p { font: 400 13px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.row .p i { font-style: normal; color: var(--ink-2); }
+.row.same .u { visibility: hidden; }
+.row.total { border-bottom: 1px solid var(--ink); }
+.row.total .c, .row.total .p { font-weight: 500; }
+.row.total .p { font-size: 15px; }
+@media (max-width: 720px) {
+  .rows-head { display: none; }
+  .row { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 2px 12px; }
+  .row .u { grid-column: 2 / 4; grid-row: 1; font: 400 11.5px var(--mono); letter-spacing: .06em; color: var(--ink-2); }
+  .row .u small { display: inline; font: inherit; margin-left: 6px; }
+  .row .w { grid-row: 1 / 3; }
+  .row .c { grid-column: 2; grid-row: 2; }
+  .row .p { grid-column: 3; grid-row: 2; }
+  .row.same .u { visibility: visible; }
+  .row .p i { display: none; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="/">tosaint</a>
+    <nav aria-label="Sections">
+      <a href="../#index">Index</a>
+      <a href="../#about">About</a>
+      <a href="./" aria-current="page">Course</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Switch colour theme">Light</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="course-head">
+    <h1 id="title"><span>余致賢老師</span> <span>115-1</span> <span>生活科技教學進度</span></h1>
+    <p id="sub">Course schedule · Living Technology · 18 weeks</p>
+  </div>
+  <div id="semesters"></div>
+  <footer>
+    <span>Built by hand from course.json. No template.</span>
+    <span><a href="../">← Portfolio</a></span>
+  </footer>
+</main>
+
+<script>
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function row(r, prev) {
+  const same = prev && prev.unit === r.unit ? " same" : "";
+  const zh = r.link ? `<a href="${esc(r.link)}">${esc(r.zh)}</a>` : esc(r.zh);
+  const pts = r.calc ? `<i>${esc(r.calc)} = </i>${r.points}` : r.points;
+  return `<li class="row${same}"><span class="w">${r.week ? String(r.week).padStart(2, "0") : ""}</span>` +
+    `<span class="u">${esc(r.unit)}<small>${esc(r.unit_en)}</small></span>` +
+    `<span class="c">${zh}<small lang="en">${esc(r.en)}</small></span><span class="p">${pts}</span></li>`;
+}
+function semester(s, i, teacher) {
+  const body = s.weeks.map((r, k) => row(r, s.weeks[k - 1])).join("") + s.extra.map((r) => row(r)).join("") +
+    `<li class="row total"><span class="w"></span><span class="u"></span><span class="c">總計<small lang="en">Total</small></span><span class="p">${s.total}</span></li>`;
+  return `<details class="sem"${i === 0 ? " open" : ""}><summary>${esc(s.id)} <span>${esc(s.course)} ${esc(s.course_en)}</span></summary>` +
+    `<div class="rows-head"><span>週 Week</span><span>單元 Unit</span><span>內容 Content</span><span class="p">配分 Points</span></div>` +
+    `<ol class="rows">${body}</ol></details>`;
+}
+(function theme() {
+  const btn = document.getElementById("theme"), root = document.documentElement;
+  const current = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  const label = () => { btn.textContent = current() === "dark" ? "Light" : "Dark"; };
+  label();
+  btn.addEventListener("click", () => {
+    root.dataset.theme = current() === "dark" ? "light" : "dark";
+    try { localStorage.setItem("theme", root.dataset.theme); } catch (e) {}
+    label();
+  });
+})();
+fetch("../data/course.json", { cache: "no-cache" }).then((r) => r.json()).then((d) => {
+  const s = d.semesters[0];
+  document.getElementById("title").innerHTML = `<span>${esc(d.teacher)}老師</span> <span>${esc(s.id)}</span> <span>${esc(s.course)}教學進度</span>`;
+  document.getElementById("sub").textContent = `Course schedule · ${s.course_en} · ${s.weeks.length} weeks`;
+  document.getElementById("semesters").innerHTML = d.semesters.map((x, i) => semester(x, i, d.teacher)).join("");
+}).catch((e) => { document.getElementById("semesters").innerHTML = `<p>無法載入進度資料 Could not load the schedule (${esc(e.message)}).</p>`; });
+</script>
+</body>
+</html>
