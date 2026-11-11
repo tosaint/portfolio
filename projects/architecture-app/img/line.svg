@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none" stroke="#2b2a27" stroke-width="1.6" font-family="IBM Plex Mono, Menlo, monospace" font-size="15">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none" stroke="#2b2a27" stroke-width="2.1" font-family="IBM Plex Mono, Menlo, monospace" font-size="15">
 <!-- Architecture App: the site drawn as a plan. Home → portfolio → work pages; JSON → main.js fills the portfolio. -->
 <g fill="#ffffff">
   <rect x="40" y="90" width="150" height="190"/>
@@ -11,7 +11,7 @@
   <rect x="400" y="420" width="110" height="66"/>
   <rect x="330" y="530" width="120" height="44"/>
 </g>
-<g stroke-width=".8" opacity=".55">
+<g stroke-width="1.2" opacity=".55">
   <circle cx="115" cy="170" r="38"/><circle cx="115" cy="170" r="22"/><circle cx="96" cy="216" r="16"/><circle cx="142" cy="206" r="12"/>
   <path d="M310 110 H460 M310 150 H400 M310 190 H460 M310 230 H420 M310 262 H460"/>
 </g>
