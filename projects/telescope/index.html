@@ -42,7 +42,7 @@ a:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
 .top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
 .top a:hover { color: var(--ink); }
 
-.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(56px, 10vw, 120px) clamp(40px, 6vw, 64px); }
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(24px, 4vw, 48px) clamp(20px, 3vw, 32px); }
 .eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
 h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spacing: .14em; text-wrap: balance; }
 .en-title { margin: 14px 0 0; font: 300 clamp(18px, 2vw, 24px)/1.4 var(--serif); color: var(--ink-2); letter-spacing: .02em; }
@@ -50,21 +50,44 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.25 var(--serif); letter-spa
 .lede span { display: block; color: var(--ink-3); font-size: 13px; }
 
 .plan { margin: 0; justify-self: end; width: 100%; }
-.plan img { width: 100%; height: auto; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
+.plan img { width: 100%; height: auto; max-height: 230px; object-fit: contain; object-position: right bottom; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
 
-.enter { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--ink); border: 1px solid var(--ink); margin-bottom: clamp(40px, 6vw, 72px); }
-.enter a { display: block; background: var(--paper); padding: clamp(18px, 3vw, 28px); text-decoration: none; transition: background .2s; }
-.enter a:hover { background: var(--rule); }
-.enter b { display: block; font: 500 clamp(18px, 2vw, 22px)/1.4 var(--serif); letter-spacing: .1em; }
-.enter small { display: block; margin-top: 6px; font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
-.enter p { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); }
-.enter i { font-style: normal; float: right; font-family: var(--mono); }
-
-/* The simulator opens over the page, full screen, and closes back to where the reader was */
-.sim { position: fixed; inset: 0; z-index: 50; background: var(--paper); }
-.sim iframe { display: block; width: 100%; height: 100%; border: 0; }
-.sim[hidden] { display: none; }
-html.sim-open { overflow: hidden; }
+/* The simulator sits in the page as a window with three sizes: folded to a bar, standard,
+   and enlarged over the page. It grows and shrinks from where it stands. */
+.lab { margin-bottom: clamp(40px, 6vw, 72px); scroll-margin-top: 56px; }
+.lab-slot { --lab-h: min(760px, max(500px, calc(100vh - 170px))); }
+@supports (height: 100svh) { .lab-slot { --lab-h: min(760px, max(500px, calc(100svh - 170px))); } }
+.lab-box { display: flex; flex-direction: column; background: var(--paper); border: 1px solid var(--ink); }
+.lab-box.moving { position: fixed; z-index: 50; transition: top .28s ease, left .28s ease, width .28s ease, height .28s ease; }
+.lab-box[data-size="max"] { position: fixed; z-index: 50; inset: 0; border: 0; }
+.lab-bar { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 10px 8px 14px; border-bottom: 1px solid var(--rule); }
+.lab-box[data-size="max"] .lab-bar { padding-top: max(8px, env(safe-area-inset-top, 0px)); padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(10px, env(safe-area-inset-right, 0px)); }
+.lab-bar h2 { margin: 0; font: 500 16px/1.4 var(--serif); letter-spacing: .1em; }
+.lab-bar h2 span { margin-left: .5em; font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.lab-prog { font: 400 12px var(--mono); color: var(--ink-2); margin-right: auto; }
+.lab button { font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink); background: var(--paper); border: 1px solid var(--ink-3); border-radius: 0; padding: 7px 11px; min-height: 36px; cursor: pointer; }
+.lab button:hover { border-color: var(--ink); }
+.lab button:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+.lab-sizes { display: flex; }
+.lab-sizes button + button { margin-left: -1px; }
+.lab-sizes button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); position: relative; }
+.lab-frame { position: relative; flex: 1 1 auto; height: var(--lab-h); min-height: 0; overflow: hidden; transition: height .28s ease; }
+.lab-box[data-size="min"] .lab-frame { height: 0; flex: none; }
+.lab-box[data-size="min"] .lab-bar { border-bottom: 0; }
+.lab-box[data-size="max"] .lab-frame, .lab-box.moving .lab-frame { height: auto; transition: none; }
+.lab-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+.lab .lab-shield { position: absolute; inset: 0; width: 100%; min-height: 0; padding: 0; border: 0; background: rgba(243, 241, 236, .18); display: grid; place-items: center; cursor: pointer; }
+.lab-shield span { display: block; padding: 14px 22px; background: var(--paper); border: 1px solid var(--ink); text-align: center; }
+.lab-shield b { display: block; font: 500 clamp(17px, 2vw, 20px)/1.4 var(--serif); letter-spacing: .1em; }
+.lab-shield small { display: block; margin-top: 4px; font: 400 11px/1.6 var(--mono); color: var(--ink-3); }
+.lab [hidden] { display: none !important; }
+.lab-note { margin: 14px 0 0; font-size: 14px; color: var(--ink-2); max-width: 52em; }
+.lab-note span { display: block; color: var(--ink-3); font-size: 13px; }
+html.lab-max { overflow: hidden; }
+@media (max-width: 760px) { .plan img { max-height: 110px; object-position: left bottom; } .head h1 { font-size: 30px; } .head .lede { margin-top: 14px; } }
+@media (max-width: 560px) { .lab-bar h2 span, .lab-prog { display: none; } .lab-bar { flex-wrap: nowrap; gap: 6px; padding: 6px 6px 6px 10px; } .lab-bar h2 { margin-right: auto; font-size: 15px; white-space: nowrap; } .lab button { padding: 6px 8px; } .lab-slot { --lab-h: max(480px, calc(100vh - 150px)); } }
+@supports (height: 100svh) { @media (max-width: 560px) { .lab-slot { --lab-h: max(480px, calc(100svh - 150px)); } } }
+@media (prefers-reduced-motion: reduce) { .lab-box.moving, .lab-frame { transition: none; } }
 
 .text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
 .text h2 { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
@@ -203,9 +226,28 @@ html.sim-open { overflow: hidden; }
     <figure class="plan"><img src="img/line.svg" alt="Side elevation line drawing of a Dobsonian telescope: the tube tilted upward on its round altitude bearing, the finder and eyepiece on top, the rocker box and ground board below, and a dotted sight line leaving the front of the tube"></figure>
   </section>
 
-  <nav class="enter" aria-label="Open the work">
-    <a href="sim.html" id="open-sim"><b>開始操作 <i>→</i></b><small>Start the simulator · opens on this page</small><p>桌上型杜布森反射望遠鏡放在校園走廊，對面大樓掛著「中壢高中」的招牌。照操作面板的六個步驟：取下鏡筒蓋、裝目鏡、找招牌、調焦、觀察倒像、校正尋星鏡。做完一步會自動檢核，再帶到下一步。iPad 與電腦都可以用。</p></a>
-  </nav>
+  <section class="lab" id="sim" aria-labelledby="lab-h">
+    <div class="lab-slot" id="lab-slot">
+      <div class="lab-box" id="lab-box" data-size="std">
+        <div class="lab-bar">
+          <h2 id="lab-h">3D 操作 <span lang="en">Simulator</span></h2>
+          <span class="lab-prog" id="lab-prog"></span>
+          <button type="button" class="lab-pause" id="lab-pause" hidden>暫停</button>
+          <div class="lab-sizes" role="group" aria-label="視窗大小">
+            <button type="button" data-size="min" aria-pressed="false">收合</button>
+            <button type="button" data-size="std" aria-pressed="true">標準</button>
+            <button type="button" data-size="max" aria-pressed="false">放大</button>
+          </div>
+        </div>
+        <div class="lab-frame" id="lab-frame">
+          <iframe id="lab-iframe" title="望遠鏡實境操作室 3D 操作" allow="web-share; fullscreen" src="sim.html"></iframe>
+          <button type="button" class="lab-shield" id="lab-shield"><span><b>點一下開始操作</b><small>Tap to operate · 操作中可按「暫停」回到捲動頁面</small></span></button>
+        </div>
+      </div>
+    </div>
+    <p class="lab-note">桌上型杜布森反射望遠鏡放在校園走廊，對面大樓掛著「中壢高中」的招牌。照操作面板的六個步驟：取下鏡筒蓋、裝目鏡、找招牌、調焦、觀察倒像、校正尋星鏡。做完一步會自動檢核，再帶到下一步。<span lang="en">A tabletop Dobsonian in the school corridor, with a sign on the building opposite. Follow the six steps in the panel; each one is checked as you finish it.</span></p>
+  </section>
+
 
   <section class="text">
     <div lang="zh-Hant">
@@ -442,44 +484,69 @@ html.sim-open { overflow: hidden; }
     <dt>Note</dt><dd>器材外觀與光學為教學近似，不是實物掃描；太陽方向的警示只是教學提醒，不是真實的安全界線。<span>The instrument and optics are teaching approximations, not a scan of the real one. The sun warning is a reminder for teaching, not a real safety limit.</span></dd>
   </dl>
 </main>
-<div class="sim" id="sim" hidden></div>
 <script>
-// "開始操作" opens the simulator over this page. The address ends in #sim while it is
-// open, so that link goes straight to the simulator and Back closes it.
+// The simulator window: three sizes (folded, standard, enlarged), and it only takes over
+// touch after a tap, so the page can still be scrolled past it.
 (function () {
-  var box = document.getElementById("sim"), link = document.getElementById("open-sim"), pushed = false, y = 0, goTo = null;
-  function show() {
-    if (!box.hidden) return;
-    y = window.scrollY;
-    if (!box.firstChild) {
-      var f = document.createElement("iframe");
-      f.src = link.getAttribute("href"); f.title = "望遠鏡實境操作室 3D 操作";
-      f.allow = "web-share; fullscreen";
-      box.appendChild(f);
-    }
-    box.hidden = false; document.documentElement.classList.add("sim-open");
-    box.firstChild.focus();
+  var $ = function (id) { return document.getElementById(id); };
+  var box = $("lab-box"), slot = $("lab-slot"), frame = $("lab-frame"), shield = $("lab-shield"), pauseBtn = $("lab-pause"), iframe = $("lab-iframe");
+  var size = "std", active = false, started = false, busy = false, reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  try { if (localStorage.getItem("telescope-lab-size") === "min" && location.hash !== "#sim") size = "min"; } catch (e) {}
+
+  function setActive(on) {
+    active = !!on && size !== "min"; shield.hidden = active; pauseBtn.hidden = !active;
+    if (active) { started = true; try { iframe.contentWindow.focus(); } catch (e) {} }
+    shield.querySelector("b").textContent = started ? "點一下繼續操作" : "點一下開始操作";
   }
-  function hide() {
-    if (box.hidden) return;
-    box.hidden = true; document.documentElement.classList.remove("sim-open");
-    var t = goTo && document.getElementById(goTo); goTo = null;
-    if (t) t.scrollIntoView(); else { window.scrollTo(0, y); link.focus({ preventScroll: true }); }
+  function mark() {
+    box.dataset.size = size;
+    box.querySelectorAll(".lab-sizes button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.size === size)); });
+    document.documentElement.classList.toggle("lab-max", size === "max");
+    iframe.tabIndex = size === "min" ? -1 : 0;
+    try { if (size !== "max") localStorage.setItem("telescope-lab-size", size); } catch (e) {}
   }
-  function sync() { if (location.hash === "#sim") show(); else hide(); }
-  function close() {
-    if (pushed) { pushed = false; history.back(); }
-    else { history.replaceState(null, "", location.pathname + location.search); sync(); }
+  function px(r) { box.style.top = r.top + "px"; box.style.left = r.left + "px"; box.style.width = r.width + "px"; box.style.height = r.height + "px"; }
+  function clear() { box.classList.remove("moving"); box.style.top = box.style.left = box.style.width = box.style.height = ""; busy = false; }
+  function setSize(next, then) {
+    if (busy || next === size) { if (then) then(); return; }
+    var prev = size, full = { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+    if (next === "max") {                       // grow from where the window stands
+      var r = box.getBoundingClientRect(); slot.style.height = r.height + "px";
+      if (reduce) { size = next; mark(); setActive(true); if (then) then(); return; }
+      busy = true; box.classList.add("moving"); px(r); box.offsetWidth; px(full);
+      setTimeout(function () { size = next; mark(); clear(); setActive(true); if (then) then(); }, 300);
+    } else if (prev === "max") {                // shrink back into the page
+      slot.style.height = ""; size = next; mark();
+      var target = box.getBoundingClientRect();
+      if (reduce) { if (next === "min") setActive(false); if (then) then(); return; }
+      busy = true; slot.style.height = target.height + "px"; box.classList.add("moving"); px(full); box.offsetWidth; px(target);
+      setTimeout(function () { clear(); slot.style.height = ""; if (next === "min") setActive(false); if (then) then(); }, 300);
+    } else { size = next; mark(); if (next === "min") setActive(false); if (then) setTimeout(then, reduce ? 0 : 300); }
   }
-  link.addEventListener("click", function (e) {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button > 0) return;
-    e.preventDefault(); pushed = true; location.hash = "sim";
-  });
-  window.addEventListener("hashchange", sync);
+  box.querySelector(".lab-sizes").addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) setSize(b.dataset.size); });
+  shield.addEventListener("click", function () { setActive(true); });
+  pauseBtn.addEventListener("click", function () { setActive(false); });
+  window.addEventListener("keydown", function (e) { if (e.key === "Escape" && size === "max") setSize("std"); });
+  // leave the simulator alone once it has been scrolled away
+  if (window.IntersectionObserver) new IntersectionObserver(function (en) { if (active && size === "std" && en[0].intersectionRatio < 0.2) setActive(false); }, { threshold: [0, 0.2, 1] }).observe(frame);
+
+  // progress shown on the bar, read from what the simulator keeps in this browser
+  function progress() {
+    var n = 0; try { var x = JSON.parse(localStorage.getItem("lizhong-dobsonian-v26") || "{}"); n = Object.keys(x.history || {}).length; } catch (e) {}
+    $("lab-prog").textContent = "已完成 " + Math.min(n, 6) + " / 6";
+  }
+  window.addEventListener("storage", progress); setInterval(progress, 4000); progress();
+
+  // …/#sim goes straight to the simulator, running; the simulator can also send the reader on
+  function go() { if (location.hash !== "#sim") return; setSize("std", function () { $("sim").scrollIntoView(); setActive(true); }); }
+  window.addEventListener("hashchange", go);
   window.addEventListener("message", function (e) {
-    if (e.origin === location.origin && e.data && e.data.type === "telescope-close") { goTo = e.data.to === "optics" ? "optics" : null; close(); }
+    if (e.origin !== location.origin || !e.data || e.data.type !== "telescope-close") return;
+    var to = e.data.to === "optics" ? $("optics") : null;
+    if (location.hash === "#sim") history.replaceState(null, "", location.pathname + location.search);
+    setSize(size === "max" ? "std" : size, function () { setActive(false); if (to) to.scrollIntoView(); });
   });
-  sync();
+  mark(); setActive(false); go();
 })();
 </script>
 <script>
