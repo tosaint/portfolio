@@ -94,7 +94,7 @@ button[aria-pressed=true]{background:var(--accent-l);border-color:#7fbaaa}
 .micro{font-size:11.5px;color:var(--muted);margin:7px 0 0}
 .question-area h3{font-size:14px;margin:0 0 8px}
 .question-area+.tool-head{margin-top:14px}
-.quiz-choices{display:flex;flex-direction:column;gap:5px}
+.quiz-choices{display:flex;flex-direction:column;gap:5px}.question-area .why{display:block;margin-top:8px;padding-left:0;text-align:left;font-weight:600}.question-area .next{display:block;width:100%;margin-top:6px;min-height:42px}
 .quiz-choices button{font-size:13px;min-height:42px;text-align:left;padding:7px 10px}
 .quiz-choices button.correct{background:#e0f2e7;border-color:#58a888}
 .quiz-choices button.wrong{background:#f8eee3;border-color:#b78b52}
@@ -700,9 +700,12 @@ function renderQuestions(){
  opts.forEach((text,k)=>{const b=document.createElement('button');b.textContent=text;b.dataset.quiz=which;b.dataset.answer=k;b.onclick=()=>{
   if(which==='inv'&&!history.focus){notify('先用 20 mm 找到招牌並調清楚，再回答。');return}
   if(which==='q2'&&!history.ep4){notify('先完成 4 mm 的觀察，再回答 Q2。');return}
-  answers[which]=k;log('answer',{question:which,choice:k});uiCache='';syncUI();
+  answers[which]=k;log('answer',{question:which,choice:k});renderQuestions();uiCache='';syncUI();
   if(k!==(which==='inv'?3:0))notify('再看一次視野，答案可以改。');
  };choices.appendChild(b)});area.appendChild(choices);
+ if(answers.inv===3){const w=document.createElement('button');w.className='text-button why';w.textContent='為什麼會顛倒？看光怎麼走 →';
+  w.onclick=()=>{save();if(window.parent!==window)parent.postMessage({type:'telescope-close',to:'optics'},location.origin);else location.href='./#optics'};area.appendChild(w);
+  if(!history.align){const n=document.createElement('button');n.className='primary next';n.textContent='下一步：尋星鏡同軸 →';n.onclick=()=>goStep(firstOpen(),false);area.appendChild(n)}}
  if(which==='q2'){const p=document.createElement('p');p.textContent='Q1：哪一組看建築物最清楚？寫下你的觀察和理由。';area.appendChild(p);
   const ta=document.createElement('textarea');ta.id='q1';ta.maxLength=3000;ta.placeholder='例如：比較字的大小、邊緣和亮度…';ta.setAttribute('aria-label','Q1 觀察與理由');ta.value=answers.q1;
   ta.addEventListener('input',()=>{answers.q1=ta.value;scheduleSave();uiCache='';syncUI()});area.appendChild(ta)}
@@ -722,7 +725,7 @@ function evaluate(now){
   if(candidates[t.key]){if(!stable[t.key])stable[t.key]=now;
    if(now-stable[t.key]>=600&&!history[t.key]){const date=new Date().toISOString();history[t.key]={first:date,last:date};log('task-complete',{task:t.key});if(t.key==='focus'||t.key==='align'||!eyeShot)setTimeout(captureEye,0);
     const nx=firstOpen();notify(nx>i&&!history[TASKS[nx].key]?`✓ ${t.title}　下一步：${TASKS[nx].title}`:`✓ ${t.title}`);
-    if(taskIndex===i&&!explicitPart&&!history[TASKS[nx].key]){clearTimeout(advanceTimer);advanceTimer=setTimeout(()=>{if(taskIndex===i)goStep(firstOpen(),false)},900)}
+    if(taskIndex===i&&!explicitPart&&t.key!=='inv'&&!history[TASKS[nx].key]){clearTimeout(advanceTimer);advanceTimer=setTimeout(()=>{if(taskIndex===i)goStep(firstOpen(),false)},900)}
     uiCache='';syncUI()}}
   else stable[t.key]=0});
  sunBlocked=m.danger;$('sunWarning').hidden=!m.danger;

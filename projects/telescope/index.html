@@ -111,6 +111,77 @@ html.sim-open { overflow: hidden; }
 .how { margin: 4px 0 2px; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
 .yt { font: 400 11px var(--mono); letter-spacing: .06em; color: var(--ink-3); text-decoration: none; }
 .yt:hover { color: var(--ink); text-decoration: underline; }
+
+/* Optics block: one 3D viewer on a timeline (assembled, taken apart, light path
+   top/bottom, light path left/right), with what the eye sees beside it. */
+:root { --ray-a: #c2452d; --ray-b: #2a6aa8; --ray-c: #35805a; --ray-d: #a8780a; --glass: #6f9aa6; }
+:root[data-theme="dark"] { --ray-a: #ef7d63; --ray-b: #6fb0ea; --ray-c: #6cc191; --ray-d: #e0b548; --glass: #8fc0cc; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ray-a: #ef7d63; --ray-b: #6fb0ea; --ray-c: #6cc191; --ray-d: #e0b548; --glass: #8fc0cc; } }
+
+.optics { padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); scroll-margin-top: 56px; }
+.optics [hidden] { display: none !important; }
+.optics h2, .ox-label { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.ox-intro { margin: 0 0 clamp(16px, 3vw, 24px); font-size: 14px; color: var(--ink-2); max-width: 46em; }
+.ox-intro span { display: block; color: var(--ink-3); font-size: 13px; }
+.optics button { font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink); background: var(--paper); border: 1px solid var(--ink-3); padding: 9px 12px; min-height: 40px; cursor: pointer; border-radius: 0; }
+.optics button:hover { border-color: var(--ink); }
+.optics button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.optics button:focus-visible, .optics input:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+.ox-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ox-modes { margin-bottom: 12px; }
+
+
+.ox-stage-wrap { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 50% 38%, #1d2c36 0%, #111b23 55%, #0a1117 100%); }
+.ox-stage { display: block; width: 100%; height: clamp(320px, 58vw, 620px); touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+.ox-stage:active { cursor: grabbing; }
+.ox-stage canvas { display: block; width: 100%; height: 100%; }
+.ox-labs { position: absolute; inset: 0; pointer-events: none; }
+.ox-labs span { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font: 400 12px var(--mono); letter-spacing: .06em; color: #d7dde0; text-shadow: 0 0 6px #0a1117, 0 0 2px #0a1117; }
+.ox-labs i, .ox-chips i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.ox-chips i { outline: 1px solid var(--rule); }
+.optics .ox-zoom { position: absolute; right: 8px; top: 8px; background: rgba(10, 17, 23, .55); color: #e8ecef; border-color: #5b6b76; }
+.optics .ox-zoom:hover { border-color: #e8ecef; }
+.optics .ox-zoom[aria-pressed="true"] { background: #e8ecef; color: #111b23; border-color: #e8ecef; }
+.ox-hint { position: absolute; left: 10px; bottom: 8px; margin: 0; font: 400 11px var(--mono); color: #8fa0aa; pointer-events: none; }
+.ox-load { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; text-align: center; font: 400 12px/1.8 var(--mono); color: #b9c4cb; pointer-events: none; }
+
+.ox-bar { margin-top: 12px; }
+.ox-time { width: 100%; margin: 14px 0 4px; accent-color: var(--ink); }
+.ox-cap { margin: 6px 0 0; min-height: 3.4em; font: 500 16px/1.7 var(--serif); }
+
+.ox-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 64px); margin-top: clamp(20px, 4vw, 36px); padding-top: clamp(20px, 4vw, 32px); border-top: 1px solid var(--rule); }
+.ox-discs { display: flex; flex-wrap: wrap; gap: 20px; }
+.ox-discs figure { margin: 0; }
+.ox-discs figcaption { margin-top: 8px; font: 400 12px/1.5 var(--mono); color: var(--ink-3); max-width: 150px; }
+.ox-disc { position: relative; width: 150px; height: 150px; border-radius: 50%; overflow: hidden; outline: 1px solid var(--ink); background: #0d0d0c; }
+.ox-scene { position: absolute; inset: 0; display: grid; place-items: center; background: repeating-linear-gradient(0deg, #8f8b80 0 16px, #7d796f 16px 18px), #8f8b80; transition: opacity .25s; }
+.ox-sign { position: relative; padding: 9px 14px; background: #7a2a26; color: #ecc66c; font: 500 21px/1 var(--serif); letter-spacing: .08em; white-space: nowrap; }
+.ox-sign i { position: absolute; transition: opacity .2s; }
+.ox-sign .e-t { left: 0; right: 0; top: -5px; height: 5px; background: var(--ray-a); }
+.ox-sign .e-b { left: 0; right: 0; bottom: -5px; height: 5px; background: var(--ray-b); }
+.ox-sign .e-l { top: 0; bottom: 0; left: -5px; width: 5px; background: var(--ray-c); }
+.ox-sign .e-r { top: 0; bottom: 0; right: -5px; width: 5px; background: var(--ray-d); }
+.ox-wait { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #b3aea4; font: 400 11px var(--mono); text-align: center; line-height: 1.6; }
+.ox-key { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 14px 0 0; padding: 0; list-style: none; font: 400 12px var(--mono); color: var(--ink-2); }
+.ox-key li::before { content: ""; display: inline-block; width: 14px; height: 3px; margin-right: 6px; vertical-align: middle; background: var(--c); }
+
+.ox-chips { margin-bottom: 12px; }
+.ox-desc { margin: 0; font-size: 14px; color: var(--ink-2); min-height: 4.5em; }
+.ox-desc b { display: block; font: 500 16px/1.6 var(--serif); color: var(--ink); }
+.ox-desc small { font: 400 11px var(--mono); letter-spacing: .08em; color: var(--ink-3); margin-left: .6em; text-transform: uppercase; }
+
+.ox-mag { margin-top: clamp(20px, 4vw, 36px); padding-top: clamp(20px, 4vw, 32px); border-top: 1px solid var(--rule); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 64px); }
+.ox-mag label { display: block; font-size: 14px; color: var(--ink-2); }
+.ox-mag input[type=range] { width: 100%; accent-color: var(--ink); margin: 8px 0; }
+.ox-formula { margin: 6px 0 0; font: 300 clamp(22px, 3vw, 30px)/1.4 var(--serif); font-variant-numeric: tabular-nums; }
+.ox-formula small { font: 400 12px var(--mono); color: var(--ink-3); margin-left: .5em; }
+.ox-mag p:not(.ox-label):not(.ox-formula) { margin: 8px 0 0; font-size: 14px; color: var(--ink-2); }
+.ox-check { display: flex; gap: 8px; align-items: center; }
+.ox-check input { width: 18px; height: 18px; accent-color: var(--ink); }
+.ox-note { margin: clamp(20px, 4vw, 32px) 0 0; font: 400 12px/1.7 var(--mono); color: var(--ink-3); }
+@media (max-width: 760px) { .ox-grid, .ox-mag { grid-template-columns: 1fr; } .ox-disc { width: 132px; height: 132px; } .ox-cap { min-height: 5.1em; } }
+@media (prefers-reduced-motion: reduce) { .optics * { transition: none !important; } }
+
 @media (max-width: 900px) { .videos { grid-template-columns: repeat(2, minmax(0, 1fr)); } .videos .lead { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .videos { grid-template-columns: 1fr; } }
 </style>
@@ -159,7 +230,7 @@ html.sim-open { overflow: hidden; }
         <li>插入 20 mm 目鏡，輕輕鎖緊固定螺絲。</li>
         <li>推動鏡筒，讓主鏡對準「中壢高中」。</li>
         <li>轉調焦鈕，讓字變清楚。</li>
-        <li>觀察倒像：字是上下左右都顛倒的。</li>
+        <li>觀察倒像：字是上下左右都顛倒的。<a href="#optics">為什麼？</a></li>
         <li>只轉尋星鏡的螺絲，讓十字線對到主鏡看到的同一處。</li>
       </ol>
     </div>
@@ -174,6 +245,76 @@ html.sim-open { overflow: hidden; }
         <li>Turn only the finder’s screws until its crosshair meets the same point.</li>
       </ol>
     </div>
+  </section>
+
+  <section class="optics" id="optics" aria-labelledby="optics-h" data-three="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
+    <h2 id="optics-h">為什麼是顛倒的 · How it works</h2>
+    <p class="ox-intro">把望遠鏡變透明、拆開，再讓光走一次，就看得出像是在哪裡顛倒的。<span lang="en">Make the telescope transparent, take it apart, then follow the light to see where the image turns over.</span></p>
+  
+    <div class="ox-row ox-modes" role="group" aria-label="望遠鏡種類">
+      <button type="button" id="ox-m-main" aria-pressed="true">主鏡 · 反射式</button>
+      <button type="button" id="ox-m-finder" aria-pressed="false">尋星鏡 · 折射式</button>
+    </div>
+  
+    <div class="ox-stage-wrap">
+      <div class="ox-stage" id="ox-stage" role="img" aria-label="半透明的望遠鏡 3D 模型與光路"></div>
+      <div class="ox-labs" id="ox-labs" aria-hidden="true"></div>
+      <p class="ox-load" id="ox-load">載入 3D 模型…</p>
+      <button type="button" class="ox-zoom" id="ox-zoom" aria-pressed="false">放大焦點</button>
+      <p class="ox-hint">左右拖曳可轉動</p>
+    </div>
+  
+    <div class="ox-row ox-bar" role="group" aria-label="階段">
+      <button type="button" data-stage="0">組合</button>
+      <button type="button" data-stage="1">拆解</button>
+      <button type="button" data-stage="2">光路 · 上下</button>
+      <button type="button" data-stage="3">光路 · 左右</button>
+      <button type="button" id="ox-play">▶ 從頭播放</button>
+    </div>
+    <input class="ox-time" id="ox-time" type="range" min="0" max="100" step="0.5" value="0" aria-label="時間軸：組合、拆解、光路">
+    <p class="ox-cap" id="ox-cap" aria-live="polite"></p>
+  
+    <div class="ox-grid">
+      <div>
+        <p class="ox-label">看到什麼 · What you see</p>
+        <div class="ox-discs">
+          <figure>
+            <div class="ox-disc"><div class="ox-scene"><div class="ox-sign" id="ox-sign-a"><i class="e-t"></i><i class="e-b"></i><i class="e-l"></i><i class="e-r"></i>中壢高中</div></div></div>
+            <figcaption>肉眼看到的招牌</figcaption>
+          </figure>
+          <figure>
+            <div class="ox-disc"><p class="ox-wait" id="ox-wait">光走到眼睛<br>才看得到</p><div class="ox-scene" id="ox-seen"><div class="ox-sign" id="ox-sign-b"><i class="e-t"></i><i class="e-b"></i><i class="e-l"></i><i class="e-r"></i>中壢高中</div></div></div>
+            <figcaption id="ox-seen-cap">目鏡裡看到的像</figcaption>
+          </figure>
+        </div>
+        <ul class="ox-key" aria-label="光線顏色">
+          <li style="--c:var(--ray-a)">上緣</li><li style="--c:var(--ray-b)">下緣</li><li style="--c:var(--ray-c)">左緣</li><li style="--c:var(--ray-d)">右緣</li>
+        </ul>
+      </div>
+      <div>
+        <p class="ox-label">零件 · Parts</p>
+        <div class="ox-row ox-chips" id="ox-chips"></div>
+        <p class="ox-desc" id="ox-desc"></p>
+      </div>
+    </div>
+  
+    <div class="ox-mag" id="ox-mag">
+      <div>
+        <p class="ox-label">延伸 · 倍率 · Magnification</p>
+        <label for="ox-fe">換一支目鏡：目鏡焦距 <b id="ox-fe-v">20</b> mm</label>
+        <input id="ox-fe" type="range" min="4" max="32" step="1" value="20">
+        <p class="ox-formula" id="ox-formula"></p>
+        <p id="ox-mag-note"></p>
+      </div>
+      <div>
+        <p class="ox-label">延伸 · 焦點 · Focus</p>
+        <label class="ox-check" for="ox-paper-on"><input id="ox-paper-on" type="checkbox"> 拿掉目鏡，在光路上放一張半透明的紙</label>
+        <label for="ox-paper" style="margin-top:10px">紙的位置：<b id="ox-paper-v">正好在焦點</b></label>
+        <input id="ox-paper" type="range" min="-40" max="40" step="1" value="-28" disabled>
+        <p>紙放在焦點上，像最清楚；往前或往後都會糊。轉調焦鈕，就是在把目鏡移到這個位置。</p>
+      </div>
+    </div>
+    <p class="ox-note">示意圖：主鏡口徑 130 mm、焦距 650 mm；尋星鏡 6×30。光束的夾角與鏡面弧度畫得比實際明顯，底座為示意。實際的像還會隨觀察者站的位置轉動，這裡統一畫成轉 180°。</p>
   </section>
 
   <section class="text">
@@ -292,7 +433,7 @@ html.sim-open { overflow: hidden; }
   <dl class="data">
     <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
     <dt>Teacher</dt><dd>授課教師：黃慧春老師<span>國立中央大學附屬中壢高中 地球科學科 · Earth Science, Zhongli Senior High School</span></dd>
-    <dt>Medium</dt><dd>WebGL, HTML, JavaScript</dd>
+    <dt>Medium</dt><dd>WebGL, Three.js, HTML, JavaScript</dd>
     <dt>Model</dt><dd>桌上型杜布森反射望遠鏡、20 mm 目鏡、尋星鏡<span>Tabletop Dobsonian with a 20 mm eyepiece and a finder</span></dd>
     <dt>Devices</dt><dd>iPad Safari、電腦瀏覽器<span>iPad and desktop browsers, no installation</span></dd>
     <dt>Worksheet</dt><dd>〈望遠鏡怎麼用？〉任務一<span>Task one of the worksheet “How to Use a Telescope”</span></dd>
@@ -306,7 +447,7 @@ html.sim-open { overflow: hidden; }
 // "開始操作" opens the simulator over this page. The address ends in #sim while it is
 // open, so that link goes straight to the simulator and Back closes it.
 (function () {
-  var box = document.getElementById("sim"), link = document.getElementById("open-sim"), pushed = false, y = 0;
+  var box = document.getElementById("sim"), link = document.getElementById("open-sim"), pushed = false, y = 0, goTo = null;
   function show() {
     if (!box.hidden) return;
     y = window.scrollY;
@@ -322,7 +463,8 @@ html.sim-open { overflow: hidden; }
   function hide() {
     if (box.hidden) return;
     box.hidden = true; document.documentElement.classList.remove("sim-open");
-    window.scrollTo(0, y); link.focus({ preventScroll: true });
+    var t = goTo && document.getElementById(goTo); goTo = null;
+    if (t) t.scrollIntoView(); else { window.scrollTo(0, y); link.focus({ preventScroll: true }); }
   }
   function sync() { if (location.hash === "#sim") show(); else hide(); }
   function close() {
@@ -335,12 +477,369 @@ html.sim-open { overflow: hidden; }
   });
   window.addEventListener("hashchange", sync);
   window.addEventListener("message", function (e) {
-    if (e.origin === location.origin && e.data && e.data.type === "telescope-close") close();
+    if (e.origin === location.origin && e.data && e.data.type === "telescope-close") { goTo = e.data.to === "optics" ? "optics" : null; close(); }
   });
   sync();
 })();
 </script>
 <script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var host = $("ox-stage"), labs = $("ox-labs"), section = $("optics");
+  var st = { mode: "main", t: 0, yaw: 0.45, sel: null, zoom: false, fe: 20, paper: null };
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var T = null, G = null;   // THREE, and the built scene
+
+  /* ---------- the two instruments, in millimetres; light travels toward -x ---------- */
+  var MAIN = {
+    F: 650, S: 500, R: 75, img: 14, legs: 5,
+    parts: {
+      cap: ["鏡筒蓋", "Dust cap", "不觀測時蓋住鏡筒，擋灰塵。沒拿掉，光進不來，視野就是全黑。", [230, 0, 0], "#2b3036", "#5d6874"],
+      spider: ["副鏡與支架", "Secondary mirror", "一面斜 45° 的小平面鏡，把主鏡會聚的光轉 90°，送到鏡筒側面的目鏡。它只負責轉向。", [118, 0, 0], "#3b4045", "#8e9ba6"],
+      tube: ["鏡筒", "Tube", "固定主鏡和副鏡之間的距離，並擋掉旁邊的雜光。", [0, 0, 0], "#e8ecec", "#dfe8ea"],
+      primary: ["主鏡", "Primary mirror", "口徑 130 mm 的凹面鏡，焦距 650 mm。它收集光線並會聚成像，倒像就是在這裡決定的。", [-150, 0, 0], "#2f3b3e", "#1f6b72"],
+      focuser: ["調焦座", "Focuser", "轉旋鈕讓目鏡前後移動，把目鏡對到焦點上，字才會清楚。", [0, 70, 0], "#2d2b29", "#a07345"],
+      eyepiece: ["目鏡", "Eyepiece", "像一支放大鏡，放大焦點上的像。目鏡焦距越短，倍率越高。", [0, 165, 0], "#1f1f22", "#77689a"],
+      finder: ["尋星鏡", "Finder", "一支小型折射望遠鏡，倍率低、視野大，用來先找到目標。", [0, 95, -70], "#1d2024", "#45618f"]
+    },
+    order: ["cap", "spider", "tube", "primary", "focuser", "eyepiece", "finder"],
+    caps: ["遠方招牌{a}和{b}發出的光，幾乎平行地進入鏡筒。", "主鏡是凹面鏡，把光反射回前方，並向中間會聚。", "副鏡是平面鏡，把光轉 90° 送出鏡筒側面。", "光在焦點會合成像：{a}的光落到另一邊，{b}的光也換邊。像在這裡已經{w}顛倒。", "目鏡像放大鏡，把焦點上這個顛倒的像放大，送進眼睛。"]
+  };
+  var FINDER = {
+    F: 180, FE: 30, R: 17, img: 7, legs: 4,
+    parts: {
+      objective: ["物鏡", "Objective lens", "口徑 30 mm 的凸透鏡。光穿過它之後向中間會聚，焦距 180 mm。", [80, 0, 0], "#1d2024", "#45618f"],
+      ftube: ["鏡筒", "Tube", "固定物鏡和目鏡的距離，並擋掉雜光。", [0, 0, 0], "#cfd6da", "#c5d0d8"],
+      cross: ["十字線", "Crosshair", "裝在焦點上，所以十字線和遠方的目標會同時清楚。", [0, 62, 0], "#8a8f96", "#b08a4c"],
+      feye: ["目鏡", "Eyepiece", "焦距 30 mm，放大焦點上的像。180 ÷ 30 ＝ 6 倍，就是「6×30」的 6。", [-85, 0, 0], "#1f1f22", "#77689a"]
+    },
+    order: ["objective", "ftube", "cross", "feye"],
+    caps: ["遠方招牌{a}和{b}發出的光，幾乎平行地進入物鏡。", "物鏡是凸透鏡，光穿過後向中間會聚。", "光在焦點會合成像，位置正好是十字線：{a}的光落到另一邊，{b}的光也換邊。像在這裡已經{w}顛倒。", "目鏡把這個顛倒的像放大，送進眼睛。鏡子和透鏡做的是同一件事：讓光會聚。"]
+  };
+  var PAIR = [
+    { a: "上緣（紅）", b: "下緣（藍）", w: "上下", ca: 0xff3418, cb: 0x1478ff },
+    { a: "左緣（綠）", b: "右緣（黃）", w: "左右", ca: 0x16c26a, cb: 0xff9a00, k: 0.6 }
+  ];
+  var GLASS = "#8fe0e4";
+  function sc() { return st.mode === "main" ? MAIN : FINDER; }
+
+  /* ---------- timeline: 0-15 assembled, 15-30 apart, 30-40 hold, 40-50 back, 50-75 light 1, 75-100 light 2 ---------- */
+  function smooth(x) { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); }
+  function explodeAt(t) { return t < 15 ? 0 : t < 30 ? smooth((t - 15) / 15) : t < 40 ? 1 : t < 50 ? 1 - smooth((t - 40) / 10) : 0; }
+  function rayAt(t) { return t < 50 ? null : t < 75 ? { pair: 0, p: (t - 50) / 23 } : { pair: 1, p: (t - 75) / 23 }; }
+  var STOPS = [[0, 0], [15, 34], [50, 75], [75, 100]];
+
+  /* ---------- light: corner points of one ray, for one point of the sign and one point of the aperture ---------- */
+  function traceMain(ty, tz, py, pz) {
+    var F = MAIN.F, S = MAIN.S, fe = st.fe, P = [0, py, pz], u = [-1, -ty, -tz], start = [820, py + ty * 820, pz + tz * 820];
+    var I0 = [F, -F * ty, -F * tz], d = [I0[0] - P[0], I0[1] - P[1], I0[2] - P[2]], k = (S - P[0] + P[1]) / (d[0] - d[1]);
+    var Sp = [P[0] + d[0] * k, P[1] + d[1] * k, P[2] + d[2] * k], I = [I0[1] + S, I0[0] - S, I0[2]], w = [I[0] - Sp[0], I[1] - Sp[1], I[2] - Sp[2]];
+    if (st.paper !== null) {   // no eyepiece: the light simply carries on, until the paper stops it
+      var far = [I[0] + w[0] * 70 / w[1], I[1] + 70, I[2] + w[2] * 70 / w[1]], y = 150 + st.paper;
+      if (y <= I[1]) { var k2 = (y - Sp[1]) / (I[1] - Sp[1]); return [start, P, Sp, [Sp[0] + w[0] * k2, y, Sp[2] + w[2] * k2]]; }
+      var k3 = (y - I[1]) / 70; return [start, P, Sp, I, [I[0] + (far[0] - I[0]) * k3, y, I[2] + (far[2] - I[2]) * k3]];
+    }
+    var Q = [I[0] + w[0] * fe / w[1], I[1] + fe, I[2] + w[2] * fe / w[1]], C = [S, 150 + fe, 0], ex = [C[0] - I[0], C[1] - I[1], C[2] - I[2]], tt = (fe + 26) / ex[1];
+    return [start, P, Sp, I, Q, [Q[0] + ex[0] * tt, Q[1] + ex[1] * tt, Q[2] + ex[2] * tt]];
+  }
+  function traceFinder(ty, tz, py, pz) {
+    var s = FINDER, Pl = [180, py, pz], start = [300, py + ty * 120, pz + tz * 120], I = [0, -s.F * ty, -s.F * tz];
+    var w = [I[0] - Pl[0], I[1] - Pl[1], I[2] - Pl[2]], k = s.FE / -w[0], Q = [I[0] + w[0] * k, I[1] + w[1] * k, I[2] + w[2] * k];
+    var C = [-s.FE, 0, 0], ex = [C[0] - I[0], C[1] - I[1], C[2] - I[2]], tt = (s.FE + 16) / -ex[0];
+    return [start, Pl, I, Q, [Q[0] + ex[0] * tt, Q[1] + ex[1] * tt, Q[2] + ex[2] * tt]];
+  }
+  function reveal(v, p, legs) {
+    var x = Math.max(0, Math.min(1, p)) * legs, full = Math.floor(x), fr = x - full, n = v.length - 1, pts = v.slice(0, Math.min(full, n) + 1);
+    if (full < n && fr > 0) { var a = v[full], b = v[full + 1]; pts.push([a[0] + (b[0] - a[0]) * fr, a[1] + (b[1] - a[1]) * fr, a[2] + (b[2] - a[2]) * fr]); }
+    return pts;
+  }
+
+  /* ---------- build the scene once Three.js is here ---------- */
+  function build() {
+    T = window.THREE;
+    var r = new T.WebGLRenderer({ antialias: true, alpha: true });
+    r.outputEncoding = T.sRGBEncoding; r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    host.appendChild(r.domElement);
+    var scene = new T.Scene(), cam = new T.PerspectiveCamera(24, 1.6, 10, 9000);
+    scene.add(new T.HemisphereLight(0xcfe3ee, 0x1a2026, 0.62));
+    var key = new T.DirectionalLight(0xffffff, 0.72); key.position.set(-300, 700, 600); scene.add(key);
+    var rim = new T.DirectionalLight(0x9fd0e6, 0.5); rim.position.set(500, 200, -700); scene.add(rim);
+    G = { r: r, scene: scene, cam: cam, mats: [], groups: { main: {}, finder: {} }, pick: [], beams: null };
+
+    var PIV = 250, TILT = 0.34;
+    var mainRoot = new T.Group(), tele = new T.Group(), core = new T.Group();
+    tele.position.set(PIV, 0, 0); tele.rotation.z = TILT; core.position.set(-PIV, 0, 0); tele.add(core); mainRoot.add(tele); scene.add(mainRoot);
+    var finRoot = new T.Group(), fcore = new T.Group(); finRoot.rotation.z = 0.2; finRoot.add(fcore); scene.add(finRoot);
+    G.mainRoot = mainRoot; G.finRoot = finRoot; G.core = { main: core, finder: fcore };
+    ["main", "finder"].forEach(function (m) { var s = m === "main" ? MAIN : FINDER; s.order.forEach(function (k) { var g = new T.Group(); g.userData.part = k; G.groups[m][k] = g; G.core[m].add(g); }); });
+
+    // materials remember their real colour and their tint, so the timeline can move between them
+    function M(mode, part, o, real, tint, role) {
+      var s = mode === "main" ? MAIN : FINDER, m = new T.MeshStandardMaterial(Object.assign({ roughness: 0.62, metalness: 0.12 }, o || {}));
+      G.mats.push({ m: m, part: part, mode: mode, real: new T.Color(real || s.parts[part][4]), tint: new T.Color(tint || s.parts[part][5]), role: role || "part" }); return m;
+    }
+    function glass(mode, part) { var m = new T.MeshStandardMaterial({ roughness: 0.3, metalness: 0.55, emissive: 0x124a52, emissiveIntensity: 0.3, side: T.DoubleSide }); G.mats.push({ m: m, part: part, mode: mode, real: new T.Color(GLASS), tint: new T.Color(GLASS), role: "glass" }); return m; }
+    function shell(mode, part, base, rimK) {
+      var s = mode === "main" ? MAIN : FINDER, m = new T.ShaderMaterial({ transparent: true, depthWrite: false, side: T.DoubleSide, uniforms: { c: { value: new T.Color(s.parts[part][4]) }, base: { value: base }, rimK: { value: rimK }, k: { value: 1 } },
+        vertexShader: "varying vec3 n;varying vec3 v;void main(){vec4 p=modelViewMatrix*vec4(position,1.);n=normalize(normalMatrix*normal);v=normalize(-p.xyz);gl_Position=projectionMatrix*p;}",
+        fragmentShader: "uniform vec3 c;uniform float base;uniform float rimK;uniform float k;varying vec3 n;varying vec3 v;void main(){float f=pow(1.-abs(dot(normalize(n),normalize(v))),2.2);gl_FragColor=vec4(c,(base+f*rimK)*k);}" });
+      G.mats.push({ m: m, part: part, mode: mode, role: "shell" }); return m;
+    }
+    function add(mode, part, mesh) { mesh.userData.part = part; G.groups[mode][part].add(mesh); G.pick.push(mesh); return mesh; }
+    function cyl(mode, part, axis, c, L, r, m, o) {
+      o = o || {}; var me = new T.Mesh(new T.CylinderGeometry(o.r2 === undefined ? r : o.r2, r, L, o.seg || 48, 1, !!o.open), m);
+      if (axis === "x") { me.rotation.z = -Math.PI / 2; me.position.set(c[0] + L / 2, c[1], c[2]); } else if (axis === "y") me.position.set(c[0], c[1] + L / 2, c[2]); else { me.rotation.x = Math.PI / 2; me.position.set(c[0], c[1], c[2] + L / 2); }
+      if (o.flat) m.flatShading = true; return add(mode, part, me);
+    }
+    function ring(mode, part, axis, c, r, tube, m) { var me = new T.Mesh(new T.TorusGeometry(r, tube, 10, 64), m); if (axis === "x") me.rotation.y = Math.PI / 2; else if (axis === "y") me.rotation.x = Math.PI / 2; me.position.set(c[0], c[1], c[2]); return add(mode, part, me); }
+    function box(mode, part, size, pos, m) { var me = new T.Mesh(new T.BoxGeometry(size[0], size[1], size[2]), m); me.position.set(pos[0], pos[1], pos[2]); return add(mode, part, me); }
+    function dish(mode, part, x, r, sag, m) { var pts = [], i; for (i = 0; i <= 20; i++) { var q = r * i / 20; pts.push(new T.Vector2(q, sag * (q / r) * (q / r))); } var me = new T.Mesh(new T.LatheGeometry(pts, 64), m); me.rotation.z = -Math.PI / 2; me.position.x = x; return add(mode, part, me); }
+
+    /* ----- main telescope ----- */
+    var S = MAIN.S, R = MAIN.R, i, a;
+    G.tubeShell = shell("main", "tube", 0.05, 0.5); cyl("main", "tube", "x", [-25, 0, 0], 625, R, G.tubeShell, { open: true, seg: 72 });
+    var rimM = M("main", "tube", { roughness: 0.5 }, "#f2f4f3", "#eef3f4");
+    ring("main", "tube", "x", [-25, 0, 0], R, 2.4, rimM); ring("main", "tube", "x", [600, 0, 0], R, 2.4, rimM);
+    cyl("main", "tube", "x", [PIV - 22, 0, 0], 44, R + 2.5, M("main", "tube", { roughness: 0.55 }, "#2b3036", "#56606b"), { open: true, seg: 72 });
+
+    var cellM = M("main", "primary");
+    cyl("main", "primary", "x", [-22, 0, 0], 16, 70, cellM); dish("main", "primary", -6, 65, 7, glass("main", "primary"));
+    var screwM = M("main", "primary", { metalness: 0.7, roughness: 0.35 }, "#9aa1a8", "#b9c4c8");
+    for (i = 0; i < 3; i++) { a = i / 3 * Math.PI * 2 + 0.5; cyl("main", "primary", "x", [-34, 45 * Math.cos(a), 45 * Math.sin(a)], 12, 5.5, screwM, { seg: 10, flat: true }); box("main", "primary", [6, 9, 12], [-3, 63 * Math.cos(a + 1), 63 * Math.sin(a + 1)], cellM).rotation.x = a + 1 - Math.PI / 2; }
+
+    var spM = M("main", "spider", { metalness: 0.55, roughness: 0.4 });
+    var sec = new T.Mesh(new T.CylinderGeometry(34, 34, 3, 48), glass("main", "spider")); sec.scale.set(Math.SQRT2, 1, 1); sec.rotation.z = Math.PI / 4 + Math.PI; sec.position.set(S, 0, 0); add("main", "spider", sec);
+    var holder = new T.Mesh(new T.CylinderGeometry(22, 30, 14, 40), spM); holder.rotation.z = -Math.PI / 4 - Math.PI / 2; holder.position.set(S + 7, -7, 0); add("main", "spider", holder);
+    cyl("main", "spider", "x", [S + 10, 0, 0], 40, 6, spM); cyl("main", "spider", "x", [S + 40, 0, 0], 14, 11, spM, { seg: 8, flat: true });
+    for (i = 0; i < 4; i++) { var vane = new T.Mesh(new T.BoxGeometry(16, R - 12, 1.1), spM); vane.position.set(S + 47, 0, 0); vane.rotation.x = i * Math.PI / 2; vane.translateY((R - 12) / 2 + 10); add("main", "spider", vane); }
+
+    var capM = M("main", "cap"); G.capMats = [capM];
+    cyl("main", "cap", "x", [600, 0, 0], 12, R + 3, capM, { seg: 72 }); cyl("main", "cap", "x", [612, 0, 0], 3, R - 8, capM, { seg: 72 }); cyl("main", "cap", "x", [615, 0, 0], 10, 12, capM, { r2: 9 });
+
+    var foM = M("main", "focuser", { metalness: 0.45, roughness: 0.45 }), chrome = M("main", "focuser", { metalness: 0.85, roughness: 0.25 }, "#c9cdd2", "#d6dadd"), brass = M("main", "focuser", { metalness: 0.8, roughness: 0.3 }, "#b8923f", "#d0a84c");
+    box("main", "focuser", [78, 7, 62], [S, R + 1, 0], foM); cyl("main", "focuser", "y", [S, R + 4, 0], 26, 25, foM); cyl("main", "focuser", "y", [S, R + 30, 0], 5, 22, foM, { r2: 20 });
+    cyl("main", "focuser", "y", [S, R + 30, 0], 24, 18, chrome, { open: true });
+    cyl("main", "focuser", "x", [S - 40, R + 16, 0], 80, 3.5, chrome);
+    cyl("main", "focuser", "x", [S + 28, R + 16, 0], 16, 11, foM, { seg: 14, flat: true }); cyl("main", "focuser", "x", [S - 44, R + 16, 0], 16, 11, foM, { seg: 14, flat: true });
+    cyl("main", "focuser", "z", [S, R + 47, 17], 12, 2.6, brass); cyl("main", "focuser", "z", [S, R + 47, 29], 6, 6, brass, { seg: 10, flat: true });
+
+    G.eyeM = { barrel: M("main", "eyepiece", { metalness: 0.85, roughness: 0.25 }, "#c9cdd2", "#d6dadd"), body: M("main", "eyepiece", { transparent: true }), cup: M("main", "eyepiece", { roughness: 0.9, transparent: true }, "#141416", "#4d4466"), glass: glass("main", "eyepiece") };
+    G.buildEye = function () {
+      var g = G.groups.main.eyepiece, fe = st.fe; while (g.children.length) { var c = g.children.pop(); c.geometry.dispose(); var ix = G.pick.indexOf(c); if (ix >= 0) G.pick.splice(ix, 1); }
+      cyl("main", "eyepiece", "y", [S, 124, 0], 26, 15, G.eyeM.barrel, { open: true });
+      cyl("main", "eyepiece", "y", [S, 150, 0], fe + 10, 21, G.eyeM.body, { open: true }); ring("main", "eyepiece", "y", [S, 150 + fe * 0.5, 0], 21, 1.6, G.eyeM.body); ring("main", "eyepiece", "y", [S, 150, 0], 20, 1.6, G.eyeM.body);
+      cyl("main", "eyepiece", "y", [S, 150 + fe + 10, 0], 9, 19, G.eyeM.cup, { open: true, r2: 22 });
+      var l = new T.Mesh(new T.CylinderGeometry(15, 15, 2.5, 40), G.eyeM.glass); l.position.set(S, 150 + fe, 0); add("main", "eyepiece", l);
+    };
+    G.buildEye();
+
+    var fiM = M("main", "finder"), fiB = M("main", "finder", { metalness: 0.4 }, "#2a2d31", "#5d7299");
+    cyl("main", "finder", "x", [215, R + 46, -56], 175, 15, fiM); cyl("main", "finder", "x", [388, R + 46, -56], 26, 20, fiM); cyl("main", "finder", "x", [186, R + 46, -56], 29, 11, fiM); cyl("main", "finder", "x", [178, R + 46, -56], 8, 13, fiM, { open: true });
+    var fl = new T.Mesh(new T.CylinderGeometry(17, 17, 2, 36), glass("main", "finder")); fl.rotation.z = Math.PI / 2; fl.position.set(412, R + 46, -56); add("main", "finder", fl);
+    [255, 355].forEach(function (x) { ring("main", "finder", "x", [x, R + 46, -56], 19, 3, fiB); box("main", "finder", [9, 26, 9], [x, R + 16, -56], fiB); for (var j = 0; j < 3; j++) { var b = j / 3 * Math.PI * 2 + 0.6; cyl("main", "finder", "x", [x - 2, R + 46 + 22 * Math.cos(b), -56 + 22 * Math.sin(b)], 4, 2.4, brass, { seg: 8 }); } });
+    box("main", "finder", [130, 6, 16], [305, R + 3, -52], fiB);
+
+    /* the mount: one wooden arm and a round board. It stays put and dims when the light plays. */
+    var wood = M("main", "base", null, "#4f3524", "#4f3524", "mount"), wood2 = M("main", "base", null, "#3b281b", "#3b281b", "mount"), dark = M("main", "base", null, "#24272a", "#24272a", "mount");
+    function mount(mesh) { mainRoot.add(mesh); return mesh; }
+    var arm = mount(new T.Mesh(new T.BoxGeometry(128, 250, 16), wood)); arm.position.set(PIV, -125, -(R + 14));
+    var top = mount(new T.Mesh(new T.CylinderGeometry(64, 64, 16, 48), wood)); top.rotation.x = Math.PI / 2; top.position.set(PIV, 0, -(R + 14));
+    var knob = mount(new T.Mesh(new T.CylinderGeometry(20, 20, 14, 14), dark)); knob.rotation.x = Math.PI / 2; knob.position.set(PIV, 0, -(R + 29));
+    mount(new T.Mesh(new T.CylinderGeometry(150, 150, 14, 72), wood)).position.set(PIV, -257, -10);
+    mount(new T.Mesh(new T.CylinderGeometry(160, 160, 10, 72), wood2)).position.set(PIV, -269, -10);
+    for (i = 0; i < 3; i++) { a = i / 3 * Math.PI * 2; mount(new T.Mesh(new T.CylinderGeometry(12, 10, 10, 20), dark)).position.set(PIV + 130 * Math.cos(a), -279, -10 + 130 * Math.sin(a)); }
+
+    /* ----- finder, drawn on its own ----- */
+    G.finShell = shell("finder", "ftube", 0.06, 0.55); cyl("finder", "ftube", "x", [-42, 0, 0], 222, FINDER.R, G.finShell, { open: true });
+    var frim = M("finder", "ftube", null, "#e4e8ea", "#dfe6ea"); ring("finder", "ftube", "x", [-42, 0, 0], FINDER.R, 0.8, frim); ring("finder", "ftube", "x", [180, 0, 0], FINDER.R, 0.8, frim);
+    var obM = M("finder", "objective", { transparent: true, opacity: 0.6, depthWrite: false }); cyl("finder", "objective", "x", [170, 0, 0], 24, 21, obM, { open: true });
+    var lens = new T.Mesh(new T.SphereGeometry(15, 40, 20), glass("finder", "objective")); lens.scale.set(0.3, 1, 1); lens.position.set(180, 0, 0); lens.material.transparent = true; lens.material.opacity = 0.75; add("finder", "objective", lens);
+    var crM = M("finder", "cross", { metalness: 0.6, roughness: 0.4 }); ring("finder", "cross", "x", [0, 0, 0], 13, 1, crM); cyl("finder", "cross", "y", [0, -13, 0], 26, 0.35, crM, { seg: 6 }); cyl("finder", "cross", "z", [0, 0, -13], 26, 0.35, crM, { seg: 6 });
+    var feM = M("finder", "feye", { transparent: true, opacity: 0.6, depthWrite: false }); cyl("finder", "feye", "x", [-62, 0, 0], 44, 12, feM, { open: true }); cyl("finder", "feye", "x", [-70, 0, 0], 8, 13, feM, { open: true, r2: 12 });
+    var el = new T.Mesh(new T.SphereGeometry(10, 32, 16), glass("finder", "feye")); el.scale.set(0.3, 1, 1); el.position.set(-FINDER.FE, 0, 0); add("finder", "feye", el);
+
+    /* paper, glow and the beam holder */
+    G.paper = new T.Mesh(new T.PlaneGeometry(64, 64), new T.MeshBasicMaterial({ color: 0xf3f1ec, transparent: true, opacity: 0.82, side: T.DoubleSide, depthWrite: false })); G.paper.rotation.x = -Math.PI / 2; core.add(G.paper);
+    var c = document.createElement("canvas"); c.width = c.height = 64; var x = c.getContext("2d"), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, "rgba(255,255,255,1)"); gr.addColorStop(0.25, "rgba(255,255,255,.55)"); gr.addColorStop(1, "rgba(255,255,255,0)"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); G.glow = new T.CanvasTexture(c);
+    G.beamGroup = { main: new T.Group(), finder: new T.Group() }; core.add(G.beamGroup.main); fcore.add(G.beamGroup.finder);
+    G.ray = new T.Raycaster();
+    $("ox-load").hidden = true;
+    if (window.ResizeObserver) new ResizeObserver(render).observe(host);
+    render();
+  }
+
+  /* ---------- beams: a ring of rays skinned into a shell, brighter after the light has been gathered ---------- */
+  var LEGK = { main: [0.014, 0.02, 0.06, 0.1, 0.1], finder: [0.022, 0.05, 0.09, 0.09] };
+  function drawBeams(ray) {
+    var grp = G.beamGroup[st.mode], s = sc(), other = G.beamGroup[st.mode === "main" ? "finder" : "main"];
+    [grp, other].forEach(function (g) { while (g.children.length) { var c = g.children.pop(); if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose(); } });
+    if (!ray) return;
+    var show = [{ pair: ray.pair, p: ray.p, k: PAIR[ray.pair].k || 1 }]; if (ray.pair === 1) show.unshift({ pair: 0, p: 1, k: 0.2 });
+    var tan = s.img / s.F, N = 44, ap = st.mode === "main" ? 58 : 12, fn = st.mode === "main" ? traceMain : traceFinder, focusLeg = st.mode === "main" ? 3 : 2;
+    show.forEach(function (sh) {
+      [1, -1].forEach(function (sign, which) {
+        var ty = sh.pair === 0 ? sign * tan : 0, tz = sh.pair === 1 ? sign * tan : 0, col = new T.Color(which ? PAIR[sh.pair].cb : PAIR[sh.pair].ca), rings = [], i, j;
+        for (i = 0; i < N; i++) { var a = i / N * Math.PI * 2; rings.push(reveal(fn(ty, tz, ap * Math.cos(a), ap * Math.sin(a)), sh.p, s.legs)); }
+        var L = rings[0].length; if (L < 2) return;
+        var pos = [], cols = [], idx = [], kk = LEGK[st.mode];
+        for (i = 0; i < N; i++) for (j = 0; j < L; j++) { var p = rings[i][j], f = kk[Math.min(kk.length - 1, Math.max(0, j - 1))] * sh.k; if (j === 0) f = kk[0] * sh.k; pos.push(p[0], p[1], p[2]); cols.push(col.r * f, col.g * f, col.b * f); }
+        for (i = 0; i < N; i++) { var n = (i + 1) % N; for (j = 0; j < L - 1; j++) { var q = i * L + j, b = n * L + j; idx.push(q, b, q + 1, b, b + 1, q + 1); } }
+        var g = new T.BufferGeometry(); g.setAttribute("position", new T.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new T.Float32BufferAttribute(cols, 3)); g.setIndex(idx);
+        grp.add(new T.Mesh(g, new T.MeshBasicMaterial({ vertexColors: true, transparent: true, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide })));
+        for (i = 0; i < N; i += 11) grp.add(new T.Line(new T.BufferGeometry().setFromPoints(rings[i].map(function (p) { return new T.Vector3(p[0], p[1], p[2]); })), new T.LineBasicMaterial({ color: col, transparent: true, opacity: 0.42 * sh.k, blending: T.AdditiveBlending, depthWrite: false })));
+        if (sh.p * s.legs >= focusLeg && L > focusLeg) { var I = rings[0][focusLeg], sp = new T.Sprite(new T.SpriteMaterial({ map: G.glow, color: col, blending: T.AdditiveBlending, depthWrite: false, depthTest: false, transparent: true, opacity: sh.k })); sp.position.set(I[0], I[1], I[2]); var z = st.mode === "main" ? 24 : 9; sp.scale.set(z, z, 1); grp.add(sp); }
+      });
+    });
+  }
+
+  /* ---------- one frame ---------- */
+  var W = 800, H = 480;
+  function render() {
+    var e = explodeAt(st.t), ray = rayAt(st.t);
+    if (!G) { sync(e, ray); return; }
+    var s = sc(), main = st.mode === "main", k, box = host.getBoundingClientRect();
+    W = Math.max(280, box.width); H = Math.max(240, box.height); G.r.setSize(W, H, false); G.cam.aspect = W / H;
+    G.mainRoot.visible = main; G.finRoot.visible = !main;
+    // parts move apart; the dust cap stays off once the light is on
+    var capOff = st.t >= 50 ? 1 : e, capFade = st.t < 43 ? 1 : st.t < 50 ? 1 - (st.t - 43) / 7 : 0;
+    for (k in s.parts) { var o = s.parts[k][3], ee = k === "cap" ? capOff : e; G.groups[st.mode][k].position.set(o[0] * ee, o[1] * ee, o[2] * ee); }
+    if (main) { G.groups.main.cap.visible = capFade > 0.02; G.capMats.forEach(function (m) { m.transparent = capFade < 1; m.opacity = capFade; }); G.groups.main.eyepiece.visible = st.paper === null; G.paper.visible = st.paper !== null && !!ray; if (st.paper !== null) G.paper.position.set(MAIN.S, 150 + st.paper, 0); }
+    // colour: near the real thing when assembled, further apart when taken apart, dimmed under the light
+    var tint = 0.35 + 0.65 * e, lit = !!ray && e === 0;
+    G.mats.forEach(function (x) {
+      if (x.mode !== st.mode) return;
+      var dimSel = st.sel && st.sel !== x.part ? 0.42 : 1;
+      if (x.role === "shell") { x.m.uniforms.k.value = (lit ? 0.8 : 1) * (st.sel && st.sel !== x.part ? 0.5 : st.sel === x.part ? 1.8 : 1); return; }
+      var d = x.role === "mount" ? (lit ? 0.3 : st.sel ? 0.5 : 1) : x.role === "glass" ? dimSel : (lit ? 0.62 : 1) * dimSel;
+      x.m.color.copy(x.real).lerp(x.tint, x.role === "part" ? tint : 0).multiplyScalar(d);
+      if (x.role !== "glass") x.m.emissive.copy(st.sel === x.part ? x.m.color : new T.Color(0)).multiplyScalar(0.35);
+    });
+    G.eyeM.body.opacity = lit ? 0.45 : 1; G.eyeM.body.depthWrite = !lit; G.eyeM.cup.opacity = lit ? 0.5 : 1; G.eyeM.cup.depthWrite = !lit;
+    drawBeams(lit ? ray : null);
+    // camera: turns left and right around the instrument
+    var narrow = Math.max(1, 1.55 / (W / H)), dist, tgt;
+    if (main) { tgt = st.zoom ? local("main", null, [MAIN.S - 20, 150, 0]) : new T.Vector3(330 - 40 * e, -45 + 30 * e, 0); dist = st.zoom ? 820 : (1600 + 620 * e) * narrow; }
+    else { tgt = st.zoom ? local("finder", null, [0, 0, 0]) : new T.Vector3(95, 22, 0); dist = st.zoom ? 330 : (780 + 220 * e) * narrow; }
+    var p = 0.3; G.cam.position.set(tgt.x + Math.sin(st.yaw) * Math.cos(p) * dist, tgt.y + Math.sin(p) * dist, tgt.z + Math.cos(st.yaw) * Math.cos(p) * dist); G.cam.lookAt(tgt); G.cam.updateProjectionMatrix();
+    G.scene.updateMatrixWorld(true); G.r.render(G.scene, G.cam);
+    drawLabels(e, lit ? ray : null);
+    sync(e, ray);
+  }
+  function local(mode, part, p) { var v = new T.Vector3(p[0], p[1], p[2]); G.scene.updateMatrixWorld(true); return (part ? G.groups[mode][part] : G.core[mode]).localToWorld(v); }
+  function drawLabels(e, ray) {
+    var L = [], s = sc(), m = st.mode, h = "";
+    var dot = function (k) { var c = s.parts[k]; return (k === "primary" || k === "spider" || k === "objective") ? GLASS : c[5]; };
+    if (m === "main") {
+      if (e > 0.5) s.order.forEach(function (k) { var at = { cap: [612, 80, 0], spider: [500, 78, 0], tube: [300, -78, 0], primary: [-10, -72, 0], focuser: [545, 92, 0], eyepiece: [522, 165, 0], finder: [215, 140, -56] }[k], off = { cap: [34, -26], spider: [66, 58], tube: [0, 26], primary: [-10, 30], focuser: [64, 14], eyepiece: [46, 0], finder: [-56, -14] }[k]; L.push([k, at, s.parts[k][0], off[0], off[1], dot(k)]); });
+      else { L.push(["primary", [0, -70, 0], "主鏡", -14, 26]); L.push(["spider", [540, -34, 0], "副鏡", 30, 12]); if (st.paper === null) L.push(["eyepiece", [522, 150 + st.fe, 0], "目鏡", 40, 0]); }
+      if (ray) { L.push([null, [820, 75, 0], "來自招牌的光", -30, -22]); if (ray.p * 5 >= 3) L.push([null, [MAIN.S, 150, 0], "焦點", -40, 2]); if (st.paper === null && ray.p > 0.92) L.push([null, [MAIN.S, 150 + 2 * st.fe + 26, 0], "眼睛", 34, -8]); }
+    } else {
+      if (e > 0.5) s.order.forEach(function (k) { var at = { objective: [184, 22, 0], ftube: [70, -18, 0], cross: [0, 14, 0], feye: [-40, -13, 0] }[k], off = { objective: [20, -18], ftube: [0, 24], cross: [34, -14], feye: [-10, 26] }[k]; L.push([k, at, s.parts[k][0], off[0], off[1], dot(k)]); });
+      else { L.push(["objective", [184, 22, 0], "物鏡", 14, -16]); L.push(["cross", [0, 14, 0], "十字線", 20, -18]); L.push(["feye", [-40, -13, 0], "目鏡", -6, 24]); }
+      if (ray) { L.push([null, [300, 16, 0], "來自招牌的光", -44, -20]); if (ray.p > 0.92) L.push([null, [-FINDER.FE * 2 - 22, 0, 0], "眼睛", -30, 2]); }
+    }
+    L.forEach(function (l) { var v = local(m, l[0], l[1]).project(G.cam), x = (v.x + 1) / 2 * W + l[3], y = (1 - v.y) / 2 * H + l[4]; if (x < 30 || x > W - 30 || y < 12 || y > H - 12 || (x > W - 150 && y < 52)) return; h += '<span style="left:' + x.toFixed(0) + "px;top:" + y.toFixed(0) + 'px">' + (l[5] ? '<i style="background:' + l[5] + '"></i>' : "") + l[2] + "</span>"; });
+    labs.innerHTML = h;
+  }
+
+  /* ---------- everything outside the drawing ---------- */
+  function sync(e, ray) {
+    var s = sc(), cap;
+    if (ray) {
+      var legs = s.legs, leg = Math.min(legs - 1, Math.floor(Math.max(0, Math.min(0.999, ray.p)) * legs)), pr = PAIR[ray.pair];
+      cap = "①②③④⑤".charAt(leg) + " " + s.caps[leg].replace(/\{a\}/g, pr.a).replace(/\{b\}/g, pr.b).replace(/\{w\}/g, pr.w);
+      if (ray.pair === 1 && ray.p >= 1) cap = "上下顛倒，加上左右顛倒，整個像等於轉了 180°。所以目鏡裡的「中壢高中」是倒過來的。";
+      if (st.mode === "main" && st.paper !== null && leg >= 3) cap = "④ 光落在紙上。紙在焦點時，同一點來的光會合成一點，像最清楚；離開焦點，光還沒會合或已經散開，像就糊了。";
+    } else if (e > 0.02) cap = "拆解：零件沿著光走的方向分開，各用一點顏色區分。點一個零件，看它負責什麼。";
+    else cap = st.mode === "main" ? "組合：光從鏡筒前端進來，主鏡在鏡筒最底部，副鏡斜掛在前端中央，目鏡在側面。" : "組合：尋星鏡是一支直筒，光從前面的物鏡進來，眼睛在另一頭。";
+    $("ox-cap").textContent = cap;
+    var stage = st.t < 15 ? 0 : st.t < 50 ? 1 : st.t < 75 ? 2 : 3;
+    document.querySelectorAll("#optics [data-stage]").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.stage === stage)); });
+    var seen = st.t >= 75 ? 1 : ray ? Math.max(0, Math.min(1, (ray.p - 0.8) / 0.2)) : 0, paperOn = st.mode === "main" && st.paper !== null;
+    if (paperOn && ray) seen = Math.max(0, Math.min(1, (ray.p - 0.6) / 0.1));
+    $("ox-seen").style.opacity = seen; $("ox-wait").hidden = seen > 0.05;
+    $("ox-wait").innerHTML = paperOn ? "光走到紙上<br>才看得到" : "光走到眼睛<br>才看得到";
+    $("ox-seen-cap").textContent = paperOn ? "紙上的像" : st.mode === "main" ? "目鏡裡看到的像（" + (Math.round(MAIN.F / st.fe * 10) / 10) + " 倍）" : "尋星鏡裡看到的像（6 倍）";
+    var scale = paperOn ? 0.8 : st.mode === "main" ? Math.max(0.55, Math.min(4.2, 20 / st.fe)) : 0.42;
+    var blur = paperOn ? Math.abs(st.paper) * 0.22 : 0, bright = paperOn || st.mode !== "main" ? 1 : Math.max(0.3, Math.min(1, Math.pow(st.fe / 20, 1.3)));
+    $("ox-sign-b").parentNode.style.transform = "rotate(180deg) scale(" + scale.toFixed(2) + ")";
+    $("ox-sign-b").parentNode.style.filter = "blur(" + blur.toFixed(1) + "px) brightness(" + bright.toFixed(2) + ")";
+    var ud = st.t >= 100 || !ray || ray.pair === 0, lr = st.t >= 100 || !ray || ray.pair === 1;
+    ["ox-sign-a", "ox-sign-b"].forEach(function (id) { var el = $(id); el.querySelector(".e-t").style.opacity = el.querySelector(".e-b").style.opacity = ud ? 1 : 0.2; el.querySelector(".e-l").style.opacity = el.querySelector(".e-r").style.opacity = lr ? 1 : 0.2; });
+    var d = st.sel && s.parts[st.sel];
+    $("ox-desc").innerHTML = d ? "<b>" + d[0] + "<small>" + d[1] + "</small></b>" + d[2] : "點圖上的零件或上面的名稱，看它負責什麼。";
+    document.querySelectorAll("#ox-chips button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.part === st.sel)); });
+    $("ox-mag").hidden = st.mode !== "main";
+  }
+  function chips() {
+    var s = sc(), h = "";
+    s.order.forEach(function (k) { var c = (k === "primary" || k === "spider" || k === "objective") ? GLASS : s.parts[k][5]; h += '<button type="button" data-part="' + k + '" aria-pressed="false"><i style="background:' + c + '"></i>' + s.parts[k][0] + "</button>"; });
+    $("ox-chips").innerHTML = h;
+  }
+  function mag() {
+    var M = MAIN.F / st.fe;
+    $("ox-fe-v").textContent = st.fe;
+    $("ox-formula").innerHTML = "650 ÷ " + st.fe + " ＝ " + (Math.round(M * 10) / 10) + " 倍<small>主鏡焦距 ÷ 目鏡焦距</small>";
+    $("ox-mag-note").textContent = st.fe < 12 ? "倍率高：招牌變大，但看到的範圍變小、畫面變暗，目標也更難找。" : st.fe > 24 ? "倍率低：招牌變小，但看到的範圍大、畫面亮，容易找到目標。" : "20 mm 目鏡的倍率適中、視野夠大，所以操作步驟先用它找目標。";
+  }
+
+  /* ---------- controls ---------- */
+  var raf = 0;
+  function setT(t) { st.t = Math.max(0, Math.min(100, t)); $("ox-time").value = st.t; render(); }
+  function playTo(from, to) {
+    cancelAnimationFrame(raf); if (from !== null) setT(from);
+    if (reduce) { setT(to); return; }
+    var last = performance.now();
+    (function step(now) { var dt = Math.min(60, now - last); last = now; var n = st.t + dt * 0.0075; if (n >= to) { setT(to); return; } setT(n); raf = requestAnimationFrame(step); })(last);
+  }
+  document.querySelectorAll("#optics [data-stage]").forEach(function (b) { b.onclick = function () { var sp = STOPS[+b.dataset.stage]; st.sel = null; playTo(sp[0], sp[1]); }; });
+  $("ox-play").onclick = function () { st.sel = null; playTo(0, 100); };
+  $("ox-time").oninput = function () { cancelAnimationFrame(raf); setT(+this.value); };
+  $("ox-zoom").onclick = function () { st.zoom = !st.zoom; this.setAttribute("aria-pressed", String(st.zoom)); this.textContent = st.zoom ? "看全部" : "放大焦點"; render(); };
+  function setMode(m) {
+    cancelAnimationFrame(raf); st.mode = m; st.sel = null; st.t = 0; $("ox-time").value = 0;
+    $("ox-m-main").setAttribute("aria-pressed", String(m === "main")); $("ox-m-finder").setAttribute("aria-pressed", String(m === "finder"));
+    chips(); render();
+  }
+  $("ox-m-main").onclick = function () { setMode("main"); };
+  $("ox-m-finder").onclick = function () { setMode("finder"); };
+  $("ox-chips").onclick = function (ev) { var b = ev.target.closest("button"); if (b) pick(b.dataset.part); };
+  function pick(k) { st.sel = st.sel === k ? null : k; if (st.sel && explodeAt(st.t) < 0.5) { playTo(15, 34); return; } render(); }
+  $("ox-fe").oninput = function () { st.fe = +this.value; mag(); if (G) G.buildEye(); render(); };
+  function paper() {
+    var on = $("ox-paper-on").checked, d = +$("ox-paper").value; $("ox-paper").disabled = !on; st.paper = on ? d : null;
+    $("ox-paper-v").textContent = d === 0 ? "正好在焦點" : (d < 0 ? "焦點前 " : "焦點後 ") + Math.abs(d) + " mm";
+    if (on && st.t < 75) setT(75); else render();
+  }
+  $("ox-paper-on").onchange = paper; $("ox-paper").oninput = paper;
+
+  // drag left and right to turn; a tap on a part selects it
+  var drag = null;
+  host.addEventListener("pointerdown", function (ev) { drag = { x: ev.clientX, y: ev.clientY, yaw: st.yaw, moved: false }; });
+  window.addEventListener("pointermove", function (ev) { if (!drag) return; var dx = ev.clientX - drag.x; if (Math.abs(dx) > 5) drag.moved = true; if (drag.moved) { st.yaw = Math.max(-0.4, Math.min(1.3, drag.yaw - dx * 0.006)); render(); } });
+  window.addEventListener("pointerup", function (ev) {
+    if (drag && !drag.moved && G) {
+      var b = host.getBoundingClientRect(), v = new T.Vector2((ev.clientX - b.left) / b.width * 2 - 1, -((ev.clientY - b.top) / b.height) * 2 + 1); G.ray.setFromCamera(v, G.cam);
+      var hits = G.ray.intersectObjects(G.pick.filter(function (m) { return m.parent && m.parent.parent === G.core[st.mode] && m.parent.visible; }), false), shellHit = null, part = null;
+      for (var i = 0; i < hits.length && !part; i++) { var k = hits[i].object.userData.part; if (k === "tube" || k === "ftube") shellHit = shellHit || k; else part = k; }
+      part = part || shellHit; if (part) pick(part);
+    }
+    drag = null;
+  });
+  window.addEventListener("pointercancel", function () { drag = null; });
+
+  /* ---------- load Three.js only when the block is about to be seen ---------- */
+  function start() {
+    if (window.THREE) { try { build(); } catch (err) { fail(); } return; }
+    var s = document.createElement("script"); s.src = section.dataset.three; s.onload = function () { try { build(); } catch (err) { fail(); } }; s.onerror = fail; document.head.appendChild(s);
+  }
+  function fail() { $("ox-load").hidden = false; $("ox-load").textContent = "這台裝置無法顯示 3D 模型。下方的說明文字和兩個圓形視野仍然可以使用。"; }
+  chips(); mag(); paper();
+  if (window.IntersectionObserver) { var io = new IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) { io.disconnect(); start(); } }, { rootMargin: "400px" }); io.observe(section); } else start();
+})();
+</script><script>
 // Swap a video picture for the no-cookie YouTube player when it is chosen.
 // Without this script each picture still opens the video on YouTube.
 document.querySelectorAll(".thumb[data-video]").forEach(function (a) {
