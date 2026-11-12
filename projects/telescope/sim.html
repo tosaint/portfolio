@@ -902,7 +902,8 @@ $('listBtn').onclick=()=>setList(!listOpen);
 $('helpBtn').onclick=()=>$('helpDialog').showModal();
 // 嵌在說明頁時通知外層關閉；單獨開啟時回到說明頁
 $('closeBtn').onclick=()=>{save();location.href='./'};
-if(window.parent!==window)$('closeBtn').hidden=true; // 嵌在說明頁時，大小與暫停由外層的視窗列控制$('restartBtn').onclick=()=>$('resetDialog').showModal();
+if(window.parent!==window)$('closeBtn').hidden=true; // 嵌在其他頁面時不顯示關閉鈕
+$('restartBtn').onclick=()=>$('resetDialog').showModal();
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
 $('confirmReset').onclick=()=>{S={...INIT};history={};answers={inv:null,q2:null,q1:''};events=[];stable={};epSequence={removed20:false,inserted4:false};started=new Date().toISOString();student={...EMPTY_STUDENT};sessionId=newId();checkCode=newCheckCode();submitted=null;eyeShot=null;try{localStorage.removeItem(KEY+'-eye')}catch(_){};animation=null;sunBlocked=false;savedOverview=null;$('resetDialog').close();changed('restart');goStep(0,false);overview();save();notify('已清除，可以換下一位同學。')};
 $('safeDirection').onclick=()=>perform('safe');
