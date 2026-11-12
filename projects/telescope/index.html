@@ -250,6 +250,13 @@ html.lab-max { overflow: hidden; }
 #tl.flow .bar .sun { margin-right: auto; }
 #tl.flow .sun .long { display: inline; }
 #tl.full { position: fixed; inset: 0; z-index: 60; height: auto; padding-top: env(safe-area-inset-top, 0px); }
+/* expanded: the bar may never push its buttons off the screen, whatever the width */
+#tl.full .bar { min-width: 0; }
+#tl.full .brand, #tl.full .sun { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#tl.full .bar button { flex: none; }
+#tl.full #closeBtn { border-color: var(--ink); font-weight: 600; }
+@media (max-width: 700px) { #tl.full .long { display: none; } #tl.full .bar { gap: 6px; } }
+@media (max-width: 380px) { #tl.full .sun { display: none; } }
 /* on a phone the two round views ride on the 3D picture, so they stay in sight while the
    controls below are used */
 #tl.flow .stage > .d-views { position: absolute; right: 8px; bottom: 8px; z-index: 5; width: auto; padding: 0; border: 0; background: none; }
@@ -420,7 +427,7 @@ html.lab-max { overflow: hidden; }
   <span id="saveState" hidden></span>
   <button id="reportBtn">繳交</button>
   <button id="helpBtn">說明</button>
-  <button id="closeBtn" aria-label="縮回說明頁">✕</button>
+  <button id="closeBtn" aria-label="縮回說明頁">縮回 ⤡</button>
 </header>
 
 <main class="stage side" id="workspace" aria-label="互動望遠鏡 3D 場景">
@@ -1653,9 +1660,14 @@ try{
     placeViews();
     if (H.api) { if (flow) H.api.setDrawer(true); H.api.resize(); }
   }
-  H.expand = function () { if (H.flow) lay(false); };
-  H.collapse = function () { if (!H.flow) { lay(true); document.getElementById("sim").scrollIntoView(); btn.focus({ preventScroll: true }); } };
-  H.why = function () { H.collapse(); document.getElementById("optics").scrollIntoView(); };
+  // Expanding adds a step to the browser's history, so Back (or the back swipe) shrinks the
+  // simulator instead of leaving the page.
+  var pushed = false;
+  function shrink() { if (H.flow) return false; lay(true); document.getElementById("sim").scrollIntoView(); btn.focus({ preventScroll: true }); return true; }
+  H.expand = function () { if (!H.flow) return; lay(false); try { history.pushState({ lab: 1 }, ""); pushed = true; } catch (e) {} };
+  H.collapse = function () { if (shrink() && pushed) { pushed = false; history.back(); } };
+  H.why = function () { shrink(); pushed = false; document.getElementById("optics").scrollIntoView(); };
+  window.addEventListener("popstate", function () { pushed = false; shrink(); });
   btn.addEventListener("click", H.expand);
   placeViews(); if (narrow.addEventListener) narrow.addEventListener("change", function () { placeViews(); if (H.api) H.api.resize(); });
   if (H.api) { H.api.setDrawer(true); H.api.resize(); }
