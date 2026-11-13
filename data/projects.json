@@ -111,5 +111,21 @@
     "image": "projects/clhs4bar/img/line.svg",
     "image_style": "line",
     "link": "projects/clhs4bar/"
+  },
+  {
+    "title": "Ruisui Fire Station Green Retrofit",
+    "title_zh": "瑞穗消防分隊 綠建築改善前後比較",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "three.js",
+      "Sun-path simulation",
+      "EEWH indicators"
+    ],
+    "role": "Analysis, 3D modelling, development",
+    "summary": "A midterm study for the course Green Building Development Practice. One 3D model of a three-storey fire station in Hualien's East Rift Valley compares passive design (sun, planting, daylight, ventilation, shading) and active systems (walls, roof, glazing, lighting, air conditioning, rainwater) before and after a retrofit. It switches between colour, plain and night views, and the same page plays as a slide deck.",
+    "image": "projects/ruisui-green/img/axon.png",
+    "image_style": "line",
+    "link": "projects/ruisui-green/"
   }
 ]

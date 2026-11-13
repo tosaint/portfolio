@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>瑞穗消防分隊 綠建築改善前後比較 · Ruisui Fire Station Green Retrofit Study</title>
+<meta name="description" content="以花蓮縣消防局瑞穗分隊廳舍為案例，用 3D 模型比較被動式與主動式綠建築策略的改善前後。A before-and-after green retrofit study of the Ruisui fire station in Hualien, Taiwan, told through one 3D model.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc; --mat: #faf9f5;
+  --before: #c8553d; --after: #2f8f9d;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --before: #ff7a5c; --after: #5cc3cf; color-scheme: dark;
+} }
+:root[data-theme="dark"] { --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --before: #ff7a5c; --after: #5cc3cf; color-scheme: dark; }
+* { box-sizing: border-box; }
+html { scroll-padding-top: 60px; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.85 var(--sans); }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 3px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 16px; }
+
+.top { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+
+.head { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(44px, 7vw, 88px) clamp(32px, 5vw, 56px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.3 var(--serif); letter-spacing: .1em; text-wrap: balance; }
+.en-title { margin: 14px 0 0; font: 300 clamp(17px, 1.9vw, 22px)/1.4 var(--serif); color: var(--ink-2); }
+.lede { margin: 0; font-size: 15px; color: var(--ink-2); }
+.lede span { display: block; margin-top: 10px; color: var(--ink-3); font-size: 13px; line-height: 1.7; }
+.start { margin-top: 22px; display: inline-flex; gap: 10px; align-items: baseline; border: 1px solid var(--ink); background: none; padding: 10px 18px; cursor: pointer; font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.start:hover { background: var(--ink); color: var(--paper); }
+.start small { font: inherit; color: var(--ink-3); letter-spacing: .08em; }
+
+/* Story: text on the left, one sticky 3D stage on the right */
+.story { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(20px, 3vw, 44px); border-top: 1px solid var(--rule); }
+.steps { padding-bottom: 30vh; }
+.chapter { margin: 0; padding: 56px 0 6px; font: 300 26px/1.4 var(--serif); letter-spacing: .1em; }
+.chapter small { display: block; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+.step { min-height: 74vh; padding: 28px 0 40px; border-bottom: 1px solid var(--rule); opacity: .42; transition: opacity .35s; }
+.step.active { opacity: 1; }
+.step .num { margin: 0 0 6px; font: 400 11px var(--mono); letter-spacing: .16em; color: var(--ink-3); }
+.step h3 { margin: 0 0 12px; font: 500 21px/1.45 var(--serif); letter-spacing: .06em; }
+.step h3 span { display: block; font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink-3); margin-top: 4px; }
+.step p { margin: 0 0 .9em; }
+.step .cap { display: none; }
+.step ul { margin: 0 0 1em; padding-left: 1.2em; } .step li { margin-bottom: .35em; }
+.note { font-size: 13px; color: var(--ink-3); }
+dl.facts { display: grid; grid-template-columns: 8.5em 1fr; gap: 6px 14px; margin: 0 0 1.2em; font-size: 14px; }
+dl.facts dt { color: var(--ink-3); } dl.facts dd { margin: 0; }
+.ba { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 14px 0 16px; font-size: 14px; }
+.ba > div { background: var(--paper); padding: 12px 14px; }
+.ba h4 { margin: 0 0 6px; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.ba .b h4 { color: var(--before); } .ba .a h4 { color: var(--after); }
+.ba ul { margin: 0; padding-left: 1.1em; } .ba li { margin-bottom: .3em; }
+.ba.on-before .a, .ba.on-after .b { opacity: .5; }
+.score { font: 400 13px var(--mono); color: var(--ink-2); margin: 0 0 1em; }
+.score b { font-weight: 400; color: var(--ink); }
+.score .up { color: var(--after); }
+.map { position: relative; border: 1px solid var(--rule); margin: 14px 0 6px; aspect-ratio: 4 / 3; background: var(--mat); }
+.map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.maptoggle { display: flex; gap: 1px; margin-bottom: 18px; } .maptoggle button { border: 1px solid var(--rule); background: var(--paper); padding: 4px 10px; font: 400 11px var(--mono); cursor: pointer; }
+.maptoggle button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+/* Insolation bars */
+#suntable { font-size: 13px; margin: 14px 0; }
+.sunhead, .sunface { display: grid; grid-template-columns: 11.5em repeat(3, 1fr); gap: 8px; align-items: center; }
+.sunhead span { font: 400 11px var(--mono); color: var(--ink-3); letter-spacing: .08em; }
+.sunface { padding: 4px 0; border-top: 1px solid var(--rule); }
+.sunrow { position: relative; height: 18px; display: flex; align-items: center; }
+.sunrow i { position: absolute; left: 0; top: 3px; bottom: 3px; background: var(--ink-3); opacity: .35; }
+.sunrow.on i { background: #d99a2b; opacity: .9; }
+.sunrow b { position: relative; font: 400 12px var(--mono); padding-left: 4px; }
+.unit { margin: 8px 0 0; font-size: 12px; color: var(--ink-3); }
+
+/* Score chart */
+.chart { margin: 16px 0; font-size: 13px; }
+.chart .row { display: grid; grid-template-columns: 7em 1fr; gap: 10px; align-items: center; padding: 5px 0; border-top: 1px solid var(--rule); }
+.chart .bars { display: grid; gap: 3px; }
+.chart .bar { height: 12px; position: relative; }
+.chart .bar i { position: absolute; inset: 0 auto 0 0; }
+.chart .bar.b i { background: var(--before); opacity: .75; } .chart .bar.a i { background: var(--after); }
+.chart .bar em { position: absolute; left: calc(var(--w) + 6px); top: -3px; font: 400 11px var(--mono); font-style: normal; color: var(--ink-2); }
+.scale { position: relative; height: 54px; margin: 18px 0 6px; border-top: 1px solid var(--ink-3); }
+.scale span { position: absolute; top: 0; height: 10px; border-left: 1px solid var(--ink-3); font: 400 10px var(--mono); color: var(--ink-3); padding: 12px 0 0 4px; white-space: nowrap; }
+.scale .pt { top: -9px; height: auto; border: 0; padding: 0; transform: translateX(-50%); font-size: 11px; }
+.scale .pt::before { content: ""; display: block; width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 4px; }
+.scale .pt.b::before { background: var(--before); } .scale .pt.a::before { background: var(--after); }
+.scale .pt { padding-top: 0; } .scale .pt b { display: block; margin-top: 30px; font-weight: 400; }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0 14px; }
+table.t th, table.t td { border-top: 1px solid var(--rule); padding: 6px 4px; text-align: left; vertical-align: top; }
+table.t th { font: 400 11px var(--mono); color: var(--ink-3); letter-spacing: .06em; }
+table.t td.n { font-family: var(--mono); white-space: nowrap; }
+
+/* Stage */
+.stage-wrap { position: relative; }
+#stage { position: sticky; top: 58px; height: calc(100vh - 74px); min-height: 420px; margin-top: 14px; background: #ebe8e1; overflow: hidden; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+.bar-top { position: absolute; left: 10px; right: 10px; top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; pointer-events: none; }
+.bar-top > * { pointer-events: auto; }
+.seg { display: inline-flex; gap: 1px; background: #c9c5ba; border: 1px solid #c9c5ba; }
+.seg button { border: 0; background: rgba(250,249,245,.92); color: #2b2a27; padding: 5px 10px; font: 400 12px var(--sans); cursor: pointer; white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: #2b2a27; color: #f3f1ec; }
+#phase button[data-phase="before"][aria-pressed="true"] { background: #c8553d; }
+#phase button[data-phase="after"][aria-pressed="true"] { background: #2f8f9d; }
+.spacer { flex: 1; }
+.panel { background: rgba(250,249,245,.94); border: 1px solid #c9c5ba; padding: 6px 10px; font: 400 12px var(--sans); color: #2b2a27; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.panel input[type=range] { width: 150px; accent-color: #c08a2c; }
+.panel code { font: 400 12px var(--mono); }
+#sunread { font: 400 11px var(--mono); color: #5f5b54; }
+#legend { position: absolute; left: 10px; bottom: 10px; display: flex; flex-wrap: wrap; gap: 4px 12px; background: rgba(250,249,245,.92); border: 1px solid #c9c5ba; padding: 6px 10px; font-size: 12px; color: #2b2a27; max-width: calc(100% - 20px); }
+#legend i { display: inline-block; width: 10px; height: 10px; margin-right: 5px; vertical-align: -1px; }
+#loading, #nogl { position: absolute; inset: 0; display: grid; place-items: center; font: 400 12px var(--mono); color: #5f5b54; letter-spacing: .1em; }
+[hidden] { display: none !important; }
+
+/* Slide mode: the stage fills the screen and the active step becomes a caption */
+.slidecap { display: none; }
+body.slides { overflow: hidden; }
+body.slides #stage { position: fixed; inset: 0; height: 100vh; margin: 0; z-index: 50; }
+body.slides .slidecap { display: grid; grid-template-columns: 1fr auto; gap: 4px 24px; align-items: end; position: absolute; left: 0; right: 0; bottom: 0; padding: 18px clamp(16px, 4vw, 48px) 20px; background: linear-gradient(transparent, rgba(243,241,236,.94) 28%); color: #2b2a27; pointer-events: none; }
+body.slides.night .slidecap { background: linear-gradient(transparent, rgba(14,19,23,.92) 28%); color: #ece8df; }
+.slidecap .sec { grid-column: 1 / -1; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; opacity: .65; }
+.slidecap h2 { margin: 0; font: 500 clamp(20px, 2.4vw, 30px)/1.35 var(--serif); letter-spacing: .06em; }
+.slidecap p { margin: 4px 0 0; font-size: clamp(14px, 1.3vw, 17px); max-width: 70ch; }
+.slidecap .count { font: 400 12px var(--mono); opacity: .7; align-self: end; }
+body.slides #legend { bottom: auto; top: 56px; }
+.slidenav { display: none; }
+body.slides .slidenav { display: flex; gap: 1px; }
+body.slides .seg.slidenav button { padding: 5px 12px; }
+
+footer.src { border-top: 1px solid var(--rule); padding: 40px 0 70px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 64px); font-size: 13px; color: var(--ink-2); }
+footer.src h2 { margin: 0 0 10px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+footer.src ol { margin: 0; padding-left: 1.4em; } footer.src li { margin-bottom: .5em; }
+footer.src p { margin: 0 0 1em; }
+
+@media (max-width: 860px) {
+  .head { grid-template-columns: 1fr; }
+  .story { grid-template-columns: 1fr; }
+  .stage-wrap { order: -1; position: sticky; top: 46px; z-index: 5; }
+  #stage { position: relative; top: 0; height: 46vh; min-height: 280px; margin-top: 0; }
+  .step { min-height: 0; padding-bottom: 60px; }
+  .seg button { padding: 4px 7px; font-size: 11px; }
+  footer.src { grid-template-columns: 1fr; }
+  .ba { grid-template-columns: 1fr; }
+  .sunhead, .sunface { grid-template-columns: 8.5em repeat(3, 1fr); }
+}
+</style>
+<script>
+// Each step drives the 3D stage. cam: persp | top (plan cut) | elev (orthographic elevation).
+window.RUISUI_STATES = {
+  cover:    { cam: 'persp', pos: [-44, 27, 72], target: [19, 4, -8] },
+  site:     { cam: 'persp', pos: [-62, 74, 66], target: [20, 0, -8] },
+  zones:    { cam: 'persp', pos: [-40, 36, 50], target: [20, 7, -8], diagram: true, zones: true },
+  plan:     { cam: 'top', floor: 1, zones: true, mode: 'plain' },
+  elev:     { cam: 'elev', elev: 'front', mode: 'plain' },
+  persp:    { cam: 'persp', pos: [58, 17, 52], target: [22, 5, -7] },
+  sunS:     { cam: 'persp', pos: [-58, 46, 62], target: [20, 4, -8], layers: ['sun'], sun: [172, 15] },
+  sunW:     { cam: 'persp', pos: [-66, 30, 22], target: [20, 4, -8], layers: ['sun'], sun: [355, 12] },
+  green:    { cam: 'persp', pos: [-16, 40, -62], target: [18, 4, -12], layers: ['green'], phase: 'before' },
+  daylight: { cam: 'top', floor: 2, cut: 2, layers: ['daylight'], phase: 'before', mode: 'plain' },
+  wind:     { cam: 'persp', pos: [-44, 30, -46], target: [20, 6, -10], layers: ['wind'], phase: 'before', mode: 'plain', xray: true },
+  shade:    { cam: 'persp', pos: [-24, 18, -60], target: [16, 5, -14], layers: ['shade', 'sun'], phase: 'before', sun: [172, 16.5] },
+  envelope: { cam: 'persp', pos: [-38, 22, -52], target: [18, 5, -14], layers: ['envelope'], phase: 'before' },
+  roof:     { cam: 'persp', pos: [-18, 62, 32], target: [20, 6, -9], layers: ['roof', 'green'], phase: 'before' },
+  light:    { cam: 'persp', pos: [-34, 15, -52], target: [16, 4, -12], mode: 'night', light: true, phase: 'before' },
+  ac:       { cam: 'persp', pos: [-30, 24, -56], target: [18, 4, -12], layers: ['ac'], phase: 'before' },
+  water:    { cam: 'persp', pos: [-20, 26, 50], target: [17, 0, -9], layers: ['water'], phase: 'before', xray: true },
+  summary:  { cam: 'persp', pos: [-44, 34, 64], target: [19, 4, -8], layers: ['green', 'shade', 'roof'], phase: 'after', notags: true }
+};
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <span>Work 007 · 2026</span>
+</div></header>
+
+<main class="wrap">
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 007 · 綠色建築開發實務 · 期中報告 · 2026</p>
+      <h1>瑞穗消防分隊<br>綠建築改善前後比較</h1>
+      <p class="en-title">Ruisui Fire Station — Green Retrofit Study</p>
+    </div>
+    <div>
+      <p class="lede">以花蓮縣消防局瑞穗分隊廳舍為案例，用同一個 3D 模型比較被動式設計與主動式設計的改善前後：日照、綠化、採光、通風、遮陽，以及外牆、屋頂、窗戶、照明、空調與水資源。綠建築九大指標只作為佐證，本次期中不做全面檢核。<span>A before-and-after study of a three-storey fire station in Hualien's East Rift Valley. One 3D model walks through passive design (sun, planting, daylight, ventilation, shading) and active systems (walls, roof, glazing, lighting, air conditioning, rainwater), with Taiwan's EEWH green building indicators as supporting evidence.</span></p>
+      <button class="start" id="startslides">簡報模式 ▶ <small>Slides · P</small></button>
+    </div>
+  </section>
+
+  <div class="story">
+    <div class="steps">
+
+      <h2 class="chapter"><small>01 · Case</small>案例簡介</h2>
+      <article class="step" data-state="cover">
+        <p class="num">1-0</p>
+        <h3>花蓮縣消防局第三大隊 瑞穗分隊廳舍<span>Overview</span></h3>
+        <p class="cap">地上 3 層 RC 造消防廳舍，2021 年竣工、2022 年啟用。本報告以它為案例，比較綠建築策略的改善前後。</p>
+        <p>位於花蓮縣瑞穗鄉台 9 線旁的消防分隊，地上 3 層鋼筋混凝土造，一樓是挑高的消防車庫與值勤空間，二樓是備勤寢室，三樓是會議活動室與訓練用樓梯塔。</p>
+        <p>右側 3D 模型可拖曳旋轉、滾輪縮放；上方可切換<strong>上色、素模、夜間</strong>三種顯示。往下捲動，模型會跟著每一節切換視角與圖層。</p>
+        <p class="note">模型為作者自建之分析用模型，尺寸為近似值，非竣工圖。</p>
+      </article>
+
+      <article class="step" data-state="site">
+        <p class="num">1-1</p>
+        <h3>基地<span>Site</span></h3>
+        <p class="cap">花東縱谷中段、北回歸線通過的瑞穗鄉。基地 2,588 m²，建蔽率僅 25.9%，空地是後續改善最大的本錢。</p>
+        <p>基地位在中央山脈與海岸山脈之間的花東縱谷，北回歸線通過瑞穗鄉：夏至正午太陽幾乎在頭頂，這一點直接決定了第 3 節的日照分析。主立面朝<strong>東北東（約 74°）</strong>，建築長向沿北北西—南南東排列。</p>
+        <div class="map"><iframe id="gmap" title="Google 地圖：花蓮縣消防局瑞穗分隊" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=%E8%8A%B1%E8%93%AE%E7%B8%A3%E6%B6%88%E9%98%B2%E5%B1%80%E7%91%9E%E7%A9%97%E5%88%86%E9%9A%8A&z=17&output=embed"></iframe></div>
+        <div class="maptoggle"><button data-maptype="m" aria-pressed="true">地圖</button><button data-maptype="k" aria-pressed="false">衛星</button></div>
+        <dl class="facts">
+          <dt>基地面積</dt><dd>2,588.00 m²（約 783 坪）</dd>
+          <dt>建築面積</dt><dd>670.37 m²</dd>
+          <dt>建蔽率／容積率</dt><dd>25.90%（法定 60%）／51.28%（法定 180%）</dd>
+          <dt>總樓地板面積</dt><dd>1,198.05 m²（約 362 坪）</dd>
+          <dt>構造／樓層</dt><dd>鋼筋混凝土造，地上 3 層</dd>
+          <dt>土地使用</dt><dd>特定農業區 特定目的事業用地</dd>
+          <dt>設計與監造</dt><dd>鄒永亷建築師事務所</dd>
+          <dt>施工</dt><dd>晶展營造股份有限公司</dd>
+          <dt>工程造價</dt><dd>NT$55,280,230（約 5,528 萬元）</dd>
+          <dt>竣工／啟用</dt><dd>2021.12.05／2022.02.18</dd>
+          <dt>綠建築</dt><dd>候選綠建築證書 合格級（綠化量、日常節能、水資源 3 項指標，總分 RS = 19.01）</dd>
+        </dl>
+        <p class="note">公有建築造價 5,000 萬元以上，依規定須取得合格級以上綠建築標章［5］。</p>
+      </article>
+
+      <article class="step" data-state="zones">
+        <p class="num">1-2</p>
+        <h3>機能<span>Programme</span></h3>
+        <p class="cap">一樓車庫與值勤，二樓備勤寢室，三樓會議與樓梯塔。24 小時輪值，讓空調與照明的需求日夜不同。</p>
+        <p>把三層樓拆開看：</p>
+        <ul>
+          <li><strong>1F</strong>：消防車庫（X3–X6，五部車輛）、值班室、分隊辦公室、廚房餐廳、裝備器材室、發電機房。</li>
+          <li><strong>2F</strong>：沿西南西側一字排開的備勤寢室，加上分隊長、小隊長寢室；車庫上方挑空。</li>
+          <li><strong>3F</strong>：會議室、活動室與屋頂平台；北端樓梯塔升到 +12.30。</li>
+        </ul>
+        <p>消防分隊 24 小時輪值：值班室全天有人、寢室夜間使用、辦公與會議以日間為主、車庫幾乎不需空調。這個「時段差」是第 4 節空調與照明分區的依據。</p>
+      </article>
+
+      <h2 class="chapter"><small>02 · Layout</small>空間配置</h2>
+      <article class="step" data-state="plan">
+        <p class="num">2-1</p>
+        <h3>平面圖<span>Plans · 1F / 2F / 3F</span></h3>
+        <p class="cap">L 形量體：寢室沿西南西側排成 40 m 長的一字形，車庫為 24.3 m 大跨、挑高開放。</p>
+        <p>模型在各層樓板上方 1.6 m 處水平剖切，以機能色塊標示房間。用右上角的 <code>1F / 2F / 3F</code> 切換樓層。</p>
+        <ul>
+          <li>柱網 X1–X6：8.0 + 8.0 + 8.8 + 8.0 + 7.5 = 40.30 m；Y1–Y4：5.0 + 6.5 + 7.0 = 18.50 m。</li>
+          <li>西南西側 7 m 進深的房間帶貫穿全長，寢室單側開窗、背對走道。</li>
+          <li>車庫上方（2F）挑空，三樓只在 X2–X3 與北端樓梯塔有室內空間，其餘為屋頂平台。</li>
+        </ul>
+      </article>
+
+      <article class="step" data-state="elev">
+        <p class="num">2-2</p>
+        <h3>立面圖<span>Elevations</span></h3>
+        <p class="cap">樓高 3.80／3.50／3.50 m。主立面金黃塗料配深色框與斜向飾帶，南端是外傾的深色框與白色 V 形斜撐。</p>
+        <p>正投影立面，可用右上角切換東北東（主立面）、西南西（背面）、南南東、北北西四向。</p>
+        <ul>
+          <li>樓板高程：1FL +1.50、2FL +5.30、3FL +8.80、RFL +12.30。</li>
+          <li><strong>主立面（東北東）</strong>：金黃色塗料與深色石材框，車庫上方一道斜向深色飾帶連到北端樓梯塔。</li>
+          <li><strong>南端（南南東）</strong>：深色外框上寬下窄、向外傾，三樓平台由白色 V 形斜撐支承，「119」標誌在三樓。</li>
+          <li><strong>背面（西南西）</strong>：兩層各 8 扇窗等距排列，正是西曬最需要處理的一面。</li>
+        </ul>
+      </article>
+
+      <article class="step" data-state="persp">
+        <p class="num">2-3</p>
+        <h3>透視圖<span>Perspective</span></h3>
+        <p class="cap">三種顯示：上色看材料、素模看量體、夜間看照明。</p>
+        <p>切換上方的顯示模式：</p>
+        <ul>
+          <li><strong>上色</strong>：依外觀配色的材質，用來討論外殼與遮陽。</li>
+          <li><strong>素模</strong>：去掉顏色只留量體與線條，用來看比例與陰影。</li>
+          <li><strong>夜間</strong>：依房間機能點亮窗戶，用來討論照明計畫（4-3）。</li>
+        </ul>
+      </article>
+
+      <h2 class="chapter"><small>03 · Passive</small>被動式設計</h2>
+      <article class="step" data-state="sunS">
+        <p class="num">3-1</p>
+        <h3>日照模擬：夏至<span>Sun study · June solstice</span></h3>
+        <p class="cap">夏至正午太陽高度 89.8°，幾乎在頭頂。屋頂一天受熱最多，其次是早上的前立面與下午的背面。</p>
+        <p>太陽位置依經緯度（約北緯 23.5°、東經 121.4°）、日期與時刻計算，可用滑桿改變時間。下表是各面一天的晴天直射日射量：</p>
+        <div id="suntable"></div>
+        <p>夏至這天，<strong>屋頂</strong>受熱遠高於任何一面牆；牆面中以早上受曬的<strong>前立面（東北東）</strong>與下午受曬的<strong>背面（西南西）</strong>最多。太陽從東北東升起、往西北西落下，連北北西的樓梯塔端牆傍晚都曬得到；反倒是南端幾乎曬不到。</p>
+      </article>
+
+      <article class="step" data-state="sunW">
+        <p class="num">3-2</p>
+        <h3>日照模擬：冬至，夏冬優劣<span>Sun study · December solstice</span></h3>
+        <p class="cap">冬至正午太陽高度 43°。南端夏天幾乎曬不到、冬天受熱最多；屋頂與背面則是夏天的負擔。</p>
+        <p>冬至太陽從東南東升起、正午高度約 43°。表中的亮色欄會跟著日期切換。</p>
+        <div class="ba">
+          <div class="b"><h4>優勢</h4><ul><li>南端（深色外框）夏天幾乎不受直射，冬天反而最多，方位合理。</li><li>南端外框上寬下窄，夏天高角度的太陽被自己遮住。</li><li>建蔽率低，四周沒有遮擋，冬季日照充足。</li></ul></div>
+          <div class="a"><h4>劣勢</h4><ul><li>屋頂夏季受熱最大，是最優先的處理面。</li><li>背面（西南西）8 扇窗下午受曬，寢室傍晚過熱。</li><li>前立面早晨受曬，辦公與值班室上午偏熱。</li></ul></div>
+        </div>
+        <p>這幾點分別對應後面的綠化（3-3）、外遮陽（3-6）與屋頂（4-2）。</p>
+      </article>
+
+      <article class="step" data-state="green">
+        <p class="num">3-3</p>
+        <h3>綠化<span>Planting · 綠化量指標</span></h3>
+        <p class="cap">屋頂平台加屋頂花園、西南西牆加垂直綠化，同時處理屋頂受熱與西曬。</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>大喬木 14 株、小喬木 15 株、灌木 268 m²、草花 136 m²，保留老樹。</li><li>屋頂平台與外牆沒有植栽。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li>寢室翼屋頂平台設屋頂花園，灌木約 180 m²。</li><li>背面窗間設垂直綠化，多年生蔓藤約 80 m²。</li><li>植栽同時降低屋頂與西牆表面溫度。</li></ul></div>
+        </div>
+        <p class="score">CO₂ 固定量 TCO₂ <b>338,391</b> → <b class="up">405,351 kg</b>（基準值 310,560）<br>綠化量得分 RS2 <b>2.11</b> → <b class="up">3.58</b></p>
+        <p class="note">改善後以手冊係數推估：灌木 300 kg/m²、蔓藤 100 kg/m²，生態綠化優待係數維持 1.08。</p>
+      </article>
+
+      <article class="step" data-state="daylight">
+        <p class="num">3-4</p>
+        <h3>自然採光<span>Daylight · 2F plan</span></h3>
+        <p class="cap">寢室進深 7 m、單側開窗，內側偏暗。加光棚與高窗、走道側加氣窗，把光送進更深處。</p>
+        <p>常用的估算是：有效採光深度約為窗頂高度的 2 倍。二樓寢室窗頂約在樓板上 2.5 m，光大約只照得到窗邊 4–5 m，靠走道的一側要開燈。</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>窗頂約 2.5 m，有效採光深度約 4 m。</li><li>靠走道約 1–2 m 偏暗，白天也需照明。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li>室內光棚把直射光反射到天花板，窗頂提高。</li><li>寢室與走道之間的隔間上方加氣窗，走道得到二次光。</li><li>可搭配 4-3 的日光感知控制。</li></ul></div>
+        </div>
+      </article>
+
+      <article class="step" data-state="wind">
+        <p class="num">3-5</p>
+        <h3>自然通風<span>Natural ventilation</span></h3>
+        <p class="cap">寢室兩側開口形成穿堂風，樓梯塔做浮力通風，車庫本身就是開放空間。</p>
+        <p>本案空調評估沒有計入自然通風的折減（Vac = 1.00），等於全棟都假設要開冷氣。改善方向：</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>寢室只有外側單面開窗，與走道之間缺少對流開口。</li><li>以分離式冷氣為主，外氣難以進入。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li><strong>穿堂風</strong>：寢室隔間與走道加可開氣窗，外氣從背面穿過走道、經挑空車庫往主立面排出。</li><li><strong>浮力通風</strong>：北端樓梯塔頂部設排氣口，熱空氣上升帶動各層換氣。</li><li>春秋過渡季不開空調，可計入自然通風折減。</li></ul></div>
+        </div>
+        <p class="note">模型以垂直長向的對流示意。花東縱谷呈南北走向，實際風向與風速需以中央氣象署鄰近測站資料驗證。</p>
+      </article>
+
+      <article class="step" data-state="shade">
+        <p class="num">3-6</p>
+        <h3>外遮陽<span>External shading</span></h3>
+        <p class="cap">背面窗戶加垂直與水平格柵擋下午斜射，前立面加水平遮簷擋早晨的陽光。</p>
+        <p>西南西向的下午太陽高度低、方位斜，單靠水平遮簷擋不住，所以用<strong>垂直鰭片＋水平遮簷</strong>的格柵；前立面（東北東）的辦公室與三樓會議室則加水平遮簷。切換改善前後並拖動時間滑桿，可以看到窗面陰影的變化。</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>背面 16 扇窗無外遮陽，只有 2F 四處陽台。</li><li>前立面辦公室窗戶直接受早晨日照。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li>背面每扇窗加深 0.75 m 的格柵。</li><li>前立面 1F、2F 與 3F 會議室加 0.9–1.2 m 水平遮簷。</li></ul></div>
+        </div>
+      </article>
+
+      <h2 class="chapter"><small>04 · Active</small>主動式設計</h2>
+      <article class="step" data-state="envelope">
+        <p class="num">4-1</p>
+        <h3>外牆與窗戶<span>Walls and glazing · 日常節能 EEV</span></h3>
+        <p class="cap">外牆加外隔熱、玻璃改 Low-E 複層，再加上 3-6 的外遮陽，外殼節能 EEV 由 0.72 降到 0.60。</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>外殼節能 EEV 0.72（基準 0.80），已合格。</li><li>外牆與窗戶的熱傳透率未檢討。</li><li>玻璃可見光反射率 0.09。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li>背面、南端、樓梯塔外牆做外隔熱。</li><li>玻璃改 Low-E 複層玻璃，降低日射與熱傳透。</li><li>EEV 目標 0.60。</li></ul></div>
+        </div>
+        <p class="score">外殼節能得分 RS41 <b>4.93</b> → <b class="up">9.33</b>　（RS41 = 29.30 ×（0.80 − EEV）／0.80 + 2.0）</p>
+        <p class="note">紅色／青色色塊示意外牆的熱負荷處理；改善後窗戶改為 Low-E 玻璃顏色。</p>
+      </article>
+
+      <article class="step" data-state="roof">
+        <p class="num">4-2</p>
+        <h3>屋頂<span>Roof · Uar</span></h3>
+        <p class="cap">屋頂是夏季受熱最大的面：加隔熱與高反射面層、做屋頂花園，車庫大屋頂鋪太陽光電。</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>屋頂平均熱傳透率 Uar 0.72（上限 0.80）。</li><li>車庫大屋頂約 280 m² 未利用。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li>加厚隔熱層、改高反射面層，Uar 目標 0.45。</li><li>寢室翼屋頂花園（同 3-3）。</li><li>車庫屋頂太陽光電，白天發電供值勤用電。</li></ul></div>
+        </div>
+        <p class="note">太陽光電可計入日常節能的再生能源係數，期末報告再估算裝置容量與發電量。</p>
+      </article>
+
+      <article class="step" data-state="light">
+        <p class="num">4-3</p>
+        <h3>照明<span>Lighting · 日常節能 EL</span></h3>
+        <p class="cap">夜間只亮值班動線，寢室低照度、辦公區感應關燈。照明節能 EL 由 0.53 降到 0.35。</p>
+        <p>夜間模式下，窗戶依房間機能點亮。切換改善前後比較：</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>照明節能 EL 0.53（基準 0.80），已有高效燈具。</li><li>無分區與感應控制，夜間大面積點亮。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li>值班室、出勤動線維持照明。</li><li>寢室低照度夜燈，辦公與器材室人員感應自動關燈。</li><li>窗邊日光感知調光（配合 3-4）。</li></ul></div>
+        </div>
+        <p class="score">照明節能得分 RS43 <b>4.54</b> → <b class="up">6.56</b>　（RS43 = 9.00 ×（0.80 − EL）／0.80 + 1.5）</p>
+      </article>
+
+      <article class="step" data-state="ac">
+        <p class="num">4-4</p>
+        <h3>主動式空調<span>Air conditioning · 日常節能 EAC</span></h3>
+        <p class="cap">分離式冷氣改一級能效變頻多聯系統，依時段分區；車庫不空調。空調節能 EAC 由 0.80 降到 0.60。</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>全棟個別空調 1,198 m²，無節能標章證明。</li><li>EAC 0.80，剛好等於基準，得分是最低的 1.50。</li><li>室外機散布在背面與地面。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li>一級能效變頻多聯（VRF），室外機集中到屋頂。</li><li>依時段分區：值班 24 小時、寢室夜間、辦公日間。</li><li>過渡季改用 3-5 的自然通風。</li></ul></div>
+        </div>
+        <p class="score">空調節能得分 RS42 <b>1.50</b> → <b class="up">6.15</b>　（RS42 = 18.60 ×（0.80 − EAC）／0.80 + 1.5）</p>
+      </article>
+
+      <article class="step" data-state="water">
+        <p class="num">4-5</p>
+        <h3>水資源<span>Rainwater · 水資源指標</span></h3>
+        <p class="cap">屋頂雨水進筏基貯集槽。改善後除了澆灌，再供消防車清洗與演練補水。</p>
+        <p>模型改為透視，可看見地下的雨水貯集槽（位置示意）。</p>
+        <div class="ba">
+          <div class="b"><h4>改善前</h4><ul><li>屋頂集雨約 600 m²，貯集槽 20.31 m³（需求 10.02 m³）。</li><li>雨水只用於植栽澆灌。</li><li>水資源 WI 5.54（基準 2.00）。</li></ul></div>
+          <div class="a"><h4>改善後</h4><ul><li>雨水另接到車庫洗車區與樓梯塔演練用水。</li><li>消防車清洗與演練是消防分隊特有的大量用水，改用雨水可直接減少自來水。</li></ul></div>
+        </div>
+        <p class="score">水資源得分 RS8 <b>5.93</b> → <b>5.93</b>（指標分數不變，實際節水量增加）</p>
+        <p class="note">水資源指標以器具省水與澆灌彌補為主，洗車與演練用水的雨水替代率期末報告再量化。</p>
+      </article>
+
+      <h2 class="chapter"><small>05 · Summary</small>總結</h2>
+      <article class="step" data-state="summary">
+        <p class="num">5-0</p>
+        <h3>總結<span>Summary</span></h3>
+        <p class="cap">本次處理的 5 項得分由 19.01 提升到約 31.55（+66%），提升最多的是空調與外殼。鑽石級（58 分）需納入其餘指標，留待期末。</p>
+        <p>這次處理的項目，改善前後的得分（改善後為設計目標推估）：</p>
+        <div class="chart" id="chart"></div>
+        <table class="t">
+          <tr><th>指標</th><th>改善前</th><th>改善後</th><th>主要手段</th></tr>
+          <tr><td>綠化量 RS2</td><td class="n">2.11</td><td class="n">3.58</td><td>屋頂花園、垂直綠化</td></tr>
+          <tr><td>外殼節能 RS41</td><td class="n">4.93</td><td class="n">9.33</td><td>外遮陽、外牆外隔熱、Low-E 玻璃、屋頂隔熱</td></tr>
+          <tr><td>空調節能 RS42</td><td class="n">1.50</td><td class="n">6.15</td><td>一級變頻 VRF、時段分區、自然通風</td></tr>
+          <tr><td>照明節能 RS43</td><td class="n">4.54</td><td class="n">6.56</td><td>分區、感應與日光控制</td></tr>
+          <tr><td>水資源 RS8</td><td class="n">5.93</td><td class="n">5.93</td><td>雨水供洗車與演練</td></tr>
+          <tr><td><strong>合計</strong></td><td class="n"><strong>19.01</strong></td><td class="n"><strong>31.55</strong></td><td></td></tr>
+        </table>
+        <div class="scale" id="scale"></div>
+        <p>基地小於 1 公頃免評估生物多樣性指標，等級門檻為：合格級 18、銅級 34、銀級 41、黃金級 48、鑽石級 58［6］。</p>
+        <ul>
+          <li><strong>被動式先降負荷</strong>：屋頂與西南西面是夏季主要熱源，屋頂花園、隔熱與外遮陽先把熱擋在外面。</li>
+          <li><strong>再升級主動設備</strong>：負荷降低後，空調改一級變頻並依消防分隊 24 小時輪值的時段分區，是提升最多的一項。</li>
+          <li><strong>消防分隊的特性</strong>：車庫開放不需空調、洗車與演練用水大，讓自然通風與雨水回收比一般辦公建築更有發揮空間。</li>
+        </ul>
+        <p>改善後約 31.55 分，仍在合格級，距銅級差約 2.5 分。要達到鑽石級的 58 分，需把基地保水、二氧化碳減量、廢棄物減量、室內環境、污水垃圾改善等指標一起納入評估，這部分留待期末報告。</p>
+      </article>
+
+    </div>
+
+    <div class="stage-wrap">
+      <div id="stage">
+        <div id="loading">LOADING 3D…</div>
+        <div id="nogl" hidden>此瀏覽器無法啟用 WebGL 3D</div>
+        <div class="bar-top">
+          <div class="seg" role="group" aria-label="顯示模式"><button data-mode="color">上色</button><button data-mode="plain">素模</button><button data-mode="night">夜間</button></div>
+          <div class="seg" id="phase" role="group" aria-label="改善前後" hidden><button data-phase="before">改善前</button><button data-phase="after">改善後</button></div>
+          <span class="spacer"></span>
+          <div class="seg slidenav"><button id="prev" aria-label="上一頁">←</button><button id="next" aria-label="下一頁">→</button><button id="exitslides">結束</button></div>
+          <div class="seg"><button id="resetview" title="回到本節視角">視角</button><button id="shot" title="下載截圖">截圖</button><button id="slidebtn" title="簡報模式（P）">簡報</button></div>
+          <div class="panel" id="sunbox" hidden>
+            <span class="seg"><button data-doy="172">夏至</button><button data-doy="79">春秋分</button><button data-doy="355">冬至</button></span>
+            <input type="range" id="hour" min="5" max="19" step="0.25" aria-label="時刻"><code id="hourval"></code><span id="sunread"></span>
+          </div>
+          <div class="seg" id="floorbox" hidden><button data-floor="1">1F</button><button data-floor="2">2F</button><button data-floor="3">3F</button></div>
+          <div class="seg" id="elevbox" hidden><button data-elev="front">東北東</button><button data-elev="back">西南西</button><button data-elev="south">南南東</button><button data-elev="north">北北西</button></div>
+        </div>
+        <div id="legend" hidden></div>
+        <div class="slidecap"><span class="sec" id="capsec"></span><div><h2 id="captitle"></h2><p id="captext"></p></div><span class="count" id="capcount"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="src">
+    <div>
+      <h2>Sources · 資料來源</h2>
+      <ol>
+        <li>東台灣新聞網，〈消防瑞穗分隊廳舍啟用！〉，2022/02/19。<a href="https://etaiwan.news/2022/02/19/%E6%B6%88%E9%98%B2%E7%91%9E%E7%A9%82%E5%88%86%E9%9A%8A%E5%BB%B3%E8%88%8D%E5%95%9F%E7%94%A8%EF%BC%81/" target="_blank" rel="noopener">連結</a></li>
+        <li>Yahoo 新聞，〈花蓮縣消防局瑞穗分隊廳舍新建工程啟用 救災能量更強化〉。<a href="https://tw.news.yahoo.com/%E8%8A%B1%E8%93%AE%E7%B8%A3%E6%B6%88%E9%98%B2%E5%B1%80%E7%91%9E%E7%A9%97%E5%88%86%E9%9A%8A%E5%BB%B3%E8%88%8D%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B%E5%95%9F%E7%94%A8-%E6%95%91%E7%81%BD%E8%83%BD%E9%87%8F%E6%9B%B4%E5%BC%B7%E5%8C%96-095035501.html" target="_blank" rel="noopener">連結</a></li>
+        <li>鄒永亷建築師事務所，作品〈花蓮縣消防局瑞穗分隊廳舍新建工程〉。<a href="https://www.arch-tyl.com/?astra-portfolio=%E8%8A%B1%E8%93%AE%E7%B8%A3%E6%B6%88%E9%98%B2%E5%B1%80%E7%91%9E%E7%A9%97%E5%88%86%E9%9A%8A%E5%BB%B3%E8%88%8D%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B" target="_blank" rel="noopener">連結</a></li>
+        <li>花蓮縣消防局，〈第三大隊瑞穗分隊新建廳舍 3D 模型展示動畫〉，Facebook。<a href="https://www.facebook.com/HLCFD119/videos/302186427432032/" target="_blank" rel="noopener">連結</a></li>
+        <li>遠見雜誌，〈綠建築標章再升級 全球低碳綠建築典範在臺灣〉（九大指標、公有建築門檻）。<a href="https://www.gvm.com.tw/article/105495" target="_blank" rel="noopener">連結</a></li>
+        <li>高雄市政府工務局新建工程處，〈高雄市政府公有及學校建築物取得綠建築標章等級統計分佈〉，2021（分級門檻）。<a href="https://pwb.kcg.gov.tw/WEB/FileDownLoad/FileUpload/20210826094905748540.pdf" target="_blank" rel="noopener">連結</a></li>
+        <li>內政部建築研究所，《綠建築評估手冊－基本型》2015 年版（評分公式與植栽係數）。<a href="https://www.abri.gov.tw/" target="_blank" rel="noopener">連結</a></li>
+        <li>NOAA Global Monitoring Laboratory, Solar Calculation Details（太陽位置演算法）。<a href="https://gml.noaa.gov/grad/solcalc/calcdetails.html" target="_blank" rel="noopener">連結</a></li>
+        <li>Google 地圖（嵌入）。</li>
+      </ol>
+      <p style="margin-top:1em">案例各項設計值（綠化量、日常節能、水資源）引自本案綠建築申請資料。</p>
+    </div>
+    <div>
+      <h2>Note · 說明</h2>
+      <p>本頁為國立臺灣科技大學建築所課程「綠色建築開發實務」期中報告，屬學術課程之分析練習，以公開資料與作者自建模型推演綠建築改善策略。</p>
+      <p>3D 模型為作者自建之分析用模型，尺寸為近似值，非竣工圖。改善後數值為設計目標推估，不代表該建築之實際性能或評定結果，亦無評論原設計之意。日照數值為晴天直射日射的簡化計算，僅供方位比較。</p>
+      <p>余致賢 ChihHsien Yu · 2026</p>
+    </div>
+  </footer>
+</main>
+
+<script type="module" src="app.js"></script>
+<script type="module">
+const steps = [...document.querySelectorAll('.step')];
+const chapterOf = (el) => { let p = el.previousElementSibling; while (p && !p.classList.contains('chapter')) p = p.previousElementSibling; return p ? `${p.querySelector('small').textContent} ${p.lastChild.textContent.trim()}` : ''; };
+let idx = 0, ready = false, slides = false;
+
+function activate(i, instant = false) {
+  idx = Math.max(0, Math.min(steps.length - 1, i));
+  const el = steps[idx];
+  steps.forEach(s => s.classList.toggle('active', s === el));
+  if (ready) window.__ruisui.go(el.dataset.state, instant);
+  document.getElementById('capsec').textContent = `${el.querySelector('.num').textContent} · ${chapterOf(el)}`;
+  document.getElementById('captitle').textContent = el.querySelector('h3').firstChild.textContent.trim();
+  document.getElementById('captext').textContent = el.querySelector('.cap').textContent;
+  document.getElementById('capcount').textContent = `${idx + 1} / ${steps.length}`;
+}
+const io = new IntersectionObserver((es) => { if (slides) return; for (const e of es) if (e.isIntersecting) activate(steps.indexOf(e.target)); }, { rootMargin: matchMedia('(max-width: 860px)').matches ? '-62% 0px -30% 0px' : '-42% 0px -52% 0px' });
+steps.forEach(s => io.observe(s));
+
+function setSlides(on) {
+  slides = on; document.body.classList.toggle('slides', on);
+  if (on) { history.replaceState(null, '', '#slides'); document.documentElement.requestFullscreen?.().catch(() => {}); activate(idx, true); }
+  else { history.replaceState(null, '', location.pathname); if (document.fullscreenElement) document.exitFullscreen?.(); steps[idx].scrollIntoView({ block: 'center' }); }
+  window.dispatchEvent(new Event('resize'));
+}
+document.getElementById('startslides').onclick = () => { idx = 0; setSlides(true); };
+document.getElementById('slidebtn').onclick = () => setSlides(!slides);
+document.getElementById('exitslides').onclick = () => setSlides(false);
+document.getElementById('prev').onclick = () => activate(idx - 1);
+document.getElementById('next').onclick = () => activate(idx + 1);
+addEventListener('keydown', (e) => {
+  if (e.target.closest('input, iframe')) return;
+  if (e.key === 'p' || e.key === 'P') { setSlides(!slides); return; }
+  if (!slides) return;
+  if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); activate(idx + 1); }
+  if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); activate(idx - 1); }
+  if (e.key === 'Home') activate(0); if (e.key === 'End') activate(steps.length - 1);
+  if (e.key === 'Escape') setSlides(false);
+});
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && slides) setSlides(false); });
+document.addEventListener('statechange', (e) => document.body.classList.toggle('night', e.detail.s.mode === 'night'));
+document.addEventListener('phasechange', (e) => document.querySelectorAll('.step.active .ba').forEach(b => { b.classList.toggle('on-before', e.detail === 'before'); b.classList.toggle('on-after', e.detail === 'after'); }));
+function start() { ready = true; if (location.hash === '#slides') setSlides(true); else activate(idx, true); }
+if (window.__ruisui) start(); else document.addEventListener('sceneready', start, { once: true });
+
+// Map type toggle
+const base = document.getElementById('gmap').src;
+document.querySelectorAll('[data-maptype]').forEach(b => b.onclick = () => {
+  document.querySelectorAll('[data-maptype]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  document.getElementById('gmap').src = base + (b.dataset.maptype === 'k' ? '&t=k' : '');
+});
+
+// Legend and charts
+const Z = [['消防車庫', '#c8553d'], ['辦公．會議', '#4f7cac'], ['值勤．生活', '#d9a441'], ['寢室', '#6a9a62'], ['設備．服務', '#9a958a']];
+document.getElementById('legend').innerHTML = Z.map(([n, c]) => `<span><i style="background:${c}"></i>${n}</span>`).join('');
+const S = [['綠化量 RS2', 2.11, 3.58, 9], ['外殼 RS41', 4.93, 9.33, 14], ['空調 RS42', 1.50, 6.15, 14], ['照明 RS43', 4.54, 6.56, 9], ['水資源 RS8', 5.93, 5.93, 8]];
+const mx = 10;
+document.getElementById('chart').innerHTML = S.map(([n, b, a]) => `<div class="row"><span>${n}</span><div class="bars"><div class="bar b" style="--w:${b / mx * 82}%"><i style="width:${b / mx * 82}%"></i><em>${b.toFixed(2)}</em></div><div class="bar a" style="--w:${a / mx * 82}%"><i style="width:${a / mx * 82}%"></i><em>${a.toFixed(2)}</em></div></div></div>`).join('') + '<p class="unit"><span style="color:var(--before)">■</span> 改善前　<span style="color:var(--after)">■</span> 改善後（設計目標推估）</p>';
+const T = [['合格', 18], ['銅', 34], ['銀', 41], ['黃金', 48], ['鑽石', 58]], max = 64, pos = v => `${(v / max * 100).toFixed(1)}%`;
+document.getElementById('scale').innerHTML = T.map(([n, v]) => `<span style="left:${pos(v)}">${n} ${v}</span>`).join('') + `<span class="pt b" style="left:${pos(19.01)}"><b>19.01</b></span><span class="pt a" style="left:${pos(31.55)}"><b>31.55</b></span>`;
+</script>
+</body>
+</html>
