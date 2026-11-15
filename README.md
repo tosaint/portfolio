@@ -26,7 +26,7 @@ main.js                reads the JSON files and renders the page
 data/profile.json      name, quote, about text, education, contact
 data/projects.json     one entry per work
 data/course.json       course schedule, one block per semester
-projects/index.html    course schedule page (reads course.json)
+projects/index.html    course schedule + 學習壢程 certificate page (self-contained, data inline)
 projects/gchair/       work page: 高音譜椅 Gchair (photos + line drawing)
 projects/water-echo/   work page: 水聲木 Water's Echo in Wood
 projects/seen-through/ research page: Seen Through, with the 3D study in model/
