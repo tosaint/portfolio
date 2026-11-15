@@ -4,12 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>115-1 生活科技 · 學習壢程</title>
-<meta name="description" content="115-1 生活科技教學進度與學習壢程：十八週、五段路，從處暑走到大寒。Weekly course schedule and learning journey, Living Technology.">
+<meta name="description" content="115-1 生活科技教學進度與學習壢程：十八週、五種能力，從處暑走到大寒。Weekly course schedule and learning journey, Living Technology.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@300;400;500&family=Noto+Serif+TC:wght@200;300;400;500&display=swap">
 <script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <style>
 /* ---- 網站共用的語彙（與 portfolio/style.css 相同） ---- */
 :root {
@@ -228,16 +227,34 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
 .spec { display: flex; flex-direction: column; gap: 10px; padding-top: 30px; }
 .spec div { display: flex; flex-direction: column; gap: 2px; border-bottom: 1px solid var(--rule); padding-bottom: 6px; }
 .spec .v { font: 400 15px var(--mono); }
-.glbox { position: relative; width: 674px; height: 430px; margin-top: 6px; }
-#certGL { position: absolute; left: -60px; top: -150px; width: 794px; height: 600px; display: block; z-index: 1; pointer-events: none; }
-.glbox .tag { position: absolute; z-index: 3; }
+.ph h1.ctitle { margin: 16px 0 0; font: 300 40px/1.2 var(--zh); letter-spacing: .04em; white-space: nowrap; }
+.ph .en { margin-top: 8px; }
+.ztitle { margin: 10px 0 12px; font: 300 clamp(28px, 3.6vw, 44px)/1.35 var(--zh); letter-spacing: .14em; }
+.liz { position: relative; display: inline-block; }
+.liz .h, .liz .t { position: absolute; left: 0; top: 0; opacity: 0; }
+.liz .z { display: inline-block; background: linear-gradient(90deg, #d9643a 0 37%, currentColor 37%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; opacity: 0; }
+.liz .t { color: #d9643a; transform-origin: 0 55%; left: -2%; }
+.liz .h { transform-origin: 100% 50%; }
+.liz.ready .h { opacity: 1; }
+.liz.go .h { animation: lzh 1.6s forwards; } .liz.go .t { animation: lzt 1.6s forwards; } .liz.go .z { animation: lzz 1.6s forwards; }
+.liz.done .h, .liz.done .t { opacity: 0; animation: none; } .liz.done .z { opacity: 1; animation: none; }
+@keyframes lzh { 0%, 25% { opacity: 1; transform: none; } 55% { opacity: 1; transform: scaleX(.64); } 80%, 100% { opacity: 0; transform: scaleX(.64); } }
+@keyframes lzt { 0%, 28% { opacity: 0; transform: scale(2.2, 1.8); } 45% { opacity: 1; transform: scale(.4, .95); } 70% { opacity: 1; transform: scale(.4, .95); } 100% { opacity: 0; transform: scale(.4, .95); } }
+@keyframes lzz { 0%, 60% { opacity: 0; } 85%, 100% { opacity: 1; } }
+.hbox { position: relative; width: 674px; height: 476px; margin-top: 4px; flex-shrink: 0; }
+#certCv { position: absolute; left: 0; top: 0; width: 674px; height: 476px; display: block; }
+.pg > * { flex-shrink: 0; }
+.hbox .tag { position: absolute; z-index: 3; }
+.hl { display: flex; flex-wrap: wrap; gap: 4px 0; padding: 10px 0; border-bottom: 1px solid var(--rule); font: 400 12.5px/1.6 var(--zh); color: var(--smut); position: relative; z-index: 3; }
+.hl span + span::before { content: '｜'; margin: 0 8px; color: var(--rule); }
+.hl b { font-weight: 400; color: var(--sink); margin-right: 4px; }
 .wleg { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; font: 400 11.5px var(--sans); color: var(--smut); position: relative; z-index: 3; }
 .wleg i { display: inline-block; width: 8px; height: 8px; vertical-align: 0; margin-right: 5px; border-radius: 50%; }
 .res { display: grid; grid-template-columns: 1.15fr 1.1fr 1.2fr 1.2fr; margin-top: 16px; border-top: 1px solid var(--sink); border-bottom: 1px solid var(--rule); position: relative; z-index: 3; }
 .res > div { padding: 12px 12px 12px 0; display: flex; flex-direction: column; gap: 6px; }
 .res > div + div { padding-left: 14px; border-left: 1px solid var(--rule); }
 .res .v { font: 400 21px var(--zh); letter-spacing: .08em; }
-.res .big { font: 200 88px/.8 var(--zh); letter-spacing: 0; margin: 2px 0 -22px; }
+.res .big { font: 200 72px/.85 var(--zh); letter-spacing: 0; margin: 2px 0 0; }
 .res .vs2 { font: 400 13px var(--sans); color: var(--smut); letter-spacing: 0; }
 .res .dots { display: grid; grid-template-columns: repeat(6, 9px); gap: 5px; margin-top: 2px; }
 .res .dots i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--smut); }
@@ -245,8 +262,8 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
 .res .dots i.late { background: linear-gradient(0deg, var(--lamp) 50%, transparent 50%); border-color: var(--lamp); }
 .res .dots i.leave { background: #8fb2b4; border-color: #8fb2b4; }
 .res .dots i.fut { border-style: dotted; opacity: .5; }
-.words { margin-top: 22px; padding-left: 16px; border-left: 2px solid var(--acc); position: relative; z-index: 3; }
-.words p { margin: 6px 0 0; font: 400 16px/1.95 var(--zh); }
+.words { margin-top: 18px; padding-left: 16px; border-left: 2px solid var(--acc); position: relative; z-index: 3; }
+.words p { margin: 6px 0 0; font: 400 14.5px/1.8 var(--zh); }
 .foot { margin-top: auto; display: flex; justify-content: space-between; font: 400 10.5px var(--mono); letter-spacing: .16em; color: var(--smut); padding-top: 12px; position: relative; z-index: 3; }
 .p2 { gap: 14px; }
 .p2h { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--sink); padding-bottom: 12px; }
@@ -305,7 +322,13 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
   .top, .story, .course, .zone > .wrap > :not(.papers), footer.site { display: none !important; }
   .zone { padding: 0; } .zone > .wrap { padding: 0; max-width: none; }
   .papers { width: 794px; gap: 0; }
-  .holder { width: 794px !important; height: 1123px !important; break-after: page; }
+  .holder { width: 794px !important; height: 1123px !important; break-after: page; overflow: hidden; }
+  .holder:last-child { break-after: auto; }
+  #certCv { background: #ece6d9; }
+  .trow { opacity: 1 !important; }
+  #track path { stroke-dashoffset: 0 !important; }
+  .zone, .zone > .wrap, .papers { margin: 0 !important; padding: 0 !important; }
+  .story, .course, .demo, .pnote, .ztitle { display: none !important; }
   .sheet { transform: none !important; outline: none; --bg: #ece6d9; --sink: #2b2a27; --smut: #6f6b63; --rule: #d3cbbd; --stone: #2b2a27; }
 }
 </style>
@@ -331,7 +354,7 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
         <p class="eyebrow">Nº 001 · Course · Living Technology · 115-1</p>
         <h1 class="ttl">生活科技</h1>
         <p class="school">國立中央大學附屬中壢高中</p>
-        <p class="lead">十八週、五段路，從處暑走到大寒。<br>往下捲，一張一張讀懂這學期。</p>
+        <p class="lead">十八週、五種能力，從處暑走到大寒。<br>往下捲，一張一張讀懂這學期。</p>
         <p class="hint">Scroll ↓</p>
       </section>
       <section class="chap">
@@ -340,26 +363,26 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
         <div class="wk" id="c2box"><div class="wkh"><span class="big" id="c2w">W01</span><span class="term" id="c2t">處暑</span><span class="d" id="c2d">9.01</span></div>
           <p class="u" id="c2u"></p><p class="c" id="c2c"></p><p class="e" id="c2e"></p><p class="pts" id="c2p"></p></div>
         <div class="wbar" id="c2bar"></div>
-        <p class="note">完整的十八週詳細表在下方。</p>
+        <p class="note">完整的教學進度在下方。</p>
       </section>
       <section class="chap">
-        <p class="eyebrow">Nº 003 · Five paths</p>
-        <h2>五段路，五個動詞</h2>
+        <p class="eyebrow">Nº 003 · Five abilities</p>
+        <h2>五種能力，五個動詞</h2>
         <div class="pth" id="c3box"><div class="v" id="c3v"></div><p class="u" id="c3u"></p><p class="m" id="c3m"></p><p class="dsc" id="c3d"></p></div>
         <div class="pdots" id="c3n"></div>
         <p class="note">第六件事：每週準時走進教室，點亮一盞燈。</p>
       </section>
       <section class="chap">
-        <p class="eyebrow">Nº 004 · Scoring · 110 → 100</p>
+        <p class="eyebrow">Nº 004 · Scoring · 95 + 15</p>
         <h2>分數怎麼來</h2>
-        <p class="lead">五段路的作業共 95 分，十八盞燈的出勤 15 分，總配分 110。成績上限 100，多出來的 10 分是留給你的緩衝。</p>
-        <ul class="rl"><li><b>今日事今日畢</b>作業當週繳交，拿完整分數。</li><li><b>補交算一半</b>段考前一週內補交，該項以一半計分。</li><li><b>請假不扣分</b>請假的那盞燈是灰青色，不算缺席。</li><li><b>遲到半盞燈</b>準時亮一盞，遲到只亮半盞。</li></ul>
+        <p class="lead">作業 95 分，依這學期實際的作業量換算；出勤每週照實給分，最多 15 分。總分最高 110。</p>
+        <ul class="rl"><li><b>今日事今日畢</b>作業當週繳交，拿完整分數。</li><li><b>補交算一半</b>段考前一週內補交，該項以一半計分。</li><li><b>準時一分</b>每週準時到課 1 分，遲到 0.5 分，請假與缺席 0 分。</li><li><b>最多十五分</b>十八週最多算 15 分，留有三週的彈性。</li></ul>
       </section>
       <section class="chap">
-        <p class="eyebrow">Nº 005 · Titles</p>
-        <h2>四種完賽</h2>
-        <ul class="rl tl"><li><b>全程完賽</b>90 – 100</li><li><b>穩健完賽</b>75 – 89</li><li><b>堅持完賽</b>60 – 74</li><li><b>仍在路上</b>60 以下，還有下一段路。</li></ul>
-        <p class="note">學期末，你會收到一張屬於自己的證書 ↓</p>
+        <p class="eyebrow">Nº 005 · Levels</p>
+        <h2>四種學習程度</h2>
+        <ul class="rl tl"><li><b>精熟</b>90 以上</li><li><b>穩健</b>75 – 89</li><li><b>成長</b>60 – 74</li><li><b>起步</b>60 以下</li></ul>
+        <p class="note">學期末，你會收到一份屬於自己的學習壢程 ↓</p>
       </section>
     </div>
     <div class="prog"><i id="storyProg"></i></div>
@@ -368,9 +391,9 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
 
 <main class="course">
   <section class="blk wrap" id="route">
-    <p class="eyebrow">Schedule · 18 weeks · 詳細表</p>
-    <h2>十八週詳細表</h2>
-    <p class="lead">每一週做什麼、佔幾分，都在這張表上。節氣那一欄，是這學期我們一起從夏末走進深冬的位置。</p>
+    <p class="eyebrow">Schedule</p>
+    <h2>教學進度</h2>
+    <p class="lead">每一週做什麼、佔幾分，都在這張表上。節氣那一欄，標出這學期我們從夏末走進深冬的位置。</p>
     <div class="rows-head"><span>週</span><span>節氣</span><span class="uh">單元 Unit</span><span>內容 Content</span><span class="p">配分</span></div>
     <div class="rows-box"><div class="tline" id="tline"><div class="fill"></div><div class="cur"></div></div><ol class="rows" id="rows"></ol></div>
   </section>
@@ -378,10 +401,10 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
 
 <div class="zone" id="cert">
   <div class="wrap">
-    <p class="eyebrow">Certificate · 學習壢程證書</p>
-    <h2 style="margin:10px 0 12px;font:300 clamp(26px,3.4vw,40px)/1.35 var(--zh);letter-spacing:.2em">兩頁，一學期</h2>
+    <p class="eyebrow">Certificate · 成績證書</p>
+    <h2 class="ztitle"><span id="zName"></span>的學習<span class="liz" id="liz0"><span class="z">壢</span><span class="h" aria-hidden="true">歷</span><span class="t" aria-hidden="true">土</span></span>程</h2>
     <p class="pnote" id="pnote"></p>
-    <div class="demo"><span>示範 · 假資料</span><button class="chip" data-k="lin" aria-pressed="true">林同學 96</button><button class="chip" data-k="chen">陳同學 71</button><button class="chip" data-k="wang">王同學 學期中</button><button class="chip" id="replay">重播</button></div>
+    <div class="demo"><span>示範 · 假資料</span><button class="chip" data-k="lin" aria-pressed="true">致賢 · 穩定</button><button class="chip" data-k="chen">致賢 · 待補交</button><button class="chip" data-k="wang">致賢 · 學期中</button><button class="chip" id="replay">重播</button></div>
     <div class="papers" id="papers">
       <div class="holder" id="h1">
         <div class="sheet" id="s1">
@@ -389,11 +412,9 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
           <div class="pg">
             <div class="ph">
               <div>
-                <div class="school">國立中央大學附屬中壢高中</div>
-                <h1>生活科技</h1>
-                <div class="sub">115-1 學習<em>壢</em>程</div>
+                <div class="school">國立中央大學附屬中壢高中 · 生活科技 · 115-1</div>
+                <h1 class="ctitle"><span id="ctName"></span>的學習<span class="liz" id="liz1"><span class="z">壢</span><span class="h" aria-hidden="true">歷</span><span class="t" aria-hidden="true">土</span></span>程</h1>
                 <div class="en">Living Technology · A Journey of Making</div>
-                <div class="namerow"><span class="lbl">Name</span><div class="cname" id="cname"></div></div>
               </div>
               <div class="spec">
                 <div><span class="lbl">Class 班級</span><span class="v" id="sCls"></span></div>
@@ -401,21 +422,21 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
                 <div><span class="lbl">Term 學期</span><span class="v">115-1</span></div>
               </div>
             </div>
-            <div class="glbox">
-              <canvas id="certGL" role="img" aria-label="晶圓：外圈十八盞燈是每週出勤，中央方塊依上課順序升起疊成山，最外圈五段弧是五段路"></canvas>
-              <span class="tag lbl" style="left:0;top:6px">Your mountain · 你的造山圖</span>
-              <span class="tag lbl" id="tagR" style="right:0;top:6px"></span>
-              <span class="tag lbl" id="tagB" style="right:0;bottom:4px"></span>
+            <div class="hbox">
+              <canvas id="certCv" role="img" aria-label="銅馬切成五塊，每一格是一分作業：實心是拿到的分數、空心是沒拿到、虛線是待補交；外圈十八格是每週出勤，馬蹄下的刷痕是每週得分率"></canvas>
+              <span class="tag lbl" style="left:0;top:2px">Five abilities · 用作業砌成的馬</span>
+              <span class="tag lbl" id="tagR" style="right:0;top:2px"></span>
             </div>
             <div class="wleg" id="wleg"></div>
             <div class="res">
               <div><span class="lbl" id="kScore">Score 學期成績</span><span class="big" id="vScore">00</span></div>
-              <div><span class="lbl">Title 完賽稱號</span><span class="v" id="vTitle"></span></div>
+              <div><span class="lbl">Level 學習程度</span><span class="v" id="vTitle"></span></div>
               <div><span class="lbl">Rank 班排 · 校排</span><span class="v" id="vRank" style="font-family:var(--mono);font-size:17px;letter-spacing:0"></span></div>
-              <div><span class="lbl">Lamps 點亮的燈</span><span class="v" id="vAtt"></span><span class="dots" id="dots"></span></div>
+              <div><span class="lbl">Attendance 出勤</span><span class="v" id="vAtt"></span></div>
             </div>
+            <div class="hl" id="hl"></div>
             <div class="words"><span class="lbl">Note 老師的話</span><p id="vWords"></p></div>
-            <div class="foot"><span>Living Technology · 115-1</span><span>抵達 · 大寒 2027.01.20</span></div>
+            <div class="foot"><span>Living Technology · 115-1</span><span>結業 · 大寒 2027.01.20</span></div>
           </div>
         </div>
       </div>
@@ -423,9 +444,9 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
         <div class="sheet" id="s2">
           
           <div class="pg p2">
-            <div class="p2h"><h2>學習<em>壢</em>程</h2><span class="who" id="p2who"></span></div>
+            <div class="p2h"><h2><span id="p2name"></span>的學習<span class="liz" id="liz2"><span class="z">壢</span><span class="h" aria-hidden="true">歷</span><span class="t" aria-hidden="true">土</span></span>程</h2><span class="who" id="p2who"></span></div>
             <div class="sec"><span class="lbl" id="trackK">Route 十八週</span><svg id="track" viewBox="0 0 674 600" role="img" aria-label="十八週學習路線：節氣、每週出勤、得分率曲線、作業與轉折"></svg></div>
-            <div class="sec"><span class="lbl">Five paths 五段路</span><div id="prows"></div></div>
+            <div class="sec"><span class="lbl">Five abilities 五種能力</span><div id="prows"></div></div>
             <div class="sig2"><div><span class="line"></span><span class="lbl">Teacher</span></div><div><span class="line"></span><span class="lbl">Student</span></div></div>
           </div>
         </div>
@@ -494,171 +515,58 @@ var TASKS = [
 ].map(function (t) { return { w: t[0], unit: t[1], name: t[2], max: t[3], p: PIDX[t[1]] }; });
 function sc(o) { return TASKS.map(function (t, i) { return (i in o) ? o[i] : t.max; }); }
 var PROFILES = {
-  lin: { name: '林同學', cls: '105', seat: '18', cur: 18, scores: sc({ 5: 3, 9: 1, 18: null, 23: 8, 26: 8, 28: 4 }), late: [13], leave: [9], absent: [],
-    score: 96, title: '全程完賽', rank: '3/36 · 21/345', att: '94%',
-    words: '做連桿的那幾週看得出你很投入，Motiongen 四連桿、四足獸、六足獸一路都是滿分。十八週沒有一次缺席，十六盞燈準時亮起，你的穩定讓人放心。下學期期待你把畫三視圖的細心，也帶進 Arduino 的程式裡。' },
-  chen: { name: '陳同學', cls: '105', seat: '07', cur: 18, scores: sc({ 5: 2, 9: null, 17: null, 18: null, 21: 1, 23: null, 26: 6, 27: 4, 28: 3, 29: 3 }), late: [2, 6, 15], leave: [], absent: [4, 11, 12],
-    score: 71, title: '堅持完賽', rank: '—', att: '83%',
-    words: 'Motiongen 的四連桿到六足獸你一份都沒漏，W07 拿下滿分，證明你做得到。偶爾晚一點到，但大多數的週次你都在教室。W11 的三視圖還留著空位，段考前回頭補上，山就會再高一層。' },
-  wang: { name: '王同學', cls: '105', seat: '25', cur: 9, scores: sc({ 5: 3 }), late: [3], leave: [], absent: [],
-    score: 98, title: '正在路上', rank: '學期中', att: '100%', live: true,
-    words: '前九週每一盞燈都亮著，Arduino 和 Motiongen 的作業一份都沒漏，這樣的節奏很棒。後半段要進入 Onshape，把想法變成形體，保持現在的步調。' }
+  lin: { name: '致賢', cls: '101', seat: '36', cur: 18, scores: sc({ 5: 3, 9: 1, 18: null, 23: 8, 26: 8, 28: 4 }), late: [13], leave: [9], absent: [], rank: '3/36 · 21/350' },
+  chen: { name: '致賢', cls: '101', seat: '36', cur: 18, scores: sc({ 5: 2, 9: null, 17: null, 18: null, 21: 1, 23: null, 26: 6, 27: 4, 28: 3, 29: 3 }), late: [2, 6, 15], leave: [], absent: [4, 11, 12], rank: '—' },
+  wang: { name: '致賢', cls: '101', seat: '36', cur: 9, scores: sc({ 5: 3 }), late: [3], leave: [], absent: [], rank: '學期中', live: true }
 };
+var UNITN = ['科技生活', '智控機電（Arduino）', '連桿機械', '機構建模', '學習歷程檔案'];
+function givenName(n) { var CMP = ['歐陽', '司馬', '諸葛', '上官', '司徒', '東方', '西門', '張簡', '范姜', '夏侯', '皇甫', '長孫']; if (n.length >= 4 && CMP.indexOf(n.slice(0, 2)) >= 0) return n.slice(2); return n.length >= 3 ? n.slice(1) : n; }
+function stats(P) {
+  var S = { rates: [], miss: [[], [], [], [], []], on: 0, late: 0, leave: 0, absent: 0 }, earned = 0, max = 0, sub = 0, tot = 0;
+  PATHS.forEach(function (_, k) { var e = 0, m = 0; TASKS.forEach(function (t, i) { if (t.p === k && t.w <= P.cur) { m += t.max; e += (P.scores[i] || 0); if (P.scores[i] == null) S.miss[k].push(t.name); } }); S.rates.push(m ? e / m : null); });
+  TASKS.forEach(function (t, i) { if (t.w <= P.cur) { max += t.max; earned += (P.scores[i] || 0); tot++; if (P.scores[i] != null) sub++; } });
+  for (var w = 1; w <= P.cur; w++) S[statusOf(P, w)]++;
+  S.task = max ? 95 * earned / max : 0; S.attRaw = S.on + S.late * .5; S.att = Math.min(15, S.attRaw);
+  S.score = Math.min(110, Math.round((S.task + S.att) * 10) / 10); S.sub = sub; S.tot = tot; S.cur = P.cur;
+  S.level = S.score >= 90 ? '精熟' : S.score >= 75 ? '穩健' : S.score >= 60 ? '成長' : '起步';
+  S.attPct = Math.round(S.attRaw / P.cur * 100);
+  var best = 0, cur = 0; for (w = 1; w <= P.cur; w++) { if (statusOf(P, w) === 'on') { cur++; best = Math.max(best, cur); } else cur = 0; } S.streak = best;
+  return S;
+}
+function highlights(P, S) {
+  var C = [], wk = weekData(), past = wk.filter(function (k) { return !k.fut; });
+  C.push({ s: S.attRaw / S.cur, n: (S.on + S.late) + '<small>/ ' + S.cur + ' 週</small>', p: '到課 ' + (S.on + S.late) + ' 週，準時 ' + S.on + ' 週，出席率 ' + S.attPct + '%。' });
+  if (S.streak >= 4) C.push({ s: S.streak / S.cur * .95, n: S.streak + '<small>週</small>', p: '連續 ' + S.streak + ' 週準時到課。' });
+  var bi = -1; S.rates.forEach(function (r, k) { if (r != null && (bi < 0 || r > S.rates[bi] + 1e-9)) bi = k; });
+  if (bi >= 0) C.push({ s: S.rates[bi] * (S.rates[bi] >= .8 ? 1 : .8), n: Math.round(S.rates[bi] * 100) + '<small>%</small>', p: UNITN[bi] + '的作業完成度最高。' });
+  C.push({ s: S.sub / S.tot * .95, n: S.sub + '<small>/ ' + S.tot + ' 份</small>', p: '作業已繳交 ' + S.sub + ' 份。' });
+  var full = past.filter(function (k) { return k.ts.every(function (o) { return o.v != null && o.v >= o.t.max; }); }).sort(function (a, b) { return b.m - a.m || b.ts.length - a.ts.length; })[0];
+  if (full) C.push({ s: .86, n: 'W' + pad2(full.w), p: '第 ' + full.w + ' 週的 ' + full.ts.length + ' 份作業全部拿到滿分。' });
+  var cb = null; for (var i = 1; i < past.length; i++) { var d = past[i].rate - past[i - 1].rate; if (d >= 30 && past[i].st !== 'absent' && (!cb || d > cb.d)) cb = { d: d, w: past[i].w }; }
+  if (cb) C.push({ s: .72, n: '+' + cb.d + '<small>%</small>', p: '第 ' + cb.w + ' 週比前一週進步 ' + cb.d + '%。' });
+  return C.sort(function (a, b) { return b.s - a.s; }).slice(0, 3);
+}
+function comment(P, S, H) {
+  var t = (P.live ? '到第 ' + P.cur + ' 週為止，' : '') + P.cur + ' 週中有 ' + S.on + ' 週準時到課';
+  if (S.late) t += '、' + S.late + ' 週遲到'; if (S.leave) t += '、' + S.leave + ' 週請假'; if (S.absent) t += '、' + S.absent + ' 週缺席';
+  t += '，出勤分 ' + (Math.round(S.att * 10) / 10) + '/15。';
+  if (S.on / S.cur >= .9) t += '準時的習慣很好，請繼續保持。'; else if (S.absent + S.late >= 3) t += '之後每週準時到課，出勤分就能穩定累積。';
+  var done = [], part = [];
+  S.rates.forEach(function (r, k) { if (r == null) return; if (S.miss[k].length) part.push(UNITN[k] + '還缺「' + S.miss[k].slice(0, 3).join('、') + '」' + (S.miss[k].length > 3 ? '等 ' + S.miss[k].length + ' 份' : '')); else if (r >= .999) done.push(UNITN[k]); });
+  if (done.length) t += done.join('、') + '的作業全部完成。';
+  if (part.length) t += part.join('；') + '，段考前一週內補交，可以拿回一半分數。'; else t += '所有作業都已繳交。';
+  if (H[0] && H[0].p.indexOf('完成度最高') >= 0) t += H[0].p.replace('的作業完成度最高。', '是你表現最好的部分，做得很好。');
+  else if (H[0] && H[0].p.indexOf('滿分') >= 0) t += H[0].p.replace('。', '，很不錯。');
+  return t;
+}
 var ROWS = [10, 8, 6, 4, 2, 1], DIE = 30, PITCH = 34, BASE_Y = 140, SLOTS = [];
 ROWS.forEach(function (n, k) { var w = n * PITCH - 4, x0 = -w / 2, y = BASE_Y - k * PITCH; for (var i = 0; i < n; i++) SLOTS.push({ x: x0 + i * PITCH, y: y, row: k }); });
 function statusOf(P, w) { if (w > P.cur) return 'future'; if (P.absent.indexOf(w) >= 0) return 'absent'; if (P.leave.indexOf(w) >= 0) return 'leave'; if (P.late.indexOf(w) >= 0) return 'late'; return 'on'; }
 var HORSE = {"outer":[[0.2394,-0.5],[0.2472,-0.4643],[0.2383,-0.4475],[0.2517,-0.4308],[0.255,-0.4174],[0.2115,-0.4007],[0.2249,-0.385],[0.168,-0.3516],[0.1825,-0.3449],[0.1836,-0.3393],[0.1356,-0.2991],[0.139,-0.2958],[0.1613,-0.3013],[0.1624,-0.2958],[0.1267,-0.2545],[0.1568,-0.2511],[0.1579,-0.2455],[0.1044,-0.2154],[0.1401,-0.2087],[0.1289,-0.1897],[0.0776,-0.1886],[0.0686,-0.1663],[0.0519,-0.1674],[0.0173,-0.1451],[-0.0497,-0.1596],[-0.1055,-0.1562],[-0.1189,-0.1317],[-0.1735,-0.1183],[-0.2227,-0.0826],[-0.2606,-0.0904],[-0.332,-0.1339],[-0.3521,-0.1362],[-0.3878,-0.1172],[-0.4157,-0.0893],[-0.4314,-0.0815],[-0.4749,-0.0993],[-0.5619,-0.0971],[-0.5173,-0.0558],[-0.4492,-0.0212],[-0.3811,-0.0246],[-0.361,-0.0402],[-0.3365,-0.0469],[-0.2718,-0.0491],[-0.245,-0.0402],[-0.2483,-0.0078],[-0.2383,0.0446],[-0.1836,0.1261],[-0.2148,0.1786],[-0.2517,0.2165],[-0.284,0.2355],[-0.293,0.2567],[-0.2628,0.298],[-0.2372,0.3192],[-0.2015,0.3873],[-0.1992,0.4185],[-0.2104,0.423],[-0.2282,0.4464],[-0.2148,0.4955],[-0.2015,0.4989],[-0.1579,0.4799],[-0.149,0.4576],[-0.1557,0.4286],[-0.168,0.4118],[-0.1657,0.3884],[-0.2126,0.2958],[-0.2193,0.2712],[-0.2171,0.2578],[-0.101,0.1596],[-0.0765,0.115],[-0.0709,0.1161],[-0.0619,0.1786],[-0.0631,0.2098],[-0.0765,0.26],[0.0608,0.3214],[0.0742,0.3337],[0.0686,0.3583],[0.0865,0.3806],[0.1066,0.3895],[0.1345,0.3862],[0.1423,0.3672],[0.1412,0.3449],[0.1088,0.2991],[0.0006,0.2623],[-0.014,0.2422],[-0.0128,0.2054],[-0.0017,0.1808],[0.0106,0.106],[0.0061,0.0725],[0.0742,0.0781],[0.1557,0.0725],[0.2327,0.0513],[0.2662,0.0525],[0.3633,0.2344],[0.3789,0.2478],[0.4258,0.3594],[0.4403,0.3828],[0.4637,0.3806],[0.4693,0.3862],[0.4648,0.4129],[0.4749,0.4275],[0.5374,0.4386],[0.5608,0.433],[0.5296,0.3717],[0.4682,0.3326],[0.4448,0.2846],[0.4157,0.2433],[0.4102,0.2065],[0.3655,0.1473],[0.3722,0.1105],[0.3555,0.0647],[0.3532,0.0435],[0.4046,0.0246],[0.4492,0.0156],[0.4682,0.0346],[0.4872,0.1071],[0.4872,0.1194],[0.4537,0.1507],[0.486,0.2031],[0.5195,0.1775],[0.5262,0.154],[0.524,0.0949],[0.4805,-0.019],[0.4626,-0.0368],[0.409,-0.0346],[0.3778,-0.0424],[0.3644,-0.0826],[0.361,-0.1261],[0.3465,-0.1886],[0.3142,-0.2623],[0.3231,-0.2824],[0.3488,-0.2935],[0.361,-0.2935],[0.38,-0.2801],[0.4068,-0.2779],[0.4314,-0.2935],[0.4481,-0.3192],[0.4392,-0.3571],[0.3722,-0.394],[0.3265,-0.4386],[0.2852,-0.4598]],"aspect":1.1238839285714286,"inner":[[-0.1233,-0.1228],[-0.1434,-0.0792],[-0.111,0.0346],[-0.0363,0.0458],[-0.0117,0.0692],[-0.0017,0.0703],[0.0039,0.0636],[0.0028,0.0558],[-0.0229,0.0301],[-0.0128,-0.0045],[-0.0229,-0.0703],[-0.0765,-0.1228],[-0.1099,-0.1295],[-0.1122,-0.1261]]};
 var STAT = {"outer":[[0.5253,-0.336],[0.4605,-0.3866],[0.4423,-0.3947],[0.4261,-0.413],[0.4119,-0.415],[0.3836,-0.4575],[0.3573,-0.4615],[0.3188,-0.5],[0.3107,-0.4939],[0.3107,-0.4372],[0.2844,-0.417],[0.2601,-0.4109],[0.2561,-0.3988],[0.2358,-0.3907],[0.2318,-0.3745],[0.2176,-0.3644],[0.2176,-0.3522],[0.1953,-0.332],[0.1913,-0.2794],[0.1832,-0.2713],[0.1832,-0.249],[0.169,-0.2409],[0.1731,-0.2024],[0.1549,-0.1943],[0.1508,-0.1802],[0.1204,-0.1761],[0.1043,-0.168],[0.1002,-0.1599],[0.0719,-0.1599],[0.0516,-0.168],[-0.0739,-0.17],[-0.1225,-0.164],[-0.1528,-0.1538],[-0.1832,-0.1538],[-0.2014,-0.1599],[-0.2257,-0.1781],[-0.2682,-0.2227],[-0.3087,-0.2409],[-0.3512,-0.2409],[-0.3796,-0.2287],[-0.3978,-0.2146],[-0.4099,-0.2126],[-0.414,-0.2045],[-0.4504,-0.2045],[-0.5051,-0.2389],[-0.6043,-0.2611],[-0.6123,-0.2591],[-0.6144,-0.249],[-0.6083,-0.2409],[-0.582,-0.2247],[-0.5111,-0.164],[-0.4545,-0.1356],[-0.4504,-0.1296],[-0.3836,-0.1235],[-0.331,-0.1316],[-0.2844,-0.1316],[-0.246,-0.1215],[-0.2217,-0.1093],[-0.2217,-0.081],[-0.2298,-0.0526],[-0.2358,-0.0506],[-0.2419,-0.0344],[-0.246,-0.0061],[-0.2439,0.0405],[-0.2318,0.0709],[-0.2318,0.1073],[-0.3087,0.1721],[-0.3856,0.2126],[-0.3856,0.2227],[-0.3593,0.2794],[-0.3411,0.334],[-0.3269,0.4069],[-0.3269,0.4352],[-0.3431,0.4393],[-0.3613,0.4615],[-0.3715,0.4838],[-0.3694,0.496],[-0.2986,0.498],[-0.2905,0.4919],[-0.2925,0.4433],[-0.2804,0.4049],[-0.2986,0.3623],[-0.3188,0.2915],[-0.3168,0.2429],[-0.2905,0.2247],[-0.1852,0.1781],[-0.1265,0.1316],[-0.0962,0.1336],[-0.0962,0.1761],[-0.1144,0.2368],[-0.1387,0.2753],[-0.1366,0.2874],[0.0111,0.3988],[0.0253,0.4211],[0.0294,0.4717],[0.0779,0.4858],[0.086,0.4838],[0.0881,0.4433],[0.0719,0.4312],[0.0617,0.415],[0.0557,0.3866],[-0.0273,0.33],[-0.0658,0.2935],[-0.0658,0.2591],[-0.0132,0.17],[-0.003,0.1417],[0.0071,0.1316],[0.0152,0.1134],[0.0172,0.083],[0.0273,0.0749],[0.0779,0.0749],[0.0901,0.087],[0.1731,0.087],[0.2561,0.0709],[0.2945,0.0709],[0.337,0.1194],[0.3796,0.1943],[0.418,0.2794],[0.4504,0.33],[0.499,0.4453],[0.5213,0.4534],[0.5233,0.4858],[0.6022,0.4858],[0.6022,0.4737],[0.584,0.4555],[0.5779,0.4393],[0.5435,0.419],[0.4949,0.3502],[0.4727,0.3016],[0.4585,0.249],[0.4261,0.1781],[0.4079,0.1053],[0.4079,0.0769],[0.499,0.0486],[0.5354,0.0486],[0.5557,0.0749],[0.5658,0.1113],[0.5658,0.17],[0.5435,0.1943],[0.5516,0.2389],[0.5577,0.249],[0.5698,0.249],[0.5941,0.2206],[0.6022,0.2186],[0.6063,0.2085],[0.6043,0.1721],[0.6123,0.1457],[0.5881,0.083],[0.5779,0.0304],[0.5698,0.0162],[0.5577,0.0101],[0.5516,0.0],[0.5354,-0.004],[0.5111,0.002],[0.5071,0.0142],[0.4787,0.0142],[0.4666,0.004],[0.4383,-0.002],[0.4342,-0.0789],[0.4221,-0.1012],[0.42,-0.1316],[0.4079,-0.1599],[0.4079,-0.1741],[0.3836,-0.2571],[0.3836,-0.2895],[0.3877,-0.2935],[0.4565,-0.2895],[0.4646,-0.2773],[0.4929,-0.2753],[0.501,-0.2895],[0.5192,-0.2935],[0.5273,-0.3219]],"tri":[[0.4079,-0.1437],[0.3775,-0.0749],[0.3107,0.0121],[0.4059,0.0101]]};
 
-// ======================= 晶圓（細線＋漏光） =======================
-var HAS3D = !!(window.THREE && (function () { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl') || c.getContext('experimental-webgl')); } catch (e) { return false; } })());
-function canvasTex(w, h, draw) { var c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); }
-var TEX = HAS3D ? {
-  glow: canvasTex(128, 128, function (g, w) { var r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.25, 'rgba(255,255,255,.5)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, w, w); }),
-  leak: canvasTex(512, 512, function (g, w) { g.translate(256, 256); for (var i = 0; i < 90; i++) { var a = Math.random() * Math.PI * 2, L = 140 + Math.random() * 110, wd = .003 + Math.random() * .01; var gr = g.createLinearGradient(0, 0, Math.cos(a) * L, Math.sin(a) * L); gr.addColorStop(0, 'rgba(255,255,255,.16)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, L, a - wd, a + wd); g.closePath(); g.fill(); } var r = g.createRadialGradient(0, 0, 0, 0, 0, 256); r.addColorStop(0, 'rgba(255,255,255,.55)'); r.addColorStop(.4, 'rgba(255,255,255,.12)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(-256, -256, 512, 512); }),
-  beam: canvasTex(4, 128, function (g, w, h) { var r = g.createLinearGradient(0, h, 0, 0); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.6, 'rgba(255,255,255,.35)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, w, h); })
-} : null;
-var PAL = {
-  dark: { line: 0xE8E5DE, mut: 0x4A4842, lamp: 0xF2C894, leave: 0x8FB7B5, leak: 0xF0D2A6, core: 0x6A5A48, stone: 0xE8E5DE, blend: 'add' },
-  light: { line: 0x2B2A27, mut: 0xC4BEB2, lamp: 0xD9643A, leave: 0x6F9C9E, leak: 0xD9643A, core: 0xD9A27A, stone: 0x2B2A27, blend: 'normal' }
-};
-function WaferScene(canvas, opts) {
-  var S = this; S.opts = opts; S.canvas = canvas;
-  S.R = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, preserveDrawingBuffer: !!opts.print });
-  S.R.setPixelRatio(Math.min(opts.maxDpr || 2, window.devicePixelRatio || 1));
-  S.scene = new THREE.Scene(); S.cam = new THREE.PerspectiveCamera(opts.fov || 30, 1, 1, 8000);
-  S.root = new THREE.Group(); S.scene.add(S.root); S.dyn = new THREE.Group(); S.root.add(S.dyn);
-  S.light = false; S.buildStatic(); S.resize();
-}
-WaferScene.prototype.buildStatic = function () {
-  var S = this, root = S.root;
-  S.leak = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.leak, transparent: true, depthWrite: false, opacity: .3 }));
-  S.leak.scale.set(1500, 1500, 1); S.leak.position.set(0, -40, -60); root.add(S.leak);
-  S.core = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, transparent: true, depthWrite: false, opacity: .3 }));
-  S.core.scale.set(900, 900, 1); S.core.position.set(0, -10, 0); root.add(S.core);
-  var pos = []; for (var y = -232; y <= 232; y += 13) for (var x = -232; x <= 232; x += 13) { var cx = x + 5.5, cz = y + 5.5; if (Math.hypot(cx, cz) > 230) continue; pos.push(cx, 0, cz); }
-  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  S.dots = new THREE.Points(g, new THREE.PointsMaterial({ size: 2.2, transparent: true, opacity: .35, depthWrite: false })); root.add(S.dots);
-  var lp = []; for (var v = -234; v <= 234; v += 13) { var h = Math.sqrt(Math.max(0, 232 * 232 - v * v)); lp.push(v, 0, -h, v, 0, h, -h, 0, v, h, 0, v); }
-  var lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
-  S.grid = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ transparent: true, opacity: .08, depthWrite: false })); root.add(S.grid);
-  function ringGeo(r) { var p = []; for (var i = 0; i <= 200; i++) { var a = i / 200 * Math.PI * 2; p.push(r * Math.cos(a), 0, r * Math.sin(a)); } var gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); return gg; }
-  S.rings = [286, 279, 234].map(function (r, i) { var m = new THREE.Line(ringGeo(r), new THREE.LineBasicMaterial({ transparent: true, opacity: i ? .3 : .7 })); root.add(m); return m; });
-  var tp = []; for (var t = 0; t < 360; t += 5) { var a = t * Math.PI / 180, r2 = t % 20 === 0 ? 270 : 275; tp.push(279 * Math.cos(a), 0, 279 * Math.sin(a), r2 * Math.cos(a), 0, r2 * Math.sin(a)); }
-  var tg = new THREE.BufferGeometry(); tg.setAttribute('position', new THREE.Float32BufferAttribute(tp, 3));
-  S.ticks = new THREE.LineSegments(tg, new THREE.LineBasicMaterial({ transparent: true, opacity: .45 })); root.add(S.ticks);
-  S.echo = []; if (S.opts.echo) for (var e = 0; e < 4; e++) { var m = new THREE.Line(ringGeo(1), new THREE.LineBasicMaterial({ transparent: true, opacity: 0 })); root.add(m); S.echo.push(m); }
-  var sg = new THREE.PlaneGeometry(620, 90); sg.translate(0, 45, 0); sg.rotateY(Math.PI / 2);
-  S.scan = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ map: TEX.beam, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); S.scan.visible = false; root.add(S.scan);
-  var slg = new THREE.BufferGeometry(); slg.setAttribute('position', new THREE.Float32BufferAttribute([0, 1, -300, 0, 1, 300], 3));
-  S.scanLine = new THREE.Line(slg, new THREE.LineBasicMaterial({ color: 0xD9643A, transparent: true, opacity: .9 })); S.scanLine.visible = false; root.add(S.scanLine);
-  S.arcs = PATHS.map(function (p, i) {
-    var geo = new THREE.RingGeometry(298, 300.5, 64, 1, -((-90 + i * 72 + 4 + 64) * Math.PI / 180), 64 * Math.PI / 180);
-    var m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: new THREE.Color(p.c), transparent: true, opacity: .15, side: THREE.DoubleSide, depthWrite: false }));
-    m.rotation.x = -Math.PI / 2; root.add(m); return m;
-  });
-};
-WaferScene.prototype.lpos = function (w) { var a = (-90 + (w - 1) * 20) * Math.PI / 180; return { x: 250 * Math.cos(a), z: 250 * Math.sin(a) }; };
-WaferScene.prototype.setData = function (P) {
-  var S = this; S.P = P;
-  while (S.dyn.children.length) { var o = S.dyn.children.pop(); if (o.geometry) o.geometry.dispose(); }
-  S.lamps = []; S.stones = [];
-  for (var w = 1; w <= 18; w++) {
-    var p = S.lpos(w), st = statusOf(P, w), H = st === 'on' ? 150 : st === 'late' ? 72 : st === 'leave' ? 54 : 0;
-    var base = new THREE.Mesh(new THREE.CircleGeometry(5, 24), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide }));
-    base.rotation.x = -Math.PI / 2; base.position.set(p.x, .5, p.z); S.dyn.add(base);
-    var ringL = new THREE.Mesh(new THREE.RingGeometry(8, 8.8, 32), new THREE.MeshBasicMaterial({ transparent: true, opacity: .4, depthWrite: false, side: THREE.DoubleSide }));
-    ringL.rotation.x = -Math.PI / 2; ringL.position.set(p.x, .4, p.z); S.dyn.add(ringL);
-    var beam = null, halo = null, top = null;
-    if (H > 0) {
-      var bg = new THREE.CylinderGeometry(.8, .8, 1, 8, 1, true); bg.translate(0, .5, 0);
-      beam = new THREE.Mesh(bg, new THREE.MeshBasicMaterial({ map: TEX.beam, transparent: true, depthWrite: false, side: THREE.DoubleSide })); beam.position.set(p.x, 0, p.z); beam.scale.y = .001; S.dyn.add(beam);
-      var hg = new THREE.CylinderGeometry(6, 6, 1, 14, 1, true); hg.translate(0, .5, 0);
-      halo = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({ map: TEX.beam, transparent: true, opacity: .08, depthWrite: false, side: THREE.DoubleSide })); halo.position.set(p.x, 0, p.z); halo.scale.y = .001; S.dyn.add(halo);
-      top = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, transparent: true, depthWrite: false, opacity: 0 })); top.scale.set(26, 26, 1); top.position.set(p.x, 0, p.z); S.dyn.add(top);
-    }
-    S.lamps.push({ w: w, st: st, H: H, beam: beam, halo: halo, top: top, base: base, ring: ringL });
-  }
-  TASKS.forEach(function (t, i) {
-    var s = SLOTS[i], v = P.scores[i], fut = t.w > P.cur, h = 12 + s.row * 15, cx = s.x + DIE / 2, cz = s.y + DIE / 2;
-    var geo = new THREE.BoxGeometry(28, 1, 28); geo.translate(0, .5, 0);
-    var r = v == null ? 0 : v / t.max, base = v == null || fut ? 0 : (S.light ? .5 : 1) * (.04 + .1 * r);
-    var fill = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ transparent: true, opacity: base, depthWrite: false })); fill.position.set(cx, 0, cz); S.dyn.add(fill);
-    var eg = new THREE.EdgesGeometry(geo), dash = v == null && !fut;
-    var em = dash ? new THREE.LineDashedMaterial({ dashSize: 3, gapSize: 3, transparent: true, opacity: .55 }) : new THREE.LineBasicMaterial({ transparent: true, opacity: fut ? .18 : .3 + .5 * r });
-    var edge = new THREE.LineSegments(eg, em); if (dash) edge.computeLineDistances(); edge.position.set(cx, 0, cz); S.dyn.add(edge);
-    S.stones.push({ t: t, v: v, fut: fut, h: fut ? 1.5 : h, fill: fill, edge: edge, x: cx, z: cz, base: base });
-  });
-  S.order = S.stones.filter(function (s) { return !s.fut; }); S.scanDone = false;
-  S.pLast = PATHS.map(function (_, pi) { var idx = -1; S.order.forEach(function (s, k) { if (s.t.p === pi) idx = k; }); return idx; });
-  var o = S.opts; S.T = { L0: o.L0 || .9, LD: o.LD || .1 }; S.T.R0 = S.T.L0 + 17 * S.T.LD + .5; S.T.ST = o.ST || .15; S.T.END = S.T.R0 + S.order.length * S.T.ST + .3;
-  S.setLight(S.light);
-};
-WaferScene.prototype.setLight = function (on) {
-  var S = this, C = on ? PAL.light : PAL.dark, add = on ? THREE.NormalBlending : THREE.AdditiveBlending; S.light = on;
-  function col(m, c, b) { m.color.set(c); if (b !== undefined) { m.blending = b; m.needsUpdate = true; } }
-  col(S.leak.material, C.leak, add); S.leak.material.opacity = on ? .1 : .26;
-  col(S.core.material, C.core, add); S.core.material.opacity = on ? .14 : .3;
-  col(S.dots.material, C.line, add); S.dots.material.opacity = on ? .3 : .3;
-  col(S.grid.material, C.line); S.grid.material.opacity = on ? .1 : .07;
-  S.rings.forEach(function (r, i) { col(r.material, i ? C.mut : C.line); });
-  col(S.ticks.material, C.line); S.echo.forEach(function (e) { col(e.material, C.line); });
-  S.scan.material.color.set(on ? 0xD9643A : 0xFFE6D2);
-  if (!S.stones) return;
-  S.stones.forEach(function (s) { col(s.fill.material, C.stone, add); col(s.edge.material, s.fut ? C.mut : C.line); var rr = s.v == null ? 0 : s.v / s.t.max; s.base = s.v == null || s.fut ? 0 : (on ? .5 : 1) * (.04 + .1 * rr); s.fill.material.opacity = s.base; });
-  S.lamps.forEach(function (l) {
-    var c = l.st === 'leave' ? C.leave : C.lamp;
-    col(l.base.material, l.st === 'absent' || l.st === 'future' ? C.mut : c); l.base.material.opacity = l.st === 'future' ? .5 : .95;
-    col(l.ring.material, C.line);
-    if (l.beam) { col(l.beam.material, on ? c : c, add); col(l.halo.material, c, add); col(l.top.material, c, add); l.halo.visible = !on; }
-  });
-};
-WaferScene.prototype.resize = function () {
-  var r = this.canvas.getBoundingClientRect(), w = this.opts.w || Math.max(1, Math.floor(r.width)), h = this.opts.h || Math.max(1, Math.floor(r.height));
-  this.R.setSize(w, h, false); this.cam.aspect = w / h; this.cam.updateProjectionMatrix();
-};
-WaferScene.prototype.render = function (t, now) {
-  var S = this, T = S.T, o = S.opts, cam = S.cam, idle = t > T.END + 1, br = idle ? .88 + .12 * Math.sin((t - T.END) * 1.6) : 1;
-  if (S.light && o.flatInLight) { var zo = o.flatZ || 0; cam.position.set(0, o.topDist || 1180, zo + .01); cam.up.set(0, 0, -1); cam.lookAt(0, 0, zo); }
-  else {
-    cam.up.set(0, 1, 0);
-    var intro = reduce ? 1 : easeIO(clamp((t - .1) / (o.introDur || 2.6)));
-    var orbit = (o.orbit || .22) * Math.sin(now * .0001) + (o.yaw || 0), dist = o.dist || 980, elev = (o.elev || .62) * intro + 1.45 * (1 - intro), d2 = dist + 500 * (1 - intro);
-    cam.position.set(Math.sin(orbit) * Math.cos(elev) * d2, Math.sin(elev) * d2, Math.cos(orbit) * Math.cos(elev) * d2);
-    cam.lookAt(o.lookX || 0, o.lookY || 30, 0);
-  }
-  S.leak.material.rotation = now * .00002;
-  S.lamps.forEach(function (L) {
-    if (!L.beam) return;
-    var u = t - (T.L0 + (L.w - 1) * T.LD), g = clamp(u / .8), e = easeOut(g), hh = Math.max(.001, L.H * e);
-    L.beam.scale.y = hh; L.halo.scale.y = hh; L.beam.material.opacity = g > 0 ? (S.light ? .9 : .85) * br : 0; L.halo.material.opacity = g > 0 ? .08 * br : 0;
-    L.top.position.y = hh; L.top.material.opacity = g > 0 ? (S.light ? .35 : .55) * br : 0;
-  });
-  var placed = 0;
-  S.stones.forEach(function (s) { if (s.fut) s.fill.scale.y = s.edge.scale.y = 1.5; });
-  for (var j = 0; j < S.order.length; j++) {
-    var s = S.order[j], v = t - (T.R0 + j * T.ST);
-    if (v < 0) { s.fill.scale.y = s.edge.scale.y = .001; s.edge.visible = false; continue; }
-    placed = j + 1; s.edge.visible = true;
-    var sp = 1 - Math.exp(-5 * v) * Math.cos(9 * v) * (s.v == null ? 0 : 1), hh2 = s.v == null ? 2 : Math.max(.001, s.h * sp);
-    s.fill.scale.y = hh2; s.edge.scale.y = hh2;
-  }
-  var sT = t - (T.END + .3), sd = 2.4;
-  if (!o.noScan && sT > 0 && sT < sd) {
-    var sx = -310 + 620 * easeIO(sT / sd); S.scan.visible = !S.light; S.scanLine.visible = true; S.scanDone = false;
-    S.scan.position.x = sx; S.scanLine.position.x = sx; S.scan.material.opacity = .4 * Math.sin(Math.PI * sT / sd);
-    S.stones.forEach(function (s) { if (s.fut || s.v == null) return; var d = sx - s.x; s.fill.material.opacity = s.base + (d > 0 && d < 110 ? (1 - d / 110) * .35 : 0); });
-  } else { S.scan.visible = false; S.scanLine.visible = false; if (!S.scanDone) { S.scanDone = true; S.stones.forEach(function (s) { s.fill.material.opacity = s.base; }); } }
-  S.arcs.forEach(function (a, i) { var l = S.pLast[i], on = l >= 0 && placed > l ? clamp((t - (T.R0 + l * T.ST)) / .5) : 0; a.material.opacity = .12 + .7 * on; });
-  S.echo.forEach(function (m, i) { var k = ((now / 1000) * .06 + i / 4) % 1, r = 300 + k * 520; m.scale.set(r, 1, r); m.material.opacity = Math.sin(Math.PI * k) * (S.light ? .35 : .3); });
-  S.R.render(S.scene, cam);
-};
-
 // ======================= 開場 =======================
 var hero = null, heroT0 = performance.now(), heroOn = true;
-var HERO_P = { cur: 18, scores: TASKS.map(function (t) { return t.max; }), late: [7, 13], leave: [9], absent: [] };
-if (false) { hero = new WaferScene($('heroGL'), { echo: true, noScan: true, dist: mobile ? 1500 : 900, elev: .5, lookX: 0, lookY: mobile ? 0 : 10, orbit: .3, introDur: 3.4, L0: 1.4, LD: .1, ST: .07, maxDpr: mobile ? 1.5 : 2 }); hero.setData(HERO_P); }
-
 // ======================= 教學進度 =======================
 (function () {
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -670,7 +578,7 @@ if (false) { hero = new WaferScene($('heroGL'), { echo: true, noScan: true, dist
       '<span class="c">' + esc(r.zh) + '<small lang="en">' + esc(r.en) + '</small></span><span class="p" data-t="' + esc((r.calc ? r.calc + ' = ' : '') + r.points) + '">' + (r.calc ? '<i>' + esc(r.calc) + ' = </i>' : '') + r.points + '</span></li>';
   });
   (S.extra || []).forEach(function (r) { html += '<li class="row"><span class="w"></span><span class="jq r">·</span><span class="u">' + esc(r.unit) + '<small>' + esc(r.unit_en) + '</small></span><span class="c">' + esc(r.zh) + '<small lang="en">' + esc(r.en) + '</small></span><span class="p">' + (r.calc ? '<i>' + esc(r.calc) + ' = </i>' : '') + r.points + '</span></li>'; });
-  html += '<li class="row total"><span class="w"></span><span class="jq"></span><span class="u"></span><span class="c">總計 · 成績上限<small lang="en">Total · capped at 100</small></span><span class="p tot"><s>' + S.total + '</s><b>100</b></span></li>';
+  html += '<li class="row total"><span class="w"></span><span class="jq"></span><span class="u"></span><span class="c">總計 · 作業 95 ＋ 出勤 15<small lang="en">Total · assignments 95 + attendance 15</small></span><span class="p">' + S.total + '</span></li>';
   $('rows').innerHTML = html;
 
 })();
@@ -755,11 +663,28 @@ function storyFrame(now) {
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.lineJoin = 'round'; c.lineCap = 'round'; c.setLineDash([]);
   c.fillStyle = C.page; c.fillRect(0, 0, W, H);
   // ---- 版面
-  var px, py, pw, ph;
-  if (m) { px = 14; pw = W - 28; py = 12; ph = Math.min(H * .56, pw * 1.05); }
-  else { px = Math.max(40, W * .05); pw = W * .57; py = 28; ph = H - py - 36; }
-  var R = Math.min(pw, ph) * .34, cx = px + pw / 2, cy = py + ph * .5;
+  var reg = m ? { x: 0, y: 0, w: W, h: Math.min(H * .56, (W - 28) * 1.05) + 12 } : { x: 0, y: 0, w: W * .64, h: H };
+  var KP = m ? [{ x: 0, y: 0, w: 1, h: 1 }, { x: .04, y: .02, w: .92, h: .96 }, { x: 0, y: .12, w: 1, h: .76 }, { x: 0, y: .2, w: 1, h: .62 }, { x: .06, y: .03, w: .88, h: .94 }]
+             : [{ x: .03, y: .03, w: .95, h: .94 }, { x: .08, y: .05, w: .84, h: .9 }, { x: .02, y: .16, w: .96, h: .68 }, { x: .01, y: .24, w: .98, h: .52 }, { x: .1, y: .06, w: .8, h: .88 }];
+  var KA = m ? [{ x: .42, y: .6, r: .6 }, { x: .5, y: .5, r: .36 }, { x: .5, y: .5, r: .36 }, { x: .5, y: .5, r: .3 }, { x: .5, y: .5, r: .36 }]
+             : [{ x: .4, y: .58, r: .5 }, { x: .5, y: .5, r: .34 }, { x: .5, y: .5, r: .34 }, { x: .5, y: .52, r: .26 }, { x: .5, y: .5, r: .36 }];
+  var PP = lerpK(KP, p), AA = lerpK(KA, p), mn = Math.min(reg.w, reg.h);
+  var px = reg.x + PP.x * reg.w, py = reg.y + PP.y * reg.h, pw = PP.w * reg.w, ph = PP.h * reg.h;
+  var R = AA.r * mn, cx = reg.x + AA.x * reg.w, cy = reg.y + AA.y * reg.h;
+  // 超大字：壓在版畫後面，再用描邊跨過版畫
+  var GT = ['壢', '18', '5', '95', '110'], gfs = m ? H * .42 : H * .95;
+  c.textBaseline = 'middle'; c.textAlign = 'center';
+  function giant(stroke) { for (var gi = 0; gi < 5; gi++) { if (w[gi] < .02) continue; var gx0 = m ? W * .5 : W * (.62 + (gi % 2 ? -.06 : .04)), gy0 = m ? reg.h * .55 : H * .52; var dx = (1 - w[gi]) * (gi % 2 ? -1 : 1) * W * .12; c.font = (/\d/.test(GT[gi]) ? '200 ' : '200 ') + gfs + 'px "Noto Serif TC", serif'; if (stroke) { c.strokeStyle = INK(.13 * w[gi]); c.lineWidth = 1; c.strokeText(GT[gi], gx0 + dx, gy0); } else { c.fillStyle = INK(.06 * w[gi]); c.fillText(GT[gi], gx0 + dx, gy0); } } }
+  giant(false); c.textBaseline = 'alphabetic';
   c.fillStyle = C.plate; c.fillRect(px, py, pw, ph);
+  c.textBaseline = 'middle'; c.textAlign = 'center'; giant(true); c.textBaseline = 'alphabetic';
+  // 灰青太陽：會滾出版畫，落到文字後面
+  var KS = m ? [{ x: .5, y: .3, r: .2 }, { x: .86, y: .12, r: .1 }, { x: .12, y: .92, r: .08 }, { x: .92, y: .86, r: .16 }, { x: .5, y: .3, r: .2 }]
+             : [{ x: .4, y: .36, r: .2 }, { x: .84, y: .16, r: .1 }, { x: .69, y: .88, r: .06 }, { x: .97, y: .7, r: .17 }, { x: .5, y: .33, r: .17 }];
+  var SS = lerpK(KS, p), sux = SS.x * (m ? W : W), suy = SS.y * (m ? H : H), sur = SS.r * Math.min(W, H), suIn = w[0] + w[4];
+  c.fillStyle = COL('teal', (.25 + .6 * Math.min(1, suIn)) * Math.max(geo, act > 0 ? 1 : 0)); c.beginPath(); c.arc(sux, suy, sur, 0, Math.PI * 2); c.fill();
+  c.save(); c.beginPath(); c.arc(sux, suy, sur, 0, Math.PI * 2); c.clip(); c.fillStyle = INK(.2 * Math.max(geo, act > 0 ? 1 : 0)); var hof = (ti * 3) % 7;
+  for (var hy = suy - sur - 7 + hof; hy < suy + sur; hy += 7) for (var hx2 = sux - sur - 7 + hof; hx2 < sux + sur; hx2 += 7) c.fillRect(hx2, hy, 1.4, 1.4); c.restore();
   c.lineWidth = .7;
   [[0, 0, .5], [1.6, 1.1, .2]].forEach(function (o) { var g = 14, x = px + o[0], y = py + o[1]; c.strokeStyle = INK(o[2]); c.beginPath(); c.moveTo(x + g, y); c.lineTo(x + pw - g, y); c.moveTo(x + pw, y + g); c.lineTo(x + pw, y + ph - g); c.moveTo(x + pw - g, y + ph); c.lineTo(x + g, y + ph); c.moveTo(x, y + ph - g); c.lineTo(x, y + g); c.stroke(); });
   c.strokeStyle = INK(.4); c.beginPath(); [[px - 8, py - 8, 1, 1], [px + pw + 8, py - 8, -1, 1], [px - 8, py + ph + 8, 1, -1], [px + pw + 8, py + ph + 8, -1, -1]].forEach(function (q) { c.moveTo(q[0] - q[2] * 4, q[1]); c.lineTo(q[0] + q[2] * 10, q[1]); c.moveTo(q[0], q[1] - q[3] * 4); c.lineTo(q[0], q[1] + q[3] * 10); }); c.stroke();
@@ -767,7 +692,7 @@ function storyFrame(now) {
   c.font = '11px "IBM Plex Mono", monospace'; c.fillStyle = INK(.75); c.textAlign = 'left';
   var lx = px + (m ? 14 : 24), ly = py + (m ? 24 : 32);
   c.fillText('Nº 00' + (act + 1), lx, ly); c.fillRect(lx, ly + 8, 26, .8);
-  c.textAlign = 'right'; c.fillText(['C / L / H / S', 'W01 — W18', 'FIVE PATHS', '110 → 100', '0 — 100'][act], px + pw - (m ? 14 : 24), ly);
+  c.textAlign = 'right'; c.fillText(['C / L / H / S', 'W01 — W18', 'FIVE ABILITIES', '95 + 15', '0 — 110'][act], px + pw - (m ? 14 : 24), ly);
   c.textAlign = 'left'; c.fillText(m ? '115-1' : '— Equus in Motu · 115-1', lx, py + ph - (m ? 14 : 22)); c.textAlign = 'right'; c.fillText('/ / /', px + pw - (m ? 14 : 24), py + ph - (m ? 14 : 22));
   c.save(); c.beginPath(); c.rect(px, py, pw, ph); c.clip();
   // ---- 共用元素的關鍵影格
@@ -790,10 +715,6 @@ function storyFrame(now) {
     var a0 = w[0], pu = expoOut(prt);
     c.fillStyle = COL('sand', .55 * a0 * pu); c.fillRect(cx - R * 1.02 + 12 * (1 - pu), cy + R * .02, R * 1.02, R * .52);
     c.fillStyle = COL('sand2', .7 * a0 * pu); c.fillRect(cx - R * 1.25, cy + R * .54, R * 1.25, R * .42);
-    var sx = cx - R * .02, sy = cy - R * .42, sr = R * .4;
-    c.fillStyle = COL('teal', .85 * a0 * pu); c.beginPath(); c.arc(sx + 10 * (1 - pu), sy - 8 * (1 - pu), sr, 0, Math.PI * 2); c.fill();
-    c.save(); c.beginPath(); c.arc(sx, sy, sr, 0, Math.PI * 2); c.clip(); c.fillStyle = INK(.22 * a0 * pu);
-    for (var gy = sy - sr; gy < sy + sr; gy += 7) for (var gx = sx - sr; gx < sx + sr; gx += 7) { c.fillRect(gx, gy, 1.4, 1.4); } c.restore();
     // 十八盞燈：圓上的小點
     for (var k = 1; k <= 18; k++) { var th = -Math.PI / 2 + k / 18 * Math.PI * 2, on = geo > k / 18; c.fillStyle = on ? INK(.8 * a0) : INK(.15 * a0); c.beginPath(); c.arc(cx + Math.cos(th) * R, cy + Math.sin(th) * R, 2, 0, Math.PI * 2); c.fill(); }
     // 網點
@@ -802,7 +723,7 @@ function storyFrame(now) {
   // ---- 地面點線＋朱橙點（第一、二、五章）
   var ga = Math.max(w[0], w[1], w[4]);
   if (ga > .01) {
-    c.strokeStyle = INK(.6 * ga * L1); c.lineWidth = .9; c.setLineDash([1, 6]); c.beginPath(); c.moveTo(px + 20, yb); c.lineTo(px + pw - 20, yb); c.stroke(); c.setLineDash([]);
+    c.strokeStyle = INK(.6 * ga * L1); c.lineWidth = .9; c.setLineDash([1, 6]); c.lineDashOffset = -ti * 14; c.beginPath(); c.moveTo(px + 20, yb); c.lineTo(px + pw - 20, yb); c.stroke(); c.setLineDash([]);
   }
   // ---- 一筆畫（開場）
   if (L1 < 1 && w[0] > .5) {
@@ -823,14 +744,13 @@ function storyFrame(now) {
     if (w[2] > .01) {
       var u3 = chU(p, 2), pi = Math.min(4, Math.floor(u3 * 5 * .999)), whole = u3 > .93, x0 = TS.x + STATX[0] * TS.h, x1 = TS.x + STATX[1] * TS.h, bw = (x1 - x0) / 5;
       for (var b = 0; b < 5; b++) {
-        var isA = b === pi && !whole, lift = isA ? -R * .12 : 0, sh = isA ? 8 : 0;
+        var gap = R * .2 * w[2] * (whole ? .25 : 1), isA = b === pi && !whole, lift = isA ? -R * .12 : 0, sh = (isA ? 8 : 0) + (b - 2) * gap;
         c.save(); c.globalAlpha = w[2] * (isA || whole ? 1 : .5);
-        c.beginPath(); c.rect(x0 + b * bw - (b ? 0 : 20), TS.y - TS.h, bw + (b === 4 ? 20 : 0) + (b ? 0 : 20), TS.h * 2); c.clip();
+        c.beginPath(); c.rect(x0 + b * bw - (b ? 0 : 20) + sh, TS.y - TS.h, bw + (b === 4 ? 20 : 0) + (b ? 0 : 20), TS.h * 2); c.clip();
         c.translate(sh, lift); c.fillStyle = PATHS[b].c; statuePath(c, TS); c.fill();
         c.globalCompositeOperation = 'destination-out'; c.globalAlpha = .5; c.drawImage(ST.speck, -sh, -lift, W, H); c.restore();
+        c.strokeStyle = isA ? PATHS[b].c : INK(.35 * w[2]); c.lineWidth = isA ? 1.4 : .7; c.strokeRect(x0 + b * bw + sh - (b ? 2 : 22), TS.y - TS.h * .62 + lift, bw + (b ? 4 : 24) + (b === 4 ? 20 : 0), TS.h * 1.22); c.fillStyle = INK(.6 * w[2]); c.font = '10px "IBM Plex Mono", monospace'; c.textAlign = 'left'; c.fillText('0' + (b + 1), x0 + b * bw + sh - (b ? 0 : 20), TS.y - TS.h * .62 + lift - 6);
       }
-      c.strokeStyle = INK(.5 * w[2]); c.lineWidth = .7; c.setLineDash([3, 4]);
-      for (b = 1; b < 5; b++) { c.beginPath(); c.moveTo(x0 + b * bw, TS.y - TS.h * .7); c.lineTo(x0 + b * bw, TS.y + TS.h * .62); c.stroke(); } c.setLineDash([]);
       // 造山的線索：三十一塊石
       var sxx = px + pw - (m ? 70 : 96), syy = py + ph - (m ? 40 : 56), sz = m ? 5 : 6, n = 0, lit = Math.round(31 * u3);
       [10, 8, 6, 4, 2, 1].forEach(function (cnt, row) { for (var s2 = 0; s2 < cnt; s2++) { var bx2 = sxx + (s2 - cnt / 2) * (sz + 1.5), by2 = syy - row * (sz + 1.5); c.strokeStyle = INK(.5 * w[2]); c.lineWidth = .6; c.strokeRect(bx2, by2, sz, sz); if (n < lit) { c.fillStyle = INK(.75 * w[2]); c.fillRect(bx2, by2, sz, sz); } n++; } });
@@ -858,18 +778,17 @@ function storyFrame(now) {
     var segs = PATHS.map(function (Q, k3) { return { c: Q.c, v: TASKS.filter(function (t) { return t.p === k3; }).reduce(function (s, t) { return s + t.max; }, 0) }; }); segs.push({ c: 'rgb(' + C.verm + ')', v: 15 });
     c.strokeStyle = INK(.4 * a3); c.lineWidth = .7; c.strokeRect(bx0, by0, bwid, bh);
     segs.forEach(function (g2, k3) { var gu = expoOut(clamp((u4 - k3 * .07) / .18)); var ww = g2.v / 110 * bwid * gu; c.globalAlpha = a3; c.fillStyle = g2.c; c.fillRect(bx0 + acc, by0 + 8 * (1 - gu), ww, bh); c.globalAlpha = 1; acc += g2.v / 110 * bwid; });
-    var cu = expoOut(clamp((u4 - .5) / .2)), capX = bx0 + bwid * 100 / 110;
-    c.strokeStyle = COL('verm', a3 * cu); c.lineWidth = 1.2; c.beginPath(); c.moveTo(capX, by0 - R * .5 * cu); c.lineTo(capX, by0 + bh + R * .3); c.stroke();
-    c.fillStyle = COL('verm', a3 * cu); c.font = '11px "IBM Plex Mono", monospace'; c.textAlign = 'left'; c.fillText('上限 100', capX + 6, by0 - R * .5 * cu + 10);
-    var hu = clamp((u4 - .65) / .15); if (hu > 0) { c.save(); c.beginPath(); c.rect(capX, by0, bx1 - capX, bh); c.clip(); c.strokeStyle = C.plate; c.globalAlpha = a3 * hu; c.lineWidth = 2; for (var hx = capX - bh; hx < bx1 + bh; hx += 6) { c.beginPath(); c.moveTo(hx, by0 + bh); c.lineTo(hx + bh, by0); c.stroke(); } c.restore(); c.fillStyle = INK(.7 * a3 * hu); c.textAlign = 'right'; c.fillText('緩衝 10', bx1, by0 + bh + 18); }
-    c.fillStyle = INK(.6 * a3); c.textAlign = 'left'; c.fillText('0', bx0, by0 + bh + 18); c.textAlign = 'center'; c.fillText('110', bx1, by0 - 8);
+    var cu = expoOut(clamp((u4 - .5) / .2)), capX = bx0 + bwid * 95 / 110;
+    c.strokeStyle = INK(.6 * a3 * cu); c.lineWidth = .8; c.beginPath(); c.moveTo(bx0, by0 - 14); c.lineTo(bx0, by0 - 20); c.lineTo(capX - 2, by0 - 20); c.lineTo(capX - 2, by0 - 14); c.moveTo(capX + 2, by0 - 14); c.lineTo(capX + 2, by0 - 20); c.lineTo(bx1, by0 - 20); c.lineTo(bx1, by0 - 14); c.stroke();
+    c.fillStyle = INK(.8 * a3 * cu); c.font = '11px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.fillText('作業 95 · 依作業量換算', (bx0 + capX) / 2, by0 - 26); c.fillStyle = COL('verm', a3 * cu); c.fillText('出勤 15', (capX + bx1) / 2, by0 - 26);
+    c.fillStyle = INK(.6 * a3); c.textAlign = 'left'; c.fillText('0', bx0, by0 + bh + 18); c.textAlign = 'right'; c.fillText('110', bx1, by0 + bh + 18);
     // 四條規則的小圖示
-    var gl = ['今日', '一半', '請假', '遲到'];
+    var gl = ['準時繳交', '補交一半', '請假 0', '遲到 0.5'];
     for (var r4 = 0; r4 < 4; r4++) {
       var gu2 = expoOut(clamp((u4 - .72 - r4 * .05) / .12)), gx3 = bx0 + bwid * (.12 + r4 * .25), gy3 = by0 + bh + R * .62, rr2 = R * .1;
       c.strokeStyle = INK(.6 * a3); c.lineWidth = .8; c.beginPath(); c.arc(gx3, gy3, rr2, 0, Math.PI * 2); c.stroke();
       c.fillStyle = r4 === 2 ? COL('teal', a3) : r4 === 3 ? COL('verm', a3) : INK(.9 * a3);
-      c.beginPath(); if (r4 === 0 || r4 === 2) c.arc(gx3, gy3, rr2 * gu2, 0, Math.PI * 2); else if (r4 === 1) { c.moveTo(gx3, gy3 - rr2); c.arc(gx3, gy3, rr2 * gu2, -Math.PI / 2, Math.PI / 2); c.lineTo(gx3, gy3); } else { c.moveTo(gx3 - rr2, gy3); c.arc(gx3, gy3, rr2 * gu2, Math.PI, 0, true); } c.fill();
+      c.beginPath(); if (r4 === 2) { c.strokeStyle = COL('teal', a3); c.lineWidth = 1.6; c.arc(gx3, gy3, rr2 * (.4 + .6 * gu2), 0, Math.PI * 2); c.stroke(); c.beginPath(); } else if (r4 === 0) c.arc(gx3, gy3, rr2 * gu2, 0, Math.PI * 2); else if (r4 === 1) { c.moveTo(gx3, gy3 - rr2); c.arc(gx3, gy3, rr2 * gu2, -Math.PI / 2, Math.PI / 2); c.lineTo(gx3, gy3); } else { c.moveTo(gx3 - rr2, gy3); c.arc(gx3, gy3, rr2 * gu2, Math.PI, 0, true); } c.fill();
       c.fillStyle = INK(.75 * a3 * gu2); c.font = (m ? 11 : 12.5) + 'px "Noto Serif TC", serif'; c.textAlign = 'center'; c.fillText(gl[r4], gx3, gy3 + rr2 + 18);
     }
   }
@@ -877,9 +796,9 @@ function storyFrame(now) {
   if (w[4] > .01) {
     var a4 = w[4], u5 = chU(p, 4), rx0 = px + pw * .08, rx1 = px + pw * .92, ry = yb + R * .3, rw = rx1 - rx0;
     c.strokeStyle = INK(.6 * a4); c.lineWidth = .8; c.beginPath(); c.moveTo(rx0, ry); c.lineTo(rx1, ry); c.stroke();
-    for (var t5 = 0; t5 <= 10; t5++) { var tx = rx0 + rw * t5 / 10; c.beginPath(); c.moveTo(tx, ry - (t5 % 5 ? 4 : 7)); c.lineTo(tx, ry); c.stroke(); }
-    var bands = [[0, 60, '仍在路上'], [60, 75, '堅持完賽'], [75, 90, '穩健完賽'], [90, 100, '全程完賽']];
-    bands.forEach(function (B, k5) { var bu = expoOut(clamp((u5 - k5 * .12) / .2)); var bx3 = rx0 + rw * B[0] / 100, bx4 = rx0 + rw * B[1] / 100; c.strokeStyle = k5 === 3 ? COL('verm', a4 * bu) : INK((.3 + k5 * .15) * a4 * bu); c.lineWidth = 3; c.lineCap = 'butt'; c.beginPath(); c.moveTo(bx3 + 1, ry + 6); c.lineTo(bx3 + (bx4 - bx3) * bu - 1, ry + 6); c.stroke(); c.lineCap = 'round'; c.fillStyle = INK(.85 * a4 * bu); c.font = (m ? 10 : 12) + 'px "Noto Serif TC", serif'; c.textAlign = 'center'; c.fillText(m && k5 > 0 ? B[2].slice(0, 2) : B[2], (bx3 + bx4) / 2, ry + 26); c.fillStyle = INK(.5 * a4 * bu); c.font = '10px "IBM Plex Mono", monospace'; c.fillText(B[0] + '–' + B[1], (bx3 + bx4) / 2, ry + 40); });
+    for (var t5 = 0; t5 <= 11; t5++) { var tx = rx0 + rw * t5 / 11; c.beginPath(); c.moveTo(tx, ry - (t5 % 5 ? 4 : 7)); c.lineTo(tx, ry); c.stroke(); }
+    var bands = [[0, 60, '起步'], [60, 75, '成長'], [75, 90, '穩健'], [90, 110, '精熟']];
+    bands.forEach(function (B, k5) { var bu = expoOut(clamp((u5 - k5 * .12) / .2)); var bx3 = rx0 + rw * B[0] / 110, bx4 = rx0 + rw * B[1] / 110; c.strokeStyle = k5 === 3 ? COL('verm', a4 * bu) : INK((.3 + k5 * .15) * a4 * bu); c.lineWidth = 3; c.lineCap = 'butt'; c.beginPath(); c.moveTo(bx3 + 1, ry + 6); c.lineTo(bx3 + (bx4 - bx3) * bu - 1, ry + 6); c.stroke(); c.lineCap = 'round'; c.fillStyle = INK(.85 * a4 * bu); c.font = (m ? 10 : 12) + 'px "Noto Serif TC", serif'; c.textAlign = 'center'; c.fillText(B[2], (bx3 + bx4) / 2, ry + 26); c.fillStyle = INK(.5 * a4 * bu); c.font = '10px "IBM Plex Mono", monospace'; c.fillText(B[0] + '–' + B[1], (bx3 + bx4) / 2, ry + 40); });
     var mu = easeIO(clamp((u5 - .2) / .6)), mx = rx0 + rw * mu; c.fillStyle = COL('verm', a4); c.beginPath(); c.moveTo(mx - 6, ry - 16); c.lineTo(mx + 6, ry - 16); c.lineTo(mx, ry - 8); c.closePath(); c.fill();
   }
   c.restore();
@@ -894,6 +813,15 @@ function storyFrame(now) {
   // 破框：軸線越出版框
   var axA = Math.max(w[0] * geo, w[4]);
   if (axA > .01) { c.strokeStyle = INK(.4 * axA); c.lineWidth = .7; c.beginPath(); c.moveTo(px - 30, cy); c.lineTo(px + pw + 30, cy); c.stroke(); c.fillStyle = INK(.8 * axA); [px, px + pw].forEach(function (x3) { c.beginPath(); c.arc(x3, cy, 2.4, 0, Math.PI * 2); c.fill(); }); regMark(c, px - 22, cy, 5, INK(.6 * axA)); }
+  // 換章：錯版與跨版面的朱橙刷痕
+  for (var bi = 1; bi < 5; bi++) {
+    var dd = p - CB[bi]; if (Math.abs(dd) >= TW) continue; var g = 1 - Math.abs(dd) / TW, prog = (dd + TW) / (2 * TW);
+    c.strokeStyle = COL('verm', .55 * g); c.lineCap = 'butt';
+    for (var k8 = 0; k8 < 6; k8++) { var yy8 = (m ? reg.h * .82 : H * .8) + (k8 - 3) * 4 + (noise(k8, bi) - .5) * 3; c.lineWidth = 3; c.beginPath(); c.moveTo(-10, yy8); c.lineTo(W * prog + noise(k8 * 2, bi) * 40, yy8); c.stroke(); }
+    c.lineCap = 'round';
+    c.lineWidth = 1; c.strokeStyle = 'rgba(231,155,190,' + (.7 * g) + ')'; c.strokeRect(px + 9 * g, py - 6 * g, pw, ph); c.strokeStyle = 'rgba(143,195,201,' + (.7 * g) + ')'; c.strokeRect(px - 7 * g, py + 5 * g, pw, ph);
+    if (g > .25 && !reduce) { var sd = Math.floor(now / 70); for (var k9 = 0; k9 < 7; k9++) { var yy9 = rnd(k9, sd) * H, hh9 = 6 + rnd(k9, sd + 1) * 40, dx9 = (rnd(k9, sd + 2) - .5) * 80 * g; try { c.drawImage(ST.cv, 0, yy9 * dpr, W * dpr, hh9 * dpr, dx9, yy9, W, hh9); } catch (e) {} } }
+  }
   // 紙紋
   c.save(); c.beginPath(); c.rect(px, py, pw, ph); c.clip();
   c.globalCompositeOperation = isLight() ? 'multiply' : 'overlay'; c.globalAlpha = isLight() ? .08 : .14;
@@ -904,34 +832,117 @@ function storyFrame(now) {
 }
 
 // ======================= 證書 =======================
-var cert = null, P = null;
-if (HAS3D) cert = new WaferScene($('certGL'), { w: 794, h: 600, print: true, flatInLight: true, flatZ: -110, dist: 1080, elev: .64, orbit: .16, lookY: 70, introDur: 2.4, topDist: 1720, fov: 30 });
+var P = null, SX = null, PRINTING = false;
 var STATPATH = (function () { var a = STAT.outer.map(function (p) { return ((p[0] + .62) * 400).toFixed(1) + ' ' + ((p[1] + .5) * 400).toFixed(1); }); return 'M' + a.join('L') + 'Z'; })();
 function deco(id) { var REG = '<svg class="reg {k}" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg>'; return '<div class="grain"></div><i class="bleed"></i>' + 'abcd'.split('').map(function (k) { return REG.replace('{k}', k); }).join('') + (id === 1 ? '<svg class="wmk" viewBox="0 0 496 400" aria-hidden="true"><path d="' + STATPATH + '"/></svg>' : ''); }
 function buildCert(key) {
-  P = PROFILES[key];
-  if (cert) cert.setData(P);
-  $('cname').innerHTML = P.name.split('').map(function (c) { return '<span>' + c + '</span>'; }).join('');
+  P = PROFILES[key]; SX = stats(P); var H = highlights(P, SX), g = givenName(P.name);
+  $('ctName').textContent = g; $('zName').textContent = g; $('p2name').textContent = g;
   $('sCls').textContent = P.cls; $('sSeat').textContent = P.seat;
   $('kScore').textContent = P.live ? 'Live 目前成績' : 'Score 學期成績';
-  $('vRank').textContent = P.rank; $('vWords').textContent = P.words;
-  var lit = 0, dots = ''; for (var w = 1; w <= 18; w++) { var s = statusOf(P, w); if (s === 'on' || s === 'late') lit++; dots += '<i class="' + (s === 'on' ? 'on' : s === 'late' ? 'late' : s === 'leave' ? 'leave' : s === 'future' ? 'fut' : '') + '"></i>'; }
-  $('vAtt').innerHTML = lit + '<span class="vs2"> 盞 / ' + P.cur + ' · 出席 ' + P.att + '</span>'; $('dots').innerHTML = dots;
-  $('p2who').textContent = P.name + ' · ' + P.cls + '-' + P.seat;
-  $('pnote').textContent = '以下是示範證書（假資料）。真實的成績，只會從信中的專屬連結打開。';
-  var good = 0, tested = 0; TASKS.forEach(function (t, i) { if (t.w <= P.cur) { tested++; if (P.scores[i] != null) good++; } });
-  $('tagR').textContent = '疊起 ' + good + ' 塊石 · 共 ' + tested;
-  $('tagB').textContent = P.live ? '處暑 → ' + WEEK[P.cur].term + ' · 還在路上' : '處暑 → 大寒 · 抵達';
+  $('vRank').textContent = P.rank; $('vWords').textContent = comment(P, SX, H);
+  $('vAtt').innerHTML = (Math.round(SX.att * 10) / 10) + '<span class="vs2"> / 15 · 出席率 ' + SX.attPct + '%</span>';
+  $('hl').innerHTML = '<span><b>亮點</b></span>' + H.map(function (h) { return '<span>' + h.p.replace(/。$/, '') + '</span>'; }).join('');
+  $('p2who').textContent = P.cls + ' · ' + P.seat + ' 號';
+  $('pnote').textContent = '以下是示範（假資料），三種情況都用「致賢」示範。真實的成績，只會從信中的專屬連結打開。' + (P.live ? '學期中的出勤分會隨週次累積，最高 15 分。' : '');
+  $('tagR').textContent = P.live ? '處暑 → ' + WEEK[P.cur].term + ' · 學期中' : '處暑 → 大寒';
   document.querySelectorAll('.demo .chip[data-k]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.k === key ? 'true' : 'false'); });
+  ['liz0', 'liz1', 'liz2'].forEach(function (id) { var z = $(id); z.classList.remove('go', 'done'); z.classList.add('ready'); });
+  $('liz2').classList.add('done');
   buildPage2();
 }
+var END = 2.8, BL = null;
 function renderCertText(t) {
-  var T = cert ? cert.T : { END: 3 };
-  Array.prototype.forEach.call($('cname').children, function (s, i) { s.classList.toggle('in', t > .4 + i * .35); });
-  $('vScore').textContent = pad2(Math.round(P.score * easeOut(clamp((t - T.END) / 1.4))));
-  var n = Math.max(0, Math.floor((t - T.END - .5) * 6)); $('vTitle').textContent = P.title.slice(0, n);
+  $('vScore').textContent = (P.live ? '' : '') + (Math.round(SX.score * easeOut(clamp((t - END) / 1.4)) * 10) / 10).toFixed(t > END + 1.4 ? (SX.score % 1 ? 1 : 0) : 0);
+  var n = Math.max(0, Math.floor((t - END - .5) * 6)); $('vTitle').textContent = SX.level.slice(0, n);
+  var z = $('liz1'); if (t > .6 && !z.classList.contains('go') && !z.classList.contains('done')) { if (t > 50) z.classList.add('done'); else z.classList.add('go'); }
+  drawCert(t);
 }
-$('wleg').innerHTML = PATHS.map(function (p) { return '<span><i style="background:' + p.c + '"></i>' + p.verb + '</span>'; }).join('') + '<span><i style="background:var(--lamp)"></i>點燈</span><span><i style="background:#8fb2b4"></i>請假</span><span><i style="border:1px dashed var(--smut);border-radius:0"></i>待補交</span>';
+function brickLayout() {
+  if (BL && BL.P === P) return BL;
+  var W = 674, H = 476, cx = W / 2, cy = 200, R = 176, TS = { x: cx + 8, y: cy + 10, h: 272 };
+  var oc = document.createElement('canvas'); oc.width = W; oc.height = H; var o = oc.getContext('2d'); statuePath(o, TS);
+  var top = TS.y - TS.h * .5, bot = TS.y + TS.h * .5, x0 = TS.x + STATX[0] * TS.h, x1 = TS.x + STATX[1] * TS.h, bw = (x1 - x0) / 5, slices = [], order = [];
+  for (var b = 0; b < 5; b++) {
+    var ids = []; TASKS.forEach(function (t, i) { if (t.p === b) ids.push(i); }); var pts = ids.reduce(function (a, i) { return a + TASKS[i].max; }, 0);
+    var xa = b ? x0 + b * bw : x0 - 40, xb = b === 4 ? x1 + 40 : x0 + (b + 1) * bw, cells, sz;
+    sz = 7.5; cells = []; for (var y = bot - sz; y >= top - sz; y -= sz) for (var x = xa; x + sz <= xb + .01; x += sz) if (o.isPointInPath(x + sz / 2, y + sz / 2)) cells.push({ x: x, y: y });
+    var unit = []; ids.forEach(function (i) { for (var j = 0; j < TASKS[i].max; j++) unit.push([i, j]); });
+    var per = cells.length / Math.max(1, unit.length);
+    cells.forEach(function (c2, k) { var u = unit[Math.min(unit.length - 1, Math.floor(k / per))]; c2.i = u[0]; c2.j = u[1]; order.push(c2); });
+    var topY = bot; cells.forEach(function (c2) { if (c2.i != null) topY = Math.min(topY, c2.y); });
+    slices.push({ cells: cells, sz: sz, xa: xa, xb: xb, topY: topY });
+  }
+  order.sort(function (a, b2) { return TASKS[a.i].w - TASKS[b2.i].w || a.i - b2.i || a.j - b2.j; }); order.forEach(function (c2, n) { c2.n = n; });
+  BL = { P: P, slices: slices, TS: TS, cx: cx, cy: cy, R: R, top: top, bot: bot, x0: x0, bw: bw, N: order.length };
+  return BL;
+}
+function drawCert(t) {
+  var cv = $('certCv'); if (!cv) return; var W = 674, H = 476, dpr = 2, c = cv.getContext('2d');
+  if (cv.width !== W * dpr) { cv.width = W * dpr; cv.height = H * dpr; }
+  var Lt = PRINTING || isLight(), IK = Lt ? '43,42,39' : '232,229,222', ink = function (a) { return 'rgba(' + IK + ',' + a + ')'; }, VM = '#d9643a';
+  var B = brickLayout(), cx = B.cx, cy = B.cy, R = B.R, TS = B.TS;
+  c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H); if (PRINTING) { c.fillStyle = '#ece6d9'; c.fillRect(0, 0, W, H); } c.lineCap = 'round'; c.lineJoin = 'round';
+  // 底紋：淡淡的晶粒格
+  c.save(); c.beginPath(); c.arc(cx, cy, R - 10, 0, Math.PI * 2); c.clip(); c.fillStyle = ink(.08); for (var gy = cy - R; gy < cy + R; gy += 9) for (var gx = cx - R; gx < cx + R; gx += 9) c.fillRect(gx, gy, 1, 1); c.restore();
+  c.strokeStyle = ink(.18); c.lineWidth = .7; c.beginPath(); c.moveTo(cx - R - 50, cy); c.lineTo(cx + R + 50, cy); c.moveTo(cx, cy - R - 18); c.lineTo(cx, cy + R + 4); c.stroke();
+  c.setLineDash([2, 5]); c.beginPath(); c.arc(cx + R * .12, cy - R * .05, R * 1.12, Math.PI * .92, Math.PI * 1.55); c.stroke(); c.setLineDash([]);
+  // 出勤：十八格的日晷環
+  for (var w = 1; w <= 18; w++) {
+    var a0 = -Math.PI / 2 + (w - 1) / 18 * Math.PI * 2 + .025, a1 = -Math.PI / 2 + w / 18 * Math.PI * 2 - .025, st = statusOf(P, w), ap = clamp((t - .15 - w * .06) / .35); if (ap <= 0) continue;
+    c.globalAlpha = ap; c.lineCap = 'butt';
+    if (st === 'on') { c.strokeStyle = VM; c.lineWidth = 6; }
+    else if (st === 'late') { c.strokeStyle = VM; c.lineWidth = 6; c.setLineDash([3, 3]); }
+    else if (st === 'leave') { c.strokeStyle = '#8fb2b4'; c.lineWidth = 6; }
+    else if (st === 'absent') { c.strokeStyle = ink(.25); c.lineWidth = 1; }
+    else { c.strokeStyle = ink(.25); c.lineWidth = 1; c.setLineDash([1, 3]); }
+    c.beginPath(); c.arc(cx, cy, R, a0, a0 + (a1 - a0) * easeOut(ap)); c.stroke(); c.setLineDash([]); c.lineCap = 'round';
+    if (WEEK[w].first) { var am = (a0 + a1) / 2; c.fillStyle = ink(.6); c.font = '10px "Noto Serif TC", serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(WEEK[w].term, cx + Math.cos(am) * (R + 15), cy + Math.sin(am) * (R + 15)); c.textBaseline = 'alphabetic'; }
+    c.globalAlpha = 1;
+  }
+  c.strokeStyle = ink(.3); c.lineWidth = .6; c.beginPath(); c.arc(cx, cy, R - 6, 0, Math.PI * 2); c.stroke();
+  // 馬的輪廓與五塊作業磚
+  c.strokeStyle = ink(.4); c.lineWidth = .8; statuePath(c, TS); c.stroke();
+  B.slices.forEach(function (S2, b) {
+    var col = PATHS[b].c;
+    S2.cells.forEach(function (q) {
+      var x = q.x + .8, y = q.y + .8, z = S2.sz - 1.6;
+      if (q.i == null) { c.fillStyle = col; c.globalAlpha = .1; c.fillRect(x, y, z, z); c.globalAlpha = 1; return; }
+      var ap = clamp((t - .4 - q.n / B.N * 1.9) / .2); if (ap <= 0) return; var dy = -6 * (1 - easeOut(ap));
+      var T = TASKS[q.i], v = P.scores[q.i], fut = T.w > P.cur;
+      c.globalAlpha = ap;
+      if (fut) { c.strokeStyle = ink(.3); c.lineWidth = .6; c.setLineDash([1, 2]); c.strokeRect(x, y + dy, z, z); c.setLineDash([]); }
+      else if (v == null) { c.strokeStyle = col; c.lineWidth = 1; c.setLineDash([2, 2]); c.strokeRect(x + .5, y + dy + .5, z - 1, z - 1); c.setLineDash([]); }
+      else if (q.j < v) { c.fillStyle = col; c.fillRect(x, y + dy, z, z); if (q.j + 1 > v) { c.fillStyle = Lt ? '#ece6d9' : '#1b1a18'; c.fillRect(x + z * (v - q.j), y + dy, z * (1 - (v - q.j)), z); } }
+      else { c.strokeStyle = col; c.lineWidth = 1; c.strokeRect(x + .5, y + dy + .5, z - 1, z - 1); }
+      c.globalAlpha = 1;
+    });
+  });
+  c.strokeStyle = ink(.3); c.lineWidth = .6; c.setLineDash([3, 4]); for (var b = 1; b < 5; b++) { c.beginPath(); c.moveTo(B.x0 + b * B.bw, B.top - 8); c.lineTo(B.x0 + b * B.bw, B.bot + 4); c.stroke(); } c.setLineDash([]);
+  // 最完整的一塊：拉一條註解線
+  var bi = -1; SX.rates.forEach(function (r, k) { if (r != null && (bi < 0 || r > SX.rates[bi] + 1e-9)) bi = k; });
+  var la = clamp((t - 2.6) / .6);
+  if (bi >= 0 && la > 0) {
+    var S3 = B.slices[bi], lx = (S3.xa + S3.xb) / 2, ly = S3.topY + 4, ex = bi < 2 ? 46 : W - 46, ey = 34;
+    c.globalAlpha = la; c.strokeStyle = VM; c.lineWidth = .8; c.beginPath(); c.arc(lx, ly, 3, 0, Math.PI * 2); c.moveTo(lx, ly - 3); c.lineTo(lx, ey + 8); c.lineTo(ex + (bi < 2 ? 70 : -70), ey + 8); c.stroke();
+    c.fillStyle = VM; c.font = '11px "IBM Plex Mono", monospace'; c.textAlign = bi < 2 ? 'left' : 'right'; c.fillText('BEST · ' + Math.round(SX.rates[bi] * 100) + '%', bi < 2 ? 20 : W - 20, ey);
+    c.font = '12px "Noto Serif TC", serif'; c.fillText(UNITN[bi] + ' · 最完整', bi < 2 ? 20 : W - 20, ey + 18); c.globalAlpha = 1;
+  }
+  // 馬蹄下的朱橙刷痕：每週得分率
+  var by = B.bot + 18, bx0 = cx - R, bx1 = cx + R, wk = (W > 0) ? weekData() : [];
+  c.lineCap = 'butt';
+  wk.forEach(function (k2, idx) { if (k2.fut) return; var ap = clamp((t - .6 - idx * .07) / .3); if (ap <= 0) return; var s0 = bx0 + idx / 18 * (bx1 - bx0), s1 = s0 + (bx1 - bx0) / 18 * ap - 1; for (var k3 = 0; k3 < 5; k3++) { c.strokeStyle = 'rgba(217,100,58,' + ((.15 + .6 * k2.rate / 100) * (.6 + .4 * noise(k3 * 1.7, idx))).toFixed(3) + ')'; c.lineWidth = 2; var yy = by + (k3 - 2) * 2.4; c.beginPath(); c.moveTo(s0, yy); c.lineTo(s1, yy); c.stroke(); } });
+  c.lineCap = 'round'; c.fillStyle = ink(.55); c.font = '9.5px "IBM Plex Mono", monospace'; c.textAlign = 'left'; c.fillText('W01', bx0, by + 16); c.textAlign = 'right'; c.fillText('W18 · 每週得分率', bx1, by + 16);
+  // 五個能力的標籤與水位刻度
+  for (b = 0; b < 5; b++) {
+    var lx2 = B.x0 + B.bw * (b + .5), la2 = clamp((t - 1.4 - b * .14) / .5), r = SX.rates[b];
+    c.globalAlpha = la2; c.textAlign = 'center'; c.fillStyle = PATHS[b].c; c.font = '300 15px "Noto Serif TC", serif'; c.fillText(PATHS[b].verb, lx2, H - 24);
+    c.fillStyle = ink(.85); c.font = '11px "IBM Plex Mono", monospace'; c.fillText(r == null ? '—' : Math.round(r * 100) + '%', lx2, H - 8);
+    c.fillStyle = PATHS[b].c; c.fillRect(lx2 - 14, H - 44, 28 * (r || 0) * easeOut(la2), 2); c.fillStyle = ink(.15); c.fillRect(lx2 - 14 + 28 * (r || 0) * easeOut(la2), H - 44, 28 * (1 - (r || 0) * easeOut(la2)), 2);
+    c.globalAlpha = 1;
+  }
+}
+$('wleg').innerHTML = '<span><i style="background:var(--smut);border-radius:1px"></i>一格＝1 分</span><span><i style="border:1px solid var(--smut);border-radius:1px"></i>沒拿到的分數</span><span><i style="border:1px dashed var(--smut);border-radius:1px"></i>待補交</span><span><i style="background:#d9643a;border-radius:1px"></i>出勤環</span><span><i style="background:#8fb2b4;border-radius:1px"></i>請假</span>';
 var paceAnim = { t: -1 };
 function weekData() {
   var weeks = [];
@@ -1031,7 +1042,7 @@ function buildPage2() {
     rows.push({ g: g, k: (k.cy - TOP) / (BODY - TOP), note: note, full: full });
   });
   var good = 0, tested = 0; TASKS.forEach(function (t, i) { if (t.w <= P.cur) { tested++; if (P.scores[i] != null) good++; } });
-  $('trackK').textContent = 'ROUTE 十八週賽道 · STONES ' + good + ' / ' + tested;
+  $('trackK').textContent = 'Weeks 每週紀錄 · 已繳 ' + good + ' / ' + tested + ' 份';
   paceAnim = { t: -1, line: line, len: len, area: area, rest: rest, rows: rows, endF: (last.Y - TOP) / (BODY - TOP) };
 }
 function paceFrame(now) {
@@ -1091,10 +1102,10 @@ function fourBar(now) {
 
 // ======================= 縮放 · 觀察 · 迴圈 =======================
 function fit() { ['1', '2'].forEach(function (n) { var h = $('h' + n), s = Math.min(1, h.clientWidth / 794); $('s' + n).style.transform = 'scale(' + s + ')'; h.style.height = (1123 * s) + 'px'; }); }
-function applyTheme() { var L = isLight(); $('papers').classList.toggle('lightsheet', L); if (hero) hero.setLight(L); if (cert) cert.setLight(L); }
+function applyTheme() { var L = isLight(); $('papers').classList.toggle('lightsheet', L); }
 themeHooks.push(applyTheme);
 if (window.matchMedia) { var mq = matchMedia('(prefers-color-scheme: light)'); if (mq.addEventListener) mq.addEventListener('change', applyTheme); }
-window.addEventListener('resize', function () { fit(); if (hero) hero.resize(); clearTimeout(window.__rt); window.__rt = setTimeout(buildStory, 250); });
+window.addEventListener('resize', function () { fit(); clearTimeout(window.__rt); window.__rt = setTimeout(buildStory, 250); });
 var certStart = -1, frozen = reduce, certVis = false;
 var io = new IntersectionObserver(function (es) {
   es.forEach(function (e) {
@@ -1107,11 +1118,9 @@ var io = new IntersectionObserver(function (es) {
 }, { threshold: .1 });
 ['h1', 'h2', 'story'].forEach(function (id) { io.observe($(id)); });
 function loop(now) {
-  if (hero && heroOn) hero.render(reduce ? 999 : (now - heroT0) / 1000, now);
   storyFrame(now);
   var t = frozen ? 999 : certStart < 0 ? 0 : (now - certStart) / 1000;
-  if (cert && (certVis || frozen)) cert.render(t, now);
-  renderCertText(t); paceFrame(now); 
+  if (certVis || frozen) renderCertText(t); paceFrame(now); 
   requestAnimationFrame(loop);
 }
 function load(key) {
@@ -1122,12 +1131,13 @@ function load(key) {
 document.querySelectorAll('.demo .chip[data-k]').forEach(function (b) { b.addEventListener('click', function () { load(b.dataset.k); }); });
 $('replay').addEventListener('click', function () { frozen = false; $('h1').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { certStart = performance.now(); paceAnim.t = performance.now() + 6000; }, 500); });
 var printWasLight = false;
-window.addEventListener('beforeprint', function () { printWasLight = isLight(); $('papers').classList.add('lightsheet'); if (cert) { cert.setLight(true); cert.render(999, performance.now()); } frozen = true; renderCertText(999); paceAnim.t = performance.now() - 9000; paceFrame(performance.now()); document.querySelectorAll('.prow .fl').forEach(function (f) { f.style.transition = 'none'; f.style.width = f.dataset.w; }); });
-window.addEventListener('afterprint', function () { applyTheme(); });
+window.addEventListener('beforeprint', function () { printWasLight = isLight(); $('papers').classList.add('lightsheet'); PRINTING = true; frozen = true; ['liz0', 'liz1', 'liz2'].forEach(function (id) { $(id).classList.remove('go'); $(id).classList.add('done'); }); renderCertText(999); paceAnim.t = performance.now() - 9000; paceFrame(performance.now()); document.querySelectorAll('.prow .fl').forEach(function (f) { f.style.transition = 'none'; f.style.width = f.dataset.w; }); });
+window.addEventListener('afterprint', function () { PRINTING = false; applyTheme(); });
 ['s1', 's2'].forEach(function (id, i) { $(id).insertAdjacentHTML('afterbegin', deco(i + 1)); });
 var fontsReady = (document.fonts && document.fonts.load) ? Promise.race([document.fonts.load('300 40px "Noto Serif TC"', '學習壢程'), new Promise(function (r) { setTimeout(r, 1500); })]) : Promise.resolve();
 fontsReady.then(buildStory);
-load('lin'); applyTheme();
+load('lin'); applyTheme(); renderCertText(0);
+var zio = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { var z = $('liz0'); if (!z.classList.contains('done')) z.classList.add('go'); } }); }, { threshold: .6 }); zio.observe($('liz0'));
 requestAnimationFrame(loop);
 })();
 </script>
