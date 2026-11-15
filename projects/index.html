@@ -63,6 +63,45 @@ footer.site { margin-top: 96px; border-top: 1px solid var(--hair); padding-block
 .ticks span.on { background: var(--ink); }
 .ticks span.now { background: var(--verm); }
 
+/* ---- 故事 ---- */
+.story { position: relative; height: 1000vh; }
+.stage { position: sticky; top: var(--hdr, 52px); height: calc(100vh - var(--hdr, 52px)); height: calc(100svh - var(--hdr, 52px)); overflow: hidden; }
+#storyCv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.txt { position: absolute; left: calc(max(40px, 5vw) + 57vw + 4vw); right: max(28px, 4vw); top: 28px; bottom: 36px; }
+.chap { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; opacity: 0; transform: translateY(14px); transition: opacity .6s, transform .8s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+.chap.on { opacity: 1; transform: none; pointer-events: auto; }
+.chap h2 { margin: 10px 0 18px; font: 300 clamp(22px, 2.4vw, 32px)/1.35 var(--zh); letter-spacing: .18em; }
+.chap .ttl { margin: 14px 0 10px; font: 300 clamp(40px, 4.6vw, 68px)/1.05 var(--zh); letter-spacing: .3em; }
+.chap .school { margin: 0 0 22px; font: 400 12px var(--mono); letter-spacing: .12em; color: var(--ink-2); }
+.chap .lead { margin: 0; color: var(--ink-2); font-size: 14.5px; }
+.chap .hint, .chap .note { margin: 22px 0 0; font: 400 11.5px var(--mono); letter-spacing: .12em; color: var(--ink-2); }
+.wk { border-top: 1px solid var(--ink); padding-top: 14px; }
+.wkh { display: flex; align-items: baseline; gap: 14px; }
+.wkh .big { font: 300 clamp(40px, 4vw, 56px)/1 var(--zh); letter-spacing: .04em; }
+.wkh .term { font: 400 20px var(--zh); letter-spacing: .2em; }
+.wkh .d { margin-left: auto; font: 400 12px var(--mono); color: var(--ink-2); }
+.wk .u { margin: 12px 0 4px; font: 400 12.5px var(--sans); color: var(--ink-2); }
+.wk .u i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; }
+.wk .c { margin: 0; font: 400 18px/1.5 var(--zh); }
+.wk .e { margin: 2px 0 0; font-size: 13px; color: var(--ink-2); }
+.wk .pts { margin: 10px 0 0; font: 400 13px var(--mono); }
+.swap { animation: swap .5s cubic-bezier(.2,.8,.2,1); }
+@keyframes swap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.wbar { display: grid; grid-template-columns: repeat(18, 1fr); gap: 3px; margin-top: 18px; }
+.wbar i { height: 3px; background: var(--hair); } .wbar i.p { background: var(--ink-2); } .wbar i.n { background: var(--verm); }
+.pth { border-top: 1px solid var(--ink); padding-top: 14px; }
+.pth .v { font: 200 clamp(48px, 5vw, 72px)/1.1 var(--zh); letter-spacing: .1em; }
+.pth .u { margin: 6px 0 0; font: 400 16px var(--zh); letter-spacing: .14em; }
+.pth .m { margin: 4px 0 10px; font: 400 12px var(--mono); color: var(--ink-2); }
+.pth .dsc { margin: 0; color: var(--ink-2); font-size: 14.5px; }
+.pdots { display: flex; gap: 8px; margin-top: 18px; } .pdots i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid; }
+.rl { list-style: none; margin: 18px 0 0; padding: 0; border-top: 1px solid var(--ink); }
+.rl li { padding: 10px 0; border-bottom: 1px solid var(--hair); font-size: 13.5px; color: var(--ink-2); }
+.rl b { display: block; font: 400 15.5px var(--zh); letter-spacing: .14em; color: var(--ink); margin-bottom: 2px; }
+.rl.tl li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; } .rl.tl b { margin: 0; }
+.prog { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: transparent; }
+.prog i { display: block; height: 100%; background: var(--verm); transform-origin: left; transform: scaleX(0); }
+
 /* ---- 課程 ---- */
 section.blk { padding-top: clamp(64px, 10vw, 120px); }
 .blk h2 { margin: 10px 0 12px; font: 300 clamp(26px, 3.4vw, 40px)/1.35 var(--zh); letter-spacing: .2em; }
@@ -234,6 +273,16 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
 .sig2 .line { border-bottom: 1px solid var(--smut); height: 30px; }
 .pnote { font: 400 12px var(--mono); color: var(--ink-2); letter-spacing: .08em; margin: 0 0 16px; }
 
+@media (max-width: 759px) {
+  .story { height: 1100vh; }
+  .txt { left: 18px; right: 18px; top: auto; bottom: 16px; height: calc(100svh - var(--hdr, 52px) - 12px - min(56 * (100svh - var(--hdr, 52px)) / 100, (100vw - 28px) * 1.05) - 30px); }
+  .chap { justify-content: flex-start; }
+  .chap h2 { margin: 6px 0 10px; font-size: 20px; } .chap .ttl { font-size: 38px; margin: 8px 0 6px; } .chap .school { margin-bottom: 10px; }
+  .wkh .big { font-size: 34px; } .wk .c { font-size: 16px; } .wk .u { margin-top: 6px; } .wbar { margin-top: 10px; }
+  .pth .v { font-size: 40px; } .pdots, .chap .note, .chap .hint { margin-top: 10px; }
+  .rl { margin-top: 8px; } .rl li { padding: 5px 0; font-size: 12.5px; } .rl b { font-size: 14px; display: inline; margin-right: 8px; }
+  .chap .lead { font-size: 13.5px; }
+}
 @media (max-width: 860px) {
   .row, .rows-head { grid-template-columns: 26px 54px minmax(0, 1fr) max-content; gap: 4px 12px; }
   .row .u, .rows-head .uh, .row .p i { display: none; }
@@ -253,7 +302,7 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
 @media print {
   @page { size: A4; margin: 0; }
   body { background: #fff !important; }
-  .top, .hero, .course, .scope, .zone > .wrap > :not(.papers), footer.site { display: none !important; }
+  .top, .story, .course, .zone > .wrap > :not(.papers), footer.site { display: none !important; }
   .zone { padding: 0; } .zone > .wrap { padding: 0; max-width: none; }
   .papers { width: 794px; gap: 0; }
   .holder { width: 794px !important; height: 1123px !important; break-after: page; }
@@ -274,57 +323,58 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
   </div>
 </header>
 
-<div class="hero">
-  <canvas id="heroGL" aria-hidden="true"></canvas>
-  <div class="wrap">
-    <div class="h-top">
-      <p class="eyebrow">Course · Living Technology · 115-1</p>
-      <h1>生活科技</h1>
-      <div class="school">國立中央大學附屬中壢高中 · CLHS</div>
+<div class="story" id="story">
+  <div class="stage">
+    <canvas id="storyCv" role="img" aria-label="五張版畫依序換場：銅馬開場、十八週節氣盤、五段路拼貼、分數長條、完賽稱號尺"></canvas>
+    <div class="txt">
+      <section class="chap on">
+        <p class="eyebrow">Nº 001 · Course · Living Technology · 115-1</p>
+        <h1 class="ttl">生活科技</h1>
+        <p class="school">國立中央大學附屬中壢高中</p>
+        <p class="lead">十八週、五段路，從處暑走到大寒。<br>往下捲，一張一張讀懂這學期。</p>
+        <p class="hint">Scroll ↓</p>
+      </section>
+      <section class="chap">
+        <p class="eyebrow">Nº 002 · Schedule</p>
+        <h2>十八週，從處暑到大寒</h2>
+        <div class="wk" id="c2box"><div class="wkh"><span class="big" id="c2w">W01</span><span class="term" id="c2t">處暑</span><span class="d" id="c2d">9.01</span></div>
+          <p class="u" id="c2u"></p><p class="c" id="c2c"></p><p class="e" id="c2e"></p><p class="pts" id="c2p"></p></div>
+        <div class="wbar" id="c2bar"></div>
+        <p class="note">完整的十八週詳細表在下方。</p>
+      </section>
+      <section class="chap">
+        <p class="eyebrow">Nº 003 · Five paths</p>
+        <h2>五段路，五個動詞</h2>
+        <div class="pth" id="c3box"><div class="v" id="c3v"></div><p class="u" id="c3u"></p><p class="m" id="c3m"></p><p class="dsc" id="c3d"></p></div>
+        <div class="pdots" id="c3n"></div>
+        <p class="note">第六件事：每週準時走進教室，點亮一盞燈。</p>
+      </section>
+      <section class="chap">
+        <p class="eyebrow">Nº 004 · Scoring · 110 → 100</p>
+        <h2>分數怎麼來</h2>
+        <p class="lead">五段路的作業共 95 分，十八盞燈的出勤 15 分，總配分 110。成績上限 100，多出來的 10 分是留給你的緩衝。</p>
+        <ul class="rl"><li><b>今日事今日畢</b>作業當週繳交，拿完整分數。</li><li><b>補交算一半</b>段考前一週內補交，該項以一半計分。</li><li><b>請假不扣分</b>請假的那盞燈是灰青色，不算缺席。</li><li><b>遲到半盞燈</b>準時亮一盞，遲到只亮半盞。</li></ul>
+      </section>
+      <section class="chap">
+        <p class="eyebrow">Nº 005 · Titles</p>
+        <h2>四種完賽</h2>
+        <ul class="rl tl"><li><b>全程完賽</b>90 – 100</li><li><b>穩健完賽</b>75 – 89</li><li><b>堅持完賽</b>60 – 74</li><li><b>仍在路上</b>60 以下，還有下一段路。</li></ul>
+        <p class="note">學期末，你會收到一張屬於自己的證書 ↓</p>
+      </section>
     </div>
-    <div class="h-rule"><div class="ends"><span><b>W01</b><i>處暑</i> · 9.01</span><span><b>W18</b><i>大寒</i> · 1.20</span></div><div class="ticks" id="heroTicks"></div></div>
-    <div class="h-vert" aria-hidden="true">學習<em>壢</em>程</div>
+    <div class="prog"><i id="storyProg"></i></div>
   </div>
 </div>
 
 <main class="course">
   <section class="blk wrap" id="route">
-    <p class="eyebrow">Schedule · 18 weeks</p>
-    <h2>十八週，從處暑到大寒</h2>
-    <p class="lead">每一週做什麼、佔幾分，都在這張表上。左邊多了一欄節氣：這學期我們一起從夏末走進深冬。</p>
+    <p class="eyebrow">Schedule · 18 weeks · 詳細表</p>
+    <h2>十八週詳細表</h2>
+    <p class="lead">每一週做什麼、佔幾分，都在這張表上。節氣那一欄，是這學期我們一起從夏末走進深冬的位置。</p>
     <div class="rows-head"><span>週</span><span>節氣</span><span class="uh">單元 Unit</span><span>內容 Content</span><span class="p">配分</span></div>
     <div class="rows-box"><div class="tline" id="tline"><div class="fill"></div><div class="cur"></div></div><ol class="rows" id="rows"></ol></div>
   </section>
-  <section class="blk wrap">
-    <p class="eyebrow">Five paths</p>
-    <h2>五段路，五個動詞</h2>
-    <p class="lead">每一段路用一個動詞記住它。證書第二頁的「五段路」，就是在看這些能力練得如何；第六件事是每週準時走進教室，點亮一盞燈。</p>
-    <div class="paths" id="paths"></div>
-  </section>
-  <section class="blk wrap">
-    <p class="eyebrow">Scoring · 110 → 100</p>
-    <h2>分數怎麼來</h2>
-    <p class="lead">五段路的作業共 95 分，十八盞燈的出勤 15 分，總配分 110 分。成績上限 100 分，多出來的 10 分，是留給你的緩衝。</p>
-    <div class="stack" id="stack" data-rv><div class="bar" id="stackBar"></div><div class="buf"></div><div class="cap"><span>上限 100</span></div><span class="bufl">緩衝 10</span><div class="lg" id="stackLg"></div></div>
-    <div class="rules" data-rv>
-      <div class="rule"><svg viewBox="0 0 28 28"><circle class="o" cx="14" cy="14" r="10"/><circle class="f" cx="14" cy="14" r="10" style="fill:var(--ink)"/></svg><b>今日事今日畢</b>作業當週繳交，拿完整分數。</div>
-      <div class="rule"><svg viewBox="0 0 28 28"><circle class="o" cx="14" cy="14" r="10"/><path class="f" d="M14 4a10 10 0 0 1 0 20z" style="fill:var(--ink)"/></svg><b>補交算一半</b>段考前一週內補交，該項以一半計分。</div>
-      <div class="rule"><svg viewBox="0 0 28 28"><circle class="o" cx="14" cy="14" r="10"/><circle class="f" cx="14" cy="14" r="10" style="fill:#8fb2b4"/></svg><b>請假不扣分</b>請假的那盞燈是灰青色，不算缺席。</div>
-      <div class="rule"><svg viewBox="0 0 28 28"><circle class="o" cx="14" cy="14" r="10" style="stroke:var(--verm)"/><path class="f" d="M4 14a10 10 0 0 0 20 0z" style="fill:var(--verm)"/></svg><b>遲到半盞燈</b>準時亮一盞，遲到只亮半盞。</div>
-    </div>
-    <div class="ruler" data-rv>
-      <div class="sc" id="rulerSc"></div><i class="mk"></i>
-      <div class="bands">
-        <div class="band" style="flex:60;border-top-color:var(--hair)"><b>仍在路上</b><span>0 – 59</span></div>
-        <div class="band" style="flex:15;border-top-color:var(--ink-2)"><b>堅持完賽</b><span>60 – 74</span></div>
-        <div class="band" style="flex:15;border-top-color:var(--accent)"><b>穩健完賽</b><span>75 – 89</span></div>
-        <div class="band" style="flex:10;border-top-color:var(--verm)"><b>全程完賽</b><span>90 – 100</span></div>
-      </div>
-    </div>
-  </section>
 </main>
-
-<div class="scope" id="scope"><div class="pin"><canvas id="ridge" role="img" aria-label="版畫 Nº 001：一條線畫出壢中銅馬，壢馬線稿破框解構，構成線對位，色版與油墨印出銅馬，季節的太陽沿著節氣走一圈，抵達大寒"></canvas></div></div>
 
 <div class="zone" id="cert">
   <div class="wrap">
@@ -607,7 +657,7 @@ WaferScene.prototype.render = function (t, now) {
 // ======================= 開場 =======================
 var hero = null, heroT0 = performance.now(), heroOn = true;
 var HERO_P = { cur: 18, scores: TASKS.map(function (t) { return t.max; }), late: [7, 13], leave: [9], absent: [] };
-if (HAS3D) { hero = new WaferScene($('heroGL'), { echo: true, noScan: true, dist: mobile ? 1500 : 900, elev: .5, lookX: 0, lookY: mobile ? 0 : 10, orbit: .3, introDur: 3.4, L0: 1.4, LD: .1, ST: .07, maxDpr: mobile ? 1.5 : 2 }); hero.setData(HERO_P); }
+if (false) { hero = new WaferScene($('heroGL'), { echo: true, noScan: true, dist: mobile ? 1500 : 900, elev: .5, lookX: 0, lookY: mobile ? 0 : 10, orbit: .3, introDur: 3.4, L0: 1.4, LD: .1, ST: .07, maxDpr: mobile ? 1.5 : 2 }); hero.setData(HERO_P); }
 
 // ======================= 教學進度 =======================
 (function () {
@@ -622,37 +672,16 @@ if (HAS3D) { hero = new WaferScene($('heroGL'), { echo: true, noScan: true, dist
   (S.extra || []).forEach(function (r) { html += '<li class="row"><span class="w"></span><span class="jq r">·</span><span class="u">' + esc(r.unit) + '<small>' + esc(r.unit_en) + '</small></span><span class="c">' + esc(r.zh) + '<small lang="en">' + esc(r.en) + '</small></span><span class="p">' + (r.calc ? '<i>' + esc(r.calc) + ' = </i>' : '') + r.points + '</span></li>'; });
   html += '<li class="row total"><span class="w"></span><span class="jq"></span><span class="u"></span><span class="c">總計 · 成績上限<small lang="en">Total · capped at 100</small></span><span class="p tot"><s>' + S.total + '</s><b>100</b></span></li>';
   $('rows').innerHTML = html;
-  var spiral = (function () { var d = '', n = 60; for (var k = 0; k <= n; k++) { var a = k / n * Math.PI * 4.2, rr = 2 + k / n * 17; d += (k ? 'L' : 'M') + (32 + Math.cos(a) * rr).toFixed(1) + ' ' + (23 + Math.sin(a) * rr * .9).toFixed(1); } return d; })();
-  var ICONS = [
-    '<path class="draw" pathLength="1" d="M6 23 Q32 3 58 23 Q32 43 6 23 Z"/><circle class="draw" pathLength="1" cx="32" cy="23" r="8"/><circle cx="32" cy="23" r="2.2" style="fill:var(--c);stroke:none"/>',
-    '<circle class="led" cx="26" cy="15" r="9"/><path class="draw" pathLength="1" d="M20 30 V16 a6 6 0 0 1 12 0 V30 Z"/><path class="draw" pathLength="1" d="M23 30 v12 M29 30 v6 h6 l2 -3 l3 6 l3 -6 l3 6 l2 -3 h6"/>',
-    '<g class="fbar"><line class="draw" pathLength="1" x1="8" y1="40" x2="56" y2="40"/><line class="lk a"/><line class="lk b"/><line class="lk c"/><circle class="jt" cx="16" cy="36" r="2.2"/><circle class="jt" cx="46" cy="36" r="2.2"/><circle class="jt j1" r="1.8"/><circle class="jt j2" r="1.8"/></g>',
-    '<path class="draw" pathLength="1" d="M32 6 L50 15 L32 24 L14 15 Z"/><path class="draw" pathLength="1" d="M14 15 V33 L32 42 V24"/><path class="draw" pathLength="1" d="M50 15 V33 L32 42"/>',
-    '<path class="draw" pathLength="1" d="' + spiral + '"/>'
-  ];
-  $('paths').innerHTML = PATHS.map(function (p, i) { var pts = TASKS.filter(function (t) { return t.p === i; }).reduce(function (s, t) { return s + t.max; }, 0); return '<div class="path" data-rv style="--c:' + p.c + ';--w:' + (pts / 33 * 100).toFixed(1) + '%"><svg class="ic" viewBox="0 0 64 46" aria-hidden="true">' + ICONS[i] + '</svg><div class="v">' + p.verb + '</div><div class="u">' + p.unit + '</div><div class="m">' + p.weeks + ' · ' + pts + ' 分</div><div class="bar"><i></i></div><p>' + p.desc + '</p></div>'; }).join('');
-  // 分數長條
-  var segs = PATHS.map(function (p, i) { return { n: p.verb, c: p.c, v: TASKS.filter(function (t) { return t.p === i; }).reduce(function (s, t) { return s + t.max; }, 0) }; }); segs.push({ n: '十八盞燈', c: 'var(--verm)', v: 15 });
-  $('stackBar').innerHTML = segs.map(function (g) { return '<i class="seg" style="background:' + g.c + '" data-w="' + (g.v / 110 * 100) + '%"></i>'; }).join('');
-  $('stackLg').innerHTML = segs.map(function (g) { return '<span><i style="background:' + g.c + '"></i>' + g.n + ' ' + g.v + '</span>'; }).join('');
-  $('rulerSc').innerHTML = new Array(11).join('<i></i>') + '<i></i>';
-  // 開場時間尺
-  $('heroTicks').innerHTML = WEEK.slice(1).map(function (W) { return '<span class="' + (W.first ? 'f' : '') + '"></span>'; }).join('');
+
 })();
 
-// ======================= 版畫 Nº 001 =======================
-var SC = { cv: $('ridge'), on: false, ready: false, rp: null };
-var KW = ['連桿', 'Arduino', '三視圖', '伺服馬達', '四連桿', 'Onshape', '超音波', '紅綠燈', '〈造山者〉', '曲柄滑塊', '撲翼機', '學習歷程', 'Motiongen', '十八盞燈', '五段路'];
+// ======================= 故事：五張版畫的換場 =======================
+var ST = { cv: $('storyCv'), on: true, ready: false, t0: performance.now(), wk: -1, pi: -1, act: -1 };
 var PL = {
-  dark: { page: '#141412', plate: '#1d1c19', ink: '232,229,222', mut: '154,150,141', teal: '96,134,134', sand: '96,86,72', verm: '217,100,58' },
-  light: { page: '#f3f1ec', plate: '#ebe4d6', ink: '43,42,39', mut: '111,107,99', teal: '143,178,180', sand: '210,192,165', verm: '217,100,58' }
+  dark: { page: '#141412', plate: '#1d1c19', ink: '232,229,222', mut: '154,150,141', teal: '96,134,134', sand: '96,86,72', sand2: '70,64,55', verm: '217,100,58' },
+  light: { page: '#f3f1ec', plate: '#ebe4d6', ink: '43,42,39', mut: '111,107,99', teal: '143,178,180', sand: '210,192,165', sand2: '224,211,190', verm: '217,100,58' }
 };
-function hp(p, T) { return [T.x + (p[0] * (T.fx || 1) + (T.sk || 0) * p[1]) * T.h, T.y + p[1] * T.h]; }
-function horsePath(c, T) {
-  c.beginPath();
-  HORSE.outer.forEach(function (p, i) { var q = hp(p, T); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.closePath();
-  HORSE.inner.forEach(function (p, i) { var q = hp(p, T); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); });
-}
+function hp(p, T) { return [T.x + p[0] * T.h, T.y + p[1] * T.h]; }
 function statuePath(c, T) { c.beginPath(); STAT.outer.forEach(function (p, i) { var q = hp(p, T); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.closePath(); }
 function resample(poly, N) {
   var n = poly.length, st = 0, best = -9;
@@ -664,249 +693,215 @@ function resample(poly, N) {
   return out;
 }
 STAT.res = resample(STAT.outer, 460);
-HORSE.len = (function () { var L = 0, O = HORSE.outer; for (var i = 0; i < O.length; i++) { var a = O[i], b = O[(i + 1) % O.length]; L += Math.hypot(b[0] - a[0], b[1] - a[1]); } return L; })();
-var BEATS = [
-  { d: .07, k: 'grid' },
-  { d: .05, k: 'one', h: 1.9, x: .3, y: .6, bands: 7, amp: .14 },
-  { d: .16, k: 'slow', h: .5, x: .5, y: .52, dims: 1 },
-  { d: .04, k: 'one', h: 2.5, x: .72, y: .4, fx: -1, bands: 4, amp: .07 },
-  { d: .035, k: 'one', h: .15, x: .82, y: .26 },
-  { d: .035, k: 'one', h: .15, x: .2, y: .76 },
-  { d: .035, k: 'one', h: .26, x: .5, y: .52 },
-  { d: .06, k: 'strips', h: 1.15, x: .5, y: .54 },
-  { d: .17, k: 'draw', h: .72, x: .5, y: .52, dims: 1 },
-  { d: .06, k: 'reg', h: .95, x: .46, y: .52 },
-  { d: .21, k: 'zoom' }
-];
-(function () { var t = 0; BEATS.forEach(function (b) { b.s = t; t += b.d; }); BEATS.forEach(function (b) { b.s /= t; b.d /= t; }); })();
-function buildScope() {
-  var cv = SC.cv, dpr = Math.min(2, window.devicePixelRatio || 1), r = cv.getBoundingClientRect(), W = Math.floor(r.width), H = Math.floor(r.height);
+var STATX = (function () { var a = 9, b = -9; STAT.outer.forEach(function (p) { a = Math.min(a, p[0]); b = Math.max(b, p[0]); }); return [a, b]; })();
+function buildStory() {
+  var cv = ST.cv, dpr = Math.min(2, window.devicePixelRatio || 1), r = cv.getBoundingClientRect(), W = Math.floor(r.width), H = Math.floor(r.height);
   if (W < 10 || H < 10) return;
-  cv.width = W * dpr; cv.height = H * dpr; SC.W = W; SC.H = H; SC.dpr = dpr; SC.m = W < 600;
-  SC.hdr = document.querySelector('.top').offsetHeight;
-  SC.dims = []; for (var i = 0; i < 5; i++) SC.dims.push({ x: .14 + rnd(i, 31) * .72, y: .16 + rnd(i, 32) * .6, len: .1 + rnd(i, 33) * .14, ang: (rnd(i, 34) < .5 ? 0 : Math.PI / 2) + (rnd(i, 35) - .5) * .4, lab: ['R 286', '12 ×', 'Ø 4.2', '90°', '34 mm'][i] });
-  SC.kw = KW.map(function (t, i) { return { t: t, x: .08 + rnd(i, 41) * .84, y: .14 + rnd(i, 42) * .76 }; });
+  cv.width = W * dpr; cv.height = H * dpr; ST.W = W; ST.H = H; ST.dpr = dpr; ST.m = W < 760;
+  ST.hdr = document.querySelector('.top').offsetHeight; document.documentElement.style.setProperty('--hdr', ST.hdr + 'px');
   var mk = function () { var c = document.createElement('canvas'); c.width = W * dpr; c.height = H * dpr; return c; };
   var sp = mk(), g = sp.getContext('2d'); g.scale(dpr, dpr);
-  for (i = 0; i < W * H / 240; i++) { var x = Math.random() * W, y = Math.random() * H, rr = .3 + Math.pow(Math.random(), 4) * 1.6; g.fillStyle = 'rgba(0,0,0,' + (.35 + Math.random() * .65).toFixed(2) + ')'; g.beginPath(); g.ellipse(x, y, rr * (1 + Math.random()), rr, Math.random() * 3, 0, Math.PI * 2); g.fill(); }
+  for (var i = 0; i < W * H / 240; i++) { var x = Math.random() * W, y = Math.random() * H, rr = .3 + Math.pow(Math.random(), 4) * 1.6; g.fillStyle = 'rgba(0,0,0,' + (.35 + Math.random() * .65).toFixed(2) + ')'; g.beginPath(); g.ellipse(x, y, rr * (1 + Math.random()), rr, Math.random() * 3, 0, Math.PI * 2); g.fill(); }
   g.strokeStyle = 'rgba(0,0,0,.45)'; for (i = 0; i < 40; i++) { var x1 = Math.random() * W, y1 = Math.random() * H, an = Math.random() * 6.28, ln = 10 + Math.random() * 60; g.lineWidth = .4 + Math.random() * .7; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x1 + Math.cos(an) * ln, y1 + Math.sin(an) * ln); g.stroke(); }
   for (i = 0; i < 16; i++) { var bx = Math.random() * W, by = Math.random() * H, br = 8 + Math.random() * 30, gr = g.createRadialGradient(bx, by, 0, bx, by, br); gr.addColorStop(0, 'rgba(0,0,0,.14)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(bx - br, by - br, br * 2, br * 2); }
-  SC.speck = sp; SC.ink = mk();
+  ST.speck = sp; ST.ink = mk();
   var gc = document.createElement('canvas'); gc.width = gc.height = 200; var gg = gc.getContext('2d'), id = gg.createImageData(200, 200);
   for (i = 0; i < 40000; i++) { var v = Math.random() * 255 | 0; id.data[i * 4] = id.data[i * 4 + 1] = id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255; }
-  gg.putImageData(id, 0, 0); SC.grain = gc;
+  gg.putImageData(id, 0, 0); ST.grain = gc;
   try { var url = gc.toDataURL(); document.querySelectorAll('.grain').forEach(function (e) { e.style.backgroundImage = 'url(' + url + ')'; }); } catch (e) {}
-  SC.ready = true;
-}
-function scopeRates() {
-  if (SC.rp === P) return SC.rates;
-  var rates = []; for (var w = 1; w <= 18; w++) { if (w > P.cur) { rates.push(null); continue; } var g = 0, m = 0; TASKS.forEach(function (t, i) { if (t.w === w) { m += t.max; g += (P.scores[i] || 0); } }); rates.push(g / m); }
-  SC.rp = P; SC.rates = rates; return rates;
-}
-function cropMarks(c, x, y, w, h, col) {
-  var L = 10; c.strokeStyle = col; c.lineWidth = .7; c.beginPath();
-  [[x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1]].forEach(function (q) { c.moveTo(q[0] - q[2] * 4, q[1]); c.lineTo(q[0] + q[2] * L, q[1]); c.moveTo(q[0], q[1] - q[3] * 4); c.lineTo(q[0], q[1] + q[3] * L); });
-  c.stroke();
+  ST.ready = true;
 }
 function regMark(c, x, y, r, col) { c.strokeStyle = col; c.lineWidth = .8; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.moveTo(x - r * 2, y); c.lineTo(x + r * 2, y); c.moveTo(x, y - r * 2); c.lineTo(x, y + r * 2); c.stroke(); }
-function scopeFrame(now) {
-  if (!SC.on || !SC.ready || !P) return;
-  var r = $('scope').getBoundingClientRect(), span = Math.max(1, r.height - window.innerHeight);
-  var p = reduce ? 1 : clamp(-r.top / span), t = now / 1000;
-  var a1 = clamp((p - .03) / .16), a2 = clamp((p - .19) / .27), a3 = clamp((p - .46) / .12), a4 = clamp((p - .58) / .15), a5 = clamp((p - .73) / .18), a6 = clamp((p - .91) / .07);
-  var c = SC.cv.getContext('2d'), W = SC.W, H = SC.H, dpr = SC.dpr, m = SC.m, C = isLight() ? PL.light : PL.dark;
-  var INK = function (a) { return 'rgba(' + C.ink + ',' + a + ')'; }, MUT = function (a) { return 'rgba(' + C.mut + ',' + a + ')'; };
-  var bo = a2 > 0 && a2 < 1, pin = SC.cv.parentNode; pin.classList.toggle('breakout', bo);
+// 章節邊界（捲動比例）
+var CB = [0, .14, .46, .66, .83, 1], TW = .03;
+function chW(p, i) { var s = CB[i], e = CB[i + 1], a = i === 0 ? 1 : clamp((p - (s - TW)) / (2 * TW)), b = i === 4 ? 0 : clamp((p - (e - TW)) / (2 * TW)); return a * (1 - b); }
+function chU(p, i) { return clamp((p - CB[i]) / (CB[i + 1] - CB[i])); }
+function lerpK(K, p) {
+  for (var i = 0; i < 4; i++) { var e = CB[i + 1]; if (p < e + TW) { var f = easeIO(clamp((p - (e - TW)) / (2 * TW))); var A = K[i], B = K[i + 1]; var o = {}; for (var k in A) o[k] = A[k] + (B[k] - A[k]) * f; return o; } }
+  return K[4];
+}
+function storyText(i, p) {
+  if (i !== ST.act) { ST.act = i; document.querySelectorAll('.chap').forEach(function (n, k) { n.classList.toggle('on', k === i); }); }
+  if (i === 1) {
+    var wk = Math.min(18, 1 + Math.floor(chU(p, 1) * 18 * .999));
+    if (wk !== ST.wk) {
+      ST.wk = wk; var r = COURSE.weeks[wk - 1], Pp = PATHS[PIDX[r.unit]];
+      $('c2w').textContent = 'W' + pad2(wk); $('c2t').textContent = WEEK[wk].term; $('c2d').textContent = WEEK[wk].date;
+      $('c2u').innerHTML = '<i style="background:' + Pp.c + '"></i>' + Pp.verb + ' · ' + r.unit;
+      $('c2c').textContent = r.zh; $('c2e').textContent = r.en; $('c2p').textContent = (r.calc ? r.calc + ' = ' : '') + r.points + ' 分';
+      $('c2bar').innerHTML = WEEK.slice(1).map(function (W, k) { return '<i class="' + (k + 1 < wk ? 'p' : k + 1 === wk ? 'n' : '') + '"></i>'; }).join('');
+      var b = $('c2box'); b.classList.remove('swap'); void b.offsetWidth; b.classList.add('swap');
+    }
+  }
+  if (i === 2) {
+    var pi = Math.min(4, Math.floor(chU(p, 2) * 5 * .999));
+    if (pi !== ST.pi) {
+      ST.pi = pi; var Q = PATHS[pi], pts = TASKS.filter(function (t) { return t.p === pi; }).reduce(function (s, t) { return s + t.max; }, 0);
+      $('c3v').textContent = Q.verb; $('c3v').style.color = Q.c; $('c3u').textContent = Q.unit; $('c3m').textContent = Q.weeks + ' · ' + pts + ' 分'; $('c3d').textContent = Q.desc;
+      $('c3n').innerHTML = PATHS.map(function (x, k) { return '<i style="background:' + (k === pi ? x.c : 'transparent') + ';border-color:' + x.c + '"></i>'; }).join('');
+      var b2 = $('c3box'); b2.classList.remove('swap'); void b2.offsetWidth; b2.classList.add('swap');
+    }
+  }
+}
+function storyFrame(now) {
+  if (!ST.ready) return;
+  var rr = $('story').getBoundingClientRect(), span = Math.max(1, rr.height - window.innerHeight);
+  if (rr.bottom < 0 || rr.top > window.innerHeight) return;
+  var p = reduce ? .999 : clamp(-rr.top / span), ti = reduce ? 99 : (now - ST.t0) / 1000;
+  var c = ST.cv.getContext('2d'), W = ST.W, H = ST.H, dpr = ST.dpr, m = ST.m, C = isLight() ? PL.light : PL.dark;
+  var INK = function (a) { return 'rgba(' + C.ink + ',' + a + ')'; }, COL = function (k, a) { return 'rgba(' + C[k] + ',' + a + ')'; };
+  var w = [0, 1, 2, 3, 4].map(function (i) { return chW(p, i); }), act = w.indexOf(Math.max.apply(null, w));
+  storyText(act, p);
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.lineJoin = 'round'; c.lineCap = 'round'; c.setLineDash([]);
-  c.clearRect(0, 0, W, H); c.fillStyle = C.page; c.fillRect(0, bo ? SC.hdr : 0, W, H);
+  c.fillStyle = C.page; c.fillRect(0, 0, W, H);
   // ---- 版面
-  var top = SC.hdr + (m ? 18 : 30), capH = m ? 64 : 58, ph, pw, R;
-  if (m) { pw = W - 28; R = pw * .36; ph = Math.min(H - top - capH, R * 3.3); }
-  else { ph = H - top - capH; R = Math.min(ph * .36, W * .2); pw = Math.min(W - 80, R * 3.5); }
-  var px = (W - pw) / 2, py = top + Math.max(0, (H - top - capH - ph) / 2), ccx = px + pw / 2, ccy = py + ph * .5;
-  var hH = R * 1.3, TS = { x: ccx + R * .06, y: ccy + R * .04, h: hH }, yb = TS.y + hH * .5;
-  var frameA = bo ? .25 : 1;
+  var px, py, pw, ph;
+  if (m) { px = 14; pw = W - 28; py = 12; ph = Math.min(H * .56, pw * 1.05); }
+  else { px = Math.max(40, W * .05); pw = W * .57; py = 28; ph = H - py - 36; }
+  var R = Math.min(pw, ph) * .34, cx = px + pw / 2, cy = py + ph * .5;
   c.fillStyle = C.plate; c.fillRect(px, py, pw, ph);
-  // 不完美的框：印兩次、四角不接
   c.lineWidth = .7;
-  [[0, 0, .55], [1.6, 1.1, .22]].forEach(function (o) {
-    var g = 14, x = px + o[0], y = py + o[1]; c.strokeStyle = INK(o[2] * frameA); c.beginPath();
-    c.moveTo(x + g, y); c.lineTo(x + pw - g, y); c.moveTo(x + pw, y + g); c.lineTo(x + pw, y + ph - g); c.moveTo(x + pw - g, y + ph); c.lineTo(x + g, y + ph); c.moveTo(x, y + ph - g); c.lineTo(x, y + g); c.stroke();
-  });
-  cropMarks(c, px - 8, py - 8, pw + 16, ph + 16, MUT(.6 * frameA));
+  [[0, 0, .5], [1.6, 1.1, .2]].forEach(function (o) { var g = 14, x = px + o[0], y = py + o[1]; c.strokeStyle = INK(o[2]); c.beginPath(); c.moveTo(x + g, y); c.lineTo(x + pw - g, y); c.moveTo(x + pw, y + g); c.lineTo(x + pw, y + ph - g); c.moveTo(x + pw - g, y + ph); c.lineTo(x + g, y + ph); c.moveTo(x, y + ph - g); c.lineTo(x, y + g); c.stroke(); });
+  c.strokeStyle = INK(.4); c.beginPath(); [[px - 8, py - 8, 1, 1], [px + pw + 8, py - 8, -1, 1], [px - 8, py + ph + 8, 1, -1], [px + pw + 8, py + ph + 8, -1, -1]].forEach(function (q) { c.moveTo(q[0] - q[2] * 4, q[1]); c.lineTo(q[0] + q[2] * 10, q[1]); c.moveTo(q[0], q[1] - q[3] * 4); c.lineTo(q[0], q[1] + q[3] * 10); }); c.stroke();
+  // 角落編號
+  c.font = '11px "IBM Plex Mono", monospace'; c.fillStyle = INK(.75); c.textAlign = 'left';
+  var lx = px + (m ? 14 : 24), ly = py + (m ? 24 : 32);
+  c.fillText('Nº 00' + (act + 1), lx, ly); c.fillRect(lx, ly + 8, 26, .8);
+  c.textAlign = 'right'; c.fillText(['C / L / H / S', 'W01 — W18', 'FIVE PATHS', '110 → 100', '0 — 100'][act], px + pw - (m ? 14 : 24), ly);
+  c.textAlign = 'left'; c.fillText(m ? '115-1' : '— Equus in Motu · 115-1', lx, py + ph - (m ? 14 : 22)); c.textAlign = 'right'; c.fillText('/ / /', px + pw - (m ? 14 : 24), py + ph - (m ? 14 : 22));
   c.save(); c.beginPath(); c.rect(px, py, pw, ph); c.clip();
-  // ---- 地面線＋一筆畫
-  var hoof = hp(STAT.res[0], TS), hx = hoof[0], L = easeIO(a1), wig = 1 - a1, gx0 = px + 18, gx1 = px + pw - 18;
-  function sig(x) { return wig * (Math.sin(x * .045 + t * 2.4) * 1.8 + (noise(x * .03, t * 1.2) - .5) * 7) * Math.exp(-Math.pow((x - ccx) / (pw * .4), 2)); }
-  var groundA = a2 > 0 && a3 <= 0 ? .2 : 1;
-  c.strokeStyle = INK(.85 * groundA); c.lineWidth = .9;
-  if (a3 > 0) { c.setLineDash([1, 6]); c.beginPath(); c.moveTo(gx0, yb); c.lineTo(hx, yb); c.stroke(); c.setLineDash([]); }
-  else { c.beginPath(); for (var x = gx0; x <= hx; x += 3) { var yy = yb + sig(x); if (x === gx0) c.moveTo(x, yy); else c.lineTo(x, yy); } c.stroke(); }
-  var RES = STAT.res, N = RES.length, outlineA = a2 > 0 && a3 <= 0 ? .2 : 1; if (a4 > 0) outlineA = 1 - easeIO(a4) * .85;
-  var span2 = gx1 - hx, pts = [], tipI = -1;
-  for (var i = 0; i < N; i++) {
-    var q = hp(RES[i], TS), f = i / (N - 1), u = clamp((L - f) / .06), e = easeIO(u);
-    if (u <= 0) { var gx = hx + (f - L) / Math.max(.001, 1 - L) * span2 * (1 - L); pts.push([gx, yb + sig(gx), 0]); continue; }
-    pts.push([hoof[0] + (q[0] - hoof[0]) * e, hoof[1] + (q[1] - hoof[1]) * e, 1]); tipI = i;
+  // ---- 共用元素的關鍵影格
+  var KH = [{ x: cx + .06 * R, y: cy + .05 * R, h: 1.3 * R }, { x: cx, y: cy + .02 * R, h: .6 * R }, { x: cx, y: cy + .02 * R, h: 1.45 * R }, { x: cx, y: cy - .7 * R, h: .5 * R }, { x: cx + .04 * R, y: cy - .12 * R, h: 1.15 * R }];
+  var KC = [{ r: R, a: 1 }, { r: R, a: 1 }, { r: 1.12 * R, a: .35 }, { r: .6 * R, a: 0 }, { r: R * 1.05, a: .6 }];
+  var TS = lerpK(KH, p), CI = lerpK(KC, p), yb = TS.y + TS.h * .5;
+  // 開場的時間：一筆畫 → 構成 → 印刷
+  var L1 = easeIO(clamp((ti - .3) / 1.6)), geo = easeIO(clamp((ti - 1.4) / 1.1)), prt = clamp((ti - 2.3) / .9), ink1 = clamp((ti - 2.8) / .8), tri = clamp((ti - 3.5) / .4);
+  if (act > 0 || p > .02) { L1 = geo = prt = ink1 = tri = 1; }
+  // ---- 構成：大圓、軸線、虛線弧
+  var ca = CI.a * geo;
+  if (ca > .01) {
+    c.strokeStyle = INK(.55 * ca); c.lineWidth = .8; c.beginPath(); c.arc(cx, cy, CI.r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(1, geo * 1.2)); c.stroke();
+    c.setLineDash([2, 5]); c.beginPath(); c.arc(cx + R * .14, cy - R * .05, CI.r * 1.13, Math.PI * .92, Math.PI * .92 + Math.PI * .72 * geo); c.stroke(); c.setLineDash([]);
+    c.strokeStyle = INK(.35 * ca); c.beginPath(); c.moveTo(cx, cy - CI.r * 1.2 * geo); c.lineTo(cx, cy + CI.r * 1.2 * geo); c.stroke();
+    c.beginPath(); c.arc(cx, cy - CI.r, 3.5, 0, Math.PI * 2); c.stroke();
   }
-  c.strokeStyle = INK(.95 * outlineA); c.lineWidth = m ? 1 : 1.2;
-  if (a1 > 0) {
-    c.beginPath(); var st0 = false; for (i = 0; i < N; i++) { if (!pts[i][2]) continue; if (st0) c.lineTo(pts[i][0], pts[i][1]); else { c.moveTo(pts[i][0], pts[i][1]); st0 = true; } }
-    if (L >= .999) c.closePath(); c.stroke();
-    if (L < .999) { c.beginPath(); c.moveTo(hx, yb); for (i = 0; i < N; i++) if (!pts[i][2]) c.lineTo(pts[i][0], pts[i][1]); c.stroke(); if (tipI >= 0) { c.fillStyle = 'rgb(' + C.verm + ')'; c.beginPath(); c.arc(pts[tipI][0], pts[tipI][1], 2.6, 0, Math.PI * 2); c.fill(); } }
-  } else { c.beginPath(); c.moveTo(hx, yb); for (i = 0; i < N; i++) c.lineTo(pts[i][0], pts[i][1]); c.stroke(); }
-  // ---- 對位：構成線（框內部分）
-  var rates = scopeRates(), lastW = P.live ? P.cur : 18;
-  var thW = function (w) { return -Math.PI / 2 + w / 18 * Math.PI * 2; };
-  if (a3 > 0) {
-    c.strokeStyle = INK(.55); c.lineWidth = .8;
-    var sw = easeIO(clamp(a3 * 1.3)) * Math.PI * 2; c.beginPath(); c.arc(ccx, ccy, R, -Math.PI / 2, -Math.PI / 2 + sw); c.stroke();
-    c.setLineDash([2, 5]); c.beginPath(); c.arc(ccx + R * .14, ccy - R * .05, R * 1.13, Math.PI * .92, Math.PI * .92 + sw * .36); c.stroke(); c.setLineDash([]);
-    c.strokeStyle = INK(.4); c.beginPath(); c.arc(ccx + R * .5, ccy - R * .25, R * 1.45, Math.PI * .62, Math.PI * .62 + sw * .17); c.stroke();
-    c.beginPath(); c.arc(ccx - R * .1, ccy + R * .2, R * .62, Math.PI * 1.02, Math.PI * 1.02 + sw * .14); c.stroke();
-    var hd = clamp((a3 - .5) / .5);
-    [[px + pw * .1, py + ph * .14, 7, 5], [ccx + R * .55, yb - R * .55, 5, 4]].forEach(function (D, k) {
-      if (k === 0 && a5 > 0) return;
-      for (var yy2 = 0; yy2 < D[3]; yy2++) for (var xx = 0; xx < D[2]; xx++) { if (rnd(xx + yy2 * 9, 60 + k) > hd) continue; c.fillStyle = INK(.5); c.beginPath(); c.arc(D[0] + xx * 9, D[1] + yy2 * 9, 1.1, 0, Math.PI * 2); c.fill(); }
-    });
+  // ---- 第一章：色塊拼貼（晶粒網點藏在太陽裡）
+  if (w[0] > .01) {
+    var a0 = w[0], pu = expoOut(prt);
+    c.fillStyle = COL('sand', .55 * a0 * pu); c.fillRect(cx - R * 1.02 + 12 * (1 - pu), cy + R * .02, R * 1.02, R * .52);
+    c.fillStyle = COL('sand2', .7 * a0 * pu); c.fillRect(cx - R * 1.25, cy + R * .54, R * 1.25, R * .42);
+    var sx = cx - R * .02, sy = cy - R * .42, sr = R * .4;
+    c.fillStyle = COL('teal', .85 * a0 * pu); c.beginPath(); c.arc(sx + 10 * (1 - pu), sy - 8 * (1 - pu), sr, 0, Math.PI * 2); c.fill();
+    c.save(); c.beginPath(); c.arc(sx, sy, sr, 0, Math.PI * 2); c.clip(); c.fillStyle = INK(.22 * a0 * pu);
+    for (var gy = sy - sr; gy < sy + sr; gy += 7) for (var gx = sx - sr; gx < sx + sr; gx += 7) { c.fillRect(gx, gy, 1.4, 1.4); } c.restore();
+    // 十八盞燈：圓上的小點
+    for (var k = 1; k <= 18; k++) { var th = -Math.PI / 2 + k / 18 * Math.PI * 2, on = geo > k / 18; c.fillStyle = on ? INK(.8 * a0) : INK(.15 * a0); c.beginPath(); c.arc(cx + Math.cos(th) * R, cy + Math.sin(th) * R, 2, 0, Math.PI * 2); c.fill(); }
+    // 網點
+    c.fillStyle = INK(.4 * a0 * geo); for (var yy = 0; yy < 5; yy++) for (var xx = 0; xx < 7; xx++) { c.beginPath(); c.arc(px + pw * .1 + xx * 9, py + ph * .2 + yy * 9, 1, 0, Math.PI * 2); c.fill(); }
   }
-  // ---- 印刷：太陽、沙色、油墨、朱橙
-  var curW = 0;
-  if (a5 > 0) { var wp = clamp((a5 - .04) / .96) * lastW, wi = Math.floor(wp); curW = Math.min(lastW, wi + expoOut(clamp((wp - wi) * 1.5))); }
-  if (a4 > 0) {
-    var su = expoOut(clamp(a4 / .3)), thS = thW(curW), sx = ccx + Math.cos(thS) * R * .48, sy = ccy + Math.sin(thS) * R * .48 - R * .05, sr = R * .4;
-    c.fillStyle = 'rgba(' + C.teal + ',' + (.85 * su).toFixed(3) + ')'; c.beginPath(); c.arc(sx + 8 * (1 - su), sy - 6 * (1 - su), sr, 0, Math.PI * 2); c.fill();
-    var bu = expoOut(clamp((a4 - .12) / .3));
-    c.fillStyle = 'rgba(' + C.sand + ',' + (.6 * bu).toFixed(3) + ')'; c.fillRect(ccx - R * 1.02 + 10 * (1 - bu), ccy + R * .02, R * 1.02, R * .5);
-    var iu = clamp((a4 - .3) / .45);
-    if (iu > 0) {
-      var ic = SC.ink.getContext('2d'); ic.setTransform(dpr, 0, 0, dpr, 0, 0); ic.globalCompositeOperation = 'source-over'; ic.clearRect(0, 0, W, H);
-      ic.fillStyle = 'rgb(' + C.ink + ')'; statuePath(ic, TS); ic.fill();
-      ic.globalCompositeOperation = 'destination-out'; ic.drawImage(SC.speck, 0, 0, W, H); ic.globalCompositeOperation = 'source-over';
-      var mis = 12 * (1 - expoOut(iu));
-      if (mis > .5) { c.globalAlpha = .3 * Math.min(1, iu * 3); c.drawImage(SC.ink, -mis * 1.4, mis * .8, W, H); }
-      c.globalAlpha = Math.min(1, iu * 2.2); c.drawImage(SC.ink, mis, -mis * .5, W, H); c.globalAlpha = 1;
+  // ---- 地面點線＋朱橙點（第一、二、五章）
+  var ga = Math.max(w[0], w[1], w[4]);
+  if (ga > .01) {
+    c.strokeStyle = INK(.6 * ga * L1); c.lineWidth = .9; c.setLineDash([1, 6]); c.beginPath(); c.moveTo(px + 20, yb); c.lineTo(px + pw - 20, yb); c.stroke(); c.setLineDash([]);
+  }
+  // ---- 一筆畫（開場）
+  if (L1 < 1 && w[0] > .5) {
+    var RES = STAT.res, N = RES.length, last = Math.floor(L1 * (N - 1));
+    c.strokeStyle = INK(.95); c.lineWidth = 1.2; c.beginPath();
+    for (var i = 0; i <= last; i++) { var q = hp(RES[i], TS); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); } c.stroke();
+    var tp = hp(RES[last], TS); c.fillStyle = COL('verm', 1); c.beginPath(); c.arc(tp[0], tp[1], 2.6, 0, Math.PI * 2); c.fill();
+  }
+  // ---- 銅馬：油墨剪影（第三章換成五色切片）
+  var inkA = (1 - w[2]) * (w[0] > .5 ? ink1 : 1);
+  if (L1 >= 1 || w[0] <= .5) {
+    var ic = ST.ink.getContext('2d'); ic.setTransform(dpr, 0, 0, dpr, 0, 0); ic.globalCompositeOperation = 'source-over'; ic.clearRect(0, 0, W, H);
+    ic.fillStyle = 'rgb(' + C.ink + ')'; statuePath(ic, TS); ic.fill();
+    ic.globalCompositeOperation = 'destination-out'; ic.drawImage(ST.speck, 0, 0, W, H); ic.globalCompositeOperation = 'source-over';
+    if (inkA > .01) { var mis = 10 * (1 - expoOut(ink1)); c.globalAlpha = inkA; c.drawImage(ST.ink, mis, -mis * .5, W, H); c.globalAlpha = 1; }
+    if (inkA < 1 && w[0] > .5) { c.strokeStyle = INK(.9 * (1 - inkA)); c.lineWidth = 1.2; statuePath(c, TS); c.stroke(); }
+    // 第三章：構成線把馬切成五塊，一塊一塊滑出
+    if (w[2] > .01) {
+      var u3 = chU(p, 2), pi = Math.min(4, Math.floor(u3 * 5 * .999)), whole = u3 > .93, x0 = TS.x + STATX[0] * TS.h, x1 = TS.x + STATX[1] * TS.h, bw = (x1 - x0) / 5;
+      for (var b = 0; b < 5; b++) {
+        var isA = b === pi && !whole, lift = isA ? -R * .12 : 0, sh = isA ? 8 : 0;
+        c.save(); c.globalAlpha = w[2] * (isA || whole ? 1 : .5);
+        c.beginPath(); c.rect(x0 + b * bw - (b ? 0 : 20), TS.y - TS.h, bw + (b === 4 ? 20 : 0) + (b ? 0 : 20), TS.h * 2); c.clip();
+        c.translate(sh, lift); c.fillStyle = PATHS[b].c; statuePath(c, TS); c.fill();
+        c.globalCompositeOperation = 'destination-out'; c.globalAlpha = .5; c.drawImage(ST.speck, -sh, -lift, W, H); c.restore();
+      }
+      c.strokeStyle = INK(.5 * w[2]); c.lineWidth = .7; c.setLineDash([3, 4]);
+      for (b = 1; b < 5; b++) { c.beginPath(); c.moveTo(x0 + b * bw, TS.y - TS.h * .7); c.lineTo(x0 + b * bw, TS.y + TS.h * .62); c.stroke(); } c.setLineDash([]);
+      // 造山的線索：三十一塊石
+      var sxx = px + pw - (m ? 70 : 96), syy = py + ph - (m ? 40 : 56), sz = m ? 5 : 6, n = 0, lit = Math.round(31 * u3);
+      [10, 8, 6, 4, 2, 1].forEach(function (cnt, row) { for (var s2 = 0; s2 < cnt; s2++) { var bx2 = sxx + (s2 - cnt / 2) * (sz + 1.5), by2 = syy - row * (sz + 1.5); c.strokeStyle = INK(.5 * w[2]); c.lineWidth = .6; c.strokeRect(bx2, by2, sz, sz); if (n < lit) { c.fillStyle = INK(.75 * w[2]); c.fillRect(bx2, by2, sz, sz); } n++; } });
     }
-    var tu = clamp((a4 - .8) / .2);
-    if (tu > 0) { var te = expoOut(tu), cxs = 0, cys = 0; STAT.tri.forEach(function (q2) { cxs += q2[0]; cys += q2[1]; }); var tc = hp([cxs / STAT.tri.length, cys / STAT.tri.length], TS); c.save(); c.translate(tc[0], tc[1]); c.scale(.4 + .6 * te, .4 + .6 * te); c.translate(-tc[0], -tc[1]); c.fillStyle = 'rgba(' + C.verm + ',' + Math.min(1, tu * 3) + ')'; c.beginPath(); STAT.tri.forEach(function (q2, k) { var qq = hp(q2, TS); if (k) c.lineTo(qq[0], qq[1]); else c.moveTo(qq[0], qq[1]); }); c.closePath(); c.fill(); c.restore(); }
-    var eb = Math.min(1, a4 * 2.5); c.fillStyle = 'rgba(231,155,190,' + (.8 * eb) + ')'; c.fillRect(px, py + ph * .06, 5, ph * .16); c.fillRect(px, py + ph * .8, 5, ph * .1);
-    c.fillStyle = 'rgba(143,195,201,' + (.8 * eb) + ')'; c.fillRect(px, py + ph * .27, 5, ph * .18);
-    var la = Math.min(1, a4 * 2); c.fillStyle = INK(.8 * la); c.font = '11.5px "IBM Plex Mono", monospace'; c.textAlign = 'left';
-    var lx = px + (m ? 16 : 26), ly = py + (m ? 26 : 34); c.fillText('EX-115 · Nº ' + pad2(+P.seat), lx, ly); c.fillRect(lx, ly + 9, 30, .8);
-    c.textAlign = 'right'; ['form /', 'motion /', 'time'].forEach(function (s2, k) { c.fillText(s2, px + pw - (m ? 16 : 26), m ? py + ph - 52 + k * 15 : py + 34 + k * 17); });
-    c.textAlign = 'left'; c.fillText('A.1151', lx, py + ph - (m ? 18 : 26)); c.fillRect(lx, py + ph - (m ? 12 : 20), 30, .8);
   }
-  // ---- 節氣：太陽繞圓、朱橙刷痕、出勤網點
-  if (a5 > 0) {
-    var ta2 = Math.min(1, a5 * 4);
-    c.strokeStyle = INK(.55 * ta2); c.lineWidth = .8; c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = '11px "Noto Serif TC", serif';
-    for (var w = 1; w <= 18; w++) { var th = thW(w); c.beginPath(); c.moveTo(ccx + Math.cos(th) * (R - 4), ccy + Math.sin(th) * (R - 4)); c.lineTo(ccx + Math.cos(th) * (R + 4), ccy + Math.sin(th) * (R + 4)); c.stroke(); if (WEEK[w].first) { c.fillStyle = INK((w <= curW + .01 ? .85 : .35) * ta2); c.fillText(WEEK[w].term, ccx + Math.cos(th) * (R + 18), ccy + Math.sin(th) * (R + 18)); } }
-    c.textBaseline = 'alphabetic';
-    c.strokeStyle = 'rgba(' + C.verm + ',.85)'; c.lineWidth = 1.4; c.beginPath(); c.arc(ccx, ccy, R, thW(0), thW(curW)); c.stroke();
-    var dgx = px + pw * .1, dgy = py + ph * .14;
-    for (w = 1; w <= 18; w++) {
-      var dx = dgx + ((w - 1) % 6) * 11, dy = dgy + Math.floor((w - 1) / 6) * 11, st = statusOf(P, w), done = w <= curW + .01;
-      c.strokeStyle = INK(.5); c.lineWidth = .7; c.beginPath(); c.arc(dx, dy, 3.4, 0, Math.PI * 2); c.stroke();
-      if (!done) continue;
-      if (st === 'on') { c.fillStyle = INK(.9); c.beginPath(); c.arc(dx, dy, 3.4, 0, Math.PI * 2); c.fill(); }
-      else if (st === 'late') { c.fillStyle = INK(.9); c.beginPath(); c.arc(dx, dy, 3.4, 0, Math.PI); c.fill(); }
-      else if (st === 'leave') { c.fillStyle = 'rgba(' + C.teal + ',1)'; c.beginPath(); c.arc(dx, dy, 3.4, 0, Math.PI * 2); c.fill(); }
+  // 朱橙三角（開場）
+  if (w[0] > .01 && tri > 0) { var te = expoOut(tri), cxs = 0, cys = 0; STAT.tri.forEach(function (q2) { cxs += q2[0]; cys += q2[1]; }); var tc = hp([cxs / STAT.tri.length, cys / STAT.tri.length], TS); c.save(); c.globalAlpha = w[0]; c.translate(tc[0], tc[1]); c.scale(.4 + .6 * te, .4 + .6 * te); c.translate(-tc[0], -tc[1]); c.fillStyle = COL('verm', Math.min(1, tri * 3)); c.beginPath(); STAT.tri.forEach(function (q2, k2) { var qq = hp(q2, TS); if (k2) c.lineTo(qq[0], qq[1]); else c.moveTo(qq[0], qq[1]); }); c.closePath(); c.fill(); c.restore(); }
+  // ---- 第二章：十八週節氣盤
+  if (w[1] > .01) {
+    var a1 = w[1], u1 = chU(p, 1), pos = u1 * 18, thA = function (x) { return -Math.PI / 2 + x / 18 * Math.PI * 2; };
+    for (var w2 = 1; w2 <= 18; w2++) {
+      var th2 = thA(w2 - .5), Pc = PATHS[PIDX[COURSE.weeks[w2 - 1].unit]].c, cur = w2 === Math.min(18, 1 + Math.floor(pos * .999));
+      c.strokeStyle = Pc; c.globalAlpha = a1 * (cur ? 1 : w2 <= pos ? .7 : .25); c.lineWidth = cur ? 4 : 2.5; c.lineCap = 'butt';
+      c.beginPath(); c.arc(cx, cy, R * 1.09, thA(w2 - 1) + .02, thA(w2) - .02); c.stroke(); c.lineCap = 'round'; c.globalAlpha = 1;
+      var tk = thA(w2); c.strokeStyle = INK(.5 * a1); c.lineWidth = .8; c.beginPath(); c.moveTo(cx + Math.cos(tk) * (R - 5), cy + Math.sin(tk) * (R - 5)); c.lineTo(cx + Math.cos(tk) * (R + 5), cy + Math.sin(tk) * (R + 5)); c.stroke();
+      if (WEEK[w2].first) { c.fillStyle = INK((w2 <= pos + 1 ? .9 : .35) * a1); c.font = (m ? 10 : 11.5) + 'px "Noto Serif TC", serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(WEEK[w2].term, cx + Math.cos(th2) * (R * 1.09 + (m ? 15 : 19)), cy + Math.sin(th2) * (R * 1.09 + (m ? 15 : 19))); c.textBaseline = 'alphabetic'; }
     }
-    c.fillStyle = INK(.6); c.font = '10px "IBM Plex Mono", monospace'; c.textAlign = 'left'; c.fillText('LAMPS · 十八盞燈', dgx - 3, dgy + 40);
+    c.strokeStyle = COL('verm', .9 * a1); c.lineWidth = 1.4; c.beginPath(); c.arc(cx, cy, R, thA(0), thA(pos)); c.stroke();
+    var dth = thA(pos); c.fillStyle = COL('verm', a1); c.beginPath(); c.arc(cx + Math.cos(dth) * R, cy + Math.sin(dth) * R, 5, 0, Math.PI * 2); c.fill();
+    c.save(); c.beginPath(); c.arc(cx, cy, R * .96, 0, Math.PI * 2); c.clip(); c.fillStyle = INK(.08 * a1); for (var gy2 = cy - R; gy2 < cy + R; gy2 += 9) for (var gx2 = cx - R; gx2 < cx + R; gx2 += 9) c.fillRect(gx2, gy2, 1.2, 1.2); c.restore();
+  }
+  // ---- 第四章：分數長條
+  if (w[3] > .01) {
+    var a3 = w[3], u4 = chU(p, 3), bx0 = px + pw * .1, bx1 = px + pw * .9, bwid = bx1 - bx0, by0 = cy - R * .05, bh = R * .26, acc = 0;
+    var segs = PATHS.map(function (Q, k3) { return { c: Q.c, v: TASKS.filter(function (t) { return t.p === k3; }).reduce(function (s, t) { return s + t.max; }, 0) }; }); segs.push({ c: 'rgb(' + C.verm + ')', v: 15 });
+    c.strokeStyle = INK(.4 * a3); c.lineWidth = .7; c.strokeRect(bx0, by0, bwid, bh);
+    segs.forEach(function (g2, k3) { var gu = expoOut(clamp((u4 - k3 * .07) / .18)); var ww = g2.v / 110 * bwid * gu; c.globalAlpha = a3; c.fillStyle = g2.c; c.fillRect(bx0 + acc, by0 + 8 * (1 - gu), ww, bh); c.globalAlpha = 1; acc += g2.v / 110 * bwid; });
+    var cu = expoOut(clamp((u4 - .5) / .2)), capX = bx0 + bwid * 100 / 110;
+    c.strokeStyle = COL('verm', a3 * cu); c.lineWidth = 1.2; c.beginPath(); c.moveTo(capX, by0 - R * .5 * cu); c.lineTo(capX, by0 + bh + R * .3); c.stroke();
+    c.fillStyle = COL('verm', a3 * cu); c.font = '11px "IBM Plex Mono", monospace'; c.textAlign = 'left'; c.fillText('上限 100', capX + 6, by0 - R * .5 * cu + 10);
+    var hu = clamp((u4 - .65) / .15); if (hu > 0) { c.save(); c.beginPath(); c.rect(capX, by0, bx1 - capX, bh); c.clip(); c.strokeStyle = C.plate; c.globalAlpha = a3 * hu; c.lineWidth = 2; for (var hx = capX - bh; hx < bx1 + bh; hx += 6) { c.beginPath(); c.moveTo(hx, by0 + bh); c.lineTo(hx + bh, by0); c.stroke(); } c.restore(); c.fillStyle = INK(.7 * a3 * hu); c.textAlign = 'right'; c.fillText('緩衝 10', bx1, by0 + bh + 18); }
+    c.fillStyle = INK(.6 * a3); c.textAlign = 'left'; c.fillText('0', bx0, by0 + bh + 18); c.textAlign = 'center'; c.fillText('110', bx1, by0 - 8);
+    // 四條規則的小圖示
+    var gl = ['今日', '一半', '請假', '遲到'];
+    for (var r4 = 0; r4 < 4; r4++) {
+      var gu2 = expoOut(clamp((u4 - .72 - r4 * .05) / .12)), gx3 = bx0 + bwid * (.12 + r4 * .25), gy3 = by0 + bh + R * .62, rr2 = R * .1;
+      c.strokeStyle = INK(.6 * a3); c.lineWidth = .8; c.beginPath(); c.arc(gx3, gy3, rr2, 0, Math.PI * 2); c.stroke();
+      c.fillStyle = r4 === 2 ? COL('teal', a3) : r4 === 3 ? COL('verm', a3) : INK(.9 * a3);
+      c.beginPath(); if (r4 === 0 || r4 === 2) c.arc(gx3, gy3, rr2 * gu2, 0, Math.PI * 2); else if (r4 === 1) { c.moveTo(gx3, gy3 - rr2); c.arc(gx3, gy3, rr2 * gu2, -Math.PI / 2, Math.PI / 2); c.lineTo(gx3, gy3); } else { c.moveTo(gx3 - rr2, gy3); c.arc(gx3, gy3, rr2 * gu2, Math.PI, 0, true); } c.fill();
+      c.fillStyle = INK(.75 * a3 * gu2); c.font = (m ? 11 : 12.5) + 'px "Noto Serif TC", serif'; c.textAlign = 'center'; c.fillText(gl[r4], gx3, gy3 + rr2 + 18);
+    }
+  }
+  // ---- 第五章：0–100 的尺
+  if (w[4] > .01) {
+    var a4 = w[4], u5 = chU(p, 4), rx0 = px + pw * .08, rx1 = px + pw * .92, ry = yb + R * .3, rw = rx1 - rx0;
+    c.strokeStyle = INK(.6 * a4); c.lineWidth = .8; c.beginPath(); c.moveTo(rx0, ry); c.lineTo(rx1, ry); c.stroke();
+    for (var t5 = 0; t5 <= 10; t5++) { var tx = rx0 + rw * t5 / 10; c.beginPath(); c.moveTo(tx, ry - (t5 % 5 ? 4 : 7)); c.lineTo(tx, ry); c.stroke(); }
+    var bands = [[0, 60, '仍在路上'], [60, 75, '堅持完賽'], [75, 90, '穩健完賽'], [90, 100, '全程完賽']];
+    bands.forEach(function (B, k5) { var bu = expoOut(clamp((u5 - k5 * .12) / .2)); var bx3 = rx0 + rw * B[0] / 100, bx4 = rx0 + rw * B[1] / 100; c.strokeStyle = k5 === 3 ? COL('verm', a4 * bu) : INK((.3 + k5 * .15) * a4 * bu); c.lineWidth = 3; c.lineCap = 'butt'; c.beginPath(); c.moveTo(bx3 + 1, ry + 6); c.lineTo(bx3 + (bx4 - bx3) * bu - 1, ry + 6); c.stroke(); c.lineCap = 'round'; c.fillStyle = INK(.85 * a4 * bu); c.font = (m ? 10 : 12) + 'px "Noto Serif TC", serif'; c.textAlign = 'center'; c.fillText(m && k5 > 0 ? B[2].slice(0, 2) : B[2], (bx3 + bx4) / 2, ry + 26); c.fillStyle = INK(.5 * a4 * bu); c.font = '10px "IBM Plex Mono", monospace'; c.fillText(B[0] + '–' + B[1], (bx3 + bx4) / 2, ry + 40); });
+    var mu = easeIO(clamp((u5 - .2) / .6)), mx = rx0 + rw * mu; c.fillStyle = COL('verm', a4); c.beginPath(); c.moveTo(mx - 6, ry - 16); c.lineTo(mx + 6, ry - 16); c.lineTo(mx, ry - 8); c.closePath(); c.fill();
   }
   c.restore();
-  // ---- 破框：朱橙刷痕越出左框
-  if (a5 > 0) {
-    var xL = px - (m ? 10 : 40), xR = hx + R * .1, bh = R * .1, by = yb + R * .07;
-    for (w = 1; w <= Math.min(18, Math.ceil(curW)); w++) {
-      var rv = rates[w - 1]; if (rv == null) continue; var fr = Math.min(1, curW - (w - 1)); if (fr <= 0) continue;
-      var s0 = xL + (w - 1) / 18 * (xR - xL), s1 = s0 + (xR - xL) / 18 * fr + 1;
-      c.lineCap = 'butt'; for (var k = 0; k < 7; k++) { var yy3 = by + (k - 3) * bh / 7 + (noise(w * 3 + k, 2) - .5) * 3; c.strokeStyle = 'rgba(' + C.verm + ',' + ((.18 + .5 * rv) * (.55 + .45 * noise(k * 1.7, w))).toFixed(3) + ')'; c.lineWidth = bh / 6; c.beginPath(); c.moveTo(s0, yy3); c.lineTo(s1, yy3 + (noise(w, k) - .5) * 2); c.stroke(); }
-    }
-  }
-  // ---- 破框：軸線與對位十字越出版框
-  if (a3 > 0) {
-    var ax = easeIO(clamp((a3 - .15) / .6)), AX = (W / 2) * ax;
-    c.strokeStyle = INK(.45); c.lineWidth = .7; c.beginPath(); c.moveTo(ccx - AX, ccy); c.lineTo(ccx + AX, ccy); c.moveTo(ccx, ccy - (R * 1.15 + 30) * ax); c.lineTo(ccx, ccy + (R * 1.15 + 30) * ax); c.stroke();
-    c.fillStyle = INK(.85); [px, px + pw].forEach(function (xx2) { if (Math.abs(xx2 - ccx) <= AX) { c.beginPath(); c.arc(xx2, ccy, 2.4, 0, Math.PI * 2); c.fill(); } });
-    var rg = 1 - expoOut(clamp((a3 - .4) / .5)), rx = pw / 2 + (m ? 0 : 34);
-    regMark(c, ccx - rx + 22 * rg, ccy - 16 * rg, 5, INK(.7)); regMark(c, ccx + rx - 18 * rg, ccy + 12 * rg, 5, INK(.7));
-    c.beginPath(); c.arc(ccx, ccy - R, 4, 0, Math.PI * 2); c.stroke();
-  }
-  // ---- 解構：壢馬線稿，破框滿版
-  if (bo) {
-    var bi = 0; for (i = 0; i < BEATS.length; i++) if (a2 >= BEATS[i].s) bi = i;
-    var B = BEATS[bi], u2 = clamp((a2 - B.s) / B.d), S2 = m ? W * 1.15 : H, fe = expoOut(clamp(u2 * 3)), drift = Math.sin(t * .8) * 4;
-    c.font = '10px "IBM Plex Mono", monospace'; c.textAlign = 'left';
-    var label = function (txt, x2, y2) { c.fillStyle = INK(.7); c.fillText(txt, x2, y2); };
-    if (B.k === 'grid') {
-      var gc2 = m ? 3 : 6, gr2 = m ? 5 : 3, cw = W / gc2, chh = (H - SC.hdr) / gr2;
-      for (var gy = 0; gy < gr2; gy++) for (var gx2 = 0; gx2 < gc2; gx2++) {
-        var idx = gy * gc2 + gx2; if (idx / (gc2 * gr2) > u2 * 2.2) continue;
-        var Tg = { x: cw * (gx2 + .5), y: SC.hdr * .3 + chh * (gy + .5), h: Math.min(cw, chh) * .5, fx: rnd(idx, 9) < .2 ? -1 : 1 };
-        c.strokeStyle = INK(idx === Math.floor(u2 * 2.2 * gc2 * gr2) % (gc2 * gr2) ? 1 : .4); c.lineWidth = .7; horsePath(c, Tg); c.stroke();
-      }
-      label('LM · CONTACT SHEET · ' + pad2(Math.min(gc2 * gr2, Math.floor(u2 * 2.2 * gc2 * gr2))) + '/' + (gc2 * gr2), 16, H - 18);
-    } else if (B.k !== 'zoom') {
-      var hh = (B.k === 'slow' ? B.h * (.82 + .3 * easeIO(u2)) : B.h) * S2, T0 = { x: B.x * W + drift, y: B.y * H, h: hh, fx: B.fx || 1 };
-      if (B.k === 'one' && !B.bands) T0.h = hh * (1.25 - .25 * fe);
-      c.lineWidth = .6 + Math.min(1.2, hh / S2 * .8); c.strokeStyle = INK(1);
-      if (B.bands) {
-        var tp2 = T0.y - hh * .55, bh2 = hh * 1.1 / B.bands;
-        for (var b = 0; b < B.bands; b++) { var ddx = (rnd(b, bi + 5) - .5) * 2 * B.amp * W * (1 - fe * .7); c.save(); c.beginPath(); c.rect(0, tp2 + b * bh2, W, bh2); c.clip(); c.translate(ddx, 0); horsePath(c, T0); c.stroke(); c.restore(); }
-      } else if (B.k === 'strips') {
-        var sc3 = [1, 1.32, .78], tp3 = T0.y - hh * .55, bh3 = hh * 1.1 / 3;
-        for (var b3 = 0; b3 < 3; b3++) { var T3 = { x: T0.x + (b3 - 1) * 40 * (1 - fe), y: T0.y, h: hh * (1 + (sc3[b3] - 1) * fe) }; c.save(); c.beginPath(); c.rect(0, tp3 + b3 * bh3, W, bh3); c.clip(); horsePath(c, T3); c.stroke(); c.restore(); }
-      } else if (B.k === 'draw') {
-        var len = HORSE.len * hh; c.setLineDash([len * easeIO(u2), len * 2]); horsePath(c, T0); c.stroke(); c.setLineDash([]);
-        c.strokeStyle = INK(.2); c.lineWidth = .6; horsePath(c, T0); c.stroke();
-      } else if (B.k === 'reg') {
-        var off2 = 22 * (1 - fe); c.strokeStyle = 'rgba(' + C.verm + ',.95)'; T0.x += off2; T0.y -= off2 * .6; horsePath(c, T0); c.stroke(); T0.x -= off2 * 2; T0.y += off2 * 1.2; c.strokeStyle = INK(1); horsePath(c, T0); c.stroke();
-      } else { horsePath(c, T0); c.stroke(); }
-      var bw2 = hh * 1.12, bx = T0.x - bw2 / 2, by2 = T0.y - hh * .55;
-      if (hh < S2 * .8) cropMarks(c, bx - 12, by2 - 12, bw2 + 24, hh * 1.1 + 24, INK(.55));
-      label('LM-' + pad2(bi + 1) + ' · 1/' + [250, 500, 60, 1000, 2000, 2000, 1000, 500, 30, 125][bi % 10] + 's', hh < S2 * .8 ? bx - 12 : 16, hh < S2 * .8 ? by2 - 20 : H - 18);
-    } else {
-      var ez = easeIO(u2), Tz = { x: (.5 * W) + (TS.x - .5 * W) * ez, y: H * .5 + (TS.y - H * .5) * ez, h: (2.2 * S2) + (hH - 2.2 * S2) * ez };
-      c.globalAlpha = 1 - ez * .9; c.strokeStyle = INK(1); c.lineWidth = 1.2; horsePath(c, Tz); c.stroke(); c.globalAlpha = 1;
-    }
-    if (B.dims) {
-      var bell = Math.sin(Math.PI * u2);
-      SC.dims.forEach(function (D) {
-        var fx = D.x * W, fy = D.y * H, L2 = D.len * Math.min(W, H) * (m ? 1.3 : 1), ex = Math.cos(D.ang) * L2 / 2, ey = Math.sin(D.ang) * L2 / 2, nx = -ey / (L2 / 2) * 6, ny = ex / (L2 / 2) * 6;
-        c.strokeStyle = INK((.5 * bell).toFixed(3)); c.lineWidth = .7;
-        c.beginPath(); c.moveTo(fx - ex, fy - ey); c.lineTo(fx + ex, fy + ey); c.moveTo(fx - ex - nx, fy - ey - ny); c.lineTo(fx - ex + nx, fy - ey + ny); c.moveTo(fx + ex - nx, fy + ey - ny); c.lineTo(fx + ex + nx, fy + ey + ny); c.stroke();
-        c.save(); c.translate(fx + nx * 1.6, fy + ny * 1.6); c.rotate(D.ang > Math.PI / 4 ? D.ang - Math.PI : D.ang); c.fillStyle = INK((.7 * bell).toFixed(3)); c.textAlign = 'center'; c.fillText(D.lab, 0, -2); c.restore();
-      });
-      c.font = (m ? 11 : 12) + 'px "Noto Serif TC", serif'; c.textAlign = 'center';
-      SC.kw.forEach(function (K, i) { var ka = clamp(bell * 1.4 - rnd(i, 7) * .6); if (ka > 0) { c.fillStyle = INK((.7 * ka).toFixed(3)); c.fillText(K.t, K.x * W, K.y * H); } });
-    }
-  }
-  // ---- 抵達：終點十字圈、直排標題跨出版框
-  if (a6 > 0) {
-    var e6 = easeIO(a6), fx2 = P.live ? ccx + Math.cos(thW(lastW)) * R : hp(STAT.res[0], TS)[0], fy2 = P.live ? ccy + Math.sin(thW(lastW)) * R : yb;
-    c.strokeStyle = INK(.7 * e6); c.lineWidth = .8; c.beginPath(); c.arc(fx2, fy2, R * .2 * e6 + 1, 0, Math.PI * 2); c.moveTo(fx2 - R * .3, fy2); c.lineTo(fx2 + R * .3, fy2); c.moveTo(fx2, fy2 - R * .3); c.lineTo(fx2, fy2 + R * .3); c.stroke();
-    c.fillStyle = 'rgba(' + C.verm + ',' + e6 + ')'; c.beginPath(); c.arc(fx2, fy2, 3.5, 0, Math.PI * 2); c.fill();
-    var fs = m ? Math.min(W * .12, 46) : Math.min(R * .36, 64), vx = px + pw - fs * (m ? .75 : .35), vy = py + ph * (m ? .08 : .1);
+  // 破框：直排標題（第一章）
+  if (w[0] > .01) {
+    var fs = m ? Math.min(W * .1, 40) : Math.min(R * .3, 58), vx = m ? px + pw - fs * 1.25 : px - fs * .55, vy = py + ph * (m ? .3 : .16), e6 = clamp((ti - 3.4) / 1) * w[0];
+    if (p > .02 && act === 0) e6 = w[0];
     c.font = '200 ' + fs + 'px "Noto Serif TC", serif'; c.textAlign = 'left'; c.textBaseline = 'top';
-    ['學', '習', '壢', '程'].forEach(function (ch2, k) { var ca = clamp(e6 * 3 - k * .5); c.fillStyle = ch2 === '壢' ? 'rgba(' + C.verm + ',' + ca + ')' : INK(ca); c.fillText(ch2, vx, vy + k * fs * 1.18 + (1 - ca) * 8); });
+    ['學', '習', '壢', '程'].forEach(function (ch2, k6) { var ca2 = clamp(e6 * 3 - k6 * .5); c.fillStyle = ch2 === '壢' ? COL('verm', ca2) : INK(ca2); c.fillText(ch2, vx, vy + k6 * fs * 1.18 + (1 - ca2) * 8); });
     c.textBaseline = 'alphabetic';
   }
+  // 破框：軸線越出版框
+  var axA = Math.max(w[0] * geo, w[4]);
+  if (axA > .01) { c.strokeStyle = INK(.4 * axA); c.lineWidth = .7; c.beginPath(); c.moveTo(px - 30, cy); c.lineTo(px + pw + 30, cy); c.stroke(); c.fillStyle = INK(.8 * axA); [px, px + pw].forEach(function (x3) { c.beginPath(); c.arc(x3, cy, 2.4, 0, Math.PI * 2); c.fill(); }); regMark(c, px - 22, cy, 5, INK(.6 * axA)); }
   // 紙紋
   c.save(); c.beginPath(); c.rect(px, py, pw, ph); c.clip();
   c.globalCompositeOperation = isLight() ? 'multiply' : 'overlay'; c.globalAlpha = isLight() ? .08 : .14;
-  var gox = Math.random() * 200 | 0, goy = Math.random() * 200 | 0; c.translate(-gox, -goy); c.fillStyle = c.createPattern(SC.grain, 'repeat'); c.fillRect(px, py, pw + 200, ph + 200);
+  var gox = Math.random() * 200 | 0, goy = Math.random() * 200 | 0; c.translate(-gox, -goy); c.fillStyle = c.createPattern(ST.grain, 'repeat'); c.fillRect(px, py, pw + 200, ph + 200);
   c.restore(); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
-  // 標籤（像作品集的卡片）
-  var lap = a5 > 0 ? Math.min(lastW, Math.max(1, Math.round(curW))) : 0;
-  var ACT = ['00 訊號', '01 起身', '02 解構', '03 對位', '04 印刷', '05 節氣', '06 抵達'][a6 > 0 ? 6 : a5 > 0 ? 5 : a4 > 0 ? 4 : a3 > 0 ? 3 : a2 > 0 ? 2 : a1 > 0 ? 1 : 0];
-  var status = a6 > .9 ? (P.live ? '第' + CNUM[P.cur] + '週 · ' + WEEK[P.cur].term + ' · 還在路上' : '處暑 → 大寒 · 抵達') : ACT + (lap ? ' · 第' + CNUM[lap] + '週 · ' + WEEK[lap].term : '') + ' · scroll ↓';
-  var cy2 = py + ph + (m ? 22 : 26);
-  c.fillStyle = INK(.9); c.font = '400 ' + (m ? 13 : 14) + 'px "Noto Serif TC", serif'; c.textAlign = 'left'; c.fillText('Nº 001　銅馬 Equus in Motu', px, cy2);
-  c.fillStyle = MUT(1); c.font = '11px "IBM Plex Mono", monospace';
-  if (m) c.fillText(status, px, cy2 + 18); else { c.fillText('115-1 · riso ink on paper · 18 weeks', px, cy2 + 18); c.textAlign = 'right'; c.fillText(status, px + pw, cy2); }
+  // 捲動進度
+  var bar = $('storyProg'); if (bar) bar.style.transform = 'scaleX(' + p.toFixed(4) + ')';
 }
-
 
 // ======================= 證書 =======================
 var cert = null, P = null;
@@ -1082,8 +1077,6 @@ document.querySelectorAll('[data-rv]').forEach(function (n) { rvIO.observe(n); }
   }
   window.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd); upd();
 })();
-// 開場時間尺：一格一格亮起
-(function () { var ts = $('heroTicks').children; for (var i = 0; i < ts.length; i++) (function (k) { setTimeout(function () { ts[k].classList.add('on'); if (k === ts.length - 1) ts[k].classList.add('now'); }, reduce ? 0 : 1800 + k * 110); })(i); })();
 // 四連桿：持續慢慢轉
 function fourBar(now) {
   var g = document.querySelector('.fbar'); if (!g) return;
@@ -1101,24 +1094,24 @@ function fit() { ['1', '2'].forEach(function (n) { var h = $('h' + n), s = Math.
 function applyTheme() { var L = isLight(); $('papers').classList.toggle('lightsheet', L); if (hero) hero.setLight(L); if (cert) cert.setLight(L); }
 themeHooks.push(applyTheme);
 if (window.matchMedia) { var mq = matchMedia('(prefers-color-scheme: light)'); if (mq.addEventListener) mq.addEventListener('change', applyTheme); }
-window.addEventListener('resize', function () { fit(); if (hero) hero.resize(); clearTimeout(window.__rt); window.__rt = setTimeout(buildScope, 250); });
+window.addEventListener('resize', function () { fit(); if (hero) hero.resize(); clearTimeout(window.__rt); window.__rt = setTimeout(buildStory, 250); });
 var certStart = -1, frozen = reduce, certVis = false;
 var io = new IntersectionObserver(function (es) {
   es.forEach(function (e) {
     var id = e.target.id;
     if (id === 'h1') { certVis = e.isIntersecting; if (e.isIntersecting && certStart < 0) certStart = performance.now(); return; }
     if (id === 'heroGL') { heroOn = e.isIntersecting; return; }
-    if (id === 'scope') { SC.on = e.isIntersecting; if (!e.isIntersecting) document.querySelector('.pin').classList.remove('breakout'); return; }
+    if (id === 'story') { ST.on = e.isIntersecting; return; }
     if (id === 'h2' && e.isIntersecting) { if (paceAnim.t < 0) paceAnim.t = performance.now(); fillBars(); }
   });
 }, { threshold: .1 });
-['h1', 'h2', 'heroGL', 'scope'].forEach(function (id) { io.observe($(id)); });
+['h1', 'h2', 'story'].forEach(function (id) { io.observe($(id)); });
 function loop(now) {
   if (hero && heroOn) hero.render(reduce ? 999 : (now - heroT0) / 1000, now);
-  scopeFrame(now);
+  storyFrame(now);
   var t = frozen ? 999 : certStart < 0 ? 0 : (now - certStart) / 1000;
   if (cert && (certVis || frozen)) cert.render(t, now);
-  renderCertText(t); paceFrame(now); fourBar(reduce ? 0 : now);
+  renderCertText(t); paceFrame(now); 
   requestAnimationFrame(loop);
 }
 function load(key) {
@@ -1133,7 +1126,7 @@ window.addEventListener('beforeprint', function () { printWasLight = isLight(); 
 window.addEventListener('afterprint', function () { applyTheme(); });
 ['s1', 's2'].forEach(function (id, i) { $(id).insertAdjacentHTML('afterbegin', deco(i + 1)); });
 var fontsReady = (document.fonts && document.fonts.load) ? Promise.race([document.fonts.load('300 40px "Noto Serif TC"', '學習壢程'), new Promise(function (r) { setTimeout(r, 1500); })]) : Promise.resolve();
-fontsReady.then(buildScope);
+fontsReady.then(buildStory);
 load('lin'); applyTheme();
 requestAnimationFrame(loop);
 })();
