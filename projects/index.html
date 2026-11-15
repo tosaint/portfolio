@@ -1,389 +1,390 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>115-1 生活科技 · 學習壢程</title>
 <meta name="description" content="115-1 生活科技教學進度與學習壢程：十八週、五段路，從處暑走到大寒。Weekly course schedule and learning journey, Living Technology.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&family=Archivo:wdth,wght@62..125,300..900&family=JetBrains+Mono:wght@400;600&family=LXGW+WenKai+TC&family=Jost:wght@200..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@300;400;500&family=Noto+Serif+TC:wght@200;300;400;500&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <style>
+/* ---- 網站共用的語彙（與 portfolio/style.css 相同） ---- */
 :root {
-  --bk: #141518; --bk2: #1C1D21; --line: #2B2D32; --ink: #ECE8E1; --mut: #8D8A84; --dim: #5C5A56;
-  --v: #F06A2C; --v2: #8D8A84; --vl: #F1E7DA; --teal: #5FB3A9; --neon: #F06A2C; --cu: #F06A2C;
-  --c1: #9AA7B4; --c2: #5F8FD1; --c3: #C9A66B; --c4: #6FA98A; --c5: #A78BC6;
+  --ground: #141412; --ground-2: #1b1a18; --ink: #e8e5de; --ink-2: #9a968d; --hair: #2c2b28; --accent: #b9b4a9;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "IBM Plex Sans", "Noto Sans TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --zh: "Noto Serif TC", "Songti TC", serif;
+  --plate: #1d1c19; --verm: #d9643a; --teal: #6f9696; --sand: #6e6150;
+  color-scheme: dark;
 }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) { --ground: #f3f1ec; --ground-2: #ebe8e1; --ink: #2b2a27; --ink-2: #6f6b63; --hair: #d9d5cc; --accent: #55524b; --plate: #ece6d9; --teal: #8fb2b4; --sand: #cdba9e; color-scheme: light; }
+}
+:root[data-theme="light"] { --ground: #f3f1ec; --ground-2: #ebe8e1; --ink: #2b2a27; --ink-2: #6f6b63; --hair: #d9d5cc; --accent: #55524b; --plate: #ece6d9; --teal: #8fb2b4; --sand: #cdba9e; color-scheme: light; }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--bk); color: var(--ink); font-family: 'Noto Sans TC', sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; }
-button, select { font: inherit; }
-.mono { font-family: 'JetBrains Mono', monospace; }
-.wrap { width: min(1080px, 100% - 32px); margin: 0 auto; }
-.lbl { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .24em; color: var(--mut); text-transform: uppercase; }
-.cond { font-family: 'Archivo', sans-serif; font-variation-settings: 'wdth' 62; font-weight: 800; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 400 16px/1.65 var(--sans); -webkit-font-smoothing: antialiased; transition: background .4s, color .4s; }
+a { color: inherit; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: clamp(18px, 4vw, 40px); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ground); border-bottom: 1px solid var(--hair); }
+.top .wrap { display: flex; align-items: baseline; gap: 12px 24px; flex-wrap: wrap; padding-block: 14px; }
+.mark { font: 500 15px var(--sans); letter-spacing: .02em; text-decoration: none; margin-right: auto; }
+.top nav { display: flex; gap: 20px; }
+.top nav a { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top nav a:hover, .top nav a[aria-current] { color: var(--ink); }
+.theme, .chip { font: 400 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; background: none; border: 1px solid var(--hair); color: var(--ink-2); border-radius: 0; padding: 3px 8px; cursor: pointer; }
+.theme:hover, .chip:hover, .chip[aria-pressed="true"] { color: var(--ink); border-color: var(--ink-2); }
+.eyebrow { font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin: 0; }
+footer.site { margin-top: 96px; border-top: 1px solid var(--hair); padding-block: 14px 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font: 400 12px var(--mono); color: var(--ink-2); }
 
-/* HUD corners */
-.hud { position: absolute; inset: 14px; pointer-events: none; z-index: 3; }
-.hud i { position: absolute; width: 18px; height: 18px; border-color: rgba(241,231,218,.55); border-style: solid; }
-.hud i:nth-child(1) { left: 0; top: 0; border-width: 1px 0 0 1px; } .hud i:nth-child(2) { right: 0; top: 0; border-width: 1px 1px 0 0; }
-.hud i:nth-child(3) { left: 0; bottom: 0; border-width: 0 0 1px 1px; } .hud i:nth-child(4) { right: 0; bottom: 0; border-width: 0 1px 1px 0; }
-.hud b { position: absolute; font-family: 'JetBrains Mono', monospace; font-weight: 400; font-size: 10.5px; letter-spacing: .18em; color: rgba(241,231,218,.62); white-space: nowrap; }
-.hud .tl { left: 28px; top: 3px; } .hud .tr { right: 28px; top: 3px; } .hud .bl { left: 28px; bottom: 1px; } .hud .br { right: 28px; bottom: 1px; }
-.hud .bars { position: absolute; right: 28px; top: 20px; display: flex; gap: 3px; } .hud .bars u { width: 14px; height: 2px; background: rgba(241,231,218,.25); } .hud .bars u.on { background: var(--vl); }
+/* ---- 開場 ---- */
+.hero { position: relative; height: 92vh; min-height: 560px; overflow: hidden; border-bottom: 1px solid var(--hair); }
+#heroGL { position: absolute; inset: -6% -14% -18% -10%; width: 124%; height: 124%; display: block; }
+.hero .wrap { position: relative; height: 100%; z-index: 2; pointer-events: none; }
+.hero .wrap > * { pointer-events: auto; }
+.h-top { position: absolute; top: clamp(44px, 10vh, 110px); left: clamp(18px, 4vw, 40px); display: grid; gap: 12px; }
+.h-top h1 { margin: 0; font: 300 clamp(44px, 6.4vw, 84px)/1.05 var(--zh); letter-spacing: .3em; }
+.h-top .school { font: 400 12px var(--mono); letter-spacing: .14em; color: var(--ink-2); }
+.h-vert { position: absolute; right: clamp(18px, 4vw, 40px); bottom: -7vh; writing-mode: vertical-rl; font: 200 clamp(60px, 9.4vw, 128px)/1 var(--zh); letter-spacing: .16em; color: var(--ink); z-index: 3; }
+.h-vert em { font-style: normal; color: var(--verm); }
+.h-rule { position: absolute; left: clamp(18px, 4vw, 40px); right: calc(clamp(18px, 4vw, 40px) + clamp(90px, 12vw, 170px)); bottom: clamp(30px, 6vh, 56px); font: 400 11.5px var(--mono); letter-spacing: .12em; color: var(--ink-2); }
+.h-rule .ends { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.h-rule .ends span { background: var(--ground); padding: 2px 6px 2px 0; }
+.h-rule .ends span + span { padding: 2px 0 2px 6px; }
+.h-rule .ends b { font-weight: 400; color: var(--ink); margin-right: 8px; }
+.h-rule .ends i { font-style: normal; font-family: var(--zh); color: var(--ink); letter-spacing: .2em; }
+.ticks { position: relative; display: flex; justify-content: space-between; align-items: flex-end; height: 16px; border-bottom: 1px solid var(--hair); }
+.ticks span { width: 1px; height: 6px; background: var(--hair); transition: background .5s, height .5s; }
+.ticks span.f { height: 12px; }
+.ticks span.on { background: var(--ink); }
+.ticks span.now { background: var(--verm); }
 
-/* bar */
-.bar { position: sticky; top: 0; z-index: 30; background: rgba(5,6,8,.72); backdrop-filter: blur(14px) saturate(150%); -webkit-backdrop-filter: blur(14px) saturate(150%); border-bottom: 1px solid rgba(255,255,255,.06); }
-.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 54px; flex-wrap: wrap; padding: 6px 0; }
-.brand { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .26em; white-space: nowrap; }
-.brand b { color: var(--vl); font-weight: 600; }
-.ctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.ctl select, .ctl button { min-height: 40px; padding: 7px 12px; border-radius: 8px; border: 1px solid rgba(241,231,218,.3); background: rgba(255,255,255,.03); color: var(--ink); cursor: pointer; font-size: 14px; }
-.ctl select option { color: #111; }
-.ctl button:hover, .ctl select:hover { border-color: var(--vl); }
+/* ---- 課程 ---- */
+section.blk { padding-top: clamp(64px, 10vw, 120px); }
+.blk h2 { margin: 10px 0 12px; font: 300 clamp(26px, 3.4vw, 40px)/1.35 var(--zh); letter-spacing: .2em; }
+.blk .lead { max-width: 40em; color: var(--ink-2); margin: 0 0 32px; font-size: 15px; }
+.rows-box { position: relative; }
+.tline { position: absolute; left: -22px; top: 0; bottom: 0; width: 1px; background: var(--hair); }
+.tline .fill { position: absolute; left: 0; top: 0; width: 1px; height: 0; background: var(--ink); }
+.tline .cur { position: absolute; left: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--verm); top: 0; opacity: 0; transition: top .35s cubic-bezier(.2,.8,.2,1), opacity .3s; }
+.tline .nt { position: absolute; left: -4px; width: 9px; height: 1px; background: var(--ink-2); }
+.rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--ink); }
+.row { position: relative; border-bottom-color: transparent !important; }
+.row::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--hair); transform: scaleX(0); transform-origin: left; transition: transform .9s cubic-bezier(.2,.8,.2,1); }
+.row.total::after { background: var(--ink); }
+.row > span { opacity: 0; transform: translateY(6px); transition: opacity .6s, transform .6s; }
+.row.in::after { transform: none; } .row.in > span { opacity: 1; transform: none; }
+.row.in > span:nth-child(2) { transition-delay: .06s; } .row.in > span:nth-child(3) { transition-delay: .12s; } .row.in > span:nth-child(4) { transition-delay: .16s; } .row.in > span:nth-child(5) { transition-delay: .2s; }
+.sun { width: 18px; height: 11px; vertical-align: -1px; margin-left: 6px; overflow: visible; }
+.sun path { fill: none; stroke: var(--ink-2); stroke-width: 1; }
+.sun circle { fill: var(--verm); transform-origin: 9px 10px; transform: rotate(-90deg); transition: transform 1.4s cubic-bezier(.2,.8,.2,1) .2s; }
+.row.in .sun circle { transform: rotate(var(--a)); }
+.tot s { text-decoration: none; position: relative; color: var(--ink-2); }
+.tot s::after { content: ""; position: absolute; left: -2px; right: -2px; top: 52%; height: 1px; background: var(--verm); transform: scaleX(0); transform-origin: left; transition: transform .6s 1s; }
+.tot b { font-weight: 400; margin-left: 10px; opacity: 0; transition: opacity .6s 1.5s; }
+.row.in .tot s::after { transform: none; } .row.in .tot b { opacity: 1; }
+[data-rv] .draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1); }
+[data-rv].in .draw { stroke-dashoffset: 0; }
+.row, .rows-head { display: grid; grid-template-columns: 44px 52px 170px minmax(0, 1fr) 112px; gap: 4px 22px; align-items: baseline; padding-block: 13px; border-bottom: 1px solid var(--hair); }
+.rows-head { font: 400 11.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); padding-block: 8px; }
+.row .w { font: 400 13px var(--mono); color: var(--ink-2); }
+.row .jq { font: 400 14px var(--zh); letter-spacing: .1em; }
+.row .jq.r { color: var(--hair); }
+.row .u { font-size: 14px; }
+.row .u small, .row .c small { display: block; font: 400 12.5px/1.5 var(--sans); color: var(--ink-2); }
+.row .c { font-size: 15.5px; }
+.row .p, .rows-head .p { text-align: right; }
+.row .p { font: 400 13px var(--mono); white-space: nowrap; }
+.row .p i { font-style: normal; color: var(--ink-2); }
+.row.same .u { visibility: hidden; }
+.row.total { border-bottom: 1px solid var(--ink); }
+.row .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+.paths { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+.path { padding: 18px 16px 22px 0; border-bottom: 1px solid var(--hair); }
+.path + .path { padding-left: 16px; border-left: 1px solid var(--hair); }
+.path .ic { width: 64px; height: 46px; display: block; margin-bottom: 10px; overflow: visible; }
+.path .ic * { fill: none; stroke: var(--c); stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+.path .ic .jt { fill: var(--ground); stroke: var(--ink); }
+.path .ic .led { fill: var(--c); stroke: none; opacity: 0; transition: opacity .3s 1.6s; }
+.path.in .ic .led { animation: led 3.2s 1.8s infinite; }
+@keyframes led { 0%, 100% { opacity: .15; } 8%, 60% { opacity: .85; } }
+.path .v { font: 200 46px/1.1 var(--zh); letter-spacing: .1em; }
+.path .u { font: 400 15px var(--zh); margin-top: 6px; letter-spacing: .1em; }
+.path .m { font: 400 11.5px var(--mono); color: var(--ink-2); letter-spacing: .06em; margin: 4px 0 8px; }
+.path .bar { height: 2px; background: var(--hair); margin-bottom: 12px; }
+.path .bar i { display: block; height: 100%; width: 0; background: var(--c); transition: width 1.4s cubic-bezier(.2,.8,.2,1) .4s; }
+.path.in .bar i { width: var(--w); }
+.path p { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+.path > * { opacity: 0; transform: translateY(8px); transition: opacity .7s, transform .7s; }
+.path.in > * { opacity: 1; transform: none; }
+.stack { position: relative; margin: 6px 0 46px; }
+.stack .bar { display: flex; height: 26px; border: 1px solid var(--hair); }
+.stack .seg { width: 0; height: 100%; transition: width .9s cubic-bezier(.2,.8,.2,1); }
+.stack .cap { position: absolute; top: -18px; bottom: -14px; left: calc(100% * 100 / 110); width: 1px; background: var(--verm); opacity: 0; transform: translateY(-14px); transition: opacity .5s 1.6s, transform .9s cubic-bezier(.2,.8,.2,1) 1.6s; }
+.stack .cap span { position: absolute; top: -16px; left: 6px; font: 400 11px var(--mono); color: var(--verm); white-space: nowrap; }
+.stack .buf { position: absolute; top: 1px; bottom: 1px; right: 1px; width: calc((100% - 2px) * 10 / 110); background: repeating-linear-gradient(135deg, transparent 0 4px, var(--ground) 4px 6px); opacity: 0; transition: opacity .6s 2.2s; }
+.stack .bufl { position: absolute; right: 0; top: 34px; font: 400 11px var(--mono); color: var(--ink-2); opacity: 0; transition: opacity .6s 2.4s; }
+.stack.in .cap { opacity: 1; transform: none; } .stack.in .buf, .stack.in .bufl { opacity: 1; }
+.stack .lg { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 12px; font: 400 12px var(--sans); color: var(--ink-2); }
+.stack .lg i { display: inline-block; width: 8px; height: 8px; margin-right: 6px; }
+.rules { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+.rule { padding: 16px 16px 18px 0; border-bottom: 1px solid var(--hair); font-size: 14px; color: var(--ink-2); }
+.rule + .rule { padding-left: 16px; border-left: 1px solid var(--hair); }
+.rule b { display: block; font: 400 17px var(--zh); letter-spacing: .14em; color: var(--ink); margin: 10px 0 4px; }
+.rule svg { width: 28px; height: 28px; overflow: visible; }
+.rule svg .o { fill: none; stroke: var(--ink-2); stroke-width: 1; }
+.rule svg .f { transform-origin: 14px 14px; transform: scale(0); transition: transform .8s cubic-bezier(.3,1.4,.5,1) .5s; }
+.rules.in .rule svg .f { transform: none; }
+.ruler { position: relative; margin-top: 40px; padding-top: 30px; }
+.ruler .bands { display: flex; }
+.ruler .band { border-top: 2px solid var(--ink); padding: 10px 8px 0 0; }
+.ruler .band + .band { border-left: 1px solid var(--hair); padding-left: 10px; }
+.ruler .band b { display: block; font: 300 clamp(15px, 1.8vw, 22px) var(--zh); letter-spacing: .14em; }
+.ruler .band span { font: 400 11.5px var(--mono); color: var(--ink-2); }
+.ruler .sc { position: absolute; left: 0; right: 0; top: 18px; height: 8px; display: flex; justify-content: space-between; }
+.ruler .sc i { width: 1px; height: 8px; background: var(--hair); }
+.ruler .mk { position: absolute; top: 4px; left: 0; width: 0; height: 0; border: 6px solid transparent; border-top: 8px solid var(--verm); margin-left: -6px; transition: left 2.8s cubic-bezier(.45,0,.2,1) .3s; }
+.ruler.in .mk { left: 100%; }
 
-/* ---------- HERO ---------- */
-.hero { position: relative; height: 94vh; min-height: 600px; overflow: hidden; background: radial-gradient(ellipse 70% 60% at 50% 58%, #2A2B30 0%, #1A1B1F 48%, #121316 100%); }
-#heroGL { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.grain { position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: .09; mix-blend-mode: overlay; background-size: 200px 200px; }
-.hc { position: absolute; z-index: 2; }
-.hc.tl { left: 6vw; top: 9vh; }
-.hc .school { font-size: 13px; letter-spacing: .32em; color: var(--mut); }
-.hc .yr { font-family: 'Jost', sans-serif; font-weight: 200; font-size: clamp(44px, 6vw, 76px); line-height: 1; color: #F4F0EA; margin-top: 10px; }
-.hc .yr sup { font-size: .38em; vertical-align: 1.1em; margin-left: 3px; }
-.hc.tr { right: 6vw; top: 9vh; display: flex; flex-direction: row-reverse; gap: 16px; align-items: flex-start; }
-.vt { writing-mode: vertical-rl; margin: 0; font-weight: 500; font-size: clamp(42px, 5.4vw, 74px); letter-spacing: .2em; color: #F4F0EA; line-height: 1; }
-.vs { writing-mode: vertical-rl; font-weight: 400; font-size: clamp(15px, 1.5vw, 19px); letter-spacing: .55em; color: var(--vl); margin-top: .5em; perspective: 600px; }
-.hc.ml { left: 6vw; top: 36vh; font-family: 'Jost', sans-serif; font-weight: 300; font-size: clamp(20px, 2.5vw, 34px); letter-spacing: .16em; line-height: 1.35; color: rgba(236,232,225,.86); }
-.hc.bl { left: 6vw; bottom: 9vh; } .hc.br { right: 6vw; bottom: 9vh; text-align: right; }
-.hbig { font-family: 'Jost', 'Noto Sans TC', sans-serif; font-weight: 200; letter-spacing: .06em; font-size: clamp(52px, 7.4vw, 104px); line-height: 1; color: #F4F0EA; }
-.hbig .ar { font-size: .34em; vertical-align: 1.1em; margin-left: 6px; }
-.prow2 { display: flex; gap: 10px; align-items: center; margin-top: 8px; } .hc.br .prow2 { justify-content: flex-end; }
-.pill { border: 1px solid rgba(236,232,225,.6); border-radius: 20px; padding: 1px 12px; font-size: 13px; letter-spacing: .2em; color: var(--vl); }
-.dw { font-family: 'Jost', sans-serif; font-size: 18px; letter-spacing: .08em; }
-.flip { display: inline-block; transform-origin: 50% 55%; }
-.flip.hi { color: var(--neon); text-shadow: 0 0 14px rgba(240,106,44,.9); transition: text-shadow 1.2s; }
-.flip.hi.settle { text-shadow: 0 0 8px rgba(240,106,44,.35); }
-.down { position: absolute; z-index: 3; left: 50%; bottom: 5vh; width: 48px; height: 48px; margin-left: -24px; border-radius: 50%; border: 1px solid rgba(236,232,225,.45); color: var(--vl); display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 17px; animation: bob 2.4s ease-in-out infinite; }
-@keyframes bob { 50% { transform: translateY(6px); } }
-
-/* ---------- GUIDE ---------- */
-section.s { padding: 80px 0; border-top: 1px solid var(--line); position: relative; }
-.s h2 { font-weight: 500; font-size: clamp(28px, 4.4vw, 44px); margin: 10px 0 10px; letter-spacing: .04em; }
-.s .intro { color: #BDB8AF; max-width: 42em; margin: 0 0 30px; }
-.board { background: #101113; border: 1px solid #202125; border-radius: 12px; padding: 8px; }
-.bterm { font-size: 13px; color: var(--mut); letter-spacing: .1em; } .bterm.f { color: var(--vl); }
-.brow { display: grid; grid-template-columns: 10px 64px 44px minmax(0, 1fr) 96px 64px; gap: 10px; align-items: center; padding: 8px 10px; border-bottom: 1px solid #1A1B1E; }
-.brow:last-child { border-bottom: none; }
-.brow.head { color: var(--mut); font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .2em; }
-.bdot { width: 10px; height: 10px; border-radius: 2px; }
-.tile { display: inline-flex; gap: 2px; }
-.tile i { font-style: normal; display: inline-block; min-width: 1.05em; text-align: center; background: linear-gradient(180deg, #202125 0 49%, #18191C 51% 100%); border-radius: 3px; padding: 2px 3px; font-family: 'JetBrains Mono', monospace; color: var(--vl); position: relative; }
-.tile i::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #101113; }
-.btopic { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bunit { font-size: 13px; color: var(--mut); }
-.paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.path { background: var(--bk2); border: 1px solid var(--line); border-radius: 14px; padding: 20px; position: relative; overflow: hidden; }
-.path::after { content: ""; position: absolute; right: -40px; top: -40px; width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, var(--c), transparent 70%); opacity: .2; }
-.verb { font-size: 54px; line-height: 1.05; color: var(--c); font-weight: 200; animation: breathe 3.6s ease-in-out infinite; }
-@keyframes breathe { 0%, 100% { font-weight: 120; letter-spacing: .14em; } 50% { font-weight: 900; letter-spacing: .02em; } }
-.path .u { font-size: 19px; font-weight: 700; margin-top: 4px; }
-.path .meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--mut); margin: 2px 0 10px; }
-.path p { margin: 0 0 10px; font-size: 14px; color: #C8C3BA; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-size: 12px; border: 1px solid #34353A; border-radius: 20px; padding: 2px 10px; color: #C8C3BA; }
-.odo { display: flex; align-items: flex-end; gap: 28px; flex-wrap: wrap; margin-bottom: 24px; }
-.odo .n { display: inline-flex; font-family: 'Archivo', sans-serif; font-variation-settings: 'wdth' 62; font-size: clamp(64px, 11vw, 110px); font-weight: 800; line-height: 1; color: #fff; height: 1em; overflow: hidden; }
-.odo .n span { display: inline-block; height: 1em; overflow: hidden; }
-.odo .n span b { display: flex; flex-direction: column; font-weight: 800; transition: transform 1.6s cubic-bezier(.2,.9,.2,1); }
-.odo .n span b em { font-style: normal; height: 1em; line-height: 1; }
-.odo .cap { font-size: 13px; color: var(--mut); }
-.stack { position: relative; display: flex; height: 46px; border-radius: 8px; background: var(--bk2); border: 1px solid var(--line); }
-.stack .seg { height: 100%; width: 0; transition: width 1.2s cubic-bezier(.2,.8,.2,1); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #101113; white-space: nowrap; overflow: hidden; }
-.stack .seg:first-child { border-radius: 7px 0 0 7px; } .stack .seg:nth-last-child(2) { border-radius: 0 7px 7px 0; }
-.capline { position: absolute; top: -12px; bottom: -12px; width: 2px; background: #fff; left: calc(100% * 100 / 110); box-shadow: 0 0 12px var(--v); }
-.capline span { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #fff; white-space: nowrap; }
-.sleg { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 14px 0 22px; font-size: 13px; color: #C8C3BA; }
-.sleg i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
-.rules, .titles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.titles { margin-top: 12px; }
-.rule { background: var(--bk2); border: 1px solid var(--line); border-radius: 10px; padding: 14px; font-size: 14px; color: #C8C3BA; }
-.rule b { display: block; color: #fff; font-size: 15px; margin-bottom: 2px; }
-.ttl { border: 1px solid #34353A; border-radius: 10px; padding: 14px; text-align: center; }
-.ttl .t { font-size: 20px; font-weight: 500; color: var(--vl); }
-.ttl .r { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--mut); }
-.legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.lg { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: center; background: var(--bk2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
-.lg svg { width: 44px; height: 44px; }
-.lg b { display: block; font-size: 15px; }
-.lg span { font-size: 13px; color: #C8C3BA; }
-
-/* scope band */
-.scope { position: relative; height: 620vh; border-top: 1px solid var(--line); background: #141518; }
-.pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
-.pin.onpaper .hud i { border-color: rgba(30,29,28,.45); } .pin.onpaper .hud b { color: rgba(30,29,28,.65); }
-.hud b.neon { color: var(--neon) !important; text-shadow: 0 0 8px rgba(240,106,44,.6); }
+/* ---- 版畫 Nº 001 ---- */
+.scope { position: relative; height: 640vh; margin-top: clamp(64px, 10vw, 120px); }
+.pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; z-index: 1; }
+.pin.breakout { z-index: 8; pointer-events: none; }
 #ridge { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-/* ---------- CERT ---------- */
-.zone { background: #0F1012; padding: 30px 0 90px; transition: background .5s; }
-body.paper .zone { background: #D8D1C4; }
-.papers { width: min(794px, 100% - 24px); margin: 0 auto; display: flex; flex-direction: column; gap: 34px; }
-.pnote { text-align: center; font-size: 12px; color: var(--mut); margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; letter-spacing: .14em; }
-body.paper .pnote { color: #77736C; }
+/* ---- 證書 ---- */
+.zone { padding-top: clamp(64px, 10vw, 120px); }
+.demo { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 28px; }
+.demo span { font: 400 12px var(--mono); color: var(--ink-2); letter-spacing: .08em; margin-right: 6px; }
+.papers { width: min(794px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
 .holder { position: relative; width: 100%; }
 .sheet {
-  --bg: radial-gradient(ellipse 80% 55% at 50% 40%, #2A2B30 0%, #1B1C20 52%, #131417 100%); --ink: #ECE8E1; --mut: #8D8A84; --rule: #33343A; --acc: #F1E7DA; --wbg: rgba(236,232,225,.05); --wbd: #2A2B30;
-  --stone: #ECE8E1; position: absolute; left: 0; top: 0; width: 794px; height: 1123px; transform-origin: 0 0; background: var(--bg); color: var(--ink); overflow: hidden;
-  box-shadow: 0 0 0 1px #24252A, 0 30px 80px rgba(0,0,0,.6);
+  --bg: #1b1a18; --sink: #e8e5de; --smut: #9a968d; --rule: #34322e; --stone: #e8e5de; --acc: #d9643a; --lamp: #d9643a;
+  position: absolute; left: 0; top: 0; width: 794px; height: 1123px; transform-origin: 0 0; background: var(--bg); color: var(--sink); overflow: hidden; outline: 1px solid var(--hair);
 }
-body.paper .sheet { --stone: #1E1D1C; --bg: #ECE5D8; --ink: #1E1D1C; --mut: #7A7368; --rule: #D3C9B8; --acc: #C4561C; --wbg: rgba(188,208,214,.35); --wbd: #C9D6D8; box-shadow: 0 2px 4px rgba(30,25,20,.06), 0 22px 60px rgba(30,25,20,.14); }
-.sheet .grain { display: none; z-index: 5; }
-body.paper .sheet .grain { display: block; mix-blend-mode: multiply; opacity: .06; }
-.reg { position: absolute; width: 22px; height: 22px; color: rgba(30,29,28,.7); display: none; z-index: 4; }
-body.paper .reg { display: block; } body.paper .sheet .hud i { opacity: 0; }
-.reg.a { left: 12px; top: 12px; } .reg.b { right: 12px; top: 12px; } .reg.c { left: 12px; bottom: 12px; } .reg.d { right: 12px; bottom: 12px; }
-.bleed { position: absolute; left: 0; top: 0; bottom: 0; width: 7px; display: none; z-index: 4; background: linear-gradient(180deg, transparent 4%, rgba(231,155,190,.9) 4% 18%, transparent 18% 26%, rgba(143,195,201,.9) 26% 42%, transparent 42% 80%, rgba(231,155,190,.9) 80% 90%, transparent 90% 95%, rgba(143,195,201,.9) 95%); }
-body.paper .bleed { display: block; }
-.sheet .hud i { border-color: rgba(241,231,218,.5); } body.paper .sheet .hud i { border-color: rgba(120,116,108,.45); }
-.sheet .hud b { color: rgba(241,231,218,.6); } body.paper .sheet .hud b { color: rgba(120,116,108,.6); }
-.sheet .hud { inset: 22px; }
-.pg { position: absolute; inset: 0; padding: 60px 60px 50px; display: flex; flex-direction: column; }
-.ph { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 24px; align-items: start; }
-.ph .school { font-size: 12px; letter-spacing: .34em; color: var(--mut); margin-bottom: 12px; }
-.ph h1 { margin: 0; font-weight: 500; font-size: 70px; line-height: 1; letter-spacing: .1em; color: var(--ink); }
-
-.ph .sub { font-weight: 400; font-size: 18px; letter-spacing: .4em; margin-top: 12px; }
-.ph .sub em { font-style: normal; color: var(--neon); }
-body.paper .ph .sub em, body.paper .p2h h2 em { color: #C4561C; background: linear-gradient(transparent 60%, rgba(240,106,44,.38) 60%, rgba(240,106,44,.38) 92%, transparent 92%); }
-
-.ph .lt { font-family: 'Jost', sans-serif; font-weight: 300; font-size: 15px; letter-spacing: .3em; color: var(--mut); margin-top: 6px; }
-.namerow { display: flex; align-items: baseline; gap: 14px; margin-top: 14px; }
-.namerow .k { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .2em; color: var(--mut); }
-.cname { font-weight: 500; font-size: 30px; letter-spacing: .26em; }
-.cname span { display: inline-block; opacity: 0; transform: translateY(8px); filter: blur(5px); transition: opacity .5s, transform .5s, filter .5s, text-shadow 1.2s; text-shadow: 0 0 20px rgba(240,106,44,1); }
-.cname span.in { opacity: 1; transform: none; filter: none; text-shadow: 0 0 0 rgba(240,106,44,0); }
-.spec { display: flex; flex-direction: column; gap: 10px; padding-top: 6px; }
-.spec div { display: flex; flex-direction: column; gap: 2px; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
-.spec .k { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .2em; color: var(--mut); }
-.spec .v { font-family: 'JetBrains Mono', monospace; font-size: 15px; }
-.glbox { position: relative; width: 674px; height: 450px; margin-top: 10px; }
-#certGL { position: absolute; inset: 0; width: 100%; height: 100%; display: block; -webkit-mask-image: radial-gradient(ellipse 62% 66% at 50% 50%, #000 60%, transparent 100%); mask-image: radial-gradient(ellipse 62% 66% at 50% 50%, #000 60%, transparent 100%); }
-body.paper #certGL { -webkit-mask-image: none; mask-image: none; }
-.glbox .tag { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .18em; color: var(--mut); }
-.wleg { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; font-size: 11.5px; color: var(--mut); letter-spacing: .06em; margin-top: 2px; }
-.wleg i { display: inline-block; width: 10px; height: 10px; vertical-align: -1px; margin-right: 5px; border-radius: 2px; }
-.res { display: grid; grid-template-columns: 1.1fr 1.15fr 1.25fr 1fr; margin-top: 14px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-.res > div { padding: 12px 10px 10px; display: flex; flex-direction: column; gap: 4px; }
-.res > div + div { border-left: 1px solid var(--rule); }
-.res .k { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .2em; color: var(--mut); }
-.res .v { font-weight: 500; font-size: 22px; }
-.res .vs2 { font-size: 14px; font-weight: 400; color: var(--mut); } .res .vs3 { display: block; font-size: 12px; font-weight: 400; color: var(--mut); margin-top: 2px; letter-spacing: .06em; }
-.res .big { font-family: 'Jost', sans-serif; font-weight: 200; font-size: 66px; line-height: .9; }
-
-.words { margin-top: 14px; border: 1px solid var(--wbd); background: var(--wbg); border-radius: 8px; padding: 12px 16px; }
-.words .k { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .24em; color: var(--mut); }
-.words p { margin: 4px 0 0; font-family: 'LXGW WenKai TC', serif; font-size: 16.5px; line-height: 1.8; }
-.foot { margin-top: auto; display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .16em; color: var(--mut); padding-top: 10px; }
-
-/* page 2 */
+.lightsheet .sheet, .sheet.lt { --bg: #ece6d9; --sink: #2b2a27; --smut: #6f6b63; --rule: #d3cbbd; --stone: #2b2a27; }
+.sheet .grain { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: overlay; opacity: .18; background-size: 200px 200px; z-index: 6; }
+.lightsheet .sheet .grain { mix-blend-mode: multiply; opacity: .07; }
+.reg { position: absolute; width: 22px; height: 22px; color: var(--smut); z-index: 7; }
+.reg.a { left: 14px; top: 14px; } .reg.b { right: 14px; top: 14px; } .reg.c { left: 14px; bottom: 14px; } .reg.d { right: 14px; bottom: 14px; }
+.bleed { position: absolute; left: 0; top: 0; bottom: 0; width: 6px; z-index: 7; opacity: .8; background: linear-gradient(180deg, transparent 5%, rgba(231,155,190,.9) 5% 17%, transparent 17% 27%, rgba(143,195,201,.9) 27% 40%, transparent 40% 82%, rgba(231,155,190,.9) 82% 90%, transparent 90%); }
+.wmk { position: absolute; right: -140px; bottom: 90px; width: 560px; height: auto; opacity: .06; z-index: 0; pointer-events: none; }
+.wmk path { fill: var(--sink); }
+.pg { position: absolute; inset: 0; padding: 62px 62px 48px; display: flex; flex-direction: column; z-index: 2; }
+.lbl { font: 400 10.5px var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--smut); }
+.ph { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 24px; position: relative; z-index: 3; }
+.ph .school { font: 400 12px var(--zh); letter-spacing: .4em; color: var(--smut); }
+.ph h1 { margin: 14px 0 0; font: 300 66px/1.05 var(--zh); letter-spacing: .26em; }
+.ph .sub { font: 300 18px var(--zh); letter-spacing: .5em; margin-top: 14px; }
+.ph .sub em { font-style: normal; color: var(--acc); }
+.ph .en { font: 300 13px var(--sans); letter-spacing: .28em; text-transform: uppercase; color: var(--smut); margin-top: 6px; }
+.namerow { display: flex; align-items: baseline; gap: 16px; margin-top: 16px; }
+.cname { font: 400 28px var(--zh); letter-spacing: .4em; }
+.cname span { display: inline-block; opacity: 0; transform: translateY(6px); transition: opacity .7s, transform .7s; }
+.cname span.in { opacity: 1; transform: none; }
+.spec { display: flex; flex-direction: column; gap: 10px; padding-top: 30px; }
+.spec div { display: flex; flex-direction: column; gap: 2px; border-bottom: 1px solid var(--rule); padding-bottom: 6px; }
+.spec .v { font: 400 15px var(--mono); }
+.glbox { position: relative; width: 674px; height: 430px; margin-top: 6px; }
+#certGL { position: absolute; left: -60px; top: -150px; width: 794px; height: 600px; display: block; z-index: 1; pointer-events: none; }
+.glbox .tag { position: absolute; z-index: 3; }
+.wleg { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; font: 400 11.5px var(--sans); color: var(--smut); position: relative; z-index: 3; }
+.wleg i { display: inline-block; width: 8px; height: 8px; vertical-align: 0; margin-right: 5px; border-radius: 50%; }
+.res { display: grid; grid-template-columns: 1.15fr 1.1fr 1.2fr 1.2fr; margin-top: 16px; border-top: 1px solid var(--sink); border-bottom: 1px solid var(--rule); position: relative; z-index: 3; }
+.res > div { padding: 12px 12px 12px 0; display: flex; flex-direction: column; gap: 6px; }
+.res > div + div { padding-left: 14px; border-left: 1px solid var(--rule); }
+.res .v { font: 400 21px var(--zh); letter-spacing: .08em; }
+.res .big { font: 200 88px/.8 var(--zh); letter-spacing: 0; margin: 2px 0 -22px; }
+.res .vs2 { font: 400 13px var(--sans); color: var(--smut); letter-spacing: 0; }
+.res .dots { display: grid; grid-template-columns: repeat(6, 9px); gap: 5px; margin-top: 2px; }
+.res .dots i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--smut); }
+.res .dots i.on { background: var(--lamp); border-color: var(--lamp); }
+.res .dots i.late { background: linear-gradient(0deg, var(--lamp) 50%, transparent 50%); border-color: var(--lamp); }
+.res .dots i.leave { background: #8fb2b4; border-color: #8fb2b4; }
+.res .dots i.fut { border-style: dotted; opacity: .5; }
+.words { margin-top: 22px; padding-left: 16px; border-left: 2px solid var(--acc); position: relative; z-index: 3; }
+.words p { margin: 6px 0 0; font: 400 16px/1.95 var(--zh); }
+.foot { margin-top: auto; display: flex; justify-content: space-between; font: 400 10.5px var(--mono); letter-spacing: .16em; color: var(--smut); padding-top: 12px; position: relative; z-index: 3; }
 .p2 { gap: 14px; }
-.p2h { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--rule); padding-bottom: 12px; }
-.p2h h2 { margin: 0; font-weight: 500; font-size: 42px; letter-spacing: .06em; }
-.p2h h2 em { font-style: normal; color: var(--neon); }
-.p2h .who { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .2em; color: var(--mut); }
-.sec .k { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .24em; color: var(--mut); margin-bottom: 6px; display: block; }
-.prow { display: grid; grid-template-columns: 54px 84px minmax(0, 1fr) 44px; gap: 12px; align-items: center; padding: 2px 0; }
-.prow .vb { font-size: 18px; font-weight: 900; color: var(--c); }
-.prow .un { font-size: 14px; color: var(--mut); }
-.prow .tr { height: 5px; background: var(--rule); border-radius: 3px; overflow: hidden; }
-.prow .fl { height: 100%; width: 0; background: var(--c); border-radius: 3px; transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
-body:not(.paper) .prow .fl { box-shadow: 0 0 10px var(--c); }
-.prow .pc { font-family: 'JetBrains Mono', monospace; font-size: 14px; text-align: right; }
+.p2h { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--sink); padding-bottom: 12px; }
+.p2h h2 { margin: 0; font: 300 40px var(--zh); letter-spacing: .3em; }
+.p2h h2 em { font-style: normal; color: var(--acc); }
+.p2h .who { font: 400 12px var(--mono); letter-spacing: .18em; color: var(--smut); }
+.sec .lbl { display: block; margin-bottom: 6px; }
 #track { width: 100%; height: auto; display: block; overflow: visible; }
+.tk-ink { fill: var(--sink); } .tk-mut { fill: var(--smut); } .tk-acc { fill: var(--acc); } .tk-stone { fill: var(--stone); }
+.tk-ms { stroke: var(--smut); } .tk-rs { stroke: var(--rule); } .tk-as { stroke: var(--acc); }
+.tk-mono { font-family: var(--mono); }
+.tk-note { font-family: var(--zh); font-size: 13.5px; }
+.trow { transition: opacity .5s; }
+#track [fill="#F06A2C"] { fill: var(--lamp); } #track [stroke="#F06A2C"] { stroke: var(--lamp); } #track [fill="#0B0B14"] { fill: #1b1a18; }
 #prows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 30px; }
-.tk-ink { fill: var(--ink); } .tk-mut { fill: var(--mut); } .tk-acc { fill: var(--acc); }
-.tk-ms { stroke: var(--mut); } .tk-rs { stroke: var(--rule); } .tk-as { stroke: var(--acc); }
-.tk-stone { fill: var(--stone); }
-.tk-mono { font-family: 'JetBrains Mono', monospace; }
-.tk-note { font-family: 'LXGW WenKai TC', serif; font-size: 13.5px; }
-body:not(.paper) .tk-glow { filter: drop-shadow(0 0 4px #F06A2C); }
-.trow { transition: opacity .45s; }
-.eyes { display: flex; flex-wrap: wrap; gap: 10px; }
-.eyes span { font-family: 'LXGW WenKai TC', serif; font-size: 19px; color: var(--acc); border-bottom: 2px solid rgba(240,106,44,.45); padding: 0 4px 2px; }
+.prow { display: grid; grid-template-columns: 48px 76px minmax(0, 1fr) 40px; gap: 12px; align-items: center; padding: 3px 0; }
+.prow .vb { font: 300 19px var(--zh); color: var(--c); letter-spacing: .06em; }
+.prow .un { font: 400 13px var(--zh); color: var(--smut); }
+.prow .tr { height: 3px; background: var(--rule); overflow: hidden; }
+.prow .fl { height: 100%; width: 0; background: var(--c); transition: width 1.4s cubic-bezier(.2,.8,.2,1); }
+.prow .pc { font: 400 13px var(--mono); text-align: right; }
 .sig2 { margin-top: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
-.sig2 div { display: flex; flex-direction: column; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .2em; color: var(--mut); text-align: center; }
-.sig2 .line { border-bottom: 1px solid var(--mut); height: 28px; }
+.sig2 div { display: flex; flex-direction: column; gap: 6px; text-align: center; }
+.sig2 .line { border-bottom: 1px solid var(--smut); height: 30px; }
+.pnote { font: 400 12px var(--mono); color: var(--ink-2); letter-spacing: .08em; margin: 0 0 16px; }
 
-@media (max-width: 780px) {
-  .paths, .legend { grid-template-columns: 1fr; }
-  .rules, .titles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .brow { grid-template-columns: 8px 54px 34px minmax(0, 1fr) 52px; gap: 8px; } .bterm { font-size: 12px; letter-spacing: 0; }
-  .brow .bunit { display: none; }
-  .verb { font-size: 44px; }
-  .hero { height: 90vh; }
-  .hc.tl, .hc.tr { top: 4vh; } .hc.ml { top: auto; bottom: 25vh; font-size: 17px; }
-  .hc.bl, .hc.br { bottom: 7vh; } .hbig { font-size: 46px; } .dw { font-size: 14px; } .pill { font-size: 11px; padding: 1px 8px; }
-  .hc .school { font-size: 11px; letter-spacing: .2em; }
-  .hud .tr, .hud .bars, .hero .hud .br, .hero .hud .tl { display: none; }
+@media (max-width: 860px) {
+  .row, .rows-head { grid-template-columns: 26px 54px minmax(0, 1fr) max-content; gap: 4px 12px; }
+  .row .u, .rows-head .uh, .row .p i { display: none; }
+  .tline { left: -11px; }
+  .paths { grid-template-columns: 1fr; }
+  .path, .path + .path { display: block; padding: 20px 0 22px; border-left: none; }
+  .path .ic { float: right; width: 64px; margin: 6px 0 0 12px; } .path .v { font-size: 40px; }
+  .rules { grid-template-columns: 1fr 1fr; }
+  .rule:nth-child(3) { border-left: none; padding-left: 0; }
+  .ruler .band b { font-size: 14px; letter-spacing: .04em; } .ruler .band { padding-right: 4px; } .ruler .band + .band { padding-left: 5px; }
+  .h-top h1 { font-size: 48px; letter-spacing: .22em; }
+  .h-rule { right: calc(18px + 84px); }
+  #heroGL { inset: 18% -40% -30% -40%; width: 180%; height: 112%; }
+  .h-vert { bottom: -4vh; font-size: 66px; }
 }
-@media (prefers-reduced-motion: reduce) { .lt, .verb, .down { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 @media print {
   @page { size: A4; margin: 0; }
   body { background: #fff !important; }
-  .bar, .hero, .guide, .scope, .pnote { display: none !important; }
-  .zone { padding: 0; background: #fff !important; }
+  .top, .hero, .course, .scope, .zone > .wrap > :not(.papers), footer.site { display: none !important; }
+  .zone { padding: 0; } .zone > .wrap { padding: 0; max-width: none; }
   .papers { width: 794px; gap: 0; }
   .holder { width: 794px !important; height: 1123px !important; break-after: page; }
-  .sheet { transform: none !important; box-shadow: none !important; }
+  .sheet { transform: none !important; outline: none; --bg: #ece6d9; --sink: #2b2a27; --smut: #6f6b63; --rule: #d3cbbd; --stone: #2b2a27; }
 }
-.pfoot { display: flex; justify-content: space-between; gap: 12px; padding: 22px max(16px, calc((100% - 1080px) / 2)); font: 12px "JetBrains Mono", monospace; letter-spacing: .1em; color: var(--mut); border-top: 1px solid var(--line); }
-.pfoot a { color: inherit; }
-@media print { .pfoot { display: none !important; } }
 </style>
 </head>
 <body>
-
-<header class="bar">
+<header class="top">
   <div class="wrap">
-    <a class="brand" href="../" style="color:inherit;text-decoration:none">TOSAINT // <b>生活科技</b></a>
-    <div class="ctl">
-      <select id="who" aria-label="切換示範學生（假資料）">
-        <option value="lin">示範 · 林同學 96</option>
-        <option value="chen">示範 · 陳同學 71</option>
-        <option value="wang">示範 · 王同學 學期中</option>
-      </select>
-      <button id="mode" type="button">證書：白紙</button>
-      <button id="replay" type="button">重播</button>
-    </div>
+    <a class="mark" href="/">tosaint</a>
+    <nav aria-label="Sections">
+      <a href="../#index">Index</a>
+      <a href="../#about">About</a>
+      <a href="./" aria-current="page">Course</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Switch colour theme">Light</button>
   </div>
 </header>
 
 <div class="hero">
   <canvas id="heroGL" aria-hidden="true"></canvas>
-  <div class="hud"><i></i><i></i><i></i><i></i><b class="tl">LIFE TECHNOLOGY · 115-1</b><b class="tr">S01 · 學習壢程</b><span class="bars"><u class="on"></u><u class="on"></u><u class="on"></u><u></u><u></u><u></u></span><b class="bl">十八週 · 五段路 · 十八盞燈 · 三十一塊石</b><b class="br">CLHS</b></div>
-  <div class="grain"></div>
-  <div class="hc tl"><div class="school">國立中央大學附屬中壢高中</div><div class="yr">115<sup>-1</sup></div></div>
-  <div class="hc tr"><h1 class="vt">生活科技</h1><div class="vs">學習<span class="flip" id="flip">歷</span>程</div></div>
-  <div class="hc ml">LIFE<br>TECHNOLOGY<br>A JOURNEY<br>OF MAKING</div>
-  <div class="hc bl"><div class="hbig">處暑<span class="ar">→</span></div><div class="prow2"><span class="pill">起跑</span><span class="dw">W01 · 9.01</span></div></div>
-  <div class="hc br"><div class="hbig">大寒</div><div class="prow2"><span class="pill">抵達</span><span class="dw">W18 · 1.20</span></div></div>
-  <a class="down" href="#route" aria-label="往下看">↓</a>
+  <div class="wrap">
+    <div class="h-top">
+      <p class="eyebrow">Course · Living Technology · 115-1</p>
+      <h1>生活科技</h1>
+      <div class="school">國立中央大學附屬中壢高中 · CLHS</div>
+    </div>
+    <div class="h-rule"><div class="ends"><span><b>W01</b><i>處暑</i> · 9.01</span><span><b>W18</b><i>大寒</i> · 1.20</span></div><div class="ticks" id="heroTicks"></div></div>
+    <div class="h-vert" aria-hidden="true">學習<em>壢</em>程</div>
+  </div>
 </div>
 
-<div class="guide">
-  <section class="s" id="route">
-    <div class="wrap">
-      <span class="lbl">S02 · Route · 18 Weeks</span>
-      <h2>十八週路線</h2>
-      <p class="intro">每一週要做什麼、佔幾分，全部在這張看板上。左邊的色塊代表它屬於哪一段路。</p>
-      <div class="board" id="board"><div class="brow head"><span></span><span>WEEK</span><span>節氣</span><span>內容</span><span class="bunit">路段</span><span style="text-align:right">PTS</span></div></div>
-    </div>
+<main class="course">
+  <section class="blk wrap" id="route">
+    <p class="eyebrow">Schedule · 18 weeks</p>
+    <h2>十八週，從處暑到大寒</h2>
+    <p class="lead">每一週做什麼、佔幾分，都在這張表上。左邊多了一欄節氣：這學期我們一起從夏末走進深冬。</p>
+    <div class="rows-head"><span>週</span><span>節氣</span><span class="uh">單元 Unit</span><span>內容 Content</span><span class="p">配分</span></div>
+    <div class="rows-box"><div class="tline" id="tline"><div class="fill"></div><div class="cur"></div></div><ol class="rows" id="rows"></ol></div>
   </section>
-  <section class="s">
-    <div class="wrap">
-      <span class="lbl">S03 · Five Paths</span>
-      <h2>五段路，五種能力</h2>
-      <p class="intro">每一段路用一個動詞記住它。證書第二頁的「五段路」，就是在看這些能力練得如何。</p>
-      <div class="paths" id="paths"></div>
-    </div>
+  <section class="blk wrap">
+    <p class="eyebrow">Five paths</p>
+    <h2>五段路，五個動詞</h2>
+    <p class="lead">每一段路用一個動詞記住它。證書第二頁的「五段路」，就是在看這些能力練得如何；第六件事是每週準時走進教室，點亮一盞燈。</p>
+    <div class="paths" id="paths"></div>
   </section>
-  <section class="s">
-    <div class="wrap">
-      <span class="lbl">S04 · Scoring</span>
-      <h2>分數怎麼來</h2>
-      <p class="intro">五段路的作業共 95 分，加上十八盞燈的出勤 15 分，總配分 110 分。成績上限 100 分，多出來的 10 分是留給你的緩衝。</p>
-      <div class="odo"><div><div class="n" id="odoTotal"></div><div class="cap">總配分</div></div><div><div class="n" id="odoCap"></div><div class="cap">成績上限</div></div></div>
-      <div class="stack" id="stack"><div class="capline"><span>上限 100</span></div></div>
-      <div class="sleg" id="sleg"></div>
-      <div class="rules">
-        <div class="rule"><b>今日事今日畢</b>作業當週繳交，拿完整分數。</div>
-        <div class="rule"><b>補交算一半</b>段考前一週內補交，該項以一半計分。</div>
-        <div class="rule"><b>請假不扣分</b>請假的光柱是青色，不算缺席。</div>
-        <div class="rule"><b>遲到半根光</b>準時的光柱最高，遲到只有一半。</div>
-      </div>
-      <div class="titles">
-        <div class="ttl"><div class="t">全程完賽</div><div class="r">90 – 100</div></div>
-        <div class="ttl"><div class="t">穩健完賽</div><div class="r">75 – 89</div></div>
-        <div class="ttl"><div class="t">堅持完賽</div><div class="r">60 – 74</div></div>
-        <div class="ttl"><div class="t">仍在路上</div><div class="r">60 以下</div></div>
+  <section class="blk wrap">
+    <p class="eyebrow">Scoring · 110 → 100</p>
+    <h2>分數怎麼來</h2>
+    <p class="lead">五段路的作業共 95 分，十八盞燈的出勤 15 分，總配分 110 分。成績上限 100 分，多出來的 10 分，是留給你的緩衝。</p>
+    <div class="stack" id="stack" data-rv><div class="bar" id="stackBar"></div><div class="buf"></div><div class="cap"><span>上限 100</span></div><span class="bufl">緩衝 10</span><div class="lg" id="stackLg"></div></div>
+    <div class="rules" data-rv>
+      <div class="rule"><svg viewBox="0 0 28 28"><circle class="o" cx="14" cy="14" r="10"/><circle class="f" cx="14" cy="14" r="10" style="fill:var(--ink)"/></svg><b>今日事今日畢</b>作業當週繳交，拿完整分數。</div>
+      <div class="rule"><svg viewBox="0 0 28 28"><circle class="o" cx="14" cy="14" r="10"/><path class="f" d="M14 4a10 10 0 0 1 0 20z" style="fill:var(--ink)"/></svg><b>補交算一半</b>段考前一週內補交，該項以一半計分。</div>
+      <div class="rule"><svg viewBox="0 0 28 28"><circle class="o" cx="14" cy="14" r="10"/><circle class="f" cx="14" cy="14" r="10" style="fill:#8fb2b4"/></svg><b>請假不扣分</b>請假的那盞燈是灰青色，不算缺席。</div>
+      <div class="rule"><svg viewBox="0 0 28 28"><circle class="o" cx="14" cy="14" r="10" style="stroke:var(--verm)"/><path class="f" d="M4 14a10 10 0 0 0 20 0z" style="fill:var(--verm)"/></svg><b>遲到半盞燈</b>準時亮一盞，遲到只亮半盞。</div>
+    </div>
+    <div class="ruler" data-rv>
+      <div class="sc" id="rulerSc"></div><i class="mk"></i>
+      <div class="bands">
+        <div class="band" style="flex:60;border-top-color:var(--hair)"><b>仍在路上</b><span>0 – 59</span></div>
+        <div class="band" style="flex:15;border-top-color:var(--ink-2)"><b>堅持完賽</b><span>60 – 74</span></div>
+        <div class="band" style="flex:15;border-top-color:var(--accent)"><b>穩健完賽</b><span>75 – 89</span></div>
+        <div class="band" style="flex:10;border-top-color:var(--verm)"><b>全程完賽</b><span>90 – 100</span></div>
       </div>
     </div>
   </section>
-  <section class="s">
-    <div class="wrap">
-      <span class="lbl">S05 · How to Read</span>
-      <h2>怎麼讀你的證書</h2>
-      <p class="intro">證書的主角是一片晶圓：外圈十八盞燈是十八週的出勤，從處暑一路點到大寒；中央的方塊照上課順序一層層升起，疊成你這學期的山；最外圈五段彩色弧，是五段路。</p>
-      <div class="legend">
-        <div class="lg"><svg viewBox="-22 -22 44 44"><defs><linearGradient id="lgp" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#F06A2C"/><stop offset="1" stop-color="#F06A2C" stop-opacity="0"/></linearGradient></defs><rect x="-3" y="-20" width="6" height="36" fill="url(#lgp)"/><ellipse cx="0" cy="16" rx="8" ry="3" fill="#F1E7DA"/></svg><div><b>高光柱 · 準時</b><span>那週準時走進教室</span></div></div>
-        <div class="lg"><svg viewBox="-22 -22 44 44"><rect x="-3" y="-2" width="6" height="18" fill="url(#lgp)"/><ellipse cx="0" cy="16" rx="8" ry="3" fill="#F1E7DA" opacity=".7"/></svg><div><b>半根光 · 遲到</b><span>有來，晚了一點</span></div></div>
-        <div class="lg"><svg viewBox="-22 -22 44 44"><rect x="-3" y="4" width="6" height="12" fill="#5FB3A9" opacity=".6"/><ellipse cx="0" cy="16" rx="8" ry="3" fill="#5FB3A9"/></svg><div><b>青光 · 請假</b><span>不算缺席，不扣分</span></div></div>
-        <div class="lg"><svg viewBox="-22 -22 44 44"><ellipse cx="0" cy="16" rx="8" ry="3" fill="none" stroke="#5C5A56"/></svg><div><b>沒有光 · 缺席</b><span>那週沒有到</span></div></div>
-        <div class="lg"><svg viewBox="-22 -22 44 44"><path d="M-12 -2 L0 -9 L12 -2 L12 10 L0 17 L-12 10 Z" fill="rgba(236,232,225,.35)" stroke="#ECE8E1"/><path d="M-12 -2 L0 5 L12 -2 M0 5 L0 17" fill="none" stroke="#ECE8E1"/></svg><div><b>發光方塊 · 完成</b><span>越亮代表分數越完整</span></div></div>
-        <div class="lg"><svg viewBox="-22 -22 44 44"><path d="M-12 -2 L0 -9 L12 -2 L12 10 L0 17 L-12 10 Z" fill="none" stroke="#8D8A84" stroke-dasharray="3 3"/></svg><div><b>虛線方塊 · 待補交</b><span>段考前補交，還能拿回一半</span></div></div>
-      </div>
-    </div>
-  </section>
-</div>
+</main>
 
-<div class="scope" id="scope"><div class="pin"><canvas id="ridge" role="img" aria-label="捲動動畫：訊號線畫出銅馬，壢馬線稿解構，構成線對位，色塊與油墨印出銅馬，銅橙小點繞十八週抵達終點"></canvas>
-  <div class="hud"><i></i><i></i><i></i><i></i><b class="tl">CH1 · 學習壢程</b><b class="tr" id="scopeR">LAP 00/18</b><b class="bl" id="scopeL">00 訊號 · SCROLL ↓</b><b class="br">115-1</b></div>
-</div></div>
+<div class="scope" id="scope"><div class="pin"><canvas id="ridge" role="img" aria-label="版畫 Nº 001：一條線畫出壢中銅馬，壢馬線稿破框解構，構成線對位，色版與油墨印出銅馬，季節的太陽沿著節氣走一圈，抵達大寒"></canvas></div></div>
 
 <div class="zone" id="cert">
-  <p class="pnote" id="pnote"></p>
-  <div class="papers">
-    <div class="holder" id="h1">
-      <div class="sheet" id="s1"><div class="grain"></div><i class="bleed"></i><svg class="reg a" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg><svg class="reg b" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg><svg class="reg c" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg><svg class="reg d" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg>
-        <div class="hud"><i></i><i></i><i></i><i></i><b class="tl">LIFE TECHNOLOGY · 115-1</b><b class="tr">學習壢程</b><b class="bl">CLHS · 生活科技</b><b class="br">P 01 / 02</b></div>
-        <div class="pg">
-          <div class="ph">
-            <div>
-              <div class="school">國立中央大學附屬中壢高中</div>
-              <h1>生活科技</h1>
-              <div class="sub">115-1 學習<em>壢</em>程</div>
-              <div class="lt">LIFE TECH · A JOURNEY OF MAKING</div>
-              <div class="namerow"><span class="k">NAME</span><div class="cname" id="cname"></div></div>
+  <div class="wrap">
+    <p class="eyebrow">Certificate · 學習壢程證書</p>
+    <h2 style="margin:10px 0 12px;font:300 clamp(26px,3.4vw,40px)/1.35 var(--zh);letter-spacing:.2em">兩頁，一學期</h2>
+    <p class="pnote" id="pnote"></p>
+    <div class="demo"><span>示範 · 假資料</span><button class="chip" data-k="lin" aria-pressed="true">林同學 96</button><button class="chip" data-k="chen">陳同學 71</button><button class="chip" data-k="wang">王同學 學期中</button><button class="chip" id="replay">重播</button></div>
+    <div class="papers" id="papers">
+      <div class="holder" id="h1">
+        <div class="sheet" id="s1">
+          
+          <div class="pg">
+            <div class="ph">
+              <div>
+                <div class="school">國立中央大學附屬中壢高中</div>
+                <h1>生活科技</h1>
+                <div class="sub">115-1 學習<em>壢</em>程</div>
+                <div class="en">Living Technology · A Journey of Making</div>
+                <div class="namerow"><span class="lbl">Name</span><div class="cname" id="cname"></div></div>
+              </div>
+              <div class="spec">
+                <div><span class="lbl">Class 班級</span><span class="v" id="sCls"></span></div>
+                <div><span class="lbl">Seat 座號</span><span class="v" id="sSeat"></span></div>
+                <div><span class="lbl">Term 學期</span><span class="v">115-1</span></div>
+              </div>
             </div>
-            <div class="spec">
-              <div><span class="k">CLASS 班級</span><span class="v" id="sCls"></span></div>
-              <div><span class="k">SEAT 座號</span><span class="v" id="sSeat"></span></div>
-              <div><span class="k">TERM 學期</span><span class="v">115-1</span></div>
+            <div class="glbox">
+              <canvas id="certGL" role="img" aria-label="晶圓：外圈十八盞燈是每週出勤，中央方塊依上課順序升起疊成山，最外圈五段弧是五段路"></canvas>
+              <span class="tag lbl" style="left:0;top:6px">Your mountain · 你的造山圖</span>
+              <span class="tag lbl" id="tagR" style="right:0;top:6px"></span>
+              <span class="tag lbl" id="tagB" style="right:0;bottom:4px"></span>
             </div>
+            <div class="wleg" id="wleg"></div>
+            <div class="res">
+              <div><span class="lbl" id="kScore">Score 學期成績</span><span class="big" id="vScore">00</span></div>
+              <div><span class="lbl">Title 完賽稱號</span><span class="v" id="vTitle"></span></div>
+              <div><span class="lbl">Rank 班排 · 校排</span><span class="v" id="vRank" style="font-family:var(--mono);font-size:17px;letter-spacing:0"></span></div>
+              <div><span class="lbl">Lamps 點亮的燈</span><span class="v" id="vAtt"></span><span class="dots" id="dots"></span></div>
+            </div>
+            <div class="words"><span class="lbl">Note 老師的話</span><p id="vWords"></p></div>
+            <div class="foot"><span>Living Technology · 115-1</span><span>抵達 · 大寒 2027.01.20</span></div>
           </div>
-          <div class="glbox">
-            <canvas id="certGL" role="img" aria-label="3D 晶圓：外圈十八盞燈是每週出勤，中央方塊依上課順序升起疊成山，最外圈五段弧是五段路"></canvas>
-            <span class="tag" style="left:0;top:4px">YOUR MOUNTAIN · 你的造山圖</span>
-            <span class="tag" id="tagR" style="right:0;top:4px"></span>
-            <span class="tag" id="tagB" style="right:0;bottom:2px"></span>
-          </div>
-          <div class="wleg" id="wleg"></div>
-          <div class="res">
-            <div><span class="k" id="kScore">SCORE 學期成績</span><span class="v big" id="vScore">00</span></div>
-            <div><span class="k">TITLE 完賽稱號</span><span class="v" id="vTitle"></span></div>
-            <div><span class="k">RANK 班排 · 校排</span><span class="v" id="vRank" style="font-size:19px"></span></div>
-            <div><span class="k">LAMPS 點亮的燈</span><span class="v" id="vAtt"></span></div>
-          </div>
-          <div class="words"><span class="k">NOTE 老師的話</span><p id="vWords"></p></div>
-          <div class="foot"><span>LIFE TECHNOLOGY · 115-1</span><span>2027.01.20</span></div>
         </div>
       </div>
-    </div>
-    <div class="holder" id="h2">
-      <div class="sheet" id="s2"><div class="grain"></div><i class="bleed"></i><svg class="reg a" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg><svg class="reg b" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg><svg class="reg c" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg><svg class="reg d" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg>
-        <div class="hud"><i></i><i></i><i></i><i></i><b class="tl">LIFE TECHNOLOGY · 115-1</b><b class="tr">學習壢程</b><b class="bl">CLHS · 生活科技</b><b class="br">P 02 / 02</b></div>
-        <div class="pg p2">
-          <div class="p2h"><h2>學習<em>壢</em>程</h2><span class="who" id="p2who"></span></div>
-          <div class="sec"><span class="k" id="trackK">ROUTE 十八週賽道</span><svg id="track" viewBox="0 0 674 600" role="img" aria-label="十八週學習賽道：每週出勤、得分率曲線、作業與轉折"></svg></div>
-          <div class="sec"><span class="k">FIVE PATHS 五段路</span><div id="prows"></div></div>
-          <div class="sig2"><div><span class="line"></span>TEACHER 任課教師</div><div><span class="line"></span>STUDENT 學生</div></div>
+      <div class="holder" id="h2">
+        <div class="sheet" id="s2">
+          
+          <div class="pg p2">
+            <div class="p2h"><h2>學習<em>壢</em>程</h2><span class="who" id="p2who"></span></div>
+            <div class="sec"><span class="lbl" id="trackK">Route 十八週</span><svg id="track" viewBox="0 0 674 600" role="img" aria-label="十八週學習路線：節氣、每週出勤、得分率曲線、作業與轉折"></svg></div>
+            <div class="sec"><span class="lbl">Five paths 五段路</span><div id="prows"></div></div>
+            <div class="sig2"><div><span class="line"></span><span class="lbl">Teacher</span></div><div><span class="line"></span><span class="lbl">Student</span></div></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<div class="wrap"><footer class="site"><span>Built by hand. No template.</span><span><a href="../">← Portfolio</a></span></footer></div>
 
 <script>
 (function () {
@@ -394,23 +395,43 @@ function $(id) { return document.getElementById(id); }
 function clamp(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
 function easeOut(x) { return 1 - Math.pow(1 - x, 3); }
 function easeIO(x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+function expoOut(x) { return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x); }
 function pad2(n) { return (n < 10 ? '0' : '') + n; }
+function hash(x, y) { var h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return h - Math.floor(h); }
+function noise(x, y) { var xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf); var a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
+function rnd(i, k) { return hash(i * 1.31 + k * 7.7, k * 3.9 + i * .17); }
 var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var mobile = window.innerWidth < 700;
 
+// ======================= 主題（與網站共用） =======================
+var root = document.documentElement;
+function theme() { return root.dataset.theme || (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); }
+function isLight() { return theme() === 'light'; }
+var themeHooks = [];
+(function () {
+  var btn = $('theme');
+  var label = function () { btn.textContent = isLight() ? 'Dark' : 'Light'; };
+  label();
+  btn.addEventListener('click', function () {
+    root.dataset.theme = isLight() ? 'dark' : 'light';
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    label(); themeHooks.forEach(function (f) { f(); });
+  });
+})();
+
 // ======================= 資料 =======================
 var PATHS = [
-  { verb: '看見', unit: '科技生活', c: '#9AA7B4', weeks: 'W01 · W09', desc: '從科技故事和紀錄片〈造山者〉，看見科技怎麼改變我們的生活，也改變這座島。', abil: ['科技與社會', '觀察與表達'] },
-  { verb: '點亮', unit: '智控機電', c: '#5F8FD1', weeks: 'W02 – W05', desc: '用 Arduino 讓電路亮起來、動起來：紅綠燈、按鈕、伺服馬達、超音波。', abil: ['電路與程式', '感測與控制'] },
-  { verb: '轉動', unit: '連桿機械', c: '#C9A66B', weeks: 'W07 – 08 · W15 – 17', desc: '從 Motiongen 的四連桿到仿生機構，最後親手做出一台會動的作品。', abil: ['機構原理', '製作與修正'] },
-  { verb: '成形', unit: '機構建模', c: '#6FA98A', weeks: 'W10 – 11 · W13 – 14', desc: '在 Onshape 把想法變成形體：積木、桌椅、三視圖、馬達與連桿模擬。', abil: ['3D 建模', '工程圖溝通'] },
-  { verb: '回望', unit: '學習歷程', c: '#A78BC6', weeks: 'W06 · W12 · W18', desc: '三次學習歷程檔案，把走過的路記下來、想清楚、說出來。', abil: ['紀錄與反思', '自我表達'] }
+  { verb: '看見', unit: '科技生活', c: '#9AA7B4', weeks: 'W01 · W09', desc: '從科技故事和紀錄片〈造山者〉，看見科技怎麼改變我們的生活，也改變這座島。' },
+  { verb: '點亮', unit: '智控機電', c: '#6F8FC4', weeks: 'W02 – W05', desc: '用 Arduino 讓電路亮起來、動起來：紅綠燈、按鈕、伺服馬達、超音波。' },
+  { verb: '轉動', unit: '連桿機械', c: '#C2A275', weeks: 'W07 – 08 · W15 – 17', desc: '從 Motiongen 的四連桿到仿生機構，最後親手做出一台會動的作品。' },
+  { verb: '成形', unit: '機構建模', c: '#7FA690', weeks: 'W10 – 11 · W13 – 14', desc: '在 Onshape 把想法變成形體：積木、桌椅、三視圖、馬達與連桿模擬。' },
+  { verb: '回望', unit: '學習歷程', c: '#A792C2', weeks: 'W06 · W12 · W18', desc: '三次學習歷程檔案，把走過的路記下來、想清楚、說出來。' }
 ];
 var TERMS = [['處暑', 7, 23], ['白露', 8, 7], ['秋分', 8, 23], ['寒露', 9, 8], ['霜降', 9, 23], ['立冬', 10, 7], ['小雪', 10, 22], ['大雪', 11, 7], ['冬至', 11, 22], ['小寒', 12, 5], ['大寒', 12, 20]];
 var CNUM = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八'];
-var WEEK = []; (function () { for (var w = 1; w <= 18; w++) { var d = new Date(2026, 8, 1 + Math.round((w - 1) * 8.06)), term = TERMS[0][0]; TERMS.forEach(function (T) { if (d >= new Date(2026, T[1], T[2])) term = T[0]; }); WEEK[w] = { term: term, date: (d.getMonth() + 1) + '.' + pad2(d.getDate()), first: false }; } for (w = 1; w <= 18; w++) WEEK[w].first = w === 1 || WEEK[w].term !== WEEK[w - 1].term; })();
+var WEEK = []; (function () { for (var w = 1; w <= 18; w++) { var d = new Date(2026, 8, 1 + Math.round((w - 1) * 8.06)), term = TERMS[0][0]; TERMS.forEach(function (T) { if (d >= new Date(2026, T[1], T[2])) term = T[0]; }); WEEK[w] = { term: term, date: (d.getMonth() + 1) + '.' + pad2(d.getDate()) }; } for (w = 1; w <= 18; w++) WEEK[w].first = w === 1 || WEEK[w].term !== WEEK[w - 1].term; })();
 var PIDX = { '科技生活': 0, '智控機電': 1, '連桿機械': 2, '機構建模': 3, '學習歷程': 4 };
-var TOPICS = ['科技故事｜前測', 'Arduino｜微控制器', 'Arduino｜紅綠燈', 'Arduino｜按鈕＋伺服馬達', 'Arduino｜超音波＋伺服馬達', '一段學檔', 'Motiongen｜四連桿・四足獸・六足獸・連桿設計', 'Motiongen｜仿生獸・撲翼機・曲柄滑塊・仿生鳥', '紀錄片〈造山者〉', 'Onshape｜積木＋旋轉體', 'Onshape｜桌椅＋12 個三視圖', '二段學檔', 'Onshape｜TT 馬達・伺服・超音波', 'Onshape｜四連桿模擬', '連桿實作｜草稿', '連桿實作｜實作', '連桿實作｜實作', '三段學檔'];
+var COURSE = {"id": "115-1", "course": "生活科技", "course_en": "Living Technology", "weeks": [{"week": 1, "unit": "科技生活", "unit_en": "Technology and Life", "zh": "科技故事、前測", "en": "Stories of technology; pre-test", "points": 4, "calc": "2 + 2"}, {"week": 2, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：微控制器", "en": "The microcontroller", "points": 4, "calc": "2 + 2"}, {"week": 3, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：紅綠燈", "en": "Traffic light", "points": 6, "calc": "2 + 4"}, {"week": 4, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：按鈕＋伺服馬達", "en": "Button and servo", "points": 4, "calc": "2 + 2"}, {"week": 5, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：超音波＋伺服馬達", "en": "Ultrasonic sensor and servo", "points": 5, "calc": "2 + 3"}, {"week": 6, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（一）", "en": "Portfolio 1", "points": 2}, {"week": 7, "unit": "連桿機械", "unit_en": "Linkages", "zh": "MotionGen：四連桿、四足獸、六足獸、連桿設計", "en": "Four-bar, quadruped, hexapod, linkage design", "points": 8, "calc": "2 × 4"}, {"week": 8, "unit": "連桿機械", "unit_en": "Linkages", "zh": "MotionGen：仿生獸、撲翼機、曲柄滑塊、仿生鳥", "en": "Strandbeest, ornithopter, slider-crank, bionic bird", "points": 8, "calc": "2 × 4"}, {"week": 9, "unit": "科技生活", "unit_en": "Technology and Life", "zh": "紀錄片《造山者》", "en": "Documentary: A Chip Odyssey", "points": 2}, {"week": 10, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：積木、旋轉體", "en": "Building block, revolved solid", "points": 4, "calc": "2 + 2"}, {"week": 11, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：桌椅、12 個三視圖", "en": "Table and chair; 12 three-view drawings", "points": 14, "calc": "2 + 12"}, {"week": 12, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（二）", "en": "Portfolio 2", "points": 2}, {"week": 13, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：TT 馬達、伺服馬達、超音波", "en": "TT motor, servo, ultrasonic sensor", "points": 5}, {"week": 14, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：四連桿模擬", "en": "Four-bar simulation", "points": 10}, {"week": 15, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：草稿", "en": "Linkage build: sketch", "points": 5, "link": "clhs4bar/"}, {"week": 16, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：製作", "en": "Linkage build: making", "points": 5, "link": "clhs4bar/"}, {"week": 17, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：製作", "en": "Linkage build: making", "points": 5, "link": "clhs4bar/"}, {"week": 18, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（三）", "en": "Portfolio 3", "points": 2}], "extra": [{"unit": "課程參與", "unit_en": "Participation", "zh": "準時", "en": "On time", "points": 15}], "total": 110};
 var TASKS = [
   [1,'科技生活','科技故事',2],[1,'科技生活','前測',2],[2,'智控機電','Arduino 入門',2],[2,'智控機電','微控制器',2],
   [3,'智控機電','Arduino 練習',2],[3,'智控機電','紅綠燈',4],[4,'智控機電','按鈕',2],[4,'智控機電','伺服馬達',2],
@@ -425,296 +446,208 @@ function sc(o) { return TASKS.map(function (t, i) { return (i in o) ? o[i] : t.m
 var PROFILES = {
   lin: { name: '林同學', cls: '105', seat: '18', cur: 18, scores: sc({ 5: 3, 9: 1, 18: null, 23: 8, 26: 8, 28: 4 }), late: [13], leave: [9], absent: [],
     score: 96, title: '全程完賽', rank: '3/36 · 21/345', att: '94%',
-    words: '做連桿的那幾週看得出你很投入，Motiongen 四連桿、四足獸、六足獸一路都是滿分。十八週沒有一次缺席，十六盞燈準時亮起，你的穩定讓人放心。下學期期待你把畫三視圖的細心，也帶進 Arduino 的程式裡。', eyes: ['動手能力強', '樂於幫助同學'] },
+    words: '做連桿的那幾週看得出你很投入，Motiongen 四連桿、四足獸、六足獸一路都是滿分。十八週沒有一次缺席，十六盞燈準時亮起，你的穩定讓人放心。下學期期待你把畫三視圖的細心，也帶進 Arduino 的程式裡。' },
   chen: { name: '陳同學', cls: '105', seat: '07', cur: 18, scores: sc({ 5: 2, 9: null, 17: null, 18: null, 21: 1, 23: null, 26: 6, 27: 4, 28: 3, 29: 3 }), late: [2, 6, 15], leave: [], absent: [4, 11, 12],
     score: 71, title: '堅持完賽', rank: '—', att: '83%',
-    words: 'Motiongen 的四連桿到六足獸你一份都沒漏，W07 拿下滿分，證明你做得到。偶爾晚一點到，但大多數的週次你都在教室。W11 的三視圖還留著空位，段考前回頭補上，山就會再高一層。', eyes: ['作品有創意'] },
+    words: 'Motiongen 的四連桿到六足獸你一份都沒漏，W07 拿下滿分，證明你做得到。偶爾晚一點到，但大多數的週次你都在教室。W11 的三視圖還留著空位，段考前回頭補上，山就會再高一層。' },
   wang: { name: '王同學', cls: '105', seat: '25', cur: 9, scores: sc({ 5: 3 }), late: [3], leave: [], absent: [],
     score: 98, title: '正在路上', rank: '學期中', att: '100%', live: true,
-    words: '前九週每一盞燈都亮著，Arduino 和 Motiongen 的作業一份都沒漏，這樣的節奏很棒。後半段要進入 Onshape，把想法變成形體，保持現在的步調。', eyes: ['細心', '常主動發問'] }
+    words: '前九週每一盞燈都亮著，Arduino 和 Motiongen 的作業一份都沒漏，這樣的節奏很棒。後半段要進入 Onshape，把想法變成形體，保持現在的步調。' }
 };
 var ROWS = [10, 8, 6, 4, 2, 1], DIE = 30, PITCH = 34, BASE_Y = 140, SLOTS = [];
 ROWS.forEach(function (n, k) { var w = n * PITCH - 4, x0 = -w / 2, y = BASE_Y - k * PITCH; for (var i = 0; i < n; i++) SLOTS.push({ x: x0 + i * PITCH, y: y, row: k }); });
+function statusOf(P, w) { if (w > P.cur) return 'future'; if (P.absent.indexOf(w) >= 0) return 'absent'; if (P.leave.indexOf(w) >= 0) return 'leave'; if (P.late.indexOf(w) >= 0) return 'late'; return 'on'; }
+var HORSE = {"outer":[[0.2394,-0.5],[0.2472,-0.4643],[0.2383,-0.4475],[0.2517,-0.4308],[0.255,-0.4174],[0.2115,-0.4007],[0.2249,-0.385],[0.168,-0.3516],[0.1825,-0.3449],[0.1836,-0.3393],[0.1356,-0.2991],[0.139,-0.2958],[0.1613,-0.3013],[0.1624,-0.2958],[0.1267,-0.2545],[0.1568,-0.2511],[0.1579,-0.2455],[0.1044,-0.2154],[0.1401,-0.2087],[0.1289,-0.1897],[0.0776,-0.1886],[0.0686,-0.1663],[0.0519,-0.1674],[0.0173,-0.1451],[-0.0497,-0.1596],[-0.1055,-0.1562],[-0.1189,-0.1317],[-0.1735,-0.1183],[-0.2227,-0.0826],[-0.2606,-0.0904],[-0.332,-0.1339],[-0.3521,-0.1362],[-0.3878,-0.1172],[-0.4157,-0.0893],[-0.4314,-0.0815],[-0.4749,-0.0993],[-0.5619,-0.0971],[-0.5173,-0.0558],[-0.4492,-0.0212],[-0.3811,-0.0246],[-0.361,-0.0402],[-0.3365,-0.0469],[-0.2718,-0.0491],[-0.245,-0.0402],[-0.2483,-0.0078],[-0.2383,0.0446],[-0.1836,0.1261],[-0.2148,0.1786],[-0.2517,0.2165],[-0.284,0.2355],[-0.293,0.2567],[-0.2628,0.298],[-0.2372,0.3192],[-0.2015,0.3873],[-0.1992,0.4185],[-0.2104,0.423],[-0.2282,0.4464],[-0.2148,0.4955],[-0.2015,0.4989],[-0.1579,0.4799],[-0.149,0.4576],[-0.1557,0.4286],[-0.168,0.4118],[-0.1657,0.3884],[-0.2126,0.2958],[-0.2193,0.2712],[-0.2171,0.2578],[-0.101,0.1596],[-0.0765,0.115],[-0.0709,0.1161],[-0.0619,0.1786],[-0.0631,0.2098],[-0.0765,0.26],[0.0608,0.3214],[0.0742,0.3337],[0.0686,0.3583],[0.0865,0.3806],[0.1066,0.3895],[0.1345,0.3862],[0.1423,0.3672],[0.1412,0.3449],[0.1088,0.2991],[0.0006,0.2623],[-0.014,0.2422],[-0.0128,0.2054],[-0.0017,0.1808],[0.0106,0.106],[0.0061,0.0725],[0.0742,0.0781],[0.1557,0.0725],[0.2327,0.0513],[0.2662,0.0525],[0.3633,0.2344],[0.3789,0.2478],[0.4258,0.3594],[0.4403,0.3828],[0.4637,0.3806],[0.4693,0.3862],[0.4648,0.4129],[0.4749,0.4275],[0.5374,0.4386],[0.5608,0.433],[0.5296,0.3717],[0.4682,0.3326],[0.4448,0.2846],[0.4157,0.2433],[0.4102,0.2065],[0.3655,0.1473],[0.3722,0.1105],[0.3555,0.0647],[0.3532,0.0435],[0.4046,0.0246],[0.4492,0.0156],[0.4682,0.0346],[0.4872,0.1071],[0.4872,0.1194],[0.4537,0.1507],[0.486,0.2031],[0.5195,0.1775],[0.5262,0.154],[0.524,0.0949],[0.4805,-0.019],[0.4626,-0.0368],[0.409,-0.0346],[0.3778,-0.0424],[0.3644,-0.0826],[0.361,-0.1261],[0.3465,-0.1886],[0.3142,-0.2623],[0.3231,-0.2824],[0.3488,-0.2935],[0.361,-0.2935],[0.38,-0.2801],[0.4068,-0.2779],[0.4314,-0.2935],[0.4481,-0.3192],[0.4392,-0.3571],[0.3722,-0.394],[0.3265,-0.4386],[0.2852,-0.4598]],"aspect":1.1238839285714286,"inner":[[-0.1233,-0.1228],[-0.1434,-0.0792],[-0.111,0.0346],[-0.0363,0.0458],[-0.0117,0.0692],[-0.0017,0.0703],[0.0039,0.0636],[0.0028,0.0558],[-0.0229,0.0301],[-0.0128,-0.0045],[-0.0229,-0.0703],[-0.0765,-0.1228],[-0.1099,-0.1295],[-0.1122,-0.1261]]};
+var STAT = {"outer":[[0.5253,-0.336],[0.4605,-0.3866],[0.4423,-0.3947],[0.4261,-0.413],[0.4119,-0.415],[0.3836,-0.4575],[0.3573,-0.4615],[0.3188,-0.5],[0.3107,-0.4939],[0.3107,-0.4372],[0.2844,-0.417],[0.2601,-0.4109],[0.2561,-0.3988],[0.2358,-0.3907],[0.2318,-0.3745],[0.2176,-0.3644],[0.2176,-0.3522],[0.1953,-0.332],[0.1913,-0.2794],[0.1832,-0.2713],[0.1832,-0.249],[0.169,-0.2409],[0.1731,-0.2024],[0.1549,-0.1943],[0.1508,-0.1802],[0.1204,-0.1761],[0.1043,-0.168],[0.1002,-0.1599],[0.0719,-0.1599],[0.0516,-0.168],[-0.0739,-0.17],[-0.1225,-0.164],[-0.1528,-0.1538],[-0.1832,-0.1538],[-0.2014,-0.1599],[-0.2257,-0.1781],[-0.2682,-0.2227],[-0.3087,-0.2409],[-0.3512,-0.2409],[-0.3796,-0.2287],[-0.3978,-0.2146],[-0.4099,-0.2126],[-0.414,-0.2045],[-0.4504,-0.2045],[-0.5051,-0.2389],[-0.6043,-0.2611],[-0.6123,-0.2591],[-0.6144,-0.249],[-0.6083,-0.2409],[-0.582,-0.2247],[-0.5111,-0.164],[-0.4545,-0.1356],[-0.4504,-0.1296],[-0.3836,-0.1235],[-0.331,-0.1316],[-0.2844,-0.1316],[-0.246,-0.1215],[-0.2217,-0.1093],[-0.2217,-0.081],[-0.2298,-0.0526],[-0.2358,-0.0506],[-0.2419,-0.0344],[-0.246,-0.0061],[-0.2439,0.0405],[-0.2318,0.0709],[-0.2318,0.1073],[-0.3087,0.1721],[-0.3856,0.2126],[-0.3856,0.2227],[-0.3593,0.2794],[-0.3411,0.334],[-0.3269,0.4069],[-0.3269,0.4352],[-0.3431,0.4393],[-0.3613,0.4615],[-0.3715,0.4838],[-0.3694,0.496],[-0.2986,0.498],[-0.2905,0.4919],[-0.2925,0.4433],[-0.2804,0.4049],[-0.2986,0.3623],[-0.3188,0.2915],[-0.3168,0.2429],[-0.2905,0.2247],[-0.1852,0.1781],[-0.1265,0.1316],[-0.0962,0.1336],[-0.0962,0.1761],[-0.1144,0.2368],[-0.1387,0.2753],[-0.1366,0.2874],[0.0111,0.3988],[0.0253,0.4211],[0.0294,0.4717],[0.0779,0.4858],[0.086,0.4838],[0.0881,0.4433],[0.0719,0.4312],[0.0617,0.415],[0.0557,0.3866],[-0.0273,0.33],[-0.0658,0.2935],[-0.0658,0.2591],[-0.0132,0.17],[-0.003,0.1417],[0.0071,0.1316],[0.0152,0.1134],[0.0172,0.083],[0.0273,0.0749],[0.0779,0.0749],[0.0901,0.087],[0.1731,0.087],[0.2561,0.0709],[0.2945,0.0709],[0.337,0.1194],[0.3796,0.1943],[0.418,0.2794],[0.4504,0.33],[0.499,0.4453],[0.5213,0.4534],[0.5233,0.4858],[0.6022,0.4858],[0.6022,0.4737],[0.584,0.4555],[0.5779,0.4393],[0.5435,0.419],[0.4949,0.3502],[0.4727,0.3016],[0.4585,0.249],[0.4261,0.1781],[0.4079,0.1053],[0.4079,0.0769],[0.499,0.0486],[0.5354,0.0486],[0.5557,0.0749],[0.5658,0.1113],[0.5658,0.17],[0.5435,0.1943],[0.5516,0.2389],[0.5577,0.249],[0.5698,0.249],[0.5941,0.2206],[0.6022,0.2186],[0.6063,0.2085],[0.6043,0.1721],[0.6123,0.1457],[0.5881,0.083],[0.5779,0.0304],[0.5698,0.0162],[0.5577,0.0101],[0.5516,0.0],[0.5354,-0.004],[0.5111,0.002],[0.5071,0.0142],[0.4787,0.0142],[0.4666,0.004],[0.4383,-0.002],[0.4342,-0.0789],[0.4221,-0.1012],[0.42,-0.1316],[0.4079,-0.1599],[0.4079,-0.1741],[0.3836,-0.2571],[0.3836,-0.2895],[0.3877,-0.2935],[0.4565,-0.2895],[0.4646,-0.2773],[0.4929,-0.2753],[0.501,-0.2895],[0.5192,-0.2935],[0.5273,-0.3219]],"tri":[[0.4079,-0.1437],[0.3775,-0.0749],[0.3107,0.0121],[0.4059,0.0101]]};
 
-// ======================= THREE：晶圓場景 =======================
+// ======================= 晶圓（細線＋漏光） =======================
 var HAS3D = !!(window.THREE && (function () { try { var c = document.createElement('canvas'); return !!(c.getContext('webgl') || c.getContext('experimental-webgl')); } catch (e) { return false; } })());
-function canvasTex(w, h, draw) { var c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); var t = new THREE.CanvasTexture(c); return t; }
+function canvasTex(w, h, draw) { var c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return new THREE.CanvasTexture(c); }
 var TEX = HAS3D ? {
-  glow: canvasTex(128, 128, function (g, w) { var r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.25, 'rgba(255,255,255,.55)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, w, w); }),
-  rays: canvasTex(512, 512, function (g, w) {
-    g.translate(256, 256);
-    for (var i = 0; i < 140; i++) { var a = Math.random() * Math.PI * 2, L = 120 + Math.random() * 130, wd = .004 + Math.random() * .014; var gr = g.createLinearGradient(0, 0, Math.cos(a) * L, Math.sin(a) * L); gr.addColorStop(0, 'rgba(255,255,255,.22)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, L, a - wd, a + wd); g.closePath(); g.fill(); }
-    var r = g.createRadialGradient(0, 0, 0, 0, 0, 256); r.addColorStop(0, 'rgba(255,255,255,.5)'); r.addColorStop(.35, 'rgba(255,255,255,.12)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(-256, -256, 512, 512);
-  }),
+  glow: canvasTex(128, 128, function (g, w) { var r = g.createRadialGradient(64, 64, 0, 64, 64, 64); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.25, 'rgba(255,255,255,.5)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, w, w); }),
+  leak: canvasTex(512, 512, function (g, w) { g.translate(256, 256); for (var i = 0; i < 90; i++) { var a = Math.random() * Math.PI * 2, L = 140 + Math.random() * 110, wd = .003 + Math.random() * .01; var gr = g.createLinearGradient(0, 0, Math.cos(a) * L, Math.sin(a) * L); gr.addColorStop(0, 'rgba(255,255,255,.16)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, L, a - wd, a + wd); g.closePath(); g.fill(); } var r = g.createRadialGradient(0, 0, 0, 0, 0, 256); r.addColorStop(0, 'rgba(255,255,255,.55)'); r.addColorStop(.4, 'rgba(255,255,255,.12)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(-256, -256, 512, 512); }),
   beam: canvasTex(4, 128, function (g, w, h) { var r = g.createLinearGradient(0, h, 0, 0); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(.6, 'rgba(255,255,255,.35)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, w, h); })
 } : null;
-
+var PAL = {
+  dark: { line: 0xE8E5DE, mut: 0x4A4842, lamp: 0xF2C894, leave: 0x8FB7B5, leak: 0xF0D2A6, core: 0x6A5A48, stone: 0xE8E5DE, blend: 'add' },
+  light: { line: 0x2B2A27, mut: 0xC4BEB2, lamp: 0xD9643A, leave: 0x6F9C9E, leak: 0xD9643A, core: 0xD9A27A, stone: 0x2B2A27, blend: 'normal' }
+};
 function WaferScene(canvas, opts) {
   var S = this; S.opts = opts; S.canvas = canvas;
-  var R = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, preserveDrawingBuffer: !!opts.print });
-  R.setPixelRatio(Math.min(opts.maxDpr || 2, window.devicePixelRatio || 1));
-  S.R = R; S.scene = new THREE.Scene();
-  S.cam = new THREE.PerspectiveCamera(opts.fov || 30, 1, 1, 6000);
-  S.root = new THREE.Group(); S.scene.add(S.root);
-  S.dyn = new THREE.Group(); S.root.add(S.dyn);
-  S.light = false;
-  S.buildStatic();
-  S.resize();
+  S.R = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, preserveDrawingBuffer: !!opts.print });
+  S.R.setPixelRatio(Math.min(opts.maxDpr || 2, window.devicePixelRatio || 1));
+  S.scene = new THREE.Scene(); S.cam = new THREE.PerspectiveCamera(opts.fov || 30, 1, 1, 8000);
+  S.root = new THREE.Group(); S.scene.add(S.root); S.dyn = new THREE.Group(); S.root.add(S.dyn);
+  S.light = false; S.buildStatic(); S.resize();
 }
-WaferScene.prototype.mat = function (o) { o.transparent = true; o.depthWrite = o.depthWrite === undefined ? false : o.depthWrite; return o; };
 WaferScene.prototype.buildStatic = function () {
-  var S = this, root = this.root;
-  // 光芒與光暈
-  S.rays = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.rays, color: 0xE9D9C6, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: .4 }));
-  S.rays.scale.set(1500, 1500, 1); S.rays.position.set(0, -40, -60); S.rays.renderOrder = -2; root.add(S.rays);
-  S.core = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0x6A5446, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: .3 }));
-  S.core.scale.set(900, 900, 1); S.core.position.set(0, -10, 0); S.core.renderOrder = -1; root.add(S.core);
-  // 晶粒點陣
-  var pos = [], col = [], c = new THREE.Color();
-  for (var y = -232; y <= 232; y += 13) for (var x = -232; x <= 232; x += 13) {
-    var cx = x + 5.5, cz = y + 5.5, d = Math.hypot(cx, cz); if (d > 230) continue;
-    pos.push(cx, 0, cz);
-    c.setHSL(.07, .12, .32 + .18 * (1 - d / 232)); col.push(c.r, c.g, c.b);
-  }
-  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  S.dots = new THREE.Points(g, new THREE.PointsMaterial({ size: 4.2, vertexColors: true, transparent: true, opacity: .5, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true }));
-  root.add(S.dots);
-  // 晶粒格線（細）
-  var lp = [];
-  for (var v = -234; v <= 234; v += 13) { var h = Math.sqrt(Math.max(0, 232 * 232 - v * v)); lp.push(v, 0, -h, v, 0, h, -h, 0, v, h, 0, v); }
+  var S = this, root = S.root;
+  S.leak = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.leak, transparent: true, depthWrite: false, opacity: .3 }));
+  S.leak.scale.set(1500, 1500, 1); S.leak.position.set(0, -40, -60); root.add(S.leak);
+  S.core = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, transparent: true, depthWrite: false, opacity: .3 }));
+  S.core.scale.set(900, 900, 1); S.core.position.set(0, -10, 0); root.add(S.core);
+  var pos = []; for (var y = -232; y <= 232; y += 13) for (var x = -232; x <= 232; x += 13) { var cx = x + 5.5, cz = y + 5.5; if (Math.hypot(cx, cz) > 230) continue; pos.push(cx, 0, cz); }
+  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  S.dots = new THREE.Points(g, new THREE.PointsMaterial({ size: 2.2, transparent: true, opacity: .35, depthWrite: false })); root.add(S.dots);
+  var lp = []; for (var v = -234; v <= 234; v += 13) { var h = Math.sqrt(Math.max(0, 232 * 232 - v * v)); lp.push(v, 0, -h, v, 0, h, -h, 0, v, h, 0, v); }
   var lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(lp, 3));
-  S.grid = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0x55524C, transparent: true, opacity: .14, blending: THREE.AdditiveBlending, depthWrite: false }));
-  root.add(S.grid);
-  // 圓環與刻度
-  function ring(r, color, op) { var p = []; for (var i = 0; i <= 160; i++) { var a = i / 160 * Math.PI * 2; p.push(r * Math.cos(a), 0, r * Math.sin(a)); } var gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); var m = new THREE.Line(gg, new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: op })); root.add(m); return m; }
-  var sg = new THREE.PlaneGeometry(620, 90); sg.translate(0, 45, 0); sg.rotateY(Math.PI / 2);
-  S.scan = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ map: TEX.beam, color: 0xFFE6D2, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
-  S.scan.visible = false; root.add(S.scan);
-  var slg = new THREE.BufferGeometry(); slg.setAttribute('position', new THREE.Float32BufferAttribute([0, 1, -300, 0, 1, 300], 3));
-  S.scanLine = new THREE.Line(slg, new THREE.LineBasicMaterial({ color: 0xF06A2C, transparent: true, opacity: .9 })); S.scanLine.visible = false; root.add(S.scanLine);
-  S.rings = [ring(286, 0xF1E7DA, .9), ring(279, 0x55524C, .45), ring(234, 0x55524C, .45)];
-  var tp = []; for (var t = 0; t < 360; t += 5) { var a = t * Math.PI / 180, mj = t % 20 === 0, r1 = 279, r2 = mj ? 270 : 275; tp.push(r1 * Math.cos(a), 0, r1 * Math.sin(a), r2 * Math.cos(a), 0, r2 * Math.sin(a)); }
+  S.grid = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ transparent: true, opacity: .08, depthWrite: false })); root.add(S.grid);
+  function ringGeo(r) { var p = []; for (var i = 0; i <= 200; i++) { var a = i / 200 * Math.PI * 2; p.push(r * Math.cos(a), 0, r * Math.sin(a)); } var gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.Float32BufferAttribute(p, 3)); return gg; }
+  S.rings = [286, 279, 234].map(function (r, i) { var m = new THREE.Line(ringGeo(r), new THREE.LineBasicMaterial({ transparent: true, opacity: i ? .3 : .7 })); root.add(m); return m; });
+  var tp = []; for (var t = 0; t < 360; t += 5) { var a = t * Math.PI / 180, r2 = t % 20 === 0 ? 270 : 275; tp.push(279 * Math.cos(a), 0, 279 * Math.sin(a), r2 * Math.cos(a), 0, r2 * Math.sin(a)); }
   var tg = new THREE.BufferGeometry(); tg.setAttribute('position', new THREE.Float32BufferAttribute(tp, 3));
-  S.ticks = new THREE.LineSegments(tg, new THREE.LineBasicMaterial({ color: 0xF1E7DA, transparent: true, opacity: .55 })); root.add(S.ticks);
-  // 五段弧
+  S.ticks = new THREE.LineSegments(tg, new THREE.LineBasicMaterial({ transparent: true, opacity: .45 })); root.add(S.ticks);
+  S.echo = []; if (S.opts.echo) for (var e = 0; e < 4; e++) { var m = new THREE.Line(ringGeo(1), new THREE.LineBasicMaterial({ transparent: true, opacity: 0 })); root.add(m); S.echo.push(m); }
+  var sg = new THREE.PlaneGeometry(620, 90); sg.translate(0, 45, 0); sg.rotateY(Math.PI / 2);
+  S.scan = new THREE.Mesh(sg, new THREE.MeshBasicMaterial({ map: TEX.beam, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); S.scan.visible = false; root.add(S.scan);
+  var slg = new THREE.BufferGeometry(); slg.setAttribute('position', new THREE.Float32BufferAttribute([0, 1, -300, 0, 1, 300], 3));
+  S.scanLine = new THREE.Line(slg, new THREE.LineBasicMaterial({ color: 0xD9643A, transparent: true, opacity: .9 })); S.scanLine.visible = false; root.add(S.scanLine);
   S.arcs = PATHS.map(function (p, i) {
-    var al = 64 * Math.PI / 180;
-    var geo = new THREE.RingGeometry(298, 304, 48, 1, -((-90 + i * 72 + 4 + 64) * Math.PI / 180), al);
+    var geo = new THREE.RingGeometry(298, 300.5, 64, 1, -((-90 + i * 72 + 4 + 64) * Math.PI / 180), 64 * Math.PI / 180);
     var m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: new THREE.Color(p.c), transparent: true, opacity: .15, side: THREE.DoubleSide, depthWrite: false }));
-    m.rotation.x = -Math.PI / 2; m.rotation.z = 0; root.add(m); return m;
+    m.rotation.x = -Math.PI / 2; root.add(m); return m;
   });
 };
-WaferScene.prototype.lpos = function (w, N) { var a = (-90 + (w - 1) * 360 / N) * Math.PI / 180; return { x: 250 * Math.cos(a), z: 250 * Math.sin(a) }; };
+WaferScene.prototype.lpos = function (w) { var a = (-90 + (w - 1) * 20) * Math.PI / 180; return { x: 250 * Math.cos(a), z: 250 * Math.sin(a) }; };
 WaferScene.prototype.setData = function (P) {
   var S = this; S.P = P;
   while (S.dyn.children.length) { var o = S.dyn.children.pop(); if (o.geometry) o.geometry.dispose(); }
   S.lamps = []; S.stones = [];
-  var N = 18;
-  for (var w = 1; w <= N; w++) {
-    var p = S.lpos(w, N), st = statusOf(P, w);
-    var colr = st === 'leave' ? 0x5FB3A9 : 0xF07A3C, H = st === 'on' ? 150 : st === 'late' ? 72 : st === 'leave' ? 54 : 0;
-    var base = new THREE.Mesh(new THREE.CircleGeometry(8, 24), new THREE.MeshBasicMaterial({ color: st === 'absent' || st === 'future' ? 0x3A3A3E : colr, transparent: true, opacity: st === 'future' ? .35 : .95, depthWrite: false, side: THREE.DoubleSide }));
+  for (var w = 1; w <= 18; w++) {
+    var p = S.lpos(w), st = statusOf(P, w), H = st === 'on' ? 150 : st === 'late' ? 72 : st === 'leave' ? 54 : 0;
+    var base = new THREE.Mesh(new THREE.CircleGeometry(5, 24), new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide }));
     base.rotation.x = -Math.PI / 2; base.position.set(p.x, .5, p.z); S.dyn.add(base);
-    var ringL = new THREE.Mesh(new THREE.RingGeometry(10, 11.5, 24), new THREE.MeshBasicMaterial({ color: 0xF1E7DA, transparent: true, opacity: .5, depthWrite: false, side: THREE.DoubleSide }));
+    var ringL = new THREE.Mesh(new THREE.RingGeometry(8, 8.8, 32), new THREE.MeshBasicMaterial({ transparent: true, opacity: .4, depthWrite: false, side: THREE.DoubleSide }));
     ringL.rotation.x = -Math.PI / 2; ringL.position.set(p.x, .4, p.z); S.dyn.add(ringL);
     var beam = null, halo = null, top = null;
     if (H > 0) {
-      var bg = new THREE.CylinderGeometry(2.2, 2.2, 1, 10, 1, true); bg.translate(0, .5, 0);
-      beam = new THREE.Mesh(bg, new THREE.MeshBasicMaterial({ map: TEX.beam, color: colr, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
-      beam.position.set(p.x, 0, p.z); beam.scale.y = .001; S.dyn.add(beam);
-      var hg = new THREE.CylinderGeometry(9, 9, 1, 14, 1, true); hg.translate(0, .5, 0);
-      halo = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({ map: TEX.beam, color: colr, transparent: true, opacity: .12, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
-      halo.position.set(p.x, 0, p.z); halo.scale.y = .001; S.dyn.add(halo);
-      top = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: colr, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
-      top.scale.set(30, 30, 1); top.position.set(p.x, 0, p.z); S.dyn.add(top);
+      var bg = new THREE.CylinderGeometry(.8, .8, 1, 8, 1, true); bg.translate(0, .5, 0);
+      beam = new THREE.Mesh(bg, new THREE.MeshBasicMaterial({ map: TEX.beam, transparent: true, depthWrite: false, side: THREE.DoubleSide })); beam.position.set(p.x, 0, p.z); beam.scale.y = .001; S.dyn.add(beam);
+      var hg = new THREE.CylinderGeometry(6, 6, 1, 14, 1, true); hg.translate(0, .5, 0);
+      halo = new THREE.Mesh(hg, new THREE.MeshBasicMaterial({ map: TEX.beam, transparent: true, opacity: .08, depthWrite: false, side: THREE.DoubleSide })); halo.position.set(p.x, 0, p.z); halo.scale.y = .001; S.dyn.add(halo);
+      top = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, transparent: true, depthWrite: false, opacity: 0 })); top.scale.set(26, 26, 1); top.position.set(p.x, 0, p.z); S.dyn.add(top);
     }
-    S.lamps.push({ w: w, st: st, H: H, beam: beam, halo: halo, top: top, base: base, x: p.x, z: p.z });
+    S.lamps.push({ w: w, st: st, H: H, beam: beam, halo: halo, top: top, base: base, ring: ringL });
   }
   TASKS.forEach(function (t, i) {
-    var s = SLOTS[i], v = P.scores[i], fut = t.w > P.cur, h = 12 + s.row * 15;
-    var cx = s.x + DIE / 2, cz = s.y + DIE / 2;
+    var s = SLOTS[i], v = P.scores[i], fut = t.w > P.cur, h = 12 + s.row * 15, cx = s.x + DIE / 2, cz = s.y + DIE / 2;
     var geo = new THREE.BoxGeometry(28, 1, 28); geo.translate(0, .5, 0);
-    var r = v == null ? 0 : v / t.max;
-    var fill = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0xECE8E1, transparent: true, opacity: v == null || fut ? 0 : .08 + .16 * r, blending: THREE.AdditiveBlending, depthWrite: false }));
-    fill.position.set(cx, 0, cz); S.dyn.add(fill);
-    var eg = new THREE.EdgesGeometry(geo);
-    var em = (v == null && !fut) ? new THREE.LineDashedMaterial({ color: 0x9A958C, dashSize: 3, gapSize: 3, transparent: true, opacity: .9 }) : new THREE.LineBasicMaterial({ color: fut ? 0x3A3A3E : 0xF4F0EA, transparent: true, opacity: fut ? .5 : .45 + .55 * r });
-    var edge = new THREE.LineSegments(eg, em); if (v == null && !fut) edge.computeLineDistances();
-    edge.position.set(cx, 0, cz); S.dyn.add(edge);
-    var slot = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(28, 28)), new THREE.LineBasicMaterial({ color: 0x45443F, transparent: true, opacity: .55 }));
-    slot.rotation.x = -Math.PI / 2; slot.position.set(cx, .3, cz); S.dyn.add(slot);
-    S.stones.push({ t: t, v: v, fut: fut, h: fut ? 1.5 : h, fill: fill, edge: edge, x: cx, z: cz, base: fill.material.opacity });
+    var r = v == null ? 0 : v / t.max, base = v == null || fut ? 0 : (S.light ? .5 : 1) * (.04 + .1 * r);
+    var fill = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ transparent: true, opacity: base, depthWrite: false })); fill.position.set(cx, 0, cz); S.dyn.add(fill);
+    var eg = new THREE.EdgesGeometry(geo), dash = v == null && !fut;
+    var em = dash ? new THREE.LineDashedMaterial({ dashSize: 3, gapSize: 3, transparent: true, opacity: .55 }) : new THREE.LineBasicMaterial({ transparent: true, opacity: fut ? .18 : .3 + .5 * r });
+    var edge = new THREE.LineSegments(eg, em); if (dash) edge.computeLineDistances(); edge.position.set(cx, 0, cz); S.dyn.add(edge);
+    S.stones.push({ t: t, v: v, fut: fut, h: fut ? 1.5 : h, fill: fill, edge: edge, x: cx, z: cz, base: base });
   });
   S.order = S.stones.filter(function (s) { return !s.fut; }); S.scanDone = false;
-  S.runner = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xFFFFFF, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
-  S.runner.scale.set(40, 40, 1); S.dyn.add(S.runner);
-  S.ghosts = []; for (var gi = 0; gi < 6; gi++) { var gs = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xF06A2C, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 })); gs.scale.set(22, 22, 1); S.dyn.add(gs); S.ghosts.push(gs); }
-  var top2 = S.order[S.order.length - 1];
-  var fg = new THREE.BufferGeometry(); fg.setAttribute('position', new THREE.Float32BufferAttribute([0, 0, 0, 0, 60, 0], 3));
-  S.flag = new THREE.Line(fg, new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0 })); S.flag.position.set(top2.x, top2.h, top2.z); S.dyn.add(S.flag);
-  S.flagTop = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: 0xF1E7DA, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 })); S.flagTop.scale.set(50, 50, 1); S.flagTop.position.set(top2.x, top2.h + 60, top2.z); S.dyn.add(S.flagTop);
   S.pLast = PATHS.map(function (_, pi) { var idx = -1; S.order.forEach(function (s, k) { if (s.t.p === pi) idx = k; }); return idx; });
-  var o = S.opts; S.T = { L0: o.L0 || .9, LD: o.LD || .1 }; S.T.R0 = S.T.L0 + 17 * S.T.LD + .5; S.T.ST = o.ST || .15; S.T.REND = S.T.R0 + S.order.length * S.T.ST; S.T.END = S.T.REND + .3;
+  var o = S.opts; S.T = { L0: o.L0 || .9, LD: o.LD || .1 }; S.T.R0 = S.T.L0 + 17 * S.T.LD + .5; S.T.ST = o.ST || .15; S.T.END = S.T.R0 + S.order.length * S.T.ST + .3;
   S.setLight(S.light);
 };
 WaferScene.prototype.setLight = function (on) {
-  var S = this; S.light = on;
-  var add = on ? THREE.NormalBlending : THREE.AdditiveBlending;
-  S.rays.visible = S.core.visible = !on;
-  S.dots.material.blending = add; S.dots.material.opacity = on ? .35 : .5; S.dots.material.needsUpdate = true;
-  S.grid.material.color.set(on ? 0xC9C5BD : 0x55524C); S.grid.material.opacity = on ? .35 : .14; S.grid.material.blending = add; S.grid.material.needsUpdate = true;
-  S.rings[0].material.color.set(on ? 0x1C1D21 : 0xF1E7DA); S.rings[1].material.color.set(on ? 0xC9C5BD : 0x55524C); S.rings[2].material.color.set(on ? 0xC9C5BD : 0x55524C);
-  S.ticks.material.color.set(on ? 0x1C1D21 : 0xF1E7DA);
+  var S = this, C = on ? PAL.light : PAL.dark, add = on ? THREE.NormalBlending : THREE.AdditiveBlending; S.light = on;
+  function col(m, c, b) { m.color.set(c); if (b !== undefined) { m.blending = b; m.needsUpdate = true; } }
+  col(S.leak.material, C.leak, add); S.leak.material.opacity = on ? .1 : .26;
+  col(S.core.material, C.core, add); S.core.material.opacity = on ? .14 : .3;
+  col(S.dots.material, C.line, add); S.dots.material.opacity = on ? .3 : .3;
+  col(S.grid.material, C.line); S.grid.material.opacity = on ? .1 : .07;
+  S.rings.forEach(function (r, i) { col(r.material, i ? C.mut : C.line); });
+  col(S.ticks.material, C.line); S.echo.forEach(function (e) { col(e.material, C.line); });
+  S.scan.material.color.set(on ? 0xD9643A : 0xFFE6D2);
   if (!S.stones) return;
-  S.stones.forEach(function (s) {
-    s.fill.material.blending = add; s.fill.material.color.set(on ? 0x2B2D31 : 0xECE8E1); s.fill.material.needsUpdate = true;
-    if (s.edge.material.isLineBasicMaterial && !s.fut) s.edge.material.color.set(on ? 0x1C1D21 : 0xF4F0EA);
-    if (s.edge.material.isLineDashedMaterial) s.edge.material.color.set(on ? 0x8A86B8 : 0x9A958C);
+  S.stones.forEach(function (s) { col(s.fill.material, C.stone, add); col(s.edge.material, s.fut ? C.mut : C.line); var rr = s.v == null ? 0 : s.v / s.t.max; s.base = s.v == null || s.fut ? 0 : (on ? .5 : 1) * (.04 + .1 * rr); s.fill.material.opacity = s.base; });
+  S.lamps.forEach(function (l) {
+    var c = l.st === 'leave' ? C.leave : C.lamp;
+    col(l.base.material, l.st === 'absent' || l.st === 'future' ? C.mut : c); l.base.material.opacity = l.st === 'future' ? .5 : .95;
+    col(l.ring.material, C.line);
+    if (l.beam) { col(l.beam.material, on ? c : c, add); col(l.halo.material, c, add); col(l.top.material, c, add); l.halo.visible = !on; }
   });
-  S.lamps.forEach(function (l) { [l.beam, l.halo, l.top].forEach(function (m) { if (m) m.visible = !on; }); });
-  S.runner.visible = !on; S.ghosts.forEach(function (g) { g.visible = !on; }); S.flagTop.visible = !on;
-  S.flag.material.color.set(on ? 0x1C1D21 : 0xFFFFFF);
 };
 WaferScene.prototype.resize = function () {
   var r = this.canvas.getBoundingClientRect(), w = this.opts.w || Math.max(1, Math.floor(r.width)), h = this.opts.h || Math.max(1, Math.floor(r.height));
   this.R.setSize(w, h, false); this.cam.aspect = w / h; this.cam.updateProjectionMatrix();
 };
-WaferScene.prototype.runnerAt = function (t) {
-  var S = this, n = S.order.length, k = (t - S.T.R0) / S.T.ST;
-  if (n === 0 || k < -1.2 || k > n + .3) return null;
-  if (k < 0) { var q = easeOut(clamp((k + 1.2) / 1.2)); return { x: S.order[0].x * q - 200 * (1 - q), y: (S.order[0].h + 14) * q + 80 * (1 - q), z: S.order[0].z * q + 300 * (1 - q), sx: 1, sy: 1 }; }
-  var a = Math.min(n - 1, Math.floor(k)), b = Math.min(n - 1, a + 1), fr = a === n - 1 ? 0 : k - Math.floor(k), e = fr * fr * (3 - 2 * fr);
-  var A = S.order[a], B = S.order[b], land = Math.exp(-fr * 14) * .45, air = Math.abs(Math.cos(Math.PI * fr)) * (1 - Math.exp(-fr * 14)) * .4;
-  return { x: A.x + (B.x - A.x) * e, z: A.z + (B.z - A.z) * e, y: A.h + (B.h - A.h) * e + 14 + Math.sin(Math.PI * fr) * 26, sx: 1 + land - air * .5, sy: 1 - land + air };
-};
 WaferScene.prototype.render = function (t, now) {
-  var S = this, T = S.T, idle = t > T.END + 1;
-  var br = idle ? .85 + .15 * Math.sin((t - T.END) * 2.2) : 1;
-  // 鏡頭
-  var cam = S.cam, o = S.opts;
-  if (S.light) { cam.position.set(0, o.topDist || 1180, .01); cam.up.set(0, 0, -1); cam.lookAt(0, 0, 0); }
+  var S = this, T = S.T, o = S.opts, cam = S.cam, idle = t > T.END + 1, br = idle ? .88 + .12 * Math.sin((t - T.END) * 1.6) : 1;
+  if (S.light && o.flatInLight) { var zo = o.flatZ || 0; cam.position.set(0, o.topDist || 1180, zo + .01); cam.up.set(0, 0, -1); cam.lookAt(0, 0, zo); }
   else {
     cam.up.set(0, 1, 0);
     var intro = reduce ? 1 : easeIO(clamp((t - .1) / (o.introDur || 2.6)));
-    var orbit = (o.orbit || .22) * Math.sin(now * .00012) + (o.yaw || 0);
-    var dist = o.dist || 980, elev = (o.elev || .62) * intro + 1.45 * (1 - intro);
-    var d2 = dist + 500 * (1 - intro);
+    var orbit = (o.orbit || .22) * Math.sin(now * .0001) + (o.yaw || 0), dist = o.dist || 980, elev = (o.elev || .62) * intro + 1.45 * (1 - intro), d2 = dist + 500 * (1 - intro);
     cam.position.set(Math.sin(orbit) * Math.cos(elev) * d2, Math.sin(elev) * d2, Math.cos(orbit) * Math.cos(elev) * d2);
     cam.lookAt(o.lookX || 0, o.lookY || 30, 0);
   }
-  S.rays.material.rotation = now * .00003;
-  S.rays.material.opacity = .16 + .04 * Math.sin(now * .0011);
-  // 光柱
+  S.leak.material.rotation = now * .00002;
   S.lamps.forEach(function (L) {
     if (!L.beam) return;
-    var u = t - (T.L0 + (L.w - 1) * T.LD), g = clamp(u / .55), e = easeOut(g);
-    var hh = Math.max(.001, L.H * e * (L.st === 'late' && u < .6 ? (Math.sin(u * 40) > 0 ? 1 : .3) : 1));
-    L.beam.scale.y = hh; L.halo.scale.y = hh;
-    L.beam.material.opacity = g > 0 ? br : 0; L.halo.material.opacity = (g > 0 ? .12 : 0) * br;
-    L.top.position.y = hh; L.top.material.opacity = g > 0 ? .45 * br : 0;
+    var u = t - (T.L0 + (L.w - 1) * T.LD), g = clamp(u / .8), e = easeOut(g), hh = Math.max(.001, L.H * e);
+    L.beam.scale.y = hh; L.halo.scale.y = hh; L.beam.material.opacity = g > 0 ? (S.light ? .9 : .85) * br : 0; L.halo.material.opacity = g > 0 ? .08 * br : 0;
+    L.top.position.y = hh; L.top.material.opacity = g > 0 ? (S.light ? .35 : .55) * br : 0;
   });
-  // 方塊
   var placed = 0;
-  S.stones.forEach(function (s) { if (s.fut) { s.fill.scale.y = s.edge.scale.y = 1.5; } });
+  S.stones.forEach(function (s) { if (s.fut) s.fill.scale.y = s.edge.scale.y = 1.5; });
   for (var j = 0; j < S.order.length; j++) {
     var s = S.order[j], v = t - (T.R0 + j * T.ST);
     if (v < 0) { s.fill.scale.y = s.edge.scale.y = .001; s.edge.visible = false; continue; }
     placed = j + 1; s.edge.visible = true;
-    var sp = 1 - Math.exp(-7 * v) * Math.cos(13 * v) * (s.v == null ? 0 : 1);
-    var hh2 = s.v == null ? 2 : Math.max(.001, s.h * sp);
+    var sp = 1 - Math.exp(-5 * v) * Math.cos(9 * v) * (s.v == null ? 0 : 1), hh2 = s.v == null ? 2 : Math.max(.001, s.h * sp);
     s.fill.scale.y = hh2; s.edge.scale.y = hh2;
   }
-  var sT = t - (T.END + .25), sd = 2;
-  if (sT > 0 && sT < sd) {
+  var sT = t - (T.END + .3), sd = 2.4;
+  if (!o.noScan && sT > 0 && sT < sd) {
     var sx = -310 + 620 * easeIO(sT / sd); S.scan.visible = !S.light; S.scanLine.visible = true; S.scanDone = false;
-    S.scan.position.x = sx; S.scanLine.position.x = sx; S.scan.material.opacity = .5 * Math.sin(Math.PI * sT / sd);
-    S.stones.forEach(function (s) { if (s.fut || s.v == null) return; var d = sx - s.x; s.fill.material.opacity = s.base + (d > 0 && d < 110 ? (1 - d / 110) * .5 : 0); });
+    S.scan.position.x = sx; S.scanLine.position.x = sx; S.scan.material.opacity = .4 * Math.sin(Math.PI * sT / sd);
+    S.stones.forEach(function (s) { if (s.fut || s.v == null) return; var d = sx - s.x; s.fill.material.opacity = s.base + (d > 0 && d < 110 ? (1 - d / 110) * .35 : 0); });
   } else { S.scan.visible = false; S.scanLine.visible = false; if (!S.scanDone) { S.scanDone = true; S.stones.forEach(function (s) { s.fill.material.opacity = s.base; }); } }
-  S.arcs.forEach(function (a, i) { var l = S.pLast[i], on = l >= 0 && placed > l ? clamp((t - (T.R0 + l * T.ST)) / .4) : 0; a.material.opacity = .15 + .85 * on * (idle ? br : 1); });
-  // 跑者
-  var rp = S.light ? null : S.runnerAt(t);
-  S.runner.material.opacity = rp ? clamp((T.REND + .3 - t) / .4) : 0;
-  if (rp) { S.runner.position.set(rp.x, rp.y, rp.z); S.runner.scale.set(40 * rp.sx, 40 * rp.sy, 1); }
-  S.ghosts.forEach(function (g, i) { var gp = rp ? S.runnerAt(t - (i + 1) * .035) : null; g.material.opacity = gp ? .35 * (1 - i / 6) : 0; if (gp) { g.position.set(gp.x, gp.y, gp.z); g.scale.set(22 * gp.sx, 22 * gp.sy, 1); } });
-  var fv = t - T.REND;
-  S.flag.material.opacity = fv > 0 ? 1 : 0; S.flag.scale.y = Math.max(.001, 1 - Math.exp(-6 * Math.max(0, fv)) * Math.cos(12 * Math.max(0, fv)));
-  S.flagTop.material.opacity = fv > 0 ? .95 * br : 0; S.flagTop.position.y = S.flag.position.y + 60 * S.flag.scale.y;
+  S.arcs.forEach(function (a, i) { var l = S.pLast[i], on = l >= 0 && placed > l ? clamp((t - (T.R0 + l * T.ST)) / .5) : 0; a.material.opacity = .12 + .7 * on; });
+  S.echo.forEach(function (m, i) { var k = ((now / 1000) * .06 + i / 4) % 1, r = 300 + k * 520; m.scale.set(r, 1, r); m.material.opacity = Math.sin(Math.PI * k) * (S.light ? .35 : .3); });
   S.R.render(S.scene, cam);
 };
 
-// 狀態
-function statusOf(P, w) { if (w > P.cur) return 'future'; if (P.absent.indexOf(w) >= 0) return 'absent'; if (P.leave.indexOf(w) >= 0) return 'leave'; if (P.late.indexOf(w) >= 0) return 'late'; return 'on'; }
-
 // ======================= 開場 =======================
 var hero = null, heroT0 = performance.now(), heroOn = true;
-var HERO_P = { cur: 18, scores: TASKS.map(function (t) { return t.max; }), late: [7, 13], leave: [9], absent: [], score: 100 };
-if (HAS3D) {
-  hero = new WaferScene($('heroGL'), { dist: mobile ? 2500 : 1300, elev: mobile ? .62 : .48, lookX: 0, lookY: mobile ? -40 : 30, orbit: .35, yaw: 0, introDur: 3.2, L0: 1.2, LD: .09, ST: .07, maxDpr: mobile ? 1.5 : 2 });
-  hero.setData(HERO_P);
-}
-function flipChar() {
-  var f = $('flip');
-  if (!f.animate) { f.textContent = '壢'; f.classList.add('hi', 'settle'); return; }
-  f.animate([{ transform: 'rotateX(0deg)' }, { transform: 'rotateX(90deg)' }], { duration: 260, easing: 'ease-in' }).onfinish = function () {
-    f.textContent = '壢'; f.classList.add('hi');
-    f.animate([{ transform: 'rotateX(-90deg)' }, { transform: 'rotateX(0deg)' }], { duration: 420, easing: 'cubic-bezier(.3,1.6,.5,1)' });
-    setTimeout(function () { f.classList.add('settle'); }, 1400);
-  };
-}
-setTimeout(flipChar, reduce ? 0 : 3400);
+var HERO_P = { cur: 18, scores: TASKS.map(function (t) { return t.max; }), late: [7, 13], leave: [9], absent: [] };
+if (HAS3D) { hero = new WaferScene($('heroGL'), { echo: true, noScan: true, dist: mobile ? 1500 : 900, elev: .5, lookX: 0, lookY: mobile ? 0 : 10, orbit: .3, introDur: 3.4, L0: 1.4, LD: .1, ST: .07, maxDpr: mobile ? 1.5 : 2 }); hero.setData(HERO_P); }
 
-// ======================= 說明頁各段 =======================
-var POOL_L = '0123456789ABCDEFGHJKLMNPRSTUVWXYZ', POOL_C = '生活科技連桿機構智控建模學習程電馬達燈山石路轉動成形看見點亮回望週作品';
-function scramble(node, final, dur, delay) {
-  var start = performance.now() + delay, len = final.length;
-  (function tick(now) {
-    var u = (now - start) / dur; if (u < 0) { requestAnimationFrame(tick); return; } if (u >= 1) { node.textContent = final; return; }
-    var rv = Math.floor(u * len), out = '';
-    for (var i = 0; i < len; i++) { var ch = final[i]; out += (i < rv || ch === ' ' || ch === '｜' || ch === '・') ? ch : (/[一-鿿]/.test(ch) ? POOL_C[(Math.random() * POOL_C.length) | 0] : POOL_L[(Math.random() * POOL_L.length) | 0]); }
-    node.textContent = out; requestAnimationFrame(tick);
-  })(performance.now());
-}
-function tiles(text) { return '<span class="tile">' + text.split('').map(function (c) { return '<i>' + c + '</i>'; }).join('') + '</span>'; }
+// ======================= 教學進度 =======================
 (function () {
-  var b = $('board');
-  for (var w = 1; w <= 18; w++) {
-    var ts = TASKS.filter(function (t) { return t.w === w; }), pts = ts.reduce(function (s, t) { return s + t.max; }, 0), P = PATHS[ts[0].p];
-    var r = document.createElement('div'); r.className = 'brow';
-    r.innerHTML = '<span class="bdot" style="background:' + P.c + '"></span>' + tiles('W' + pad2(w)) + '<span class="bterm' + (WEEK[w].first ? ' f' : '') + '">' + (WEEK[w].first ? WEEK[w].term : '·') + '</span><span class="btopic" data-f="' + TOPICS[w - 1] + '">' + TOPICS[w - 1] + '</span><span class="bunit">' + P.verb + '・' + P.unit + '</span><span style="text-align:right">' + tiles(pad2(pts)) + '</span>';
-    b.appendChild(r);
-  }
-  var box = $('paths');
-  PATHS.forEach(function (p, i) {
-    var ts = TASKS.filter(function (t) { return t.p === i; }), pts = ts.reduce(function (s, t) { return s + t.max; }, 0);
-    var d = document.createElement('div'); d.className = 'path'; d.style.setProperty('--c', p.c);
-    d.innerHTML = '<div class="verb" style="animation-delay:' + (-i * .7) + 's">' + p.verb + '</div><div class="u">' + p.unit + '</div><div class="meta">' + p.weeks + ' · ' + pts + ' 分 · ' + ts.length + ' 項</div><p>' + p.desc + '</p><div class="chips">' + p.abil.map(function (a) { return '<span class="chip">' + a + '</span>'; }).join('') + '</div>';
-    box.appendChild(d);
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var html = '', S = COURSE;
+  S.weeks.forEach(function (r, k) {
+    var prev = S.weeks[k - 1], same = prev && prev.unit === r.unit ? ' same' : '', W = WEEK[r.week] || {}, P = PATHS[PIDX[r.unit]];
+    html += '<li class="row' + same + '"><span class="w">' + pad2(r.week) + '</span><span class="jq' + (W.first ? '' : ' r') + '">' + (W.first ? W.term + '<svg class="sun" viewBox="0 0 18 11" style="--a:' + Math.round(-90 + (r.week - 1) / 17 * 180) + 'deg"><path d="M1 10a8 8 0 0 1 16 0"/><circle cx="9" cy="2" r="1.8"/></svg>' : '·') + '</span>' +
+      '<span class="u"><i class="dot" style="background:' + P.c + '"></i>' + esc(r.unit) + '<small>' + esc(r.unit_en) + '</small></span>' +
+      '<span class="c">' + esc(r.zh) + '<small lang="en">' + esc(r.en) + '</small></span><span class="p" data-t="' + esc((r.calc ? r.calc + ' = ' : '') + r.points) + '">' + (r.calc ? '<i>' + esc(r.calc) + ' = </i>' : '') + r.points + '</span></li>';
   });
-  var a = document.createElement('div'); a.className = 'path'; a.style.setProperty('--c', '#F06A2C');
-  a.innerHTML = '<div class="verb" style="animation-delay:-3.5s">點燈</div><div class="u">十八盞燈 · 出勤</div><div class="meta">每週 · 15 分</div><p>每週準時走進教室，就升起一盞燈。這是最簡單、也最需要堅持的一件事。</p><div class="chips"><span class="chip">守時</span><span class="chip">穩定投入</span></div>';
-  box.appendChild(a);
-  var segs = PATHS.map(function (p, i) { return { n: p.verb + '·' + p.unit, c: p.c, v: TASKS.filter(function (t) { return t.p === i; }).reduce(function (s, t) { return s + t.max; }, 0) }; });
-  segs.push({ n: '十八盞燈', c: '#F06A2C', v: 15 });
-  var st = $('stack'), cap = st.querySelector('.capline');
-  segs.forEach(function (s) { var d = document.createElement('div'); d.className = 'seg'; d.style.background = s.c; d.dataset.w = (s.v / 110 * 100) + '%'; d.textContent = s.v >= 15 ? s.v : ''; st.insertBefore(d, cap); $('sleg').insertAdjacentHTML('beforeend', '<span><i style="background:' + s.c + '"></i>' + s.n + ' ' + s.v + '</span>'); });
+  (S.extra || []).forEach(function (r) { html += '<li class="row"><span class="w"></span><span class="jq r">·</span><span class="u">' + esc(r.unit) + '<small>' + esc(r.unit_en) + '</small></span><span class="c">' + esc(r.zh) + '<small lang="en">' + esc(r.en) + '</small></span><span class="p">' + (r.calc ? '<i>' + esc(r.calc) + ' = </i>' : '') + r.points + '</span></li>'; });
+  html += '<li class="row total"><span class="w"></span><span class="jq"></span><span class="u"></span><span class="c">總計 · 成績上限<small lang="en">Total · capped at 100</small></span><span class="p tot"><s>' + S.total + '</s><b>100</b></span></li>';
+  $('rows').innerHTML = html;
+  var spiral = (function () { var d = '', n = 60; for (var k = 0; k <= n; k++) { var a = k / n * Math.PI * 4.2, rr = 2 + k / n * 17; d += (k ? 'L' : 'M') + (32 + Math.cos(a) * rr).toFixed(1) + ' ' + (23 + Math.sin(a) * rr * .9).toFixed(1); } return d; })();
+  var ICONS = [
+    '<path class="draw" pathLength="1" d="M6 23 Q32 3 58 23 Q32 43 6 23 Z"/><circle class="draw" pathLength="1" cx="32" cy="23" r="8"/><circle cx="32" cy="23" r="2.2" style="fill:var(--c);stroke:none"/>',
+    '<circle class="led" cx="26" cy="15" r="9"/><path class="draw" pathLength="1" d="M20 30 V16 a6 6 0 0 1 12 0 V30 Z"/><path class="draw" pathLength="1" d="M23 30 v12 M29 30 v6 h6 l2 -3 l3 6 l3 -6 l3 6 l2 -3 h6"/>',
+    '<g class="fbar"><line class="draw" pathLength="1" x1="8" y1="40" x2="56" y2="40"/><line class="lk a"/><line class="lk b"/><line class="lk c"/><circle class="jt" cx="16" cy="36" r="2.2"/><circle class="jt" cx="46" cy="36" r="2.2"/><circle class="jt j1" r="1.8"/><circle class="jt j2" r="1.8"/></g>',
+    '<path class="draw" pathLength="1" d="M32 6 L50 15 L32 24 L14 15 Z"/><path class="draw" pathLength="1" d="M14 15 V33 L32 42 V24"/><path class="draw" pathLength="1" d="M50 15 V33 L32 42"/>',
+    '<path class="draw" pathLength="1" d="' + spiral + '"/>'
+  ];
+  $('paths').innerHTML = PATHS.map(function (p, i) { var pts = TASKS.filter(function (t) { return t.p === i; }).reduce(function (s, t) { return s + t.max; }, 0); return '<div class="path" data-rv style="--c:' + p.c + ';--w:' + (pts / 33 * 100).toFixed(1) + '%"><svg class="ic" viewBox="0 0 64 46" aria-hidden="true">' + ICONS[i] + '</svg><div class="v">' + p.verb + '</div><div class="u">' + p.unit + '</div><div class="m">' + p.weeks + ' · ' + pts + ' 分</div><div class="bar"><i></i></div><p>' + p.desc + '</p></div>'; }).join('');
+  // 分數長條
+  var segs = PATHS.map(function (p, i) { return { n: p.verb, c: p.c, v: TASKS.filter(function (t) { return t.p === i; }).reduce(function (s, t) { return s + t.max; }, 0) }; }); segs.push({ n: '十八盞燈', c: 'var(--verm)', v: 15 });
+  $('stackBar').innerHTML = segs.map(function (g) { return '<i class="seg" style="background:' + g.c + '" data-w="' + (g.v / 110 * 100) + '%"></i>'; }).join('');
+  $('stackLg').innerHTML = segs.map(function (g) { return '<span><i style="background:' + g.c + '"></i>' + g.n + ' ' + g.v + '</span>'; }).join('');
+  $('rulerSc').innerHTML = new Array(11).join('<i></i>') + '<i></i>';
+  // 開場時間尺
+  $('heroTicks').innerHTML = WEEK.slice(1).map(function (W) { return '<span class="' + (W.first ? 'f' : '') + '"></span>'; }).join('');
 })();
-function makeOdo(node, value) { node.innerHTML = String(value).split('').map(function () { return '<span><b>' + '0123456789'.split('').map(function (d) { return '<em>' + d + '</em>'; }).join('') + '</b></span>'; }).join(''); node.dataset.v = value; }
-function runOdo(node) { String(node.dataset.v).split('').forEach(function (d, i) { var b = node.children[i].firstChild; b.style.transitionDelay = (i * .15) + 's'; b.style.transform = 'translateY(-' + (+d) + 'em)'; }); }
-makeOdo($('odoTotal'), 110); makeOdo($('odoCap'), 100);
 
-// ======================= 示波器過場 =======================
-function hash(x, y) { var h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return h - Math.floor(h); }
-function noise(x, y) { var xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi, u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf); var a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1); return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v; }
-function fbm(x, y) { return noise(x, y) * .6 + noise(x * 2.1, y * 2.1) * .3 + noise(x * 4.3, y * 4.3) * .1; }
-var HORSE = {"outer":[[0.2394,-0.5],[0.2472,-0.4643],[0.2383,-0.4475],[0.2517,-0.4308],[0.255,-0.4174],[0.2115,-0.4007],[0.2249,-0.385],[0.168,-0.3516],[0.1825,-0.3449],[0.1836,-0.3393],[0.1356,-0.2991],[0.139,-0.2958],[0.1613,-0.3013],[0.1624,-0.2958],[0.1267,-0.2545],[0.1568,-0.2511],[0.1579,-0.2455],[0.1044,-0.2154],[0.1401,-0.2087],[0.1289,-0.1897],[0.0776,-0.1886],[0.0686,-0.1663],[0.0519,-0.1674],[0.0173,-0.1451],[-0.0497,-0.1596],[-0.1055,-0.1562],[-0.1189,-0.1317],[-0.1735,-0.1183],[-0.2227,-0.0826],[-0.2606,-0.0904],[-0.332,-0.1339],[-0.3521,-0.1362],[-0.3878,-0.1172],[-0.4157,-0.0893],[-0.4314,-0.0815],[-0.4749,-0.0993],[-0.5619,-0.0971],[-0.5173,-0.0558],[-0.4492,-0.0212],[-0.3811,-0.0246],[-0.361,-0.0402],[-0.3365,-0.0469],[-0.2718,-0.0491],[-0.245,-0.0402],[-0.2483,-0.0078],[-0.2383,0.0446],[-0.1836,0.1261],[-0.2148,0.1786],[-0.2517,0.2165],[-0.284,0.2355],[-0.293,0.2567],[-0.2628,0.298],[-0.2372,0.3192],[-0.2015,0.3873],[-0.1992,0.4185],[-0.2104,0.423],[-0.2282,0.4464],[-0.2148,0.4955],[-0.2015,0.4989],[-0.1579,0.4799],[-0.149,0.4576],[-0.1557,0.4286],[-0.168,0.4118],[-0.1657,0.3884],[-0.2126,0.2958],[-0.2193,0.2712],[-0.2171,0.2578],[-0.101,0.1596],[-0.0765,0.115],[-0.0709,0.1161],[-0.0619,0.1786],[-0.0631,0.2098],[-0.0765,0.26],[0.0608,0.3214],[0.0742,0.3337],[0.0686,0.3583],[0.0865,0.3806],[0.1066,0.3895],[0.1345,0.3862],[0.1423,0.3672],[0.1412,0.3449],[0.1088,0.2991],[0.0006,0.2623],[-0.014,0.2422],[-0.0128,0.2054],[-0.0017,0.1808],[0.0106,0.106],[0.0061,0.0725],[0.0742,0.0781],[0.1557,0.0725],[0.2327,0.0513],[0.2662,0.0525],[0.3633,0.2344],[0.3789,0.2478],[0.4258,0.3594],[0.4403,0.3828],[0.4637,0.3806],[0.4693,0.3862],[0.4648,0.4129],[0.4749,0.4275],[0.5374,0.4386],[0.5608,0.433],[0.5296,0.3717],[0.4682,0.3326],[0.4448,0.2846],[0.4157,0.2433],[0.4102,0.2065],[0.3655,0.1473],[0.3722,0.1105],[0.3555,0.0647],[0.3532,0.0435],[0.4046,0.0246],[0.4492,0.0156],[0.4682,0.0346],[0.4872,0.1071],[0.4872,0.1194],[0.4537,0.1507],[0.486,0.2031],[0.5195,0.1775],[0.5262,0.154],[0.524,0.0949],[0.4805,-0.019],[0.4626,-0.0368],[0.409,-0.0346],[0.3778,-0.0424],[0.3644,-0.0826],[0.361,-0.1261],[0.3465,-0.1886],[0.3142,-0.2623],[0.3231,-0.2824],[0.3488,-0.2935],[0.361,-0.2935],[0.38,-0.2801],[0.4068,-0.2779],[0.4314,-0.2935],[0.4481,-0.3192],[0.4392,-0.3571],[0.3722,-0.394],[0.3265,-0.4386],[0.2852,-0.4598]],"aspect":1.1238839285714286,"inner":[[-0.1233,-0.1228],[-0.1434,-0.0792],[-0.111,0.0346],[-0.0363,0.0458],[-0.0117,0.0692],[-0.0017,0.0703],[0.0039,0.0636],[0.0028,0.0558],[-0.0229,0.0301],[-0.0128,-0.0045],[-0.0229,-0.0703],[-0.0765,-0.1228],[-0.1099,-0.1295],[-0.1122,-0.1261]]};
-var STAT = {"outer":[[0.5253,-0.336],[0.4605,-0.3866],[0.4423,-0.3947],[0.4261,-0.413],[0.4119,-0.415],[0.3836,-0.4575],[0.3573,-0.4615],[0.3188,-0.5],[0.3107,-0.4939],[0.3107,-0.4372],[0.2844,-0.417],[0.2601,-0.4109],[0.2561,-0.3988],[0.2358,-0.3907],[0.2318,-0.3745],[0.2176,-0.3644],[0.2176,-0.3522],[0.1953,-0.332],[0.1913,-0.2794],[0.1832,-0.2713],[0.1832,-0.249],[0.169,-0.2409],[0.1731,-0.2024],[0.1549,-0.1943],[0.1508,-0.1802],[0.1204,-0.1761],[0.1043,-0.168],[0.1002,-0.1599],[0.0719,-0.1599],[0.0516,-0.168],[-0.0739,-0.17],[-0.1225,-0.164],[-0.1528,-0.1538],[-0.1832,-0.1538],[-0.2014,-0.1599],[-0.2257,-0.1781],[-0.2682,-0.2227],[-0.3087,-0.2409],[-0.3512,-0.2409],[-0.3796,-0.2287],[-0.3978,-0.2146],[-0.4099,-0.2126],[-0.414,-0.2045],[-0.4504,-0.2045],[-0.5051,-0.2389],[-0.6043,-0.2611],[-0.6123,-0.2591],[-0.6144,-0.249],[-0.6083,-0.2409],[-0.582,-0.2247],[-0.5111,-0.164],[-0.4545,-0.1356],[-0.4504,-0.1296],[-0.3836,-0.1235],[-0.331,-0.1316],[-0.2844,-0.1316],[-0.246,-0.1215],[-0.2217,-0.1093],[-0.2217,-0.081],[-0.2298,-0.0526],[-0.2358,-0.0506],[-0.2419,-0.0344],[-0.246,-0.0061],[-0.2439,0.0405],[-0.2318,0.0709],[-0.2318,0.1073],[-0.3087,0.1721],[-0.3856,0.2126],[-0.3856,0.2227],[-0.3593,0.2794],[-0.3411,0.334],[-0.3269,0.4069],[-0.3269,0.4352],[-0.3431,0.4393],[-0.3613,0.4615],[-0.3715,0.4838],[-0.3694,0.496],[-0.2986,0.498],[-0.2905,0.4919],[-0.2925,0.4433],[-0.2804,0.4049],[-0.2986,0.3623],[-0.3188,0.2915],[-0.3168,0.2429],[-0.2905,0.2247],[-0.1852,0.1781],[-0.1265,0.1316],[-0.0962,0.1336],[-0.0962,0.1761],[-0.1144,0.2368],[-0.1387,0.2753],[-0.1366,0.2874],[0.0111,0.3988],[0.0253,0.4211],[0.0294,0.4717],[0.0779,0.4858],[0.086,0.4838],[0.0881,0.4433],[0.0719,0.4312],[0.0617,0.415],[0.0557,0.3866],[-0.0273,0.33],[-0.0658,0.2935],[-0.0658,0.2591],[-0.0132,0.17],[-0.003,0.1417],[0.0071,0.1316],[0.0152,0.1134],[0.0172,0.083],[0.0273,0.0749],[0.0779,0.0749],[0.0901,0.087],[0.1731,0.087],[0.2561,0.0709],[0.2945,0.0709],[0.337,0.1194],[0.3796,0.1943],[0.418,0.2794],[0.4504,0.33],[0.499,0.4453],[0.5213,0.4534],[0.5233,0.4858],[0.6022,0.4858],[0.6022,0.4737],[0.584,0.4555],[0.5779,0.4393],[0.5435,0.419],[0.4949,0.3502],[0.4727,0.3016],[0.4585,0.249],[0.4261,0.1781],[0.4079,0.1053],[0.4079,0.0769],[0.499,0.0486],[0.5354,0.0486],[0.5557,0.0749],[0.5658,0.1113],[0.5658,0.17],[0.5435,0.1943],[0.5516,0.2389],[0.5577,0.249],[0.5698,0.249],[0.5941,0.2206],[0.6022,0.2186],[0.6063,0.2085],[0.6043,0.1721],[0.6123,0.1457],[0.5881,0.083],[0.5779,0.0304],[0.5698,0.0162],[0.5577,0.0101],[0.5516,0.0],[0.5354,-0.004],[0.5111,0.002],[0.5071,0.0142],[0.4787,0.0142],[0.4666,0.004],[0.4383,-0.002],[0.4342,-0.0789],[0.4221,-0.1012],[0.42,-0.1316],[0.4079,-0.1599],[0.4079,-0.1741],[0.3836,-0.2571],[0.3836,-0.2895],[0.3877,-0.2935],[0.4565,-0.2895],[0.4646,-0.2773],[0.4929,-0.2753],[0.501,-0.2895],[0.5192,-0.2935],[0.5273,-0.3219]],"tri":[[0.4079,-0.1437],[0.3775,-0.0749],[0.3107,0.0121],[0.4059,0.0101]]};
+// ======================= 版畫 Nº 001 =======================
 var SC = { cv: $('ridge'), on: false, ready: false, rp: null };
-var KW = ['連桿', 'Arduino', '三視圖', '伺服馬達', '四連桿', 'Onshape', '超音波', '紅綠燈', '〈造山者〉', '曲柄滑塊', '撲翼機', '學習歷程', 'Motiongen', 'SPLIT', 'PACE'];
-var WHT = '236,232,225', INK = '30,29,28', CU = '226,96,42';
-function rnd(i, k) { return hash(i * 1.31 + k * 7.7, k * 3.9 + i * .17); }
-function expoOut(x) { return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x); }
-function mixc(a, b, k) { var A = a.split(','), B = b.split(','); return A.map(function (v, i) { return Math.round(+v + (+B[i] - +v) * k); }).join(','); }
-function hp(p, T) { return [T.x + (p[0] * (T.fx || 1) + T.sk * p[1]) * T.h, T.y + p[1] * T.h]; }
+var KW = ['連桿', 'Arduino', '三視圖', '伺服馬達', '四連桿', 'Onshape', '超音波', '紅綠燈', '〈造山者〉', '曲柄滑塊', '撲翼機', '學習歷程', 'Motiongen', '十八盞燈', '五段路'];
+var PL = {
+  dark: { page: '#141412', plate: '#1d1c19', ink: '232,229,222', mut: '154,150,141', teal: '96,134,134', sand: '96,86,72', verm: '217,100,58' },
+  light: { page: '#f3f1ec', plate: '#ebe4d6', ink: '43,42,39', mut: '111,107,99', teal: '143,178,180', sand: '210,192,165', verm: '217,100,58' }
+};
+function hp(p, T) { return [T.x + (p[0] * (T.fx || 1) + (T.sk || 0) * p[1]) * T.h, T.y + p[1] * T.h]; }
 function horsePath(c, T) {
   c.beginPath();
   HORSE.outer.forEach(function (p, i) { var q = hp(p, T); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); c.closePath();
@@ -732,18 +665,17 @@ function resample(poly, N) {
 }
 STAT.res = resample(STAT.outer, 460);
 HORSE.len = (function () { var L = 0, O = HORSE.outer; for (var i = 0; i < O.length; i++) { var a = O[i], b = O[(i + 1) % O.length]; L += Math.hypot(b[0] - a[0], b[1] - a[1]); } return L; })();
-// 解構節拍：忽快忽慢、忽大忽小
 var BEATS = [
   { d: .07, k: 'grid' },
   { d: .05, k: 'one', h: 1.9, x: .3, y: .6, bands: 7, amp: .14 },
-  { d: .16, k: 'slow', h: .5, x: .5, y: .5, dims: 1 },
-  { d: .04, k: 'one', h: 2.5, x: .72, y: .38, fx: -1, bands: 4, amp: .07 },
-  { d: .035, k: 'one', h: .15, x: .82, y: .24 },
+  { d: .16, k: 'slow', h: .5, x: .5, y: .52, dims: 1 },
+  { d: .04, k: 'one', h: 2.5, x: .72, y: .4, fx: -1, bands: 4, amp: .07 },
+  { d: .035, k: 'one', h: .15, x: .82, y: .26 },
   { d: .035, k: 'one', h: .15, x: .2, y: .76 },
-  { d: .035, k: 'one', h: .26, x: .5, y: .5 },
-  { d: .06, k: 'strips', h: 1.15, x: .5, y: .52 },
-  { d: .17, k: 'draw', h: .72, x: .5, y: .5, dims: 1 },
-  { d: .06, k: 'reg', h: .95, x: .46, y: .5 },
+  { d: .035, k: 'one', h: .26, x: .5, y: .52 },
+  { d: .06, k: 'strips', h: 1.15, x: .5, y: .54 },
+  { d: .17, k: 'draw', h: .72, x: .5, y: .52, dims: 1 },
+  { d: .06, k: 'reg', h: .95, x: .46, y: .52 },
   { d: .21, k: 'zoom' }
 ];
 (function () { var t = 0; BEATS.forEach(function (b) { b.s = t; t += b.d; }); BEATS.forEach(function (b) { b.s /= t; b.d /= t; }); })();
@@ -751,18 +683,14 @@ function buildScope() {
   var cv = SC.cv, dpr = Math.min(2, window.devicePixelRatio || 1), r = cv.getBoundingClientRect(), W = Math.floor(r.width), H = Math.floor(r.height);
   if (W < 10 || H < 10) return;
   cv.width = W * dpr; cv.height = H * dpr; SC.W = W; SC.H = H; SC.dpr = dpr; SC.m = W < 600;
-  SC.dims = []; for (var i = 0; i < 5; i++) SC.dims.push({ x: .14 + rnd(i, 31) * .72, y: .14 + rnd(i, 32) * .6, len: .1 + rnd(i, 33) * .14, ang: (rnd(i, 34) < .5 ? 0 : Math.PI / 2) + (rnd(i, 35) - .5) * .4, lab: ['R 286', '12 ×', 'Ø 4.2', '90°', '34 mm'][i] });
-  SC.kw = KW.map(function (t, i) { return { t: t, x: .08 + rnd(i, 41) * .84, y: .1 + rnd(i, 42) * .78 }; });
+  SC.hdr = document.querySelector('.top').offsetHeight;
+  SC.dims = []; for (var i = 0; i < 5; i++) SC.dims.push({ x: .14 + rnd(i, 31) * .72, y: .16 + rnd(i, 32) * .6, len: .1 + rnd(i, 33) * .14, ang: (rnd(i, 34) < .5 ? 0 : Math.PI / 2) + (rnd(i, 35) - .5) * .4, lab: ['R 286', '12 ×', 'Ø 4.2', '90°', '34 mm'][i] });
+  SC.kw = KW.map(function (t, i) { return { t: t, x: .08 + rnd(i, 41) * .84, y: .14 + rnd(i, 42) * .76 }; });
   var mk = function () { var c = document.createElement('canvas'); c.width = W * dpr; c.height = H * dpr; return c; };
-  // 等高線
-  var off = mk(), o = off.getContext('2d'); o.scale(dpr, dpr); o.strokeStyle = 'rgba(236,232,225,.05)'; o.lineWidth = 1;
-  for (var k = 1; k <= 12; k++) { o.beginPath(); for (var a = 0; a <= 120; a++) { var th = a / 120 * Math.PI * 2, rr = k * Math.max(W, H) * .065 * (1 + .24 * (noise(Math.cos(th) * 1.6 + k * .4, Math.sin(th) * 1.6 + 3) - .5) * 2); var X = W * .55 + Math.cos(th) * rr * 1.35, Y = H * .7 + Math.sin(th) * rr * .55; if (a) o.lineTo(X, Y); else o.moveTo(X, Y); } o.closePath(); o.stroke(); }
-  SC.topo = off;
-  // 油墨斑駁
   var sp = mk(), g = sp.getContext('2d'); g.scale(dpr, dpr);
-  for (i = 0; i < W * H / 260; i++) { var x = Math.random() * W, y = Math.random() * H, rr2 = .3 + Math.pow(Math.random(), 4) * 1.5; g.fillStyle = 'rgba(0,0,0,' + (.35 + Math.random() * .65).toFixed(2) + ')'; g.beginPath(); g.ellipse(x, y, rr2 * (1 + Math.random()), rr2, Math.random() * 3, 0, Math.PI * 2); g.fill(); }
-  g.strokeStyle = 'rgba(0,0,0,.5)'; for (i = 0; i < 40; i++) { var x1 = Math.random() * W, y1 = Math.random() * H, an = Math.random() * 6.28, ln = 10 + Math.random() * 60; g.lineWidth = .4 + Math.random() * .8; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x1 + Math.cos(an) * ln, y1 + Math.sin(an) * ln); g.stroke(); }
-  for (i = 0; i < 14; i++) { var bx = Math.random() * W, by = Math.random() * H, br = 8 + Math.random() * 30, gr = g.createRadialGradient(bx, by, 0, bx, by, br); gr.addColorStop(0, 'rgba(0,0,0,.12)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(bx - br, by - br, br * 2, br * 2); }
+  for (i = 0; i < W * H / 240; i++) { var x = Math.random() * W, y = Math.random() * H, rr = .3 + Math.pow(Math.random(), 4) * 1.6; g.fillStyle = 'rgba(0,0,0,' + (.35 + Math.random() * .65).toFixed(2) + ')'; g.beginPath(); g.ellipse(x, y, rr * (1 + Math.random()), rr, Math.random() * 3, 0, Math.PI * 2); g.fill(); }
+  g.strokeStyle = 'rgba(0,0,0,.45)'; for (i = 0; i < 40; i++) { var x1 = Math.random() * W, y1 = Math.random() * H, an = Math.random() * 6.28, ln = 10 + Math.random() * 60; g.lineWidth = .4 + Math.random() * .7; g.beginPath(); g.moveTo(x1, y1); g.lineTo(x1 + Math.cos(an) * ln, y1 + Math.sin(an) * ln); g.stroke(); }
+  for (i = 0; i < 16; i++) { var bx = Math.random() * W, by = Math.random() * H, br = 8 + Math.random() * 30, gr = g.createRadialGradient(bx, by, 0, bx, by, br); gr.addColorStop(0, 'rgba(0,0,0,.14)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(bx - br, by - br, br * 2, br * 2); }
   SC.speck = sp; SC.ink = mk();
   var gc = document.createElement('canvas'); gc.width = gc.height = 200; var gg = gc.getContext('2d'), id = gg.createImageData(200, 200);
   for (i = 0; i < 40000; i++) { var v = Math.random() * 255 | 0; id.data[i * 4] = id.data[i * 4 + 1] = id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255; }
@@ -776,220 +704,239 @@ function scopeRates() {
   SC.rp = P; SC.rates = rates; return rates;
 }
 function cropMarks(c, x, y, w, h, col) {
-  var L = 10; c.strokeStyle = col; c.lineWidth = .8; c.beginPath();
+  var L = 10; c.strokeStyle = col; c.lineWidth = .7; c.beginPath();
   [[x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1]].forEach(function (q) { c.moveTo(q[0] - q[2] * 4, q[1]); c.lineTo(q[0] + q[2] * L, q[1]); c.moveTo(q[0], q[1] - q[3] * 4); c.lineTo(q[0], q[1] + q[3] * L); });
   c.stroke();
 }
-function regMark(c, x, y, r, col) { c.strokeStyle = col; c.lineWidth = .9; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.moveTo(x - r * 2, y); c.lineTo(x + r * 2, y); c.moveTo(x, y - r * 2); c.lineTo(x, y + r * 2); c.stroke(); }
+function regMark(c, x, y, r, col) { c.strokeStyle = col; c.lineWidth = .8; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.moveTo(x - r * 2, y); c.lineTo(x + r * 2, y); c.moveTo(x, y - r * 2); c.lineTo(x, y + r * 2); c.stroke(); }
 function scopeFrame(now) {
   if (!SC.on || !SC.ready || !P) return;
   var r = $('scope').getBoundingClientRect(), span = Math.max(1, r.height - window.innerHeight);
   var p = reduce ? 1 : clamp(-r.top / span), t = now / 1000;
-  var a1 = clamp((p - .04) / .15), a2 = clamp((p - .19) / .27), a3 = clamp((p - .46) / .12), a4 = clamp((p - .58) / .15), a5 = clamp((p - .73) / .18), a6 = clamp((p - .91) / .07);
-  var c = SC.cv.getContext('2d'), W = SC.W, H = SC.H, dpr = SC.dpr, m = SC.m, cx = W / 2;
+  var a1 = clamp((p - .03) / .16), a2 = clamp((p - .19) / .27), a3 = clamp((p - .46) / .12), a4 = clamp((p - .58) / .15), a5 = clamp((p - .73) / .18), a6 = clamp((p - .91) / .07);
+  var c = SC.cv.getContext('2d'), W = SC.W, H = SC.H, dpr = SC.dpr, m = SC.m, C = isLight() ? PL.light : PL.dark;
+  var INK = function (a) { return 'rgba(' + C.ink + ',' + a + ')'; }, MUT = function (a) { return 'rgba(' + C.mut + ',' + a + ')'; };
+  var bo = a2 > 0 && a2 < 1, pin = SC.cv.parentNode; pin.classList.toggle('breakout', bo);
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.lineJoin = 'round'; c.lineCap = 'round'; c.setLineDash([]);
-  var pk = easeIO(a3), LC = mixc(WHT, INK, pk);
-  // 背景：石墨 → 紙
-  var bg = c.createRadialGradient(W * .55, H * .62, 0, W * .55, H * .62, Math.max(W, H) * .8);
-  bg.addColorStop(0, '#2A2B30'); bg.addColorStop(.5, '#1A1B1F'); bg.addColorStop(1, '#121316');
-  c.fillStyle = bg; c.fillRect(0, 0, W, H);
-  if (pk < 1) { c.globalAlpha = 1 - pk; c.drawImage(SC.topo, 0, -p * 50, W, H); c.globalAlpha = 1; }
-  if (pk > 0) { var wx = W * pk; c.fillStyle = '#ECE5D8'; c.fillRect(0, 0, wx, H); if (pk < 1) { c.fillStyle = 'rgba(' + CU + ',.9)'; c.fillRect(wx - 1.5, 0, 1.5, H); } }
-  // 構成幾何
-  var R = m ? W * .4 : Math.min(W * .28, H * .36), ccy = H * (m ? .48 : .5);
-  var hH = R * 1.28, TS = { x: cx + R * .06, y: ccy + R * .03, h: hH, sk: 0 }, yb = TS.y + hH * .5;
-  var fdx = Math.sqrt(Math.max(0, R * R - (yb - ccy) * (yb - ccy))), XF = cx + fdx, thF = Math.atan2(yb - ccy, fdx);
-  // ---- 地面線（訊號）
-  var hoof = hp(STAT.res[0], TS), hx = hoof[0], L = easeIO(a1), wig = (1 - a1);
-  function sig(x) { return wig * (Math.sin(x * .045 + t * 3) * 2.2 + (noise(x * .03, t * 1.5) - .5) * 9) * Math.exp(-Math.pow((x - W * .55) / (W * .35), 2)); }
-  var groundA = 1 - clamp(a2 / .2) * (1 - pk);
-  c.strokeStyle = 'rgba(' + LC + ',' + (.82 * groundA).toFixed(3) + ')'; c.lineWidth = 1.1;
-  if (pk > 0) { c.setLineDash([1, 6]); c.beginPath(); c.moveTo(m ? W * .04 : cx - R * 1.6, yb); c.lineTo(hx, yb); c.stroke(); c.setLineDash([]); }
-  else { c.beginPath(); for (var x = 0; x <= hx; x += 3) { var yy = yb + sig(x); if (x) c.lineTo(x, yy); else c.moveTo(x, yy); } c.stroke(); }
-  if (a1 <= 0) { c.fillStyle = 'rgba(' + WHT + ',.5)'; c.font = '10px "JetBrains Mono", monospace'; c.textAlign = 'left'; c.fillText('CH1 · SIGNAL', 16, yb - 10); }
-  // ---- 銅馬輪廓（一筆畫）
-  var RES = STAT.res, N = RES.length, outlineA = a2 > 0 && a2 < 1 ? .22 : 1;
-  if (a3 > 0) outlineA = .22 + .78 * pk;
-  if (a4 > 0) outlineA = 1 - easeIO(a4) * .85;
-  var span2 = W + 40 - hx, pts = [], tipI = -1;
+  c.clearRect(0, 0, W, H); c.fillStyle = C.page; c.fillRect(0, bo ? SC.hdr : 0, W, H);
+  // ---- 版面
+  var top = SC.hdr + (m ? 18 : 30), capH = m ? 64 : 58, ph, pw, R;
+  if (m) { pw = W - 28; R = pw * .36; ph = Math.min(H - top - capH, R * 3.3); }
+  else { ph = H - top - capH; R = Math.min(ph * .36, W * .2); pw = Math.min(W - 80, R * 3.5); }
+  var px = (W - pw) / 2, py = top + Math.max(0, (H - top - capH - ph) / 2), ccx = px + pw / 2, ccy = py + ph * .5;
+  var hH = R * 1.3, TS = { x: ccx + R * .06, y: ccy + R * .04, h: hH }, yb = TS.y + hH * .5;
+  var frameA = bo ? .25 : 1;
+  c.fillStyle = C.plate; c.fillRect(px, py, pw, ph);
+  // 不完美的框：印兩次、四角不接
+  c.lineWidth = .7;
+  [[0, 0, .55], [1.6, 1.1, .22]].forEach(function (o) {
+    var g = 14, x = px + o[0], y = py + o[1]; c.strokeStyle = INK(o[2] * frameA); c.beginPath();
+    c.moveTo(x + g, y); c.lineTo(x + pw - g, y); c.moveTo(x + pw, y + g); c.lineTo(x + pw, y + ph - g); c.moveTo(x + pw - g, y + ph); c.lineTo(x + g, y + ph); c.moveTo(x, y + ph - g); c.lineTo(x, y + g); c.stroke();
+  });
+  cropMarks(c, px - 8, py - 8, pw + 16, ph + 16, MUT(.6 * frameA));
+  c.save(); c.beginPath(); c.rect(px, py, pw, ph); c.clip();
+  // ---- 地面線＋一筆畫
+  var hoof = hp(STAT.res[0], TS), hx = hoof[0], L = easeIO(a1), wig = 1 - a1, gx0 = px + 18, gx1 = px + pw - 18;
+  function sig(x) { return wig * (Math.sin(x * .045 + t * 2.4) * 1.8 + (noise(x * .03, t * 1.2) - .5) * 7) * Math.exp(-Math.pow((x - ccx) / (pw * .4), 2)); }
+  var groundA = a2 > 0 && a3 <= 0 ? .2 : 1;
+  c.strokeStyle = INK(.85 * groundA); c.lineWidth = .9;
+  if (a3 > 0) { c.setLineDash([1, 6]); c.beginPath(); c.moveTo(gx0, yb); c.lineTo(hx, yb); c.stroke(); c.setLineDash([]); }
+  else { c.beginPath(); for (var x = gx0; x <= hx; x += 3) { var yy = yb + sig(x); if (x === gx0) c.moveTo(x, yy); else c.lineTo(x, yy); } c.stroke(); }
+  var RES = STAT.res, N = RES.length, outlineA = a2 > 0 && a3 <= 0 ? .2 : 1; if (a4 > 0) outlineA = 1 - easeIO(a4) * .85;
+  var span2 = gx1 - hx, pts = [], tipI = -1;
   for (var i = 0; i < N; i++) {
     var q = hp(RES[i], TS), f = i / (N - 1), u = clamp((L - f) / .06), e = easeIO(u);
-    if (u <= 0) { var gx = hx + (f - L) * span2; pts.push([gx, yb + sig(gx), 0]); continue; }
+    if (u <= 0) { var gx = hx + (f - L) / Math.max(.001, 1 - L) * span2 * (1 - L); pts.push([gx, yb + sig(gx), 0]); continue; }
     pts.push([hoof[0] + (q[0] - hoof[0]) * e, hoof[1] + (q[1] - hoof[1]) * e, 1]); tipI = i;
   }
+  c.strokeStyle = INK(.95 * outlineA); c.lineWidth = m ? 1 : 1.2;
   if (a1 > 0) {
-    c.strokeStyle = 'rgba(' + LC + ',' + (.95 * outlineA).toFixed(3) + ')'; c.lineWidth = m ? 1.3 : 1.6;
     c.beginPath(); var st0 = false; for (i = 0; i < N; i++) { if (!pts[i][2]) continue; if (st0) c.lineTo(pts[i][0], pts[i][1]); else { c.moveTo(pts[i][0], pts[i][1]); st0 = true; } }
     if (L >= .999) c.closePath(); c.stroke();
-    if (L < .999) { c.beginPath(); c.moveTo(hx, yb); for (i = 0; i < N; i++) if (!pts[i][2]) c.lineTo(pts[i][0], pts[i][1]); c.stroke(); if (tipI >= 0) { c.fillStyle = 'rgb(' + CU + ')'; c.beginPath(); c.arc(pts[tipI][0], pts[tipI][1], 3.2, 0, Math.PI * 2); c.fill(); } }
-  } else if (a1 <= 0) { c.beginPath(); c.moveTo(hx, yb); for (i = 0; i < N; i++) c.lineTo(pts[i][0], pts[i][1]); c.strokeStyle = 'rgba(' + WHT + ',.82)'; c.lineWidth = 1.1; c.stroke(); }
-  // ---- 解構：壢馬線稿的節拍
-  if (a2 > 0 && a2 < 1) {
+    if (L < .999) { c.beginPath(); c.moveTo(hx, yb); for (i = 0; i < N; i++) if (!pts[i][2]) c.lineTo(pts[i][0], pts[i][1]); c.stroke(); if (tipI >= 0) { c.fillStyle = 'rgb(' + C.verm + ')'; c.beginPath(); c.arc(pts[tipI][0], pts[tipI][1], 2.6, 0, Math.PI * 2); c.fill(); } }
+  } else { c.beginPath(); c.moveTo(hx, yb); for (i = 0; i < N; i++) c.lineTo(pts[i][0], pts[i][1]); c.stroke(); }
+  // ---- 對位：構成線（框內部分）
+  var rates = scopeRates(), lastW = P.live ? P.cur : 18;
+  var thW = function (w) { return -Math.PI / 2 + w / 18 * Math.PI * 2; };
+  if (a3 > 0) {
+    c.strokeStyle = INK(.55); c.lineWidth = .8;
+    var sw = easeIO(clamp(a3 * 1.3)) * Math.PI * 2; c.beginPath(); c.arc(ccx, ccy, R, -Math.PI / 2, -Math.PI / 2 + sw); c.stroke();
+    c.setLineDash([2, 5]); c.beginPath(); c.arc(ccx + R * .14, ccy - R * .05, R * 1.13, Math.PI * .92, Math.PI * .92 + sw * .36); c.stroke(); c.setLineDash([]);
+    c.strokeStyle = INK(.4); c.beginPath(); c.arc(ccx + R * .5, ccy - R * .25, R * 1.45, Math.PI * .62, Math.PI * .62 + sw * .17); c.stroke();
+    c.beginPath(); c.arc(ccx - R * .1, ccy + R * .2, R * .62, Math.PI * 1.02, Math.PI * 1.02 + sw * .14); c.stroke();
+    var hd = clamp((a3 - .5) / .5);
+    [[px + pw * .1, py + ph * .14, 7, 5], [ccx + R * .55, yb - R * .55, 5, 4]].forEach(function (D, k) {
+      if (k === 0 && a5 > 0) return;
+      for (var yy2 = 0; yy2 < D[3]; yy2++) for (var xx = 0; xx < D[2]; xx++) { if (rnd(xx + yy2 * 9, 60 + k) > hd) continue; c.fillStyle = INK(.5); c.beginPath(); c.arc(D[0] + xx * 9, D[1] + yy2 * 9, 1.1, 0, Math.PI * 2); c.fill(); }
+    });
+  }
+  // ---- 印刷：太陽、沙色、油墨、朱橙
+  var curW = 0;
+  if (a5 > 0) { var wp = clamp((a5 - .04) / .96) * lastW, wi = Math.floor(wp); curW = Math.min(lastW, wi + expoOut(clamp((wp - wi) * 1.5))); }
+  if (a4 > 0) {
+    var su = expoOut(clamp(a4 / .3)), thS = thW(curW), sx = ccx + Math.cos(thS) * R * .48, sy = ccy + Math.sin(thS) * R * .48 - R * .05, sr = R * .4;
+    c.fillStyle = 'rgba(' + C.teal + ',' + (.85 * su).toFixed(3) + ')'; c.beginPath(); c.arc(sx + 8 * (1 - su), sy - 6 * (1 - su), sr, 0, Math.PI * 2); c.fill();
+    var bu = expoOut(clamp((a4 - .12) / .3));
+    c.fillStyle = 'rgba(' + C.sand + ',' + (.6 * bu).toFixed(3) + ')'; c.fillRect(ccx - R * 1.02 + 10 * (1 - bu), ccy + R * .02, R * 1.02, R * .5);
+    var iu = clamp((a4 - .3) / .45);
+    if (iu > 0) {
+      var ic = SC.ink.getContext('2d'); ic.setTransform(dpr, 0, 0, dpr, 0, 0); ic.globalCompositeOperation = 'source-over'; ic.clearRect(0, 0, W, H);
+      ic.fillStyle = 'rgb(' + C.ink + ')'; statuePath(ic, TS); ic.fill();
+      ic.globalCompositeOperation = 'destination-out'; ic.drawImage(SC.speck, 0, 0, W, H); ic.globalCompositeOperation = 'source-over';
+      var mis = 12 * (1 - expoOut(iu));
+      if (mis > .5) { c.globalAlpha = .3 * Math.min(1, iu * 3); c.drawImage(SC.ink, -mis * 1.4, mis * .8, W, H); }
+      c.globalAlpha = Math.min(1, iu * 2.2); c.drawImage(SC.ink, mis, -mis * .5, W, H); c.globalAlpha = 1;
+    }
+    var tu = clamp((a4 - .8) / .2);
+    if (tu > 0) { var te = expoOut(tu), cxs = 0, cys = 0; STAT.tri.forEach(function (q2) { cxs += q2[0]; cys += q2[1]; }); var tc = hp([cxs / STAT.tri.length, cys / STAT.tri.length], TS); c.save(); c.translate(tc[0], tc[1]); c.scale(.4 + .6 * te, .4 + .6 * te); c.translate(-tc[0], -tc[1]); c.fillStyle = 'rgba(' + C.verm + ',' + Math.min(1, tu * 3) + ')'; c.beginPath(); STAT.tri.forEach(function (q2, k) { var qq = hp(q2, TS); if (k) c.lineTo(qq[0], qq[1]); else c.moveTo(qq[0], qq[1]); }); c.closePath(); c.fill(); c.restore(); }
+    var eb = Math.min(1, a4 * 2.5); c.fillStyle = 'rgba(231,155,190,' + (.8 * eb) + ')'; c.fillRect(px, py + ph * .06, 5, ph * .16); c.fillRect(px, py + ph * .8, 5, ph * .1);
+    c.fillStyle = 'rgba(143,195,201,' + (.8 * eb) + ')'; c.fillRect(px, py + ph * .27, 5, ph * .18);
+    var la = Math.min(1, a4 * 2); c.fillStyle = INK(.8 * la); c.font = '11.5px "IBM Plex Mono", monospace'; c.textAlign = 'left';
+    var lx = px + (m ? 16 : 26), ly = py + (m ? 26 : 34); c.fillText('EX-115 · Nº ' + pad2(+P.seat), lx, ly); c.fillRect(lx, ly + 9, 30, .8);
+    c.textAlign = 'right'; ['form /', 'motion /', 'time'].forEach(function (s2, k) { c.fillText(s2, px + pw - (m ? 16 : 26), m ? py + ph - 52 + k * 15 : py + 34 + k * 17); });
+    c.textAlign = 'left'; c.fillText('A.1151', lx, py + ph - (m ? 18 : 26)); c.fillRect(lx, py + ph - (m ? 12 : 20), 30, .8);
+  }
+  // ---- 節氣：太陽繞圓、朱橙刷痕、出勤網點
+  if (a5 > 0) {
+    var ta2 = Math.min(1, a5 * 4);
+    c.strokeStyle = INK(.55 * ta2); c.lineWidth = .8; c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = '11px "Noto Serif TC", serif';
+    for (var w = 1; w <= 18; w++) { var th = thW(w); c.beginPath(); c.moveTo(ccx + Math.cos(th) * (R - 4), ccy + Math.sin(th) * (R - 4)); c.lineTo(ccx + Math.cos(th) * (R + 4), ccy + Math.sin(th) * (R + 4)); c.stroke(); if (WEEK[w].first) { c.fillStyle = INK((w <= curW + .01 ? .85 : .35) * ta2); c.fillText(WEEK[w].term, ccx + Math.cos(th) * (R + 18), ccy + Math.sin(th) * (R + 18)); } }
+    c.textBaseline = 'alphabetic';
+    c.strokeStyle = 'rgba(' + C.verm + ',.85)'; c.lineWidth = 1.4; c.beginPath(); c.arc(ccx, ccy, R, thW(0), thW(curW)); c.stroke();
+    var dgx = px + pw * .1, dgy = py + ph * .14;
+    for (w = 1; w <= 18; w++) {
+      var dx = dgx + ((w - 1) % 6) * 11, dy = dgy + Math.floor((w - 1) / 6) * 11, st = statusOf(P, w), done = w <= curW + .01;
+      c.strokeStyle = INK(.5); c.lineWidth = .7; c.beginPath(); c.arc(dx, dy, 3.4, 0, Math.PI * 2); c.stroke();
+      if (!done) continue;
+      if (st === 'on') { c.fillStyle = INK(.9); c.beginPath(); c.arc(dx, dy, 3.4, 0, Math.PI * 2); c.fill(); }
+      else if (st === 'late') { c.fillStyle = INK(.9); c.beginPath(); c.arc(dx, dy, 3.4, 0, Math.PI); c.fill(); }
+      else if (st === 'leave') { c.fillStyle = 'rgba(' + C.teal + ',1)'; c.beginPath(); c.arc(dx, dy, 3.4, 0, Math.PI * 2); c.fill(); }
+    }
+    c.fillStyle = INK(.6); c.font = '10px "IBM Plex Mono", monospace'; c.textAlign = 'left'; c.fillText('LAMPS · 十八盞燈', dgx - 3, dgy + 40);
+  }
+  c.restore();
+  // ---- 破框：朱橙刷痕越出左框
+  if (a5 > 0) {
+    var xL = px - (m ? 10 : 40), xR = hx + R * .1, bh = R * .1, by = yb + R * .07;
+    for (w = 1; w <= Math.min(18, Math.ceil(curW)); w++) {
+      var rv = rates[w - 1]; if (rv == null) continue; var fr = Math.min(1, curW - (w - 1)); if (fr <= 0) continue;
+      var s0 = xL + (w - 1) / 18 * (xR - xL), s1 = s0 + (xR - xL) / 18 * fr + 1;
+      c.lineCap = 'butt'; for (var k = 0; k < 7; k++) { var yy3 = by + (k - 3) * bh / 7 + (noise(w * 3 + k, 2) - .5) * 3; c.strokeStyle = 'rgba(' + C.verm + ',' + ((.18 + .5 * rv) * (.55 + .45 * noise(k * 1.7, w))).toFixed(3) + ')'; c.lineWidth = bh / 6; c.beginPath(); c.moveTo(s0, yy3); c.lineTo(s1, yy3 + (noise(w, k) - .5) * 2); c.stroke(); }
+    }
+  }
+  // ---- 破框：軸線與對位十字越出版框
+  if (a3 > 0) {
+    var ax = easeIO(clamp((a3 - .15) / .6)), AX = (W / 2) * ax;
+    c.strokeStyle = INK(.45); c.lineWidth = .7; c.beginPath(); c.moveTo(ccx - AX, ccy); c.lineTo(ccx + AX, ccy); c.moveTo(ccx, ccy - (R * 1.15 + 30) * ax); c.lineTo(ccx, ccy + (R * 1.15 + 30) * ax); c.stroke();
+    c.fillStyle = INK(.85); [px, px + pw].forEach(function (xx2) { if (Math.abs(xx2 - ccx) <= AX) { c.beginPath(); c.arc(xx2, ccy, 2.4, 0, Math.PI * 2); c.fill(); } });
+    var rg = 1 - expoOut(clamp((a3 - .4) / .5)), rx = pw / 2 + (m ? 0 : 34);
+    regMark(c, ccx - rx + 22 * rg, ccy - 16 * rg, 5, INK(.7)); regMark(c, ccx + rx - 18 * rg, ccy + 12 * rg, 5, INK(.7));
+    c.beginPath(); c.arc(ccx, ccy - R, 4, 0, Math.PI * 2); c.stroke();
+  }
+  // ---- 解構：壢馬線稿，破框滿版
+  if (bo) {
     var bi = 0; for (i = 0; i < BEATS.length; i++) if (a2 >= BEATS[i].s) bi = i;
-    var B = BEATS[bi], u2 = clamp((a2 - B.s) / B.d), S = m ? W * 1.15 : H, col = 'rgba(' + WHT + ',';
-    var fe = expoOut(clamp(u2 * 3)), drift = Math.sin(t * .8) * 4;
-    c.font = '10px "JetBrains Mono", monospace'; c.textAlign = 'left';
-    var label = function (txt, x, y) { c.fillStyle = col + '.7)'; c.fillText(txt, x, y); };
+    var B = BEATS[bi], u2 = clamp((a2 - B.s) / B.d), S2 = m ? W * 1.15 : H, fe = expoOut(clamp(u2 * 3)), drift = Math.sin(t * .8) * 4;
+    c.font = '10px "IBM Plex Mono", monospace'; c.textAlign = 'left';
+    var label = function (txt, x2, y2) { c.fillStyle = INK(.7); c.fillText(txt, x2, y2); };
     if (B.k === 'grid') {
-      var gc2 = m ? 3 : 6, gr2 = m ? 5 : 3, cw = W / gc2, chh = H / gr2;
+      var gc2 = m ? 3 : 6, gr2 = m ? 5 : 3, cw = W / gc2, chh = (H - SC.hdr) / gr2;
       for (var gy = 0; gy < gr2; gy++) for (var gx2 = 0; gx2 < gc2; gx2++) {
         var idx = gy * gc2 + gx2; if (idx / (gc2 * gr2) > u2 * 2.2) continue;
-        var Tg = { x: cw * (gx2 + .5), y: chh * (gy + .5), h: Math.min(cw, chh) * .5, sk: 0, fx: rnd(idx, 9) < .2 ? -1 : 1 };
-        c.strokeStyle = col + (idx === Math.floor(u2 * 2.2 * gc2 * gr2) % (gc2 * gr2) ? '1)' : '.45)'); c.lineWidth = .8; horsePath(c, Tg); c.stroke();
+        var Tg = { x: cw * (gx2 + .5), y: SC.hdr * .3 + chh * (gy + .5), h: Math.min(cw, chh) * .5, fx: rnd(idx, 9) < .2 ? -1 : 1 };
+        c.strokeStyle = INK(idx === Math.floor(u2 * 2.2 * gc2 * gr2) % (gc2 * gr2) ? 1 : .4); c.lineWidth = .7; horsePath(c, Tg); c.stroke();
       }
-      label('LM · CONTACT SHEET · ' + pad2(Math.min(gc2 * gr2, Math.floor(u2 * 2.2 * gc2 * gr2))) + '/' + (gc2 * gr2), 16, 28);
-    } else if (B.k === 'one' || B.k === 'slow' || B.k === 'draw' || B.k === 'strips' || B.k === 'reg') {
-      var hh = (B.k === 'slow' ? B.h * (.82 + .3 * easeIO(u2)) : B.h) * S, T0 = { x: B.x * W + drift, y: B.y * H, h: hh, sk: 0, fx: B.fx || 1 };
-      if (B.k === 'one' && !B.bands) { T0.h = hh * (1.25 - .25 * fe); }
-      c.lineWidth = .8 + Math.min(1.8, hh / S * 1.1);
+      label('LM · CONTACT SHEET · ' + pad2(Math.min(gc2 * gr2, Math.floor(u2 * 2.2 * gc2 * gr2))) + '/' + (gc2 * gr2), 16, H - 18);
+    } else if (B.k !== 'zoom') {
+      var hh = (B.k === 'slow' ? B.h * (.82 + .3 * easeIO(u2)) : B.h) * S2, T0 = { x: B.x * W + drift, y: B.y * H, h: hh, fx: B.fx || 1 };
+      if (B.k === 'one' && !B.bands) T0.h = hh * (1.25 - .25 * fe);
+      c.lineWidth = .6 + Math.min(1.2, hh / S2 * .8); c.strokeStyle = INK(1);
       if (B.bands) {
-        var top = T0.y - hh * .55, bh = hh * 1.1 / B.bands;
-        for (var b = 0; b < B.bands; b++) {
-          var dx = (rnd(b, bi + 5) - .5) * 2 * B.amp * W * (1 - fe * .7);
-          c.save(); c.beginPath(); c.rect(0, top + b * bh, W, bh); c.clip(); c.translate(dx, 0); c.strokeStyle = col + '1)'; horsePath(c, T0); c.stroke(); c.restore();
-        }
+        var tp2 = T0.y - hh * .55, bh2 = hh * 1.1 / B.bands;
+        for (var b = 0; b < B.bands; b++) { var ddx = (rnd(b, bi + 5) - .5) * 2 * B.amp * W * (1 - fe * .7); c.save(); c.beginPath(); c.rect(0, tp2 + b * bh2, W, bh2); c.clip(); c.translate(ddx, 0); horsePath(c, T0); c.stroke(); c.restore(); }
       } else if (B.k === 'strips') {
-        var sc3 = [1, 1.32, .78], top3 = T0.y - hh * .55, bh3 = hh * 1.1 / 3;
-        for (var b3 = 0; b3 < 3; b3++) {
-          var sk = 1 + (sc3[b3] - 1) * fe, T3 = { x: T0.x + (b3 - 1) * 40 * (1 - fe), y: T0.y, h: hh * sk, sk: 0 };
-          c.save(); c.beginPath(); c.rect(0, top3 + b3 * bh3, W, bh3); c.clip(); c.strokeStyle = col + '1)'; horsePath(c, T3); c.stroke(); c.restore();
-        }
+        var sc3 = [1, 1.32, .78], tp3 = T0.y - hh * .55, bh3 = hh * 1.1 / 3;
+        for (var b3 = 0; b3 < 3; b3++) { var T3 = { x: T0.x + (b3 - 1) * 40 * (1 - fe), y: T0.y, h: hh * (1 + (sc3[b3] - 1) * fe) }; c.save(); c.beginPath(); c.rect(0, tp3 + b3 * bh3, W, bh3); c.clip(); horsePath(c, T3); c.stroke(); c.restore(); }
       } else if (B.k === 'draw') {
-        var len = HORSE.len * hh; c.setLineDash([len * easeIO(u2), len * 2]); c.strokeStyle = col + '1)'; horsePath(c, T0); c.stroke(); c.setLineDash([]);
-        c.strokeStyle = col + '.25)'; c.lineWidth = .7; horsePath(c, T0); c.stroke();
+        var len = HORSE.len * hh; c.setLineDash([len * easeIO(u2), len * 2]); horsePath(c, T0); c.stroke(); c.setLineDash([]);
+        c.strokeStyle = INK(.2); c.lineWidth = .6; horsePath(c, T0); c.stroke();
       } else if (B.k === 'reg') {
-        var off2 = 22 * (1 - fe); c.strokeStyle = 'rgba(' + CU + ',.95)'; T0.x += off2; T0.y -= off2 * .6; horsePath(c, T0); c.stroke(); T0.x -= off2 * 2; T0.y += off2 * 1.2; c.strokeStyle = col + '1)'; horsePath(c, T0); c.stroke();
-      } else { c.strokeStyle = col + '1)'; horsePath(c, T0); c.stroke(); }
-      var bw2 = hh * 1.12, bx = T0.x - bw2 / 2, by = T0.y - hh * .55;
-      if (hh < S * .8) cropMarks(c, bx - 12, by - 12, bw2 + 24, hh * 1.1 + 24, col + '.6)');
-      label('LM-' + pad2(bi + 1) + ' · 1/' + [250, 500, 60, 1000, 2000, 2000, 1000, 500, 30, 125][bi % 10] + 's', hh < S * .8 ? bx - 12 : 16, hh < S * .8 ? by - 20 : 28);
-    } else if (B.k === 'zoom') {
-      var ez = easeIO(u2), Tz = { x: (.5 * W) + (TS.x - .5 * W) * ez, y: H * .5 + (TS.y - H * .5) * ez, h: (2.2 * S) + (hH - 2.2 * S) * ez, sk: 0 };
-      c.globalAlpha = 1 - ez * .9; c.strokeStyle = col + '1)'; c.lineWidth = 1.4; horsePath(c, Tz); c.stroke(); c.globalAlpha = 1;
+        var off2 = 22 * (1 - fe); c.strokeStyle = 'rgba(' + C.verm + ',.95)'; T0.x += off2; T0.y -= off2 * .6; horsePath(c, T0); c.stroke(); T0.x -= off2 * 2; T0.y += off2 * 1.2; c.strokeStyle = INK(1); horsePath(c, T0); c.stroke();
+      } else { horsePath(c, T0); c.stroke(); }
+      var bw2 = hh * 1.12, bx = T0.x - bw2 / 2, by2 = T0.y - hh * .55;
+      if (hh < S2 * .8) cropMarks(c, bx - 12, by2 - 12, bw2 + 24, hh * 1.1 + 24, INK(.55));
+      label('LM-' + pad2(bi + 1) + ' · 1/' + [250, 500, 60, 1000, 2000, 2000, 1000, 500, 30, 125][bi % 10] + 's', hh < S2 * .8 ? bx - 12 : 16, hh < S2 * .8 ? by2 - 20 : H - 18);
+    } else {
+      var ez = easeIO(u2), Tz = { x: (.5 * W) + (TS.x - .5 * W) * ez, y: H * .5 + (TS.y - H * .5) * ez, h: (2.2 * S2) + (hH - 2.2 * S2) * ez };
+      c.globalAlpha = 1 - ez * .9; c.strokeStyle = INK(1); c.lineWidth = 1.2; horsePath(c, Tz); c.stroke(); c.globalAlpha = 1;
     }
     if (B.dims) {
       var bell = Math.sin(Math.PI * u2);
       SC.dims.forEach(function (D) {
         var fx = D.x * W, fy = D.y * H, L2 = D.len * Math.min(W, H) * (m ? 1.3 : 1), ex = Math.cos(D.ang) * L2 / 2, ey = Math.sin(D.ang) * L2 / 2, nx = -ey / (L2 / 2) * 6, ny = ex / (L2 / 2) * 6;
-        c.strokeStyle = col + (.55 * bell).toFixed(3) + ')'; c.lineWidth = .8;
+        c.strokeStyle = INK((.5 * bell).toFixed(3)); c.lineWidth = .7;
         c.beginPath(); c.moveTo(fx - ex, fy - ey); c.lineTo(fx + ex, fy + ey); c.moveTo(fx - ex - nx, fy - ey - ny); c.lineTo(fx - ex + nx, fy - ey + ny); c.moveTo(fx + ex - nx, fy + ey - ny); c.lineTo(fx + ex + nx, fy + ey + ny); c.stroke();
-        c.save(); c.translate(fx + nx * 1.6, fy + ny * 1.6); c.rotate(D.ang > Math.PI / 4 ? D.ang - Math.PI : D.ang); c.fillStyle = col + (.7 * bell).toFixed(3) + ')'; c.textAlign = 'center'; c.fillText(D.lab, 0, -2); c.restore();
+        c.save(); c.translate(fx + nx * 1.6, fy + ny * 1.6); c.rotate(D.ang > Math.PI / 4 ? D.ang - Math.PI : D.ang); c.fillStyle = INK((.7 * bell).toFixed(3)); c.textAlign = 'center'; c.fillText(D.lab, 0, -2); c.restore();
       });
-      c.font = (m ? 10 : 11) + 'px "JetBrains Mono", "Noto Sans TC", monospace'; c.textAlign = 'center';
-      SC.kw.forEach(function (K, i) { var ka = clamp(bell * 1.4 - rnd(i, 7) * .6); if (ka > 0) { c.fillStyle = col + (.75 * ka).toFixed(3) + ')'; c.fillText(K.t, K.x * W, K.y * H); } });
+      c.font = (m ? 11 : 12) + 'px "Noto Serif TC", serif'; c.textAlign = 'center';
+      SC.kw.forEach(function (K, i) { var ka = clamp(bell * 1.4 - rnd(i, 7) * .6); if (ka > 0) { c.fillStyle = INK((.7 * ka).toFixed(3)); c.fillText(K.t, K.x * W, K.y * H); } });
     }
   }
-  // ---- 對位：構成幾何
-  if (a3 > 0) {
-    var ga = 'rgba(' + LC + ',';
-    c.strokeStyle = ga + '.7)'; c.lineWidth = .9;
-    var sw = easeIO(clamp(a3 * 1.3)) * Math.PI * 2; c.beginPath(); c.arc(cx, ccy, R, -Math.PI / 2, -Math.PI / 2 + sw); c.stroke();
-    c.setLineDash([2, 5]); c.beginPath(); c.arc(cx + R * .12, ccy - R * .04, R * 1.12, Math.PI * .95, Math.PI * .95 + sw * .35); c.stroke(); c.setLineDash([]);
-    var ax = easeIO(clamp((a3 - .15) / .6)), AX = (m ? W * .46 : R * 1.45) * ax;
-    c.beginPath(); c.moveTo(cx - AX, ccy); c.lineTo(cx + AX, ccy); c.moveTo(cx, ccy - R * 1.12 * ax); c.lineTo(cx, ccy + R * 1.12 * ax); c.stroke();
-    c.fillStyle = ga + '1)'; [[-AX, 0], [AX, 0]].forEach(function (d) { c.beginPath(); c.arc(cx + d[0], ccy, 2.6, 0, Math.PI * 2); c.fill(); });
-    c.beginPath(); c.arc(cx, ccy - R, 5, 0, Math.PI * 2); c.moveTo(cx + 5, ccy + R * 1.12); c.arc(cx, ccy + R * 1.12, 5, 0, Math.PI * 2); c.stroke();
-    var rg = 1 - expoOut(clamp((a3 - .4) / .5)), rx = m ? W * .47 : R * 1.75;
-    regMark(c, cx - rx + 26 * rg, ccy - 18 * rg, 6, ga + '.85)'); regMark(c, cx + rx - 20 * rg, ccy + 14 * rg, 6, ga + '.85)');
-  }
-  // ---- 印刷：色塊、油墨、銅橙三角
-  if (a4 > 0) {
-    var blocks = [[-.51, -.75, .51, .42, '188,208,214', .0], [-.96, -.24, .96, .58, '217,199,172', .12], [-1.21, .34, 1.21, .47, '226,214,196', .22], [-.12, .08, .78, .26, '188,208,214', .3]];
-    blocks.forEach(function (B) {
-      var u = clamp((a4 - B[5]) / .25); if (u <= 0) return; var e = expoOut(u), off = 10 * (1 - e);
-      c.fillStyle = 'rgba(' + B[4] + ',' + (.78 * Math.min(1, u * 3)).toFixed(3) + ')';
-      c.fillRect(cx + B[0] * R + off, ccy + B[1] * R - off * .6, B[2] * R, B[3] * R);
-    });
-    // 再畫一次構成線，讓線壓在色塊上
-    c.strokeStyle = 'rgba(' + INK + ',.55)'; c.lineWidth = .8; c.beginPath(); c.arc(cx, ccy, R, 0, Math.PI * 2); c.stroke();
-    var iu = clamp((a4 - .35) / .4);
-    if (iu > 0) {
-      var ic = SC.ink.getContext('2d'); ic.setTransform(dpr, 0, 0, dpr, 0, 0); ic.globalCompositeOperation = 'source-over'; ic.clearRect(0, 0, W, H);
-      ic.fillStyle = 'rgb(' + INK + ')'; statuePath(ic, TS); ic.fill();
-      ic.globalCompositeOperation = 'destination-out'; ic.drawImage(SC.speck, 0, 0, W, H); ic.globalCompositeOperation = 'source-over';
-      var mis = 14 * (1 - expoOut(iu));
-      if (mis > .5) { c.globalAlpha = .35 * Math.min(1, iu * 3); c.drawImage(SC.ink, -mis * 1.4, mis * .8, W, H); }
-      c.globalAlpha = Math.min(1, iu * 2.2); c.drawImage(SC.ink, mis, -mis * .5, W, H); c.globalAlpha = 1;
-    }
-    var tu = clamp((a4 - .78) / .2);
-    if (tu > 0) { var te = expoOut(tu), tc = hp([STAT.tri.reduce(function (s, q) { return s + q[0]; }, 0) / STAT.tri.length, STAT.tri.reduce(function (s, q) { return s + q[1]; }, 0) / STAT.tri.length], TS); c.save(); c.translate(tc[0], tc[1]); c.scale(.4 + .6 * te, .4 + .6 * te); c.translate(-tc[0], -tc[1]); c.fillStyle = 'rgba(' + CU + ',' + Math.min(1, tu * 3) + ')'; c.beginPath(); STAT.tri.forEach(function (q, i) { var qq = hp(q, TS); if (i) c.lineTo(qq[0], qq[1]); else c.moveTo(qq[0], qq[1]); }); c.closePath(); c.fill(); c.restore(); }
-    // 邊緣色版
-    var eb = Math.min(1, a4 * 2.5); c.fillStyle = 'rgba(231,155,190,' + (.85 * eb) + ')'; c.fillRect(0, H * .05, 7, H * .16); c.fillRect(0, H * .82, 7, H * .1);
-    c.fillStyle = 'rgba(143,195,201,' + (.85 * eb) + ')'; c.fillRect(0, H * .24, 7, H * .2); c.fillRect(0, H * .95, 9, H * .05);
-    // 角落編輯小字
-    var la = Math.min(1, a4 * 2); c.fillStyle = 'rgba(' + INK + ',' + (.85 * la) + ')'; c.font = '13px "JetBrains Mono", monospace'; c.textAlign = 'left';
-    var ty0 = m ? H * .13 : H * .12; c.fillText('Nº ' + pad2(+P.seat), m ? 18 : W * .06, ty0); c.fillRect(m ? 18 : W * .06, ty0 + 10, 32, 1);
-    c.textAlign = 'right'; c.fillText('C / L / H / S', m ? W - 18 : W * .94, ty0);
-    c.font = 'italic 300 13px "Jost", serif'; c.textAlign = 'left'; var by2 = m ? H * .93 : H * .9; c.fillRect(m ? 18 : W * .06, by2 - 4, 30, 1); c.fillText('Equus in Motu', (m ? 18 : W * .06) + 40, by2);
-    c.textAlign = 'right'; c.font = '13px "JetBrains Mono", monospace'; c.fillText('/ / /', m ? W - 18 : W * .94, by2);
-  }
-  // ---- 奔跑：銅橙小點繞十八格
-  var rates = scopeRates(), lastW = P.live ? P.cur : 18;
-  var thW = function (w) { return thF - Math.PI * 2 + w / 18 * Math.PI * 2; };
-  if (a5 > 0) {
-    var ta2 = Math.min(1, a5 * 4);
-    c.strokeStyle = 'rgba(' + INK + ',' + (.6 * ta2) + ')'; c.lineWidth = .9; c.font = '9.5px "JetBrains Mono", monospace'; c.textAlign = 'center'; c.textBaseline = 'middle';
-    for (var w = 1; w <= 18; w++) { var th = thW(w), r1 = R - 5, r2 = R + 5; c.beginPath(); c.moveTo(cx + Math.cos(th) * r1, ccy + Math.sin(th) * r1); c.lineTo(cx + Math.cos(th) * r2, ccy + Math.sin(th) * r2); c.stroke(); if (WEEK[w].first) { c.fillStyle = 'rgba(' + INK + ',' + (.75 * ta2) + ')'; c.font = '11px "Noto Sans TC", sans-serif'; c.fillText(WEEK[w].term, cx + Math.cos(th) * (R + 22), ccy + Math.sin(th) * (R + 22)); } }
+  // ---- 抵達：終點十字圈、直排標題跨出版框
+  if (a6 > 0) {
+    var e6 = easeIO(a6), fx2 = P.live ? ccx + Math.cos(thW(lastW)) * R : hp(STAT.res[0], TS)[0], fy2 = P.live ? ccy + Math.sin(thW(lastW)) * R : yb;
+    c.strokeStyle = INK(.7 * e6); c.lineWidth = .8; c.beginPath(); c.arc(fx2, fy2, R * .2 * e6 + 1, 0, Math.PI * 2); c.moveTo(fx2 - R * .3, fy2); c.lineTo(fx2 + R * .3, fy2); c.moveTo(fx2, fy2 - R * .3); c.lineTo(fx2, fy2 + R * .3); c.stroke();
+    c.fillStyle = 'rgba(' + C.verm + ',' + e6 + ')'; c.beginPath(); c.arc(fx2, fy2, 3.5, 0, Math.PI * 2); c.fill();
+    var fs = m ? Math.min(W * .12, 46) : Math.min(R * .36, 64), vx = px + pw - fs * (m ? .75 : .35), vy = py + ph * (m ? .08 : .1);
+    c.font = '200 ' + fs + 'px "Noto Serif TC", serif'; c.textAlign = 'left'; c.textBaseline = 'top';
+    ['學', '習', '壢', '程'].forEach(function (ch2, k) { var ca = clamp(e6 * 3 - k * .5); c.fillStyle = ch2 === '壢' ? 'rgba(' + C.verm + ',' + ca + ')' : INK(ca); c.fillText(ch2, vx, vy + k * fs * 1.18 + (1 - ca) * 8); });
     c.textBaseline = 'alphabetic';
-    var wp = clamp((a5 - .05) / .95) * lastW, wi = Math.floor(wp), wf = expoOut(clamp((wp - wi) * 1.6)), cur = Math.min(lastW, wi + wf);
-    var th0 = thW(0), thc = thW(cur);
-    c.strokeStyle = 'rgba(' + CU + ',.9)'; c.lineWidth = 2; c.beginPath(); c.arc(cx, ccy, R, th0, thc); c.stroke();
-    // 地面點線：每週一點，大小代表得分率
-    var xL = m ? W * .05 : cx - R * 1.6, xR = hx - 8;
-    for (w = 1; w <= Math.floor(cur); w++) { var rv = rates[w - 1]; if (rv == null) continue; var px = xL + (w - 1) / 17 * (xR - xL); c.fillStyle = 'rgba(' + INK + ',.85)'; c.beginPath(); c.arc(px, yb + 12, .9 + rv * 2.2, 0, Math.PI * 2); c.fill(); }
-    var dx2 = cx + Math.cos(thc) * R, dy2 = ccy + Math.sin(thc) * R;
-    c.fillStyle = 'rgb(' + CU + ')'; c.beginPath(); c.arc(dx2, dy2, 5.5, 0, Math.PI * 2); c.fill();
   }
-  // ---- 抵達：終點光＋標題
-  if (a6 > 0 || (a5 >= 1)) {
-    var e6 = easeIO(a6), fx2 = P.live ? cx + Math.cos(thW(lastW)) * R : XF, fy2 = P.live ? ccy + Math.sin(thW(lastW)) * R : yb;
-    if (!P.live) { var topY = yb - (yb + 4) * e6; c.fillStyle = 'rgba(' + CU + ',.95)'; c.fillRect(XF - .75, topY, 1.5, yb - topY); var gl = c.createLinearGradient(XF - 40, 0, XF + 40, 0); gl.addColorStop(0, 'rgba(' + CU + ',0)'); gl.addColorStop(.5, 'rgba(' + CU + ',' + (.12 * e6) + ')'); gl.addColorStop(1, 'rgba(' + CU + ',0)'); c.fillStyle = gl; c.fillRect(XF - 40, topY, 80, yb - topY); }
-    c.strokeStyle = 'rgba(' + CU + ',' + (1 - (t * .8 % 1)) * e6 + ')'; c.lineWidth = 1; c.beginPath(); c.arc(fx2, fy2, 6 + (t * .8 % 1) * 18, 0, Math.PI * 2); c.stroke();
-    var fs = m ? W * .1 : Math.min(W * .045, 56), chars = ['學', '習', '壢', '程'];
-    c.font = '400 ' + fs + 'px "Noto Sans TC", sans-serif'; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
-    if (m) { var x0 = 18, ty = H * .23; chars.forEach(function (ch2, i) { var ca = clamp(e6 * 3 - i * .5); c.fillStyle = ch2 === '壢' ? 'rgba(' + CU + ',' + ca + ')' : 'rgba(' + INK + ',' + ca + ')'; c.fillText(ch2, x0, ty); x0 += fs * 1.25; }); }
-    else { var vx = W * .94 - fs, vy = H * .2; chars.forEach(function (ch2, i) { var ca = clamp(e6 * 3 - i * .5); c.fillStyle = ch2 === '壢' ? 'rgba(' + CU + ',' + ca + ')' : 'rgba(' + INK + ',' + ca + ')'; c.fillText(ch2, vx, vy + i * fs * 1.2 + fs); }); }
-    c.fillStyle = 'rgba(' + INK + ',' + (.7 * e6) + ')'; c.font = '11px "JetBrains Mono", monospace';
-    if (m) c.fillText((P.live ? '第' + CNUM[P.cur] + '週 · ' + WEEK[P.cur].term + ' · 還在路上' : '處暑 → 大寒 · 抵達 1.20'), 18, H * .23 + 22); else { c.textAlign = 'right'; c.font = '12px "Noto Sans TC", sans-serif'; c.fillText(P.live ? '第' + CNUM[P.cur] + '週 · ' + WEEK[P.cur].term + ' · 還在路上' : '處暑 → 大寒 · 抵達', W * .94, H * .2 + fs * 5.2); }
-  }
-  // 顆粒
-  c.globalCompositeOperation = pk > .5 ? 'multiply' : 'overlay'; c.globalAlpha = pk > .5 ? .07 : .12;
-  var gox = Math.random() * 200 | 0, goy = Math.random() * 200 | 0; c.save(); c.translate(-gox, -goy); c.fillStyle = c.createPattern(SC.grain, 'repeat'); c.fillRect(0, 0, W + 200, H + 200); c.restore();
-  c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
-  $('scope').querySelector('.pin').classList.toggle('onpaper', pk > .5);
-  var done = a6 > .9, lap = a5 > 0 ? Math.min(lastW, Math.max(1, Math.round(clamp((a5 - .05) / .95) * lastW))) : 0;
-  var ACT = ['00 訊號', '01 起身', '02 解構', '03 對位', '04 印刷', '05 奔跑', '06 抵達'][a6 > 0 ? 6 : a5 > 0 ? 5 : a4 > 0 ? 4 : a3 > 0 ? 3 : a2 > 0 ? 2 : a1 > 0 ? 1 : 0];
-  var tr = $('scopeR'); tr.textContent = done ? (P.live ? WEEK[P.cur].term + ' · 還在路上' : '大寒 · 抵達') : (lap ? '第' + CNUM[lap] + '週 · ' + WEEK[lap].term : '處暑 · 出發前'); tr.classList.toggle('neon', done);
-  $('scopeL').textContent = done ? 'S06 · YOUR CERTIFICATE ↓' : ACT + ' · SCROLL ↓';
+  // 紙紋
+  c.save(); c.beginPath(); c.rect(px, py, pw, ph); c.clip();
+  c.globalCompositeOperation = isLight() ? 'multiply' : 'overlay'; c.globalAlpha = isLight() ? .08 : .14;
+  var gox = Math.random() * 200 | 0, goy = Math.random() * 200 | 0; c.translate(-gox, -goy); c.fillStyle = c.createPattern(SC.grain, 'repeat'); c.fillRect(px, py, pw + 200, ph + 200);
+  c.restore(); c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+  // 標籤（像作品集的卡片）
+  var lap = a5 > 0 ? Math.min(lastW, Math.max(1, Math.round(curW))) : 0;
+  var ACT = ['00 訊號', '01 起身', '02 解構', '03 對位', '04 印刷', '05 節氣', '06 抵達'][a6 > 0 ? 6 : a5 > 0 ? 5 : a4 > 0 ? 4 : a3 > 0 ? 3 : a2 > 0 ? 2 : a1 > 0 ? 1 : 0];
+  var status = a6 > .9 ? (P.live ? '第' + CNUM[P.cur] + '週 · ' + WEEK[P.cur].term + ' · 還在路上' : '處暑 → 大寒 · 抵達') : ACT + (lap ? ' · 第' + CNUM[lap] + '週 · ' + WEEK[lap].term : '') + ' · scroll ↓';
+  var cy2 = py + ph + (m ? 22 : 26);
+  c.fillStyle = INK(.9); c.font = '400 ' + (m ? 13 : 14) + 'px "Noto Serif TC", serif'; c.textAlign = 'left'; c.fillText('Nº 001　銅馬 Equus in Motu', px, cy2);
+  c.fillStyle = MUT(1); c.font = '11px "IBM Plex Mono", monospace';
+  if (m) c.fillText(status, px, cy2 + 18); else { c.fillText('115-1 · riso ink on paper · 18 weeks', px, cy2 + 18); c.textAlign = 'right'; c.fillText(status, px + pw, cy2); }
 }
+
 
 // ======================= 證書 =======================
 var cert = null, P = null;
-if (HAS3D) cert = new WaferScene($('certGL'), { w: 674, h: 450, print: true, dist: 1020, elev: .66, orbit: .18, lookY: 20, introDur: 2.4, topDist: 1240, fov: 30 });
+if (HAS3D) cert = new WaferScene($('certGL'), { w: 794, h: 600, print: true, flatInLight: true, flatZ: -110, dist: 1080, elev: .64, orbit: .16, lookY: 70, introDur: 2.4, topDist: 1720, fov: 30 });
+var STATPATH = (function () { var a = STAT.outer.map(function (p) { return ((p[0] + .62) * 400).toFixed(1) + ' ' + ((p[1] + .5) * 400).toFixed(1); }); return 'M' + a.join('L') + 'Z'; })();
+function deco(id) { var REG = '<svg class="reg {k}" viewBox="-11 -11 22 22" aria-hidden="true"><circle r="5" fill="none" stroke="currentColor"/><path d="M-11 0H11M0 -11V11" stroke="currentColor"/></svg>'; return '<div class="grain"></div><i class="bleed"></i>' + 'abcd'.split('').map(function (k) { return REG.replace('{k}', k); }).join('') + (id === 1 ? '<svg class="wmk" viewBox="0 0 496 400" aria-hidden="true"><path d="' + STATPATH + '"/></svg>' : ''); }
 function buildCert(key) {
   P = PROFILES[key];
   if (cert) cert.setData(P);
   $('cname').innerHTML = P.name.split('').map(function (c) { return '<span>' + c + '</span>'; }).join('');
-  $('sCls').textContent = P.cls; $('sSeat').textContent = P.seat; 
-  $('kScore').textContent = P.live ? 'LIVE 目前成績' : 'SCORE 學期成績';
-  $('vRank').textContent = P.rank; var lit = 0; for (var lw = 1; lw <= P.cur; lw++) { var ls = statusOf(P, lw); if (ls === 'on' || ls === 'late') lit++; } $('vAtt').innerHTML = lit + '<small class="vs2"> 盞 / ' + P.cur + '</small><span class="vs3">出席率 ' + P.att + '</span>'; $('vWords').textContent = P.words;
+  $('sCls').textContent = P.cls; $('sSeat').textContent = P.seat;
+  $('kScore').textContent = P.live ? 'Live 目前成績' : 'Score 學期成績';
+  $('vRank').textContent = P.rank; $('vWords').textContent = P.words;
+  var lit = 0, dots = ''; for (var w = 1; w <= 18; w++) { var s = statusOf(P, w); if (s === 'on' || s === 'late') lit++; dots += '<i class="' + (s === 'on' ? 'on' : s === 'late' ? 'late' : s === 'leave' ? 'leave' : s === 'future' ? 'fut' : '') + '"></i>'; }
+  $('vAtt').innerHTML = lit + '<span class="vs2"> 盞 / ' + P.cur + ' · 出席 ' + P.att + '</span>'; $('dots').innerHTML = dots;
   $('p2who').textContent = P.name + ' · ' + P.cls + '-' + P.seat;
-  $('pnote').textContent = '示範證書 · ' + P.name + '（假資料）· 真實成績請從信中的專屬連結開啟';
+  $('pnote').textContent = '以下是示範證書（假資料）。真實的成績，只會從信中的專屬連結打開。';
   var good = 0, tested = 0; TASKS.forEach(function (t, i) { if (t.w <= P.cur) { tested++; if (P.scores[i] != null) good++; } });
   $('tagR').textContent = '疊起 ' + good + ' 塊石 · 共 ' + tested;
   $('tagB').textContent = P.live ? '處暑 → ' + WEEK[P.cur].term + ' · 還在路上' : '處暑 → 大寒 · 抵達';
+  document.querySelectorAll('.demo .chip[data-k]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.k === key ? 'true' : 'false'); });
   buildPage2();
 }
 function renderCertText(t) {
   var T = cert ? cert.T : { END: 3 };
-  Array.prototype.forEach.call($('cname').children, function (s, i) { s.classList.toggle('in', t > .3 + i * .28); });
-  $('vScore').textContent = pad2(Math.round(P.score * easeOut(clamp((t - T.END) / 1.1))));
-  var n = Math.max(0, Math.floor((t - T.END - .4) * 8)); $('vTitle').textContent = P.title.slice(0, n);
+  Array.prototype.forEach.call($('cname').children, function (s, i) { s.classList.toggle('in', t > .4 + i * .35); });
+  $('vScore').textContent = pad2(Math.round(P.score * easeOut(clamp((t - T.END) / 1.4))));
+  var n = Math.max(0, Math.floor((t - T.END - .5) * 6)); $('vTitle').textContent = P.title.slice(0, n);
 }
-$('wleg').innerHTML = PATHS.map(function (p) { return '<span><i style="background:' + p.c + '"></i>' + p.verb + '</span>'; }).join('') +
-  '<span><i style="background:#F06A2C;border-radius:50%"></i>準時</span><span><i style="background:#F06A2C;opacity:.5;border-radius:50%"></i>遲到</span><span><i style="background:#5FB3A9;border-radius:50%"></i>請假</span><span><i style="background:var(--stone)"></i>完成</span><span><i style="border:1px dashed #8D8A84"></i>待補交</span>';
-
-// 第二頁：十八週賽道
+$('wleg').innerHTML = PATHS.map(function (p) { return '<span><i style="background:' + p.c + '"></i>' + p.verb + '</span>'; }).join('') + '<span><i style="background:var(--lamp)"></i>點燈</span><span><i style="background:#8fb2b4"></i>請假</span><span><i style="border:1px dashed var(--smut);border-radius:0"></i>待補交</span>';
 var paceAnim = { t: -1 };
 function weekData() {
   var weeks = [];
@@ -1105,8 +1052,55 @@ function paceFrame(now) {
 }
 function fillBars() { document.querySelectorAll('.prow .fl').forEach(function (f, i) { setTimeout(function () { f.style.width = f.dataset.w; }, i * 120); }); }
 
+
+
+// ======================= 細節動態 =======================
+function typeIn(node) { var full = node.dataset.t; if (!full) return; var has = full.indexOf('=') >= 0, n = 0; (function step() { n++; var s2 = full.slice(0, n); node.innerHTML = has && s2.indexOf('=') >= 0 ? '<i>' + s2.slice(0, s2.indexOf('=') + 2) + '</i>' + s2.slice(s2.indexOf('=') + 2) : (has ? '<i>' + s2 + '</i>' : s2); if (n < full.length) setTimeout(step, 38); })(); }
+var rvIO = new IntersectionObserver(function (es) {
+  es.forEach(function (e) {
+    if (!e.isIntersecting) return; var n = e.target; rvIO.unobserve(n);
+    var delay = n.classList.contains('row') ? (n.dataset.k % 5) * 70 : 0;
+    setTimeout(function () {
+      n.classList.add('in');
+      if (n.classList.contains('row')) { var pc = n.querySelector('.p[data-t]'); if (pc && !reduce) typeIn(pc); }
+      if (n.id === 'stack') n.querySelectorAll('.seg').forEach(function (g, i) { setTimeout(function () { g.style.width = g.dataset.w; }, i * 160); });
+    }, delay);
+  });
+}, { threshold: .2, rootMargin: '0px 0px -8% 0px' });
+document.querySelectorAll('.row').forEach(function (r2, i) { r2.dataset.k = i; rvIO.observe(r2); });
+document.querySelectorAll('[data-rv]').forEach(function (n) { rvIO.observe(n); });
+// 列表左側時間軸
+(function () {
+  var box = $('rows'), tl = $('tline'), fill = tl.querySelector('.fill'), cur = tl.querySelector('.cur'), rows = box.querySelectorAll('.row');
+  rows.forEach(function (r2, i) { if (i < 18 && WEEK[i + 1].first) { var nt = document.createElement('i'); nt.className = 'nt'; nt.dataset.i = i; tl.appendChild(nt); } });
+  function upd() {
+    var br = box.getBoundingClientRect(), mid = window.innerHeight * .5, h = clamp((mid - br.top) / br.height) * br.height;
+    fill.style.height = h + 'px';
+    var ci = -1; rows.forEach(function (r2, i) { if (i >= 18) return; var rr = r2.getBoundingClientRect(); if (rr.top - br.top <= h) ci = i; });
+    tl.querySelectorAll('.nt').forEach(function (nt) { nt.style.top = (rows[nt.dataset.i].offsetTop + 22) + 'px'; });
+    if (ci >= 0 && h < br.height - 4) { cur.style.opacity = 1; cur.style.top = (rows[ci].offsetTop + 19) + 'px'; } else cur.style.opacity = 0;
+  }
+  window.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd); upd();
+})();
+// 開場時間尺：一格一格亮起
+(function () { var ts = $('heroTicks').children; for (var i = 0; i < ts.length; i++) (function (k) { setTimeout(function () { ts[k].classList.add('on'); if (k === ts.length - 1) ts[k].classList.add('now'); }, reduce ? 0 : 1800 + k * 110); })(i); })();
+// 四連桿：持續慢慢轉
+function fourBar(now) {
+  var g = document.querySelector('.fbar'); if (!g) return;
+  var A = [16, 36], D = [46, 36], a = 7, b = 26, cL = 16, th = now * .0012, B = [A[0] + a * Math.cos(th), A[1] + a * Math.sin(th)];
+  var dx = D[0] - B[0], dy = D[1] - B[1], d = Math.hypot(dx, dy), k = (b * b - cL * cL + d * d) / (2 * d), hh = Math.sqrt(Math.max(0, b * b - k * k));
+  var C = [B[0] + k * dx / d - hh * dy / d, B[1] + k * dy / d + hh * dx / d];
+  if (C[1] > 36) C = [B[0] + k * dx / d + hh * dy / d, B[1] + k * dy / d - hh * dx / d];
+  var set = function (el2, x1, y1, x2, y2) { el2.setAttribute('x1', x1); el2.setAttribute('y1', y1); el2.setAttribute('x2', x2); el2.setAttribute('y2', y2); };
+  set(g.querySelector('.a'), A[0], A[1], B[0], B[1]); set(g.querySelector('.b'), B[0], B[1], C[0], C[1]); set(g.querySelector('.c'), D[0], D[1], C[0], C[1]);
+  g.querySelector('.j1').setAttribute('cx', B[0]); g.querySelector('.j1').setAttribute('cy', B[1]); g.querySelector('.j2').setAttribute('cx', C[0]); g.querySelector('.j2').setAttribute('cy', C[1]);
+}
+
 // ======================= 縮放 · 觀察 · 迴圈 =======================
 function fit() { ['1', '2'].forEach(function (n) { var h = $('h' + n), s = Math.min(1, h.clientWidth / 794); $('s' + n).style.transform = 'scale(' + s + ')'; h.style.height = (1123 * s) + 'px'; }); }
+function applyTheme() { var L = isLight(); $('papers').classList.toggle('lightsheet', L); if (hero) hero.setLight(L); if (cert) cert.setLight(L); }
+themeHooks.push(applyTheme);
+if (window.matchMedia) { var mq = matchMedia('(prefers-color-scheme: light)'); if (mq.addEventListener) mq.addEventListener('change', applyTheme); }
 window.addEventListener('resize', function () { fit(); if (hero) hero.resize(); clearTimeout(window.__rt); window.__rt = setTimeout(buildScope, 250); });
 var certStart = -1, frozen = reduce, certVis = false;
 var io = new IntersectionObserver(function (es) {
@@ -1114,42 +1108,35 @@ var io = new IntersectionObserver(function (es) {
     var id = e.target.id;
     if (id === 'h1') { certVis = e.isIntersecting; if (e.isIntersecting && certStart < 0) certStart = performance.now(); return; }
     if (id === 'heroGL') { heroOn = e.isIntersecting; return; }
-    if (id === 'scope') { SC.on = e.isIntersecting; return; }
-    if (!e.isIntersecting) return;
-    if (id === 'board') { document.querySelectorAll('.btopic').forEach(function (n, i) { scramble(n, n.dataset.f, 700, i * 90); }); io.unobserve(e.target); }
-    if (id === 'stack') { document.querySelectorAll('#stack .seg').forEach(function (s, i) { setTimeout(function () { s.style.width = s.dataset.w; }, i * 140); }); runOdo($('odoTotal')); runOdo($('odoCap')); io.unobserve(e.target); }
-    if (id === 'h2') { if (paceAnim.t < 0) paceAnim.t = performance.now(); fillBars(); }
+    if (id === 'scope') { SC.on = e.isIntersecting; if (!e.isIntersecting) document.querySelector('.pin').classList.remove('breakout'); return; }
+    if (id === 'h2' && e.isIntersecting) { if (paceAnim.t < 0) paceAnim.t = performance.now(); fillBars(); }
   });
-}, { threshold: .15 });
-['board', 'stack', 'h1', 'h2', 'heroGL', 'scope'].forEach(function (id) { io.observe($(id)); });
-
+}, { threshold: .1 });
+['h1', 'h2', 'heroGL', 'scope'].forEach(function (id) { io.observe($(id)); });
 function loop(now) {
   if (hero && heroOn) hero.render(reduce ? 999 : (now - heroT0) / 1000, now);
   scopeFrame(now);
   var t = frozen ? 999 : certStart < 0 ? 0 : (now - certStart) / 1000;
   if (cert && (certVis || frozen)) cert.render(t, now);
-  renderCertText(t);
-  paceFrame(now);
+  renderCertText(t); paceFrame(now); fourBar(reduce ? 0 : now);
   requestAnimationFrame(loop);
 }
 function load(key) {
   buildCert(key); fit();
   var r = $('h1').getBoundingClientRect(); certStart = (r.top < window.innerHeight && r.bottom > 0) ? performance.now() : -1;
   if (paceAnim.t !== -1 || $('h2').getBoundingClientRect().top < window.innerHeight) { paceAnim.t = performance.now(); fillBars(); }
-  if (cert) cert.render(certStart < 0 ? 0 : 0.01, performance.now());
 }
-function setPaper(on) { document.body.classList.toggle('paper', on); $('mode').textContent = on ? '證書：夜色' : '證書：白紙'; if (cert) { cert.setLight(on); cert.render(frozen ? 999 : (performance.now() - certStart) / 1000, performance.now()); } }
-$('who').addEventListener('change', function (e) { load(e.target.value); $('cert').scrollIntoView({ behavior: 'smooth' }); });
-$('mode').addEventListener('click', function () { setPaper(!document.body.classList.contains('paper')); $('cert').scrollIntoView({ behavior: 'smooth' }); });
-$('replay').addEventListener('click', function () { frozen = false; $('cert').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { certStart = performance.now(); paceAnim.t = performance.now() + 7000; }, 500); });
-window.addEventListener('beforeprint', function () { setPaper(true); frozen = true; if (cert) cert.render(999, performance.now()); renderCertText(999); paceAnim.t = performance.now() - 9000; paceFrame(performance.now()); document.querySelectorAll('.prow .fl').forEach(function (f) { f.style.transition = 'none'; f.style.width = f.dataset.w; }); });
-
-var fontsReady = (document.fonts && document.fonts.load) ? Promise.race([document.fonts.load('900 100px "Noto Sans TC"', '學習壢程'), new Promise(function (r) { setTimeout(r, 1500); })]) : Promise.resolve();
+document.querySelectorAll('.demo .chip[data-k]').forEach(function (b) { b.addEventListener('click', function () { load(b.dataset.k); }); });
+$('replay').addEventListener('click', function () { frozen = false; $('h1').scrollIntoView({ behavior: 'smooth' }); setTimeout(function () { certStart = performance.now(); paceAnim.t = performance.now() + 6000; }, 500); });
+var printWasLight = false;
+window.addEventListener('beforeprint', function () { printWasLight = isLight(); $('papers').classList.add('lightsheet'); if (cert) { cert.setLight(true); cert.render(999, performance.now()); } frozen = true; renderCertText(999); paceAnim.t = performance.now() - 9000; paceFrame(performance.now()); document.querySelectorAll('.prow .fl').forEach(function (f) { f.style.transition = 'none'; f.style.width = f.dataset.w; }); });
+window.addEventListener('afterprint', function () { applyTheme(); });
+['s1', 's2'].forEach(function (id, i) { $(id).insertAdjacentHTML('afterbegin', deco(i + 1)); });
+var fontsReady = (document.fonts && document.fonts.load) ? Promise.race([document.fonts.load('300 40px "Noto Serif TC"', '學習壢程'), new Promise(function (r) { setTimeout(r, 1500); })]) : Promise.resolve();
 fontsReady.then(buildScope);
-load('lin');
+load('lin'); applyTheme();
 requestAnimationFrame(loop);
 })();
 </script>
-<footer class="pfoot"><span>Built by hand. No template.</span><a href="../">← Portfolio</a></footer>
 </body>
 </html>
