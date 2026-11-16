@@ -1,6 +1,6 @@
-// 中壢神社app · 第一章：神社尋寶 —— 十件寶物
+// 神社尋寶 —— 十件寶物
 //
-// 文字取自「中壢神社 古今對照」的六站導覽與地點卡片（zhongli-shrine/app/main.js、map-data.json），
+// 文字取自六站導覽與地點卡片（../app/main.js、map-data.json），
 // 改寫成一張卡片讀得完的長度。改內容時兩邊要一致。
 //
 // 每件寶物：
@@ -9,8 +9,8 @@
 //   also   其他同樣算數的構件（石燈籠有六座，找到任何一座都算）
 //   at     標記位置：'top' 浮在構件上方；'under' 在鳥居橫木下；[qx, qy, 離地高度] 直接指定（公尺）
 //   hint   圖鑑裡還沒找到時顯示的線索
-//   photo  老照片（相對於遊戲頁）；cap 為圖說，出處寫法固定，不要改寫
-const SHRINE = '../zhongli-shrine/app/';
+//   photo  老照片（導覽資料夾裡的檔案）；cap 為圖說，出處寫法固定，不要改寫
+const SHRINE = new URL('../app/', import.meta.url).href;
 const CR = '三森久子捐贈，壢中校史館藏';
 
 export const ITEMS = [
@@ -96,4 +96,5 @@ export const ITEMS = [
   }
 ];
 
+// storeKey 沿用最初獨立成頁時的名稱，改了會讓玩家的進度歸零
 export const CHAPTER = { no: 1, title: '神社尋寶', storeKey: 'clhs-game.ch1' };

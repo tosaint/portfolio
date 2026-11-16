@@ -1,7 +1,7 @@
-// 中壢神社app · 第一章：神社尋寶
+// 神社尋寶：嵌在神社說明頁（../index.html）最前面的小遊戲
 //
-// 在「中壢神社 古今對照」（../zhongli-shrine/）的 3D 神社裡用第一人稱走動，找出十件寶物。
-// 神社模型、座標直接 import 導覽的模組，不複製、不修改；導覽的 main.js 沒有引用。
+// 在 3D 神社裡用第一人稱走動，找出十件寶物。說明頁一開就載入，收合時只慢慢環視，按「展開」才接手操作。
+// 神社模型、座標直接 import 導覽的模組（../app/），不複製、不修改；導覽的 main.js 沒有引用。
 // 黑松、輪廓線、銅馬與狛犬掃描的載入方式抄自導覽 main.js（那裡沒有匯出），改動時兩邊各改各的。
 //
 // 座標：q = 公尺平面座標（q.y 沿中軸朝本殿）；three.js 世界座標 = (q.x, 高度, -q.y)。高度 0 = 外參道地面。
@@ -10,10 +10,10 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 // ?v= 與導覽 main.js 相同，兩頁共用同一份快取
-import { buildShrine, LV, GATE_Y, TORII2_Y, WAIST, KOMA_POS, KOMA_PED, HORSE, setOnAsset, treeOK, approachPts } from '../zhongli-shrine/app/shrine-proc.js?v=20261104t';
-import { ITEMS, CHAPTER } from './items.js?v=1';
+import { buildShrine, LV, GATE_Y, TORII2_Y, WAIST, KOMA_POS, KOMA_PED, HORSE, setOnAsset, treeOK, approachPts } from '../app/shrine-proc.js?v=20261104t';
+import { ITEMS, CHAPTER } from './items.js?v=2';
 
-const SHRINE = '../zhongli-shrine/app/';
+const SHRINE = new URL('../app/', import.meta.url).href;   // 導覽資料夾（掃描檔）
 const $ = id => document.getElementById(id);
 const host = $('stage'), root = $('game');
 const phone = matchMedia('(pointer: coarse)').matches || innerWidth < 900;

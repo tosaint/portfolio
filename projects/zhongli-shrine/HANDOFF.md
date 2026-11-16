@@ -4,7 +4,7 @@
 
 - 作品頁：https://tosaint.com/portfolio/projects/zhongli-shrine/
 - 3D 導覽：https://tosaint.com/portfolio/projects/zhongli-shrine/app/
-- 穩定版分支：`shrine-tour-v1`（2026-11-16 的快照，不要在上面開發）。導覽壞掉時可以拿這個版本對照或還原。
+- 穩定版分支（快照，不要在上面開發）：`shrine-tour-v1` 是加入神社尋寶之前的導覽；`shrine-tour-v2` 是神社尋寶併入說明頁之前的樣子（2026-11-16）。壞掉時可以拿來對照或還原。
 - 海報、文宣上的 QR code 都指向作品頁，**這兩個網址不能改**。
 
 ## 作者的固定要求
@@ -24,7 +24,9 @@
 
 ```
 zhongli-shrine/
-  index.html            作品說明頁（封面線稿、六站介紹、#participate 參與區、繪馬牆預覽）
+  index.html            作品說明頁（封面線稿、#hunt 神社尋寶、六站介紹、#participate 參與區、繪馬牆預覽）
+  hunt/                 神社尋寶（game.js 場景與操作、items.js 十件寶物）
+  assets/               shrine-proc.js 的兩張字跡貼圖（複製自 app/assets，說明頁載入神社模型時要用）
   participate/          說明頁內的三份表單（御守、繪馬、燈籠）＋繪馬牆對話框
     participate.js        表單送出到 Apps Script doPost；燈籠照片縮圖並保留 EXIF GPS
     questions.js          繪馬 10 題（不含答案，答案在 Ema.gs）
@@ -90,8 +92,25 @@ gh api -X PUT repos/tosaint/portfolio/pulls/<編號>/merge
 - 社群海報、簡報、A5 對折文宣：claude.ai 設計畫布「中壢神社 導覽紀念 宣傳海報」
 - A5 文宣的可列印 PDF：A4 橫式雙面、短邊翻頁、黑白
 
+## 神社尋寶（說明頁最前面的小遊戲）
+
+2026-11-16 加入。作者的想法：尋寶和 3D 導覽是兩種使用需求，並列在說明頁開頭——上面「走進去尋寶」，下面「開啟古今對照」。**3D 導覽 `app/` 維持導覽的形式，不要把走路、收集加進去。**
+
+- 位置：`index.html` 裡 `<!-- hunt:start -->` 到 `<!-- hunt:end -->`，在標題區之後、「開啟古今對照」按鈕之前。樣式全部以 `#hunt` 開頭，放在 `<style>` 最後；頁尾有一段展開／縮回的 script 和 `hunt/game.js`。這幾段以外的說明頁內容沒有改。
+- 一開頁就載入 3D（作者選的；標題和文字先出現，3D 在背景載入）。收合時只慢慢環視、不接觸控，捲離畫面就停止繪製。按「展開」或「開始尋寶」才全螢幕並接手操作，瀏覽器返回鍵會縮回。如果實測開頁太慢，可以退回「捲到才載入」。
+- 第一人稱。手機：左下半邊按住拖曳是搖桿，其餘地方滑動轉頭，右下「跑」是開關。電腦：WASD／方向鍵、拖曳滑鼠、Shift、E。
+- **不擋牆**，建物可以穿過去。地面高度用 `groundAt()` 依各層平台與拜殿、幣殿、本殿地板算。
+- 寶物 10 個（第一鳥居、石燈籠、第二鳥居、社號標、社務所、神門、狛犬、神馬、拜殿、本殿），金色菱形加光柱。石燈籠六座算 1 個。靠近 5.5 公尺內出現「收集」鈕。介面上統一寫「神馬」。
+- 卡片文字取自六站與地點卡片（`app/main.js`、`map-data.json`），改史料時兩邊要一致。
+- 進度存 `localStorage`（鍵 `clhs-game.ch1`，沿用舊名，不要改），不收集任何資料。
+- 全部找到後出現「留下心得，領御守」「挑戰繪馬考證」兩個按鈕，會縮回頁面並直接打開「參與」區的表單（按的是那一區原有的按鈕，`participate.js` 沒有改）。
+- 直接 import `app/shrine-proc.js`，`?v=` 要和 `app/main.js` 裡寫的一樣。黑松、輪廓線、掃描檔載入抄自 `app/main.js`（那裡沒有匯出），兩邊各改各的。沒有帶夜間、燈籠、航照底圖，地面是草地色平面。
+- 改 `hunt/game.js`、`hunt/items.js` 後，遞增 `index.html` 的 `hunt/game.js?v=` 和 `game.js` 裡的 `items.js?v=`。
+- 測試：`window.__game` 可以直接改 `player.x / z / yaw`，`markers` 有十個標記的位置。
+- 考慮過、還沒做：遊戲裡的俯瞰小地圖（看自己在今天校園的哪裡）、藏起來靠線索找的寶物、主要建物擋牆。
+
 ## 接下來：校園空間遊戲
 
-另開 `projects/clhs-game/`，**不要改動這個資料夾的網址與行為**。
-- 可以直接 import 這裡的穩定模組（`shrine-proc.js`、`site.js`、`ground.js`）。需要修改時，複製一份到遊戲資料夾再改，避免改壞導覽。
-- 遊戲動手前要先和作者討論：視角（第一／第三人稱、方塊風）、場景（1939 神社、今日校園、穿梭古今）、任務是否連結真實校園。
+今日校園、解謎、跑酷屬於另一個作品，之後另開（`projects/clhs-game/` 目前只剩轉址，可以用回來；名稱「中壢神社app／CLHSapp」留給它）。
+- 可以直接 import 這裡的穩定模組（`shrine-proc.js`、`site.js`、`ground.js`）。需要修改時，複製一份再改，避免改壞導覽。
+- 動手前要先和作者討論：場景（今日校園要匯入作者的 Tinkercad 校園模型、穿梭古今）、任務是否連結真實校園。
