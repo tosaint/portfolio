@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>中壢神社app · CLHSapp</title>
+<meta name="description" content="A first-person treasure hunt on a phone, inside the 3D reconstruction of the Zhongli Shrine (1939). 用手機在 1939 年的中壢神社裡走一圈，找出十件寶物。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+<style>
+/* Same paper, ink and type as the portfolio. */
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --line-filter: none; --line-blend: multiply;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --gold: #ffc23a;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --line-filter: invert(1); --line-blend: screen; color-scheme: dark;
+} }
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans);
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px));
+}
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top a:hover { color: var(--ink); }
+
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(56px, 10vw, 120px) clamp(40px, 6vw, 64px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacing: .3em; }
+h1 span { letter-spacing: .04em; font-size: .62em; margin-left: -.2em; }
+.en-title { margin: 14px 0 0; font: 300 clamp(18px, 2vw, 24px)/1.4 var(--serif); color: var(--ink-2); letter-spacing: .02em; }
+.lede { margin: 26px 0 0; font-size: 14px; color: var(--ink-2); }
+.lede span { display: block; color: var(--ink-3); font-size: 13px; }
+.plan { margin: 0; justify-self: end; width: 100%; }
+.plan img { width: 100%; height: auto; display: block; filter: var(--line-filter); mix-blend-mode: var(--line-blend); }
+
+.text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.text h2 { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.text p { margin: 0 0 1em; }
+.text .en { color: var(--ink-2); font-size: .95em; }
+.text ol, .text ul { margin: 0; padding-left: 1.3em; }
+.text li { margin-bottom: .5em; }
+.text .fine { font-size: 13px; color: var(--ink-3); }
+
+.data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; padding-top: clamp(24px, 4vw, 40px); border-top: 1px solid var(--rule); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+.data dd span { color: var(--ink-2); margin-left: .6em; }
+
+/* ---- the game laid out in the page: a slow look around the shrine. "展開" makes it fill the
+   screen and hands over the controls; until then a finger on it scrolls the page as usual. ---- */
+.lab { margin-bottom: clamp(40px, 6vw, 72px); scroll-margin-top: 56px; }
+.lab-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 14px; }
+.lab-head h2 { margin: 0 0 6px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.lab-head p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.lab-head p span { color: var(--ink-3); margin-left: .6em; }
+.lab-head button { flex: none; font: 500 15px var(--serif); letter-spacing: .1em; color: var(--ink); background: var(--paper); border: 1px solid var(--ink); border-radius: 0; padding: 9px 14px; min-height: 42px; cursor: pointer; }
+.lab-head button:hover { background: var(--rule); }
+.lab-note { margin: 14px 0 0; font-size: 14px; color: var(--ink-2); max-width: 52em; }
+.lab-note span { display: block; color: var(--ink-3); font-size: 13px; }
+html.lab-max { overflow: hidden; }
+
+#game { position: relative; height: min(58vh, 480px); min-height: 300px; border-radius: 12px; overflow: hidden; background: #e9ede6; color: #fff; font: 400 15px/1.5 var(--sans); user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+#game.full { position: fixed; inset: 0; z-index: 60; height: auto; min-height: 0; border-radius: 0; }
+#stage, #pad { position: absolute; inset: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+#pad { touch-action: none; display: none; }
+#game.playing #pad { display: block; }
+#gload { position: absolute; inset: 0; display: grid; place-items: center; color: #5f5b54; font-size: 14px; }
+
+/* in the page: one button, over the moving picture */
+.start { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: none; white-space: nowrap; font: 500 17px var(--serif); letter-spacing: .12em; color: #2b2a27; background: var(--gold); border: 0; border-radius: 999px; padding: 12px 22px; min-height: 48px; cursor: pointer; box-shadow: 0 4px 18px rgba(0,0,0,.28); }
+.start small { font: 400 12px var(--sans); letter-spacing: 0; margin-left: .7em; opacity: .75; }
+#game.ready:not(.playing) .start { display: block; }
+
+/* expanded: the controls */
+.hud { display: none; }
+#game.playing .hud { display: flex; }
+.hud button, button.hud, .pill { white-space: nowrap; font: 500 14px var(--sans); color: #fff; background: rgba(28,27,24,.62); border: 1px solid rgba(255,255,255,.22); border-radius: 999px; min-height: 44px; padding: 0 14px; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.hud.topbar { position: absolute; z-index: 3; top: calc(10px + env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px)); gap: 8px; align-items: center; pointer-events: none; }
+.hud.topbar > * { pointer-events: auto; }
+#progBtn b { color: var(--gold); font-weight: 500; margin-left: .35em; font-variant-numeric: tabular-nums; }
+.pill { display: flex; align-items: center; gap: 8px; cursor: default; min-width: 0; flex: 0 1 auto; white-space: nowrap; overflow: hidden; font-size: 13px; }
+#hintArrow { display: inline-block; color: var(--gold); font-size: 17px; line-height: 1; transition: transform .12s linear; }
+.grow { flex: 1; }
+#helpBtn { width: 44px; padding: 0; flex: none; }
+#closeBtn { flex: none; }
+#takeBtn { position: absolute; z-index: 3; left: 50%; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); white-space: nowrap; font: 500 17px var(--sans); color: #2b2a27; background: var(--gold); border: 0; border-radius: 999px; min-height: 52px; padding: 0 24px; cursor: pointer; box-shadow: 0 0 0 6px rgba(255,194,58,.28), 0 6px 20px rgba(0,0,0,.35); animation: pulse 1.3s ease-in-out infinite; }
+#takeBtn b { font-weight: 500; margin-left: .3em; }
+#takeBtn[hidden] { display: none; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(255,194,58,.12), 0 6px 20px rgba(0,0,0,.35); } }
+#runBtn { position: absolute; z-index: 3; right: max(22px, env(safe-area-inset-right, 0px)); bottom: calc(44px + env(safe-area-inset-bottom, 0px)); width: 72px; height: 72px; min-height: 0; padding: 0; border-radius: 50%; font-size: 16px; display: none; }
+#game.playing #runBtn { display: block; }
+#runBtn[aria-pressed="true"] { background: var(--gold); color: #2b2a27; border-color: transparent; }
+#stick { position: absolute; left: 86px; top: calc(100% - 96px - env(safe-area-inset-bottom, 0px)); width: 108px; height: 108px; margin: -54px 0 0 -54px; border-radius: 50%; background: rgba(28,27,24,.3); border: 1.5px solid rgba(255,255,255,.4); pointer-events: none; }
+#stick.live { background: rgba(28,27,24,.42); }
+#knob { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; background: rgba(255,255,255,.82); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+@media (pointer: fine) { #stick { display: none; } }
+@media (max-width: 400px) { #closeBtn span { display: none; } }
+
+#help { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; padding: 20px; background: rgba(20,20,18,.6); }
+#help[hidden] { display: none; }
+.sheet { width: min(100%, 400px); background: var(--paper); color: var(--ink); border-radius: 16px; padding: 22px 22px 18px; font: 400 15px/1.7 var(--sans); }
+.sheet h3 { margin: 0 0 10px; font: 500 21px/1.4 var(--serif); letter-spacing: .08em; }
+.sheet ul { margin: 0 0 14px; padding-left: 1.2em; }
+.sheet li { margin-bottom: .35em; }
+.sheet .keys { font-size: 13px; color: var(--ink-3); margin: 0 0 14px; }
+@media (pointer: coarse) { .sheet .keys { display: none; } }
+.btn { display: block; width: 100%; text-align: center; text-decoration: none; font: 500 16px var(--sans); color: #2b2a27; background: var(--gold); border: 0; border-radius: 999px; min-height: 48px; line-height: 48px; padding: 0 18px; cursor: pointer; }
+.btn.line { background: none; color: var(--ink); border: 1px solid var(--ink); }
+.btn.quiet { background: none; color: var(--ink-2); min-height: 44px; line-height: 44px; font-size: 14px; }
+.btn + .btn { margin-top: 10px; }
+
+dialog { width: min(calc(100vw - 28px), 440px); max-height: calc(100dvh - 28px); padding: 0; border: 0; border-radius: 16px; background: var(--paper); color: var(--ink); font: 400 15px/1.7 var(--sans); overflow: auto; user-select: text; -webkit-user-select: text; }
+dialog::backdrop { background: rgba(20,20,18,.62); }
+.d-in { padding: 18px 20px 20px; }
+.d-no { margin: 0 0 4px; font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); }
+dialog h3 { margin: 0 0 10px; font: 500 24px/1.35 var(--serif); letter-spacing: .1em; }
+dialog p { margin: 0 0 .9em; }
+#card figure { margin: 0; background: #1c1b18; }
+#card img { display: block; width: 100%; max-height: 38vh; object-fit: contain; }
+#card figcaption { padding: 7px 20px; font-size: 12px; line-height: 1.5; color: #cfcabf; }
+.now { font-size: 14px; color: var(--ink-2); padding-left: 12px; border-left: 2px solid var(--gold); }
+.now b { display: block; font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); }
+#bookList { list-style: none; margin: 0 0 14px; padding: 0; border-top: 1px solid var(--rule); }
+#bookList li { border-bottom: 1px solid var(--rule); }
+#bookList button, #bookList div { display: grid; grid-template-columns: 2.2em 1fr; gap: 0 4px; width: 100%; text-align: left; padding: 10px 2px; min-height: 52px; background: none; border: 0; color: inherit; font: inherit; }
+#bookList button { cursor: pointer; }
+#bookList .no { grid-row: span 2; font: 400 12px/1.9 var(--mono); color: var(--ink-3); }
+#bookList b { font: 500 17px/1.4 var(--serif); letter-spacing: .08em; }
+#bookList i { grid-column: 2; font-style: normal; font-size: 13px; color: var(--ink-3); }
+#bookList .todo b { color: var(--ink-3); letter-spacing: .2em; }
+#bookList button i { color: #9a6a00; }
+.fine { font-size: 12.5px; line-height: 1.6; color: var(--ink-3); }
+
+@media (max-width: 760px) {
+  .head { grid-template-columns: 1fr; align-items: start; }
+  .plan { justify-self: start; order: -1; max-width: 420px; }
+  .text { grid-template-columns: 1fr; }
+  .data { grid-template-columns: 1fr; gap: 0; }
+  .data dd { margin-bottom: 10px; }
+  .data dd span { display: block; margin-left: 0; }
+  .lab-head p span { display: block; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { #takeBtn { animation: none; } }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <span>Work 007 · 2026</span>
+</div></header>
+
+<main class="wrap">
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 007 · Web 3D game · 2026</p>
+      <h1>中壢神社<span>app</span></h1>
+      <p class="en-title">CLHSapp</p>
+      <p class="lede">第一章：神社尋寶。走進 1939 年的中壢神社，找出十件寶物。<span>Chapter 1: a treasure hunt. Walk into the Zhongli Shrine of 1939 and find ten things.</span></p>
+    </div>
+    <figure class="plan"><img src="img/line.svg" width="800" height="600" alt="Line drawing of a wooden torii seen from the approach path, a stone lantern on each side, and a diamond-shaped marker floating under the lintel with a beam of light rising from it."></figure>
+  </section>
+
+  <section class="lab" id="play" aria-labelledby="lab-h">
+    <div class="lab-head">
+      <div><h2 id="lab-h">第一章 · 神社尋寶</h2><p>按「展開」開始。從第一鳥居出發，沿參道走到本殿。<span lang="en">Tap 展開 to play; start at the first torii and walk to the sanctuary.</span></p></div>
+      <button type="button" id="expandBtn">展開 ⤢</button>
+    </div>
+
+    <div id="game" class="flow">
+      <div id="stage" aria-label="1939 年中壢神社的 3D 場景"></div>
+      <div id="gload">載入神社中…</div>
+      <div id="pad"><div id="stick" aria-hidden="true"><div id="knob"></div></div></div>
+
+      <button type="button" class="start" id="startBtn">開始尋寶 ⤢<small>已找到 <span data-prog>0/10</span></small></button>
+
+      <div class="hud topbar">
+        <button type="button" id="progBtn" aria-label="打開圖鑑">圖鑑<b id="progNum">0/10</b></button>
+        <div class="pill" id="hintBox"><span id="hintArrow" aria-hidden="true">↑</span><span id="hintTxt"></span></div>
+        <span class="grow"></span>
+        <button type="button" id="helpBtn" aria-label="操作說明">？</button>
+        <button type="button" id="closeBtn" aria-label="縮回說明頁"><span>縮回 </span>⤡</button>
+      </div>
+      <button type="button" id="takeBtn" hidden>✦ 收集<b></b></button>
+      <button type="button" class="hud" id="runBtn" aria-pressed="false">跑</button>
+
+      <div id="help" hidden>
+        <div class="sheet">
+          <h3>怎麼玩</h3>
+          <ul>
+            <li>左下角按住拖曳：走路</li>
+            <li>其他地方滑動：轉頭看四周</li>
+            <li>右下「跑」：加快腳步</li>
+            <li>朝金色光柱走，靠近後按「收集」</li>
+          </ul>
+          <p class="keys">電腦：W A S D 或方向鍵走路，拖曳滑鼠轉頭，Shift 跑，E 收集。</p>
+          <button type="button" class="btn" id="helpOk">出發</button>
+        </div>
+      </div>
+
+      <dialog id="card" aria-labelledby="cardName">
+        <figure><img id="cardImg" alt=""><figcaption id="cardCap"></figcaption></figure>
+        <div class="d-in">
+          <p class="d-no" id="cardNo"></p>
+          <h3 id="cardName"></h3>
+          <p id="cardText"></p>
+          <p class="now"><b>今天在哪裡</b><span id="cardNow"></span></p>
+          <button type="button" class="btn" id="cardOk">繼續尋寶</button>
+        </div>
+      </dialog>
+
+      <dialog id="book" aria-labelledby="bookH">
+        <div class="d-in">
+          <p class="d-no">第一章 · 已找到 <span data-prog>0/10</span></p>
+          <h3 id="bookH">圖鑑</h3>
+          <ol id="bookList"></ol>
+          <button type="button" class="btn" id="bookDone" hidden>全部找到了 →</button>
+          <button type="button" class="btn line" id="bookClose">回到神社</button>
+          <button type="button" class="btn quiet" id="resetBtn">重新開始</button>
+          <p class="fine">進度只存在這台裝置的瀏覽器，不會送出任何資料。</p>
+        </div>
+      </dialog>
+
+      <dialog id="done" aria-labelledby="doneH">
+        <div class="d-in">
+          <p class="d-no">第一章 · 10/10</p>
+          <h3 id="doneH">你走完神社了</h3>
+          <p>十件寶物都找到了。要不要留下心得領一張御守，或挑戰繪馬的考證測驗？</p>
+          <a class="btn" href="../zhongli-shrine/#participate-omamori">留下心得，領御守</a>
+          <a class="btn line" href="../zhongli-shrine/#participate-ema">挑戰繪馬考證</a>
+          <button type="button" class="btn quiet" id="doneClose">再逛一下</button>
+          <p class="fine">御守、繪馬是當代教育活動的參與創作，非宗教物件，也不是中壢神社原有的設施。</p>
+        </div>
+      </dialog>
+    </div>
+
+    <p class="lab-note">展開之前，畫面只會慢慢環視神社，手指滑過去照常捲動頁面；展開後才能走動。進度只存在你這台裝置上。<span lang="en">Until it is expanded the picture only looks around slowly and the page scrolls as usual. Progress stays on this device.</span></p>
+  </section>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>玩法</h2>
+      <p>你站在中正路旁的第一鳥居前。沿著參道往裡走，經過石燈籠、第二鳥居、神門，一路到最深處的本殿，全程大約 300 公尺。</p>
+      <p>十件寶物上方各有一道金色光柱。走到旁邊按「收集」，就會打開一張卡片：一張老照片、它當年的樣子，以及它今天在校園的哪裡。</p>
+      <p>場景裡的建築可以直接穿過去，不會被牆擋住。</p>
+    </div>
+    <div lang="en">
+      <h2>How to play</h2>
+      <p class="en">You start in front of the first torii, by today’s Zhongzheng Road. Follow the approach past the stone lanterns, the second torii and the gate to the sanctuary at the far end, about 300 metres in all.</p>
+      <p class="en">Each of the ten things has a beam of gold light above it. Walk up, tap 收集, and a card opens with an old photograph, what it was, and where it is on campus today.</p>
+      <p class="en">You can walk straight through the buildings; nothing blocks the way.</p>
+    </div>
+  </section>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>十件寶物</h2>
+      <ol>
+        <li>第一鳥居</li><li>石燈籠</li><li>第二鳥居</li><li>社號標</li><li>社務所</li>
+        <li>神門</li><li>狛犬</li><li>神馬</li><li>拜殿</li><li>本殿</li>
+      </ol>
+    </div>
+    <div lang="zh-Hant">
+      <h2>關於</h2>
+      <p>這個遊戲延續自學生專案「戲說壢中 CLHS+Minecraft 創世神」：建築組的同學做出了這座消失神社的初版模型。</p>
+      <p>場景直接沿用 <a href="../zhongli-shrine/">中壢神社 古今對照</a> 的 3D 復原，只加上走動與收集。想看神社落在今天校園的哪裡、和老照片疊在一起對照，請到那個作品。</p>
+      <p class="fine">之後的章節會加入今日校園、解謎與跑酷。</p>
+      <p class="en" lang="en">The game grows out of a student project, CLHS+Minecraft, in which students made the first models of the vanished shrine. It reuses the 3D reconstruction of <a href="../zhongli-shrine/">Zhongli Shrine, Then and Now</a> and adds walking and collecting. Later chapters will bring in today’s campus, puzzles and parkour.</p>
+    </div>
+  </section>
+
+  <dl class="data">
+    <dt>Year</dt><dd>2026<span>進行中 · In progress</span></dd>
+    <dt>Medium</dt><dd>three.js<span>Web 3D, first-person, for phones</span></dd>
+    <dt>Scene</dt><dd>沿用「中壢神社 古今對照」（Work 004）的 3D 復原<span>The reconstruction from Zhongli Shrine, Then and Now</span></dd>
+    <dt>Layout</dt><dd>羅偉源 考證之配置；各建築位置依 1947 年航照修正<span>Site layout after research by Lo Wei-yuan, positions corrected against the 1947 aerial photo</span></dd>
+    <dt>Aerial 1947</dt><dd>1947 航照：中研院 GIS<span>1947 aerial photo, Academia Sinica GIS Center</span></dd>
+    <dt>Photos</dt><dd>三森久子捐贈，壢中校史館藏<span>Donated by Mimori Hisako, school history room</span></dd>
+    <dt>First torii</dt><dd>第一鳥居照片：藍清水校長提供：劉金鐘家族、吳慕舉校長相片<span>Photograph courtesy of Principal Lan Ching-shui, from the Liu Chin-chung family and Principal Wu Mu-chü</span></dd>
+    <dt>Scans</dt><dd>狛犬、神馬為現存實物 3D 掃描<span>Stone lion and bronze horse are 3D scans of the surviving pieces</span></dd>
+    <dt>Models</dt><dd>延續自「戲說壢中 CLHS+Minecraft 創世神」建築組學生的初版模型<span>After first-version models by student modellers, CLHS+Minecraft project</span></dd>
+    <dt>Main hall</dt><dd>神社主殿：莊○文、劉○輔、簡○揚、邱○毅</dd>
+    <dt>Front hall</dt><dd>神社前殿：羅○翎、鄭○軒、邱○捷</dd>
+    <dt>Torii, path</dt><dd>鳥居參道：周○航、張○丞、梁○安</dd>
+    <dt>Purpose</dt><dd>非營利教育用途，希望讓大家更重視自己生活周遭的歷史。<span>Non-commercial, for education and local history.</span></dd>
+    <dt>Note</dt><dd>模型依配置圖、老照片與少數實測推估，並非測繪復原。遊戲不收集任何個人資料。<span>An estimate from the plan, old photographs and a few measurements, not a survey. The game collects no personal data.</span></dd>
+  </dl>
+</main>
+
+<script>
+// The game lives in this page. "展開" makes it fill the screen and hands over the controls;
+// 縮回, Esc or the browser's Back puts it back among the text.
+(function () {
+  var game = document.getElementById("game"), sec = document.getElementById("play"), btn = document.getElementById("expandBtn");
+  var full = false, pushed = false;
+  function lay(on) {
+    full = on; game.classList.toggle("full", on); game.classList.toggle("flow", !on);
+    document.documentElement.classList.toggle("lab-max", on);
+    if (window.GAME) window.GAME.setPlay(on);
+  }
+  function shrink() { if (!full) return false; lay(false); sec.scrollIntoView(); btn.focus({ preventScroll: true }); return true; }
+  function expand() { if (full) return; lay(true); try { history.pushState({ game: 1 }, ""); pushed = true; } catch (e) {} }
+  function collapse() { if (shrink() && pushed) { pushed = false; history.back(); } }
+  btn.addEventListener("click", expand);
+  document.getElementById("startBtn").addEventListener("click", expand);
+  document.getElementById("closeBtn").addEventListener("click", collapse);
+  window.addEventListener("popstate", function () { pushed = false; shrink(); });
+  window.addEventListener("keydown", function (e) { if (e.key === "Escape" && full && !document.querySelector("dialog[open]")) collapse(); });
+  if (location.hash === "#play") sec.scrollIntoView();
+})();
+</script>
+<script type="module" src="game.js?v=1"></script>
+</body>
+</html>

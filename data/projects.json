@@ -110,5 +110,20 @@
     "summary": "A four-bar linkage dressed as a horse, made for a high school mechanism lesson. Students change the four bar lengths in the browser, watch whether the crank can still turn, then print a 1:1 sheet to draw and cut their own figure.",
     "image": "projects/horse-linkage/img/plate.jpg",
     "link": "projects/horse-linkage/"
+  },
+  {
+    "title": "CLHSapp",
+    "title_zh": "中壢神社app",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "three.js",
+      "Web 3D game"
+    ],
+    "role": "Game design, development",
+    "summary": "A first-person treasure hunt for phones, set inside the 3D reconstruction of the Zhongli Shrine (1939). Chapter 1: walk the approach from the first torii to the sanctuary and find ten things; each opens a card with an old photograph and where it stands on campus today. Grows out of the student project CLHS+Minecraft.",
+    "image": "projects/clhs-game/img/line.svg",
+    "image_style": "line",
+    "link": "projects/clhs-game/"
   }
 ]
