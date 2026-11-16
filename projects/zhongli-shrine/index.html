@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
 <script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <style>
 /* Same paper, ink and type as the portfolio. The line drawing follows the theme;
@@ -176,6 +177,96 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
   .stop { grid-template-columns: 1fr; }
   .stop .three { right: 8px; }
 }
+/* ---- 神社尋寶 (hunt/game.js): the game laid out in the page, a slow look around the shrine.
+   "展開" makes it fill the screen and hands over the controls; until then a finger on it
+   scrolls the page as usual. Every rule is scoped to #hunt so nothing else on the page changes. ---- */
+#hunt { --gold: #ffc23a; }
+#hunt { margin-bottom: clamp(40px, 6vw, 72px); scroll-margin-top: 56px; }
+#hunt .lab-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 14px; }
+#hunt .lab-head h2 { margin: 0 0 6px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+#hunt .lab-head p { margin: 0; font-size: 14px; color: var(--ink-2); }
+#hunt .lab-head p span { color: var(--ink-3); margin-left: .6em; }
+#hunt .lab-head button { flex: none; font: 500 15px var(--serif); letter-spacing: .1em; color: var(--ink); background: var(--paper); border: 1px solid var(--ink); border-radius: 0; padding: 9px 14px; min-height: 42px; cursor: pointer; }
+#hunt .lab-head button:hover { background: var(--rule); }
+#hunt .lab-note { margin: 14px 0 0; font-size: 14px; color: var(--ink-2); max-width: 52em; }
+#hunt .lab-note span { display: block; color: var(--ink-3); font-size: 13px; }
+html.lab-max { overflow: hidden; }
+
+#game { position: relative; height: min(58vh, 480px); min-height: 300px; border-radius: 12px; overflow: hidden; background: #e9ede6; color: #fff; font: 400 15px/1.5 var(--sans); user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+#game.full { position: fixed; inset: 0; z-index: 60; height: auto; min-height: 0; border-radius: 0; }
+#stage, #pad { position: absolute; inset: 0; }
+#stage canvas { display: block; width: 100%; height: 100%; }
+#pad { touch-action: none; display: none; }
+#game.playing #pad { display: block; }
+#gload { position: absolute; inset: 0; display: grid; place-items: center; color: #5f5b54; font-size: 14px; }
+
+/* in the page: one button, over the moving picture */
+#hunt .start { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); display: none; white-space: nowrap; font: 500 17px var(--serif); letter-spacing: .12em; color: #2b2a27; background: var(--gold); border: 0; border-radius: 999px; padding: 12px 22px; min-height: 48px; cursor: pointer; box-shadow: 0 4px 18px rgba(0,0,0,.28); }
+#hunt .start small { font: 400 12px var(--sans); letter-spacing: 0; margin-left: .7em; opacity: .75; }
+#game.ready:not(.playing) .start { display: block; }
+
+/* expanded: the controls */
+#hunt .hud { display: none; }
+#game.playing .hud { display: flex; }
+#hunt .hud button, #hunt button.hud, #hunt .pill { white-space: nowrap; font: 500 14px var(--sans); color: #fff; background: rgba(28,27,24,.62); border: 1px solid rgba(255,255,255,.22); border-radius: 999px; min-height: 44px; padding: 0 14px; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#hunt .hud.topbar { position: absolute; z-index: 3; top: calc(10px + env(safe-area-inset-top, 0px)); left: max(10px, env(safe-area-inset-left, 0px)); right: max(10px, env(safe-area-inset-right, 0px)); gap: 8px; align-items: center; pointer-events: none; }
+#hunt .hud.topbar > * { pointer-events: auto; }
+#progBtn b { color: var(--gold); font-weight: 500; margin-left: .35em; font-variant-numeric: tabular-nums; }
+#hunt .pill { display: flex; align-items: center; gap: 8px; cursor: default; min-width: 0; flex: 0 1 auto; white-space: nowrap; overflow: hidden; font-size: 13px; }
+#hintArrow { display: inline-block; color: var(--gold); font-size: 17px; line-height: 1; transition: transform .12s linear; }
+#hunt .grow { flex: 1; }
+#helpBtn { width: 44px; padding: 0; flex: none; }
+#closeBtn { flex: none; }
+#takeBtn { position: absolute; z-index: 3; left: 50%; bottom: calc(150px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); white-space: nowrap; font: 500 17px var(--sans); color: #2b2a27; background: var(--gold); border: 0; border-radius: 999px; min-height: 52px; padding: 0 24px; cursor: pointer; box-shadow: 0 0 0 6px rgba(255,194,58,.28), 0 6px 20px rgba(0,0,0,.35); animation: pulse 1.3s ease-in-out infinite; }
+#takeBtn b { font-weight: 500; margin-left: .3em; }
+#takeBtn[hidden] { display: none; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(255,194,58,.12), 0 6px 20px rgba(0,0,0,.35); } }
+#runBtn { position: absolute; z-index: 3; right: max(22px, env(safe-area-inset-right, 0px)); bottom: calc(44px + env(safe-area-inset-bottom, 0px)); width: 72px; height: 72px; min-height: 0; padding: 0; border-radius: 50%; font-size: 16px; display: none; }
+#game.playing #runBtn { display: block; }
+#runBtn[aria-pressed="true"] { background: var(--gold); color: #2b2a27; border-color: transparent; }
+#stick { position: absolute; left: 86px; top: calc(100% - 96px - env(safe-area-inset-bottom, 0px)); width: 108px; height: 108px; margin: -54px 0 0 -54px; border-radius: 50%; background: rgba(28,27,24,.3); border: 1.5px solid rgba(255,255,255,.4); pointer-events: none; }
+#stick.live { background: rgba(28,27,24,.42); }
+#knob { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; border-radius: 50%; background: rgba(255,255,255,.82); box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+@media (pointer: fine) { #stick { display: none; } }
+@media (max-width: 400px) { #closeBtn span { display: none; } }
+
+#help { position: absolute; inset: 0; z-index: 6; display: grid; place-items: center; padding: 20px; background: rgba(20,20,18,.6); }
+#help[hidden] { display: none; }
+#hunt .sheet { width: min(100%, 400px); background: var(--paper); color: var(--ink); border-radius: 16px; padding: 22px 22px 18px; font: 400 15px/1.7 var(--sans); }
+#hunt .sheet h3 { margin: 0 0 10px; font: 500 21px/1.4 var(--serif); letter-spacing: .08em; }
+#hunt .sheet ul { margin: 0 0 14px; padding-left: 1.2em; }
+#hunt .sheet li { margin-bottom: .35em; }
+#hunt .sheet .keys { font-size: 13px; color: var(--ink-3); margin: 0 0 14px; }
+@media (pointer: coarse) { #hunt .sheet .keys { display: none; } }
+#hunt .btn { display: block; width: 100%; text-align: center; text-decoration: none; font: 500 16px var(--sans); color: #2b2a27; background: var(--gold); border: 0; border-radius: 999px; min-height: 48px; line-height: 48px; padding: 0 18px; cursor: pointer; }
+#hunt .btn.line { background: none; color: var(--ink); border: 1px solid var(--ink); }
+#hunt .btn.quiet { background: none; color: var(--ink-2); min-height: 44px; line-height: 44px; font-size: 14px; }
+#hunt .btn + .btn { margin-top: 10px; }
+
+#hunt dialog { width: min(calc(100vw - 28px), 440px); max-height: calc(100dvh - 28px); padding: 0; border: 0; border-radius: 16px; background: var(--paper); color: var(--ink); font: 400 15px/1.7 var(--sans); overflow: auto; user-select: text; -webkit-user-select: text; }
+#hunt dialog::backdrop { background: rgba(20,20,18,.62); }
+#hunt .d-in { padding: 18px 20px 20px; }
+#hunt .d-no { margin: 0 0 4px; font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); }
+#hunt dialog h3 { margin: 0 0 10px; font: 500 24px/1.35 var(--serif); letter-spacing: .1em; }
+#hunt dialog p { margin: 0 0 .9em; }
+#card figure { margin: 0; background: #1c1b18; }
+#card img { display: block; width: 100%; max-height: 38vh; object-fit: contain; }
+#card figcaption { padding: 7px 20px; font-size: 12px; line-height: 1.5; color: #cfcabf; }
+#hunt .now { font-size: 14px; color: var(--ink-2); padding-left: 12px; border-left: 2px solid var(--gold); }
+#hunt .now b { display: block; font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); }
+#bookList { list-style: none; margin: 0 0 14px; padding: 0; border-top: 1px solid var(--rule); }
+#bookList li { border-bottom: 1px solid var(--rule); }
+#bookList button, #bookList div { display: grid; grid-template-columns: 2.2em 1fr; gap: 0 4px; width: 100%; text-align: left; padding: 10px 2px; min-height: 52px; background: none; border: 0; color: inherit; font: inherit; }
+#bookList button { cursor: pointer; }
+#bookList .no { grid-row: span 2; font: 400 12px/1.9 var(--mono); color: var(--ink-3); }
+#bookList b { font: 500 17px/1.4 var(--serif); letter-spacing: .08em; }
+#bookList i { grid-column: 2; font-style: normal; font-size: 13px; color: var(--ink-3); }
+#bookList .todo b { color: var(--ink-3); letter-spacing: .2em; }
+#bookList button i { color: #9a6a00; }
+#hunt .fine { font-size: 12.5px; line-height: 1.6; color: var(--ink-3); }
+
+@media (max-width: 760px) { #hunt .lab-head p span { display: block; margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) { #takeBtn { animation: none; } }
 </style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&display=swap" media="print" onload="this.media='all'">
 </head>
@@ -195,6 +286,84 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
     </div>
     <figure class="plan"><img src="img/axon-core.png" width="1600" height="1067" alt="Axonometric line drawing of the shrine’s central axis: the bronze horse and stone lions in front of the gate, the worship hall with its curved roof and side wings, and the main sanctuary with crossed finials and log ornaments behind"></figure>
   </section>
+
+  <!-- hunt:start 神社尋寶（hunt/game.js）。整段可以拿掉而不影響頁面其他部分 -->
+  <section class="lab" id="hunt" aria-labelledby="hunt-h">
+    <div class="lab-head">
+      <div><h2 id="hunt-h">神社尋寶 · Treasure hunt</h2><p>走進 1939 年的神社，找出十件寶物。<span lang="en">Walk into the shrine of 1939 and find ten things.</span></p></div>
+      <button type="button" id="expandBtn">展開 ⤢</button>
+    </div>
+
+    <div id="game" class="flow">
+      <div id="stage" aria-label="1939 年中壢神社的 3D 場景"></div>
+      <div id="gload">載入神社中…</div>
+      <div id="pad"><div id="stick" aria-hidden="true"><div id="knob"></div></div></div>
+
+      <button type="button" class="start" id="startBtn">開始尋寶 ⤢<small>已找到 <span data-prog>0/10</span></small></button>
+
+      <div class="hud topbar">
+        <button type="button" id="progBtn" aria-label="打開圖鑑">圖鑑<b id="progNum">0/10</b></button>
+        <div class="pill" id="hintBox"><span id="hintArrow" aria-hidden="true">↑</span><span id="hintTxt"></span></div>
+        <span class="grow"></span>
+        <button type="button" id="helpBtn" aria-label="操作說明">？</button>
+        <button type="button" id="closeBtn" aria-label="縮回說明頁"><span>縮回 </span>⤡</button>
+      </div>
+      <button type="button" id="takeBtn" hidden>✦ 收集<b></b></button>
+      <button type="button" class="hud" id="runBtn" aria-pressed="false">跑</button>
+
+      <div id="help" hidden>
+        <div class="sheet">
+          <h3>怎麼玩</h3>
+          <ul>
+            <li>左下角按住拖曳：走路</li>
+            <li>其他地方滑動：轉頭看四周</li>
+            <li>右下「跑」：加快腳步</li>
+            <li>朝金色光柱走，靠近後按「收集」</li>
+          </ul>
+          <p class="keys">電腦：W A S D 或方向鍵走路，拖曳滑鼠轉頭，Shift 跑，E 收集。</p>
+          <button type="button" class="btn" id="helpOk">出發</button>
+        </div>
+      </div>
+
+      <dialog id="card" aria-labelledby="cardName">
+        <figure><img id="cardImg" alt=""><figcaption id="cardCap"></figcaption></figure>
+        <div class="d-in">
+          <p class="d-no" id="cardNo"></p>
+          <h3 id="cardName"></h3>
+          <p id="cardText"></p>
+          <p class="now"><b>今天在哪裡</b><span id="cardNow"></span></p>
+          <button type="button" class="btn" id="cardOk">繼續尋寶</button>
+        </div>
+      </dialog>
+
+      <dialog id="book" aria-labelledby="bookH">
+        <div class="d-in">
+          <p class="d-no">神社尋寶 · 已找到 <span data-prog>0/10</span></p>
+          <h3 id="bookH">圖鑑</h3>
+          <ol id="bookList"></ol>
+          <button type="button" class="btn" id="bookDone" hidden>全部找到了 →</button>
+          <button type="button" class="btn line" id="bookClose">回到神社</button>
+          <button type="button" class="btn quiet" id="resetBtn">重新開始</button>
+          <p class="fine">進度只存在這台裝置的瀏覽器，不會送出任何資料。</p>
+        </div>
+      </dialog>
+
+      <dialog id="done" aria-labelledby="doneH">
+        <div class="d-in">
+          <p class="d-no">神社尋寶 · 10/10</p>
+          <h3 id="doneH">你走完神社了</h3>
+          <p>十件寶物都找到了。要不要留下心得領一張御守，或挑戰繪馬的考證測驗？</p>
+          <button type="button" class="btn" data-go="omamori">留下心得，領御守</button>
+          <button type="button" class="btn line" data-go="ema">挑戰繪馬考證</button>
+          <button type="button" class="btn quiet" id="doneClose">再逛一下</button>
+          <p class="fine">御守、繪馬是當代教育活動的參與創作，非宗教物件，也不是中壢神社原有的設施。</p>
+        </div>
+      </dialog>
+    </div>
+
+    <p class="lab-note">按「展開」開始：從第一鳥居出發，沿參道走到本殿，全程約 300 公尺。進度只存在你這台裝置上。<span lang="en">Tap 展開 to play: start at the first torii and walk to the sanctuary, about 300 metres. Progress stays on this device.</span></p>
+  </section>
+  <!-- hunt:end -->
 
   <nav class="enter one" aria-label="Open the work">
     <a href="app/"><b>開啟古今對照 <i>→</i></b><small>Open the then-and-now view</small><p>3D 神社立在今天的航照上。拖動「古 ↔ 今」滑桿看它落在今天校園的哪裡，或跟著六站導覽，從第一鳥居一路走到神門。在校園裡按「我在哪」，可以看到自己站在哪座殿上。</p></a>
@@ -469,5 +638,39 @@ h1 { margin: 0; font: 300 clamp(40px, 6vw, 72px)/1.1 var(--serif); letter-spacin
   </dl>
 </main>
 <script type="module" src="participate/participate.js?v=4"></script>
+<script>
+// 神社尋寶 lives in this page. "展開" makes it fill the screen and hands over the controls;
+// 縮回, Esc or the browser's Back puts it back among the text.
+(function () {
+  var game = document.getElementById("game"), sec = document.getElementById("hunt"), btn = document.getElementById("expandBtn");
+  var full = false, pushed = false;
+  function lay(on) {
+    full = on; game.classList.toggle("full", on); game.classList.toggle("flow", !on);
+    document.documentElement.classList.toggle("lab-max", on);
+    if (window.GAME) window.GAME.setPlay(on);
+  }
+  function shrink(stay) { if (!full) return false; lay(false); if (!stay) { sec.scrollIntoView(); btn.focus({ preventScroll: true }); } return true; }
+  function expand() { if (full) return; lay(true); try { history.pushState({ hunt: 1 }, ""); pushed = true; } catch (e) {} }
+  function collapse(stay) { if (shrink(stay) && pushed) { pushed = false; history.back(); } }
+  btn.addEventListener("click", expand);
+  document.getElementById("startBtn").addEventListener("click", expand);
+  document.getElementById("closeBtn").addEventListener("click", function () { collapse(); });
+  window.addEventListener("popstate", function () { pushed = false; shrink(); });
+  window.addEventListener("keydown", function (e) { if (e.key === "Escape" && full && !document.querySelector("dialog[open]")) collapse(); });
+  // 全部找到之後：縮回頁面，直接打開下方「參與」區的御守或繪馬表單
+  document.querySelectorAll("#done [data-go]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var kind = b.dataset.go;
+      document.getElementById("done").close(); collapse(true);
+      setTimeout(function () {
+        document.getElementById("participate").scrollIntoView();
+        var open = document.querySelector('#participate [data-open="' + kind + '"]'); if (open) open.click();
+      }, 120);
+    });
+  });
+  if (location.hash === "#hunt") sec.scrollIntoView();
+})();
+</script>
+<script type="module" src="hunt/game.js?v=2"></script>
 </body>
 </html>
