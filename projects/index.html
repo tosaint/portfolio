@@ -198,6 +198,21 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
 .zone { padding-top: clamp(64px, 10vw, 120px); }
 .demo { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 28px; }
 .demo span { font: 400 12px var(--mono); color: var(--ink-2); letter-spacing: .08em; margin-right: 6px; }
+.vers { margin: 8px 0 36px; }
+.vgrid { display: flex; gap: 28px; margin-top: 12px; }
+.vcard { display: flex; gap: 16px; align-items: flex-end; }
+.vpick { position: relative; width: 210px; height: 297px; padding: 0; border: 1px solid var(--hair); background: none; cursor: pointer; flex: none; }
+.vpick .vback { position: absolute; left: 10px; top: -10px; right: -10px; bottom: 10px; border: 1px solid var(--hair); background: var(--ground-2); }
+.vpick .vthumb { position: absolute; inset: 0; overflow: hidden; }
+.vthumb .sheet { position: absolute !important; left: 0; top: 0; transform: scale(.2645) !important; transform-origin: 0 0; outline: none; }
+.vcard.sel .vpick { outline: 2px solid var(--ink); outline-offset: 4px; }
+.vmeta { display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
+.vmeta b { font: 400 18px var(--zh); letter-spacing: .2em; }
+.vmeta span { font-size: 13px; color: var(--ink-2); }
+.vmeta .dl { margin-top: 8px; align-self: flex-start; }
+.vnote { margin: 18px 0 0; font: 400 12px var(--mono); color: var(--ink-2); letter-spacing: .06em; }
+#dlMsg { margin-left: 8px; color: var(--verm); }
+@media (max-width: 759px) { .vgrid { overflow-x: auto; scroll-snap-type: x mandatory; padding: 12px 4px 8px; gap: 20px; } .vcard { flex-direction: column; align-items: flex-start; scroll-snap-align: start; flex: none; } }
 .papers { width: min(794px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
 .holder { position: relative; width: 100%; }
 .sheet {
@@ -328,7 +343,7 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
   .trow { opacity: 1 !important; }
   #track path { stroke-dashoffset: 0 !important; }
   .zone, .zone > .wrap, .papers { margin: 0 !important; padding: 0 !important; }
-  .story, .course, .demo, .pnote, .ztitle { display: none !important; }
+  .story, .course, .demo, .pnote, .ztitle, .vers { display: none !important; }
   .sheet { transform: none !important; outline: none; --bg: #ece6d9; --sink: #2b2a27; --smut: #6f6b63; --rule: #d3cbbd; --stone: #2b2a27; }
 }
 </style>
@@ -404,7 +419,15 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
     <p class="eyebrow">Certificate · 成績證書</p>
     <h2 class="ztitle"><span id="zName"></span>的學習<span class="liz" id="liz0"><span class="z">壢</span><span class="h" aria-hidden="true">歷</span><span class="t" aria-hidden="true">土</span></span>程</h2>
     <p class="pnote" id="pnote"></p>
-    <div class="demo"><span>示範 · 假資料</span><button class="chip" data-k="lin" aria-pressed="true">致賢 · 穩定</button><button class="chip" data-k="chen">致賢 · 待補交</button><button class="chip" data-k="wang">致賢 · 學期中</button><button class="chip" id="replay">重播</button></div>
+    <div class="demo"><span>示範</span><button class="chip" data-k="lin" aria-pressed="true">余同學 · 穩定</button><button class="chip" data-k="chen">致同學 · 待補交</button><button class="chip" data-k="wang">賢同學 · 學期中</button><button class="chip" id="replay">重播</button></div>
+    <div class="vers">
+      <p class="eyebrow">選擇你的版本 · Choose a version</p>
+      <div class="vgrid">
+        <div class="vcard" data-v="dark"><button class="vpick" type="button" data-v="dark" aria-label="選擇夜色版"><span class="vback"></span><span class="vthumb" id="pvdark"></span></button><div class="vmeta"><b>夜色版</b><span>深色紙，光影與紙紋</span><button class="chip dl" type="button" data-v="dark">下載夜色版（2 張）</button></div></div>
+        <div class="vcard" data-v="light"><button class="vpick" type="button" data-v="light" aria-label="選擇白紙版"><span class="vback"></span><span class="vthumb" id="pvlight"></span></button><div class="vmeta"><b>白紙版</b><span>米白紙，適合列印</span><button class="chip dl" type="button" data-v="light">下載白紙版（2 張）</button></div></div>
+      </div>
+      <p class="vnote">列印使用白紙版；夜色版請下載圖片保存。 <button class="chip" type="button" id="printBtn">列印</button> <span id="dlMsg"></span></p>
+    </div>
     <div class="papers" id="papers">
       <div class="holder" id="h1">
         <div class="sheet" id="s1">
@@ -502,7 +525,7 @@ var TERMS = [['處暑', 7, 23], ['白露', 8, 7], ['秋分', 8, 23], ['寒露', 
 var CNUM = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八'];
 var WEEK = []; (function () { for (var w = 1; w <= 18; w++) { var d = new Date(2026, 8, 1 + Math.round((w - 1) * 8.06)), term = TERMS[0][0]; TERMS.forEach(function (T) { if (d >= new Date(2026, T[1], T[2])) term = T[0]; }); WEEK[w] = { term: term, date: (d.getMonth() + 1) + '.' + pad2(d.getDate()) }; } for (w = 1; w <= 18; w++) WEEK[w].first = w === 1 || WEEK[w].term !== WEEK[w - 1].term; })();
 var PIDX = { '科技生活': 0, '智控機電': 1, '連桿機械': 2, '機構建模': 3, '學習歷程': 4 };
-var COURSE = {"id": "115-1", "course": "生活科技", "course_en": "Living Technology", "weeks": [{"week": 1, "unit": "科技生活", "unit_en": "Technology and Life", "zh": "科技故事、前測", "en": "Stories of technology; pre-test", "points": 4, "calc": "2 + 2"}, {"week": 2, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：微控制器", "en": "The microcontroller", "points": 4, "calc": "2 + 2"}, {"week": 3, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：紅綠燈", "en": "Traffic light", "points": 6, "calc": "2 + 4"}, {"week": 4, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：按鈕＋伺服馬達", "en": "Button and servo", "points": 4, "calc": "2 + 2"}, {"week": 5, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：超音波＋伺服馬達", "en": "Ultrasonic sensor and servo", "points": 5, "calc": "2 + 3"}, {"week": 6, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（一）", "en": "Portfolio 1", "points": 2}, {"week": 7, "unit": "連桿機械", "unit_en": "Linkages", "zh": "MotionGen：四連桿、四足獸、六足獸、連桿設計", "en": "Four-bar, quadruped, hexapod, linkage design", "points": 8, "calc": "2 × 4"}, {"week": 8, "unit": "連桿機械", "unit_en": "Linkages", "zh": "MotionGen：仿生獸、撲翼機、曲柄滑塊、仿生鳥", "en": "Strandbeest, ornithopter, slider-crank, bionic bird", "points": 8, "calc": "2 × 4"}, {"week": 9, "unit": "科技生活", "unit_en": "Technology and Life", "zh": "紀錄片《造山者》", "en": "Documentary: A Chip Odyssey", "points": 2}, {"week": 10, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：積木、旋轉體", "en": "Building block, revolved solid", "points": 4, "calc": "2 + 2"}, {"week": 11, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：桌椅、12 個三視圖", "en": "Table and chair; 12 three-view drawings", "points": 14, "calc": "2 + 12"}, {"week": 12, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（二）", "en": "Portfolio 2", "points": 2}, {"week": 13, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：TT 馬達、伺服馬達、超音波", "en": "TT motor, servo, ultrasonic sensor", "points": 5}, {"week": 14, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：四連桿模擬", "en": "Four-bar simulation", "points": 10}, {"week": 15, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：草稿", "en": "Linkage build: sketch", "points": 5, "link": "horse-linkage/"}, {"week": 16, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：製作", "en": "Linkage build: making", "points": 5, "link": "horse-linkage/"}, {"week": 17, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：製作", "en": "Linkage build: making", "points": 5, "link": "horse-linkage/"}, {"week": 18, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（三）", "en": "Portfolio 3", "points": 2}], "extra": [{"unit": "課程參與", "unit_en": "Participation", "zh": "準時", "en": "On time", "points": 15}], "total": 110};
+var COURSE = {"id": "115-1", "course": "生活科技", "course_en": "Living Technology", "weeks": [{"week": 1, "unit": "科技生活", "unit_en": "Technology and Life", "zh": "科技故事、前測", "en": "Stories of technology; pre-test", "points": 4, "calc": "2 + 2"}, {"week": 2, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：微控制器", "en": "The microcontroller", "points": 4, "calc": "2 + 2"}, {"week": 3, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：紅綠燈", "en": "Traffic light", "points": 6, "calc": "2 + 4"}, {"week": 4, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：按鈕＋伺服馬達", "en": "Button and servo", "points": 4, "calc": "2 + 2"}, {"week": 5, "unit": "智控機電", "unit_en": "Smart Control", "zh": "Arduino：超音波＋伺服馬達", "en": "Ultrasonic sensor and servo", "points": 5, "calc": "2 + 3"}, {"week": 6, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（一）", "en": "Portfolio 1", "points": 2}, {"week": 7, "unit": "連桿機械", "unit_en": "Linkages", "zh": "MotionGen：四連桿、四足獸、六足獸、連桿設計", "en": "Four-bar, quadruped, hexapod, linkage design", "points": 8, "calc": "2 × 4"}, {"week": 8, "unit": "連桿機械", "unit_en": "Linkages", "zh": "MotionGen：仿生獸、撲翼機、曲柄滑塊、仿生鳥", "en": "Strandbeest, ornithopter, slider-crank, bionic bird", "points": 8, "calc": "2 × 4"}, {"week": 9, "unit": "科技生活", "unit_en": "Technology and Life", "zh": "紀錄片《造山者》", "en": "Documentary: A Chip Odyssey", "points": 2}, {"week": 10, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：積木、旋轉體", "en": "Building block, revolved solid", "points": 4, "calc": "2 + 2"}, {"week": 11, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：桌椅、12 個三視圖", "en": "Table and chair; 12 three-view drawings", "points": 14, "calc": "2 + 12"}, {"week": 12, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（二）", "en": "Portfolio 2", "points": 2}, {"week": 13, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：TT 馬達、伺服馬達、超音波", "en": "TT motor, servo, ultrasonic sensor", "points": 5}, {"week": 14, "unit": "機構建模", "unit_en": "3D Modelling", "zh": "Onshape：四連桿模擬", "en": "Four-bar simulation", "points": 10}, {"week": 15, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：草稿", "en": "Linkage build: sketch", "points": 5, "link": "clhs4bar/"}, {"week": 16, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：製作", "en": "Linkage build: making", "points": 5, "link": "clhs4bar/"}, {"week": 17, "unit": "連桿機械", "unit_en": "Linkages", "zh": "連桿實作：製作", "en": "Linkage build: making", "points": 5, "link": "clhs4bar/"}, {"week": 18, "unit": "學習歷程", "unit_en": "Portfolio", "zh": "學習歷程檔案（三）", "en": "Portfolio 3", "points": 2}], "extra": [{"unit": "課程參與", "unit_en": "Participation", "zh": "準時", "en": "On time", "points": 15}], "total": 110};
 var TASKS = [
   [1,'科技生活','科技故事',2],[1,'科技生活','前測',2],[2,'智控機電','Arduino 入門',2],[2,'智控機電','微控制器',2],
   [3,'智控機電','Arduino 練習',2],[3,'智控機電','紅綠燈',4],[4,'智控機電','按鈕',2],[4,'智控機電','伺服馬達',2],
@@ -515,12 +538,12 @@ var TASKS = [
 ].map(function (t) { return { w: t[0], unit: t[1], name: t[2], max: t[3], p: PIDX[t[1]] }; });
 function sc(o) { return TASKS.map(function (t, i) { return (i in o) ? o[i] : t.max; }); }
 var PROFILES = {
-  lin: { name: '致賢', cls: '101', seat: '36', cur: 18, scores: sc({ 5: 3, 9: 1, 18: null, 23: 8, 26: 8, 28: 4 }), late: [13], leave: [9], absent: [], rank: '3/36 · 21/350' },
-  chen: { name: '致賢', cls: '101', seat: '36', cur: 18, scores: sc({ 5: 2, 9: null, 17: null, 18: null, 21: 1, 23: null, 26: 6, 27: 4, 28: 3, 29: 3 }), late: [2, 6, 15], leave: [], absent: [4, 11, 12], rank: '—' },
-  wang: { name: '致賢', cls: '101', seat: '36', cur: 9, scores: sc({ 5: 3 }), late: [3], leave: [], absent: [], rank: '學期中', live: true }
+  lin: { name: '余同學', cls: '101', seat: '36', cur: 18, scores: sc({ 5: 3, 9: 1, 18: null, 23: 8, 26: 8, 28: 4 }), late: [13], leave: [9], absent: [], rank: '3/36 · 21/350' },
+  chen: { name: '致同學', cls: '101', seat: '36', cur: 18, scores: sc({ 5: 2, 9: null, 17: null, 18: null, 21: 1, 23: null, 26: 6, 27: 4, 28: 3, 29: 3 }), late: [2, 6, 15], leave: [], absent: [4, 11, 12], rank: '—' },
+  wang: { name: '賢同學', cls: '101', seat: '36', cur: 9, scores: sc({ 5: 3 }), late: [3], leave: [], absent: [], rank: '學期中', live: true }
 };
 var UNITN = ['科技生活', '智控機電（Arduino）', '連桿機械', '機構建模', '學習歷程檔案'];
-function givenName(n) { var CMP = ['歐陽', '司馬', '諸葛', '上官', '司徒', '東方', '西門', '張簡', '范姜', '夏侯', '皇甫', '長孫']; if (n.length >= 4 && CMP.indexOf(n.slice(0, 2)) >= 0) return n.slice(2); return n.length >= 3 ? n.slice(1) : n; }
+function givenName(n) { if (/同學$/.test(n)) return n; var CMP = ['歐陽', '司馬', '諸葛', '上官', '司徒', '東方', '西門', '張簡', '范姜', '夏侯', '皇甫', '長孫']; if (n.length >= 4 && CMP.indexOf(n.slice(0, 2)) >= 0) return n.slice(2); return n.length >= 3 ? n.slice(1) : n; }
 function stats(P) {
   var S = { rates: [], miss: [[], [], [], [], []], on: 0, late: 0, leave: 0, absent: 0 }, earned = 0, max = 0, sub = 0, tot = 0;
   PATHS.forEach(function (_, k) { var e = 0, m = 0; TASKS.forEach(function (t, i) { if (t.p === k && t.w <= P.cur) { m += t.max; e += (P.scores[i] || 0); if (P.scores[i] == null) S.miss[k].push(t.name); } }); S.rates.push(m ? e / m : null); });
@@ -844,7 +867,7 @@ function buildCert(key) {
   $('vAtt').innerHTML = (Math.round(SX.att * 10) / 10) + '<span class="vs2"> / 15 · 出席率 ' + SX.attPct + '%</span>';
   $('hl').innerHTML = '<span><b>亮點</b></span>' + H.map(function (h) { return '<span>' + h.p.replace(/。$/, '') + '</span>'; }).join('');
   $('p2who').textContent = P.cls + ' · ' + P.seat + ' 號';
-  $('pnote').textContent = '以下是示範（假資料），三種情況都用「致賢」示範。真實的成績，只會從信中的專屬連結打開。' + (P.live ? '學期中的出勤分會隨週次累積，最高 15 分。' : '');
+  $('pnote').textContent = '以下是示範（假資料），真實的成績，只會從信中的專屬連結打開。' + (P.live ? '學期中的出勤分會隨週次累積，最高 15 分。' : '');
   $('tagR').textContent = P.live ? '處暑 → ' + WEEK[P.cur].term + ' · 學期中' : '處暑 → 大寒';
   document.querySelectorAll('.demo .chip[data-k]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.k === key ? 'true' : 'false'); });
   ['liz0', 'liz1', 'liz2'].forEach(function (id) { var z = $(id); z.classList.remove('go', 'done'); z.classList.add('ready'); });
@@ -877,10 +900,10 @@ function brickLayout() {
   BL = { P: P, slices: slices, TS: TS, cx: cx, cy: cy, R: R, top: top, bot: bot, x0: x0, bw: bw, N: order.length };
   return BL;
 }
-function drawCert(t) {
-  var cv = $('certCv'); if (!cv) return; var W = 674, H = 476, dpr = 2, c = cv.getContext('2d');
+function drawCert(t, cvIn, ltIn, sc) {
+  var cv = cvIn || $('certCv'); if (!cv) return; var W = 674, H = 476, dpr = sc || 2, c = cv.getContext('2d');
   if (cv.width !== W * dpr) { cv.width = W * dpr; cv.height = H * dpr; }
-  var Lt = PRINTING || isLight(), IK = Lt ? '43,42,39' : '232,229,222', ink = function (a) { return 'rgba(' + IK + ',' + a + ')'; }, VM = '#d9643a';
+  var Lt = ltIn !== undefined ? ltIn : (PRINTING || certLight()), IK = Lt ? '43,42,39' : '232,229,222', ink = function (a) { return 'rgba(' + IK + ',' + a + ')'; }, VM = '#d9643a';
   var B = brickLayout(), cx = B.cx, cy = B.cy, R = B.R, TS = B.TS;
   c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H); if (PRINTING) { c.fillStyle = '#ece6d9'; c.fillRect(0, 0, W, H); } c.lineCap = 'round'; c.lineJoin = 'round';
   // 底紋：淡淡的晶粒格
@@ -1038,7 +1061,7 @@ function buildPage2() {
     k.ts.forEach(function (o, i) { if (i) { var sp = el('tspan', { 'class': 'tk-mut' }, nm); sp.textContent = '・'; } var t = el('tspan', o.v == null && !k.fut ? { opacity: .45 } : {}, nm); t.textContent = o.t.name; });
     var scT = el('text', { x: W, y: cy + 4, 'font-size': 12, 'text-anchor': 'end' }, g); scT.setAttribute('class', 'tk-mono ' + (k.fut ? 'tk-mut' : 'tk-ink')); scT.textContent = k.fut ? '—' : k.g + '/' + k.m;
     var note = null, full = '';
-    if (k.notes.length) { full = '↳ ' + k.notes.join('　·　'); note = el('text', { x: SX, y: k.y + RH + 11, 'class': 'tk-note tk-acc' }, g); note.textContent = full; }
+    if (k.notes.length) { full = '↳ ' + k.notes.join('　·　'); note = el('text', { x: SX, y: k.y + RH + 11, 'class': 'tk-note tk-acc' }, g); note.setAttribute('data-full', full); note.textContent = full; }
     rows.push({ g: g, k: (k.cy - TOP) / (BODY - TOP), note: note, full: full });
   });
   var good = 0, tested = 0; TASKS.forEach(function (t, i) { if (t.w <= P.cur) { tested++; if (P.scores[i] != null) good++; } });
@@ -1102,7 +1125,9 @@ function fourBar(now) {
 
 // ======================= 縮放 · 觀察 · 迴圈 =======================
 function fit() { ['1', '2'].forEach(function (n) { var h = $('h' + n), s = Math.min(1, h.clientWidth / 794); $('s' + n).style.transform = 'scale(' + s + ')'; h.style.height = (1123 * s) + 'px'; }); }
-function applyTheme() { var L = isLight(); $('papers').classList.toggle('lightsheet', L); }
+var CERTV = null; try { CERTV = localStorage.getItem('certVersion'); } catch (e) {}
+function certLight() { return CERTV ? CERTV === 'light' : isLight(); }
+function applyTheme() { var L = certLight(); $('papers').classList.toggle('lightsheet', L); document.querySelectorAll('.vcard').forEach(function (v) { v.classList.toggle('sel', v.dataset.v === (L ? 'light' : 'dark')); }); }
 themeHooks.push(applyTheme);
 if (window.matchMedia) { var mq = matchMedia('(prefers-color-scheme: light)'); if (mq.addEventListener) mq.addEventListener('change', applyTheme); }
 window.addEventListener('resize', function () { fit(); clearTimeout(window.__rt); window.__rt = setTimeout(buildStory, 250); });
@@ -1123,8 +1148,57 @@ function loop(now) {
   if (certVis || frozen) renderCertText(t); paceFrame(now); 
   requestAnimationFrame(loop);
 }
+// ---- 版本預覽與下載圖片 ----
+function inlineSvg(root) {
+  root.querySelectorAll('svg').forEach(function (sv) { sv.querySelectorAll('*').forEach(function (n) { var cs = getComputedStyle(n); ['fill', 'stroke', 'opacity', 'stroke-dasharray', 'stroke-dashoffset', 'font-family', 'font-size'].forEach(function (k) { var v = cs.getPropertyValue(k); if (v) n.style.setProperty(k, v); }); }); var c0 = getComputedStyle(sv).color; if (c0) sv.style.color = c0; });
+}
+function cloneSheet(id, light, scale) {
+  var src = $(id), cl = src.cloneNode(true);
+  cl.removeAttribute('id'); cl.querySelectorAll('[id]').forEach(function (n) { n.setAttribute('data-id', n.id); n.removeAttribute('id'); });
+  cl.style.transform = 'none';
+  var q = function (k) { return cl.querySelector('[data-id="' + k + '"]'); };
+  if (q('vScore')) q('vScore').textContent = (SX.score % 1 ? SX.score.toFixed(1) : SX.score);
+  if (q('vTitle')) q('vTitle').textContent = SX.level;
+  cl.querySelectorAll('.cname span').forEach(function (n) { n.classList.add('in'); });
+  cl.querySelectorAll('.liz').forEach(function (z) { z.classList.remove('go'); z.classList.add('done'); });
+  cl.querySelectorAll('.prow .fl').forEach(function (f) { f.style.transition = 'none'; f.style.width = f.dataset.w; });
+  cl.querySelectorAll('.trow').forEach(function (r) { r.style.opacity = 1; });
+  var pv = q('track'); if (pv) pv.querySelectorAll('path').forEach(function (pth) { pth.style.strokeDashoffset = 0; });
+  var nt = cl.querySelectorAll('.tk-note'); nt.forEach(function (n) { if (n.dataset.full) n.textContent = n.dataset.full; });
+  var cv = cl.querySelector('canvas'); if (cv) { cv.style.cssText = 'position:absolute;left:0;top:0;width:674px;height:476px;display:block'; cv.width = 674 * (scale || 2); cv.height = 476 * (scale || 2); drawCert(999, cv, light, scale || 2); }
+  return cl;
+}
+var PVKEY = '';
+function buildPreviews() {
+  var k = P.name + P.cur + P.scores.join(',');
+  if (k === PVKEY) return; PVKEY = k;
+  ['dark', 'light'].forEach(function (v) { var box = $('pv' + v); box.innerHTML = ''; var wrap = document.createElement('div'); if (v === 'light') wrap.className = 'lightsheet'; var c1 = cloneSheet('s1', v === 'light', 1); wrap.appendChild(c1); box.appendChild(wrap); });
+}
+var H2C = null;
+function loadH2C() { if (window.html2canvas) return Promise.resolve(); if (H2C) return H2C; H2C = new Promise(function (ok, no) { var sc = document.createElement('script'); sc.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); return H2C; }
+function exportPNG(v) {
+  var msg = $('dlMsg'); msg.textContent = '產生圖片中…';
+  loadH2C().then(function () {
+    var host = document.createElement('div'); host.style.cssText = 'position:fixed;left:-12000px;top:0;width:794px;'; if (v === 'light') host.className = 'lightsheet';
+    var pages = ['s1', 's2'].map(function (id) { var cl = cloneSheet(id, v === 'light', 3); cl.style.position = 'relative'; var hold = document.createElement('div'); hold.style.cssText = 'position:relative;width:794px;height:1123px;margin-bottom:20px;'; hold.appendChild(cl); host.appendChild(hold); return cl; });
+    document.body.appendChild(host);
+    pages.forEach(function (pg) { inlineSvg(pg); pg.querySelectorAll('.grain').forEach(function (g) { g.style.display = 'none'; }); pg.querySelectorAll('.liz .z').forEach(function (z) { z.style.background = 'none'; z.style.webkitTextFillColor = '#d9643a'; z.style.color = '#d9643a'; z.style.opacity = 1; }); });
+    var name = givenName(P.name), tag = v === 'light' ? '白紙版' : '夜色版';
+    return Promise.all(pages.map(function (pg) { return html2canvas(pg, { scale: 3, backgroundColor: null, useCORS: true, logging: false }); })).then(function (cvs) {
+      document.body.removeChild(host);
+      return Promise.all(cvs.map(function (cv) { return new Promise(function (r) { cv.toBlob(r, 'image/png'); }); })).then(function (blobs) {
+        var files = blobs.map(function (b, i) { return new File([b], '學習壢程_' + name + '_' + tag + '_第' + (i + 1) + '頁.png', { type: 'image/png' }); });
+        if (navigator.canShare && navigator.canShare({ files: files }) && /Mobi|Android|iPhone|iPad/.test(navigator.userAgent)) { return navigator.share({ files: files, title: name + '的學習壢程' }).catch(function () {}); }
+        files.forEach(function (f, i) { setTimeout(function () { var a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500); }, i * 400); });
+      });
+    });
+  }).then(function () { msg.textContent = '已完成'; setTimeout(function () { msg.textContent = ''; }, 2500); }, function () { msg.textContent = '圖片產生失敗，請稍後再試'; });
+}
+document.querySelectorAll('.vpick').forEach(function (b) { b.addEventListener('click', function () { CERTV = b.dataset.v; try { localStorage.setItem('certVersion', CERTV); } catch (e) {} applyTheme(); }); });
+document.querySelectorAll('.vmeta .dl').forEach(function (b) { b.addEventListener('click', function () { exportPNG(b.dataset.v); }); });
+$('printBtn').addEventListener('click', function () { window.print(); });
 function load(key) {
-  buildCert(key); fit();
+  buildCert(key); fit(); PVKEY = ''; setTimeout(buildPreviews, 60);
   var r = $('h1').getBoundingClientRect(); certStart = (r.top < window.innerHeight && r.bottom > 0) ? performance.now() : -1;
   if (paceAnim.t !== -1 || $('h2').getBoundingClientRect().top < window.innerHeight) { paceAnim.t = performance.now(); fillBars(); }
 }
