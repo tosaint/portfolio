@@ -4,7 +4,7 @@
 
 - 作品頁：https://tosaint.com/portfolio/projects/zhongli-shrine/
 - 3D 導覽：https://tosaint.com/portfolio/projects/zhongli-shrine/app/
-- 穩定版標籤：`shrine-tour-v1`（2026-11-16）。導覽壞掉時可以拿這個版本對照或還原。
+- 穩定版分支：`shrine-tour-v1`（2026-11-16 的快照，不要在上面開發）。導覽壞掉時可以拿這個版本對照或還原。
 - 海報、文宣上的 QR code 都指向作品頁，**這兩個網址不能改**。
 
 ## 作者的固定要求
