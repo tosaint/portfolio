@@ -393,6 +393,61 @@ html.lab-max { overflow: hidden; }
 
 @media (max-width: 900px) { .videos { grid-template-columns: repeat(2, minmax(0, 1fr)); } .videos .lead { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .videos { grid-template-columns: 1fr; } }
+
+/* Eyepiece block: a cut-open telescope with light drawn as moving wavefronts. Pick an eyepiece
+   and the tube, the cut-open focuser, the curve and the three views all change together. */
+.wave { --wv-wave: #2f5fa8; --wv-beam: rgba(47, 95, 168, .1); --wv-brass: #d9b25c; --wv-brassL: #f3e3b8; --wv-tube: #f7f4ec; --wv-glass: #cfe3ea; --wv-red: #c0594a; --wv-metal: #e9e5da; --wv-dark: #3a3a3a; --wv-sign: #7a2a26; --wv-gold: #ecc66c; --wv-field: #8f8b80; }
+:root[data-theme="dark"] .wave { --wv-wave: #7fb0ff; --wv-beam: rgba(127, 176, 255, .14); --wv-brass: #b8924a; --wv-brassL: #4a3d22; --wv-tube: #1f1e1b; --wv-glass: #35535c; --wv-red: #ef8a78; --wv-metal: #2c2a26; --wv-dark: #0c0c0b; --wv-field: #4a4740; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .wave { --wv-wave: #7fb0ff; --wv-beam: rgba(127, 176, 255, .14); --wv-brass: #b8924a; --wv-brassL: #4a3d22; --wv-tube: #1f1e1b; --wv-glass: #35535c; --wv-red: #ef8a78; --wv-metal: #2c2a26; --wv-dark: #0c0c0b; --wv-field: #4a4740; } }
+
+.wave { padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); scroll-margin-top: 56px; }
+.wave h2 { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.wave h3 { margin: 0; font: 300 clamp(24px, 3.4vw, 38px)/1.35 var(--serif); letter-spacing: .06em; text-wrap: balance; }
+.wv-spec { margin: 8px 0 clamp(18px, 3vw, 28px); font: 400 12px/1.7 var(--mono); color: var(--ink-3); }
+.wave svg { display: block; width: 100%; height: auto; overflow: visible; }
+.wave svg text { font-family: var(--serif); font-size: 14px; fill: var(--ink-2); }
+.wave svg .it { font-style: italic; fill: var(--ink-3); }
+.wave svg .mono { font-family: var(--mono); font-size: 11px; fill: var(--ink-3); }
+.wave svg .ln { stroke: var(--ink); fill: none; }
+.wave svg .lead { stroke: var(--ink-3); stroke-width: .8; fill: none; }
+.wave svg .wf { stroke: var(--wv-wave); stroke-width: 1.7; fill: none; stroke-linecap: round; }
+.wave svg .beam { fill: var(--wv-beam); stroke: none; }
+.wave svg .tube { fill: var(--wv-tube); stroke: var(--ink); }
+.wave svg .metal { fill: var(--wv-metal); stroke: var(--ink); }
+.wave svg .brass { fill: var(--wv-brass); stroke: var(--ink); }
+.wave svg .brassL { fill: var(--wv-brassL); stroke: var(--ink); }
+.wave svg .glass { fill: var(--wv-glass); stroke: var(--ink); }
+.wave svg .dark { fill: var(--wv-dark); stroke: var(--ink); }
+.wave svg .focus { fill: var(--wv-red); }
+.wave svg .red { stroke: var(--wv-red); fill: none; stroke-width: 2.4; }
+.wave svg .dash { stroke: var(--ink-3); stroke-width: .8; stroke-dasharray: 3 4; fill: none; }
+
+.wv-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 48px) clamp(24px, 4vw, 56px); align-items: start; }
+.wv-main { grid-column: 1 / -1; }
+.wv-label { margin: 0 0 8px; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.wv-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
+.wv-pick span { font: 400 12px var(--mono); color: var(--ink-3); margin-right: 4px; }
+.wave button { font: 400 13px var(--mono); letter-spacing: .04em; color: var(--ink); background: var(--paper); border: 1px solid var(--ink-3); border-radius: 0; padding: 8px 14px; min-height: 42px; cursor: pointer; }
+.wave button:hover { border-color: var(--ink); }
+.wave button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.wave button:focus-visible, .wave input:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; }
+.wv-play { margin-left: auto; }
+.wv-say { margin: 10px 0 0; font: 500 17px/1.7 var(--serif); min-height: 3.4em; }
+.wv-focus label { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--ink-2); }
+.wv-focus b { font-weight: 400; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+.wv-focus input { width: 100%; margin: 8px 0 0; accent-color: var(--ink); }
+.wv-note { margin: 8px 0 0; font-size: 14px; color: var(--ink-2); }
+.wv-views { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.wv-views li { text-align: center; transition: opacity .3s; }
+.wv-views li:not(.on) { opacity: .5; }
+.wv-disc { position: relative; width: min(100%, 132px); aspect-ratio: 1; margin: 0 auto; border-radius: 50%; overflow: hidden; background: var(--wv-field); outline: 1px solid var(--ink); }
+.wv-views li.on .wv-disc { outline-width: 2px; }
+.wv-disc i { position: absolute; left: 50%; top: 50%; padding: .3em .55em; white-space: nowrap; font: 500 14px/1 var(--serif); font-style: normal; letter-spacing: .06em; background: var(--wv-sign); color: var(--wv-gold); transform: translate(-50%, -50%) rotate(180deg) scale(var(--s)); transition: filter .2s; }
+.wv-views small { display: block; margin-top: 8px; font: 400 11px/1.5 var(--mono); color: var(--ink-3); }
+.wv-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.wv-swipe { display: none; margin: 4px 0 0; font: 400 11px var(--mono); color: var(--ink-3); text-align: center; }
+.wv-foot { margin: clamp(20px, 4vw, 32px) 0 0; font: 400 12px/1.7 var(--mono); color: var(--ink-3); }
+@media (max-width: 760px) { .wv-scroll svg { width: 760px; max-width: none; } .wv-swipe { display: block; } .wv-grid { grid-template-columns: minmax(0, 1fr); } .wv-say { min-height: 5.1em; } .wv-play { margin-left: 0; } }
 </style>
 </head>
 <body>
@@ -614,6 +669,55 @@ html.lab-max { overflow: hidden; }
       </div>
     </div>
     <p class="ox-note">示意圖：主鏡口徑 130 mm、焦距 650 mm；尋星鏡 6×30。光束的夾角與鏡面弧度畫得比實際明顯，底座為示意。實際的像還會隨觀察者站的位置轉動，這裡統一畫成轉 180°。</p>
+  </section>
+
+  <section class="wave" id="eyepiece" aria-labelledby="wave-h">
+    <h2 id="wave-h">換目鏡 · Changing the eyepiece</h2>
+    <h3>換一支目鏡，招牌會變大，還是變小？</h3>
+    <p class="wv-spec">主鏡焦距 650 mm，口徑 130 mm。藍線是光的波前，間距放大、速度放慢，只是示意。</p>
+  
+    <div class="wv-grid">
+      <div class="wv-main">
+        <div class="wv-pick" role="group" aria-label="目鏡焦距">
+          <span>換上目鏡</span>
+          <button type="button" data-f="32" aria-pressed="false">32 mm</button>
+          <button type="button" data-f="20" aria-pressed="true">20 mm</button>
+          <button type="button" data-f="10" aria-pressed="false">10 mm</button>
+          <button type="button" class="wv-play" id="wv-play" aria-pressed="true">暫停波前</button>
+        </div>
+        <div class="wv-scroll"><svg id="wv-tube" viewBox="0 0 1000 420" role="img" aria-label="杜布森望遠鏡剖面：光從左邊進入，主鏡反射後在焦點會合，再經目鏡進入眼睛"></svg></div><p class="wv-swipe">← 左右滑動看整支望遠鏡 →</p>
+        <p class="wv-say" id="wv-say" aria-live="polite"></p>
+      </div>
+  
+      <div>
+        <p class="wv-label">調焦座與目鏡，剖開</p>
+        <svg id="wv-zoom" viewBox="0 0 520 470" role="img" aria-label="調焦座剖面：調焦鈕帶動抽筒，讓目鏡對到焦點"></svg>
+        <div class="wv-focus">
+          <label for="wv-knob">轉調焦鈕<b id="wv-knob-v">對到焦點</b></label>
+          <input id="wv-knob" type="range" min="-30" max="30" step="1" value="0">
+          <p class="wv-note">目鏡對到焦點，出來的波前是平的，字最清楚；偏一點，波前就彎了，字會糊。</p>
+        </div>
+      </div>
+  
+      <div>
+        <p class="wv-label">倍率 ＝ 主鏡焦距 ÷ 目鏡焦距</p>
+        <svg id="wv-curve" viewBox="0 0 440 300" role="img" aria-label="倍率對目鏡焦距的曲線"></svg>
+        <p class="wv-label" style="margin-top:24px">目鏡裡看到的招牌</p>
+        <ul class="wv-views" id="wv-views">
+          <li data-f="32"><div class="wv-disc"><i>中壢高中</i></div><small>32 mm · 20.3×</small></li>
+          <li data-f="20" class="on"><div class="wv-disc"><i>中壢高中</i></div><small>20 mm · 32.5×</small></li>
+          <li data-f="10"><div class="wv-disc"><i>中壢高中</i></div><small>10 mm · 65×</small></li>
+        </ul>
+        <p class="wv-note">焦距越短，招牌越大，但看到的範圍越小、畫面越暗，也越難找到目標。</p>
+      </div>
+  
+      <div class="wv-main">
+        <p class="wv-label">光路拉直</p>
+        <div class="wv-scroll"><svg id="wv-flat" viewBox="0 0 1000 170" role="img" aria-label="把副鏡拿掉、光路拉直後的排列，與折射式的尋星鏡相同"></svg></div>
+        <p class="wv-note">拿掉副鏡、把折了 90° 的光路攤直，就是一支直筒：凹面鏡把光收到焦點，目鏡再放大。這和尋星鏡（用凸透鏡）的排列一樣。</p>
+      </div>
+    </div>
+    <p class="wv-foot">示意圖：鏡筒、目鏡長度與波前間距都不是實際比例。真正的光波間距不到千分之一毫米。</p>
   </section>
 
   <section class="text">
@@ -2034,6 +2138,227 @@ try{
   if (window.IntersectionObserver) { var io = new IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) { io.disconnect(); start(); } }, { rootMargin: "400px" }); io.observe(section); } else start();
 })();
 </script><script>
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg", $ = function (id) { return document.getElementById(id); };
+  var st = { f: 20, d: 0, t: 0, play: true };
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce) st.play = false;
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function txt(parent, x, y, s, cls, anchor) { var e = el("text", { x: x, y: y, "text-anchor": anchor || "start" }, parent); if (cls) e.setAttribute("class", cls); e.textContent = s; return e; }
+  function line(p, x1, y1, x2, y2, cls) { return el("line", { x1: x1, y1: y1, x2: x2, y2: y2, class: cls || "ln" }, p); }
+  function arc(cx, cy, r, a0, a1) {   // angles in radians, measured from +x, y down
+    return "M" + (cx + r * Math.cos(a0)).toFixed(1) + " " + (cy + r * Math.sin(a0)).toFixed(1) + " A " + r.toFixed(1) + " " + r.toFixed(1) + " 0 0 1 " + (cx + r * Math.cos(a1)).toFixed(1) + " " + (cy + r * Math.sin(a1)).toFixed(1);
+  }
+  var SP = 26, SPEED = 34;   // wavefront spacing and speed, in drawing units
+
+  /* ---------- 1. the telescope, cut open ---------- */
+  var T = $("wv-tube"), ax = 280, R = 62, tL = 110, PX = 880, SX = 330, FY = ax - 132;
+  var tStatic = el("g", {}, T), tWave = el("g", {}, T), tMirror = el("g", {}, T), tTop = el("g", {}, T);
+  (function () {
+    var g = tStatic;
+    el("rect", { x: 2, y: ax - 26, width: 34, height: 52, fill: "var(--wv-sign)" }, g);
+    var c = txt(g, 19, ax + 5, "招", null, "middle"); c.setAttribute("style", "fill:var(--wv-gold);font-size:14px");
+    el("path", { class: "beam", d: "M44 " + (ax - 52) + " L" + (PX - 6) + " " + (ax - 52) + " L" + (PX - 6) + " " + (ax + 52) + " L44 " + (ax + 52) + "Z" }, g);
+    el("rect", { class: "tube", x: tL, y: ax - R - 8, width: PX - tL, height: 8 }, g);
+    el("rect", { class: "tube", x: tL, y: ax + R, width: PX - tL, height: 8 }, g);
+    el("rect", { class: "brassL", x: tL - 5, y: ax - R - 12, width: 10, height: 16 }, g);
+    el("rect", { class: "brassL", x: tL - 5, y: ax + R - 4, width: 10, height: 16 }, g);
+    el("rect", { class: "brassL", x: PX, y: ax - R, width: 22, height: 2 * R }, g);
+    el("path", { class: "glass", d: "M" + (PX - 2) + " " + (ax - 56) + " Q " + (PX - 14) + " " + ax + " " + (PX - 2) + " " + (ax + 56) + " L" + (PX + 4) + " " + (ax + 56) + " L" + (PX + 4) + " " + (ax - 56) + "Z" }, g);
+    for (var i = 0; i < 3; i++) el("rect", { class: "metal", x: PX + 22, y: ax - 40 + i * 34, width: 12, height: 12 }, g);
+    el("rect", { class: "brassL", x: SX - 34, y: ax - R - 20, width: 68, height: 12 }, g);
+    el("rect", { class: "metal", x: SX - 22, y: ax - R - 52, width: 44, height: 32 }, g);
+    el("rect", { class: "brass", x: SX + 22, y: ax - R - 46, width: 22, height: 18, rx: 3 }, g);
+    el("rect", { class: "brass", x: SX - 44, y: ax - R - 46, width: 22, height: 18, rx: 3 }, g);
+    // the secondary mirror on its stalk, drawn above the light
+    el("path", { d: "M" + (SX - 27) + " " + (ax + 27) + " L" + (SX + 27) + " " + (ax - 27), stroke: "var(--wv-glass)", "stroke-width": 6, "stroke-linecap": "round" }, tMirror);
+    el("path", { d: "M" + (SX - 27) + " " + (ax + 27) + " L" + (SX + 27) + " " + (ax - 27), stroke: "var(--ink)", "stroke-width": .8 }, tMirror);
+    line(tMirror, SX + 16, ax - 16, SX + 70, ax, "ln"); line(tMirror, SX + 70, ax - R, SX + 70, ax + R, "ln");
+    txt(g, 44, ax - 104, "來自招牌的光"); txt(g, 44, ax - 86, "波前幾乎是平的", "it");
+    txt(g, PX - 250, ax + 96, "主鏡把波前反射成弧形，往中間收", "it");
+    txt(g, PX + 40, ax + 96, "主鏡"); line(g, PX + 38, ax + 88, PX + 10, ax + 40, "lead");
+    txt(g, SX + 92, ax + 96, "副鏡"); line(g, SX + 90, ax + 88, SX + 12, ax + 12, "lead");
+    txt(g, SX - 70, ax - R - 32, "調焦座", null, "end");
+    txt(g, tL + 80, ax + 108, "鏡筒（剖開）");
+  })();
+  function drawTube() {
+    var w = tWave, top = tTop; w.textContent = ""; top.textContent = "";
+    var fe = st.f * 1.1 + 6, EY = FY - fe - st.d * .6, ph = (st.t * SPEED) % SP, i, r, x, y;
+    var k = (PX - SX + (ax - FY)) / 650, UF = PX - 650 * k;   // unfolded focus on the axis
+    // eyepiece and its barrel
+    el("rect", { class: "metal", x: SX - 17, y: EY - 40, width: 34, height: ax - R - 52 - (EY - 40) }, top);
+    el("rect", { class: "dark", x: SX - 21, y: EY - 46, width: 42, height: 12, rx: 3 }, top);
+    el("ellipse", { class: "glass", cx: SX, cy: EY, rx: 15, ry: 3.4 }, top);
+    var eyeY = EY - 92;
+    el("path", { d: "M" + (SX - 24) + " " + eyeY + " Q " + SX + " " + (eyeY - 26) + " " + (SX + 24) + " " + eyeY + " Q " + SX + " " + (eyeY + 24) + " " + (SX - 24) + " " + eyeY + "Z", fill: "var(--paper)", stroke: "var(--ink)" }, top);
+    el("circle", { cx: SX, cy: eyeY, r: 7, fill: "var(--ink)" }, top);
+    txt(top, SX + 40, eyeY + 5, "眼睛");
+    txt(top, SX + 40, EY + 5, "目鏡 " + st.f + " mm");
+    el("circle", { class: "focus", cx: SX, cy: FY, r: 3.4 }, top);
+    txt(top, SX - 40, FY + 5, "焦點", null, "end"); line(top, SX - 36, FY, SX - 6, FY, "lead");
+    el("path", { class: "beam", d: "M" + (PX - 6) + " " + (ax - 52) + " L" + (SX + 30) + " " + (ax - 6) + " L" + (SX - 30) + " " + (ax - 6) + " L" + (PX - 6) + " " + (ax + 52) + "Z" }, w);
+    el("path", { class: "beam", d: "M" + (SX - 30) + " " + (ax - 8) + " L" + SX + " " + FY + " L" + (SX + 30) + " " + (ax - 8) + "Z" }, w);
+    var hw = 30 / (ax - 8 - FY) * (FY - EY);
+    el("path", { class: "beam", d: "M" + SX + " " + FY + " L" + (SX - hw) + " " + EY + " L" + (SX + hw) + " " + EY + "Z" }, w);
+    el("rect", { class: "beam", x: SX - hw, y: eyeY + 14, width: 2 * hw, height: EY - eyeY - 14 }, w);
+    // incoming: straight fronts moving right
+    for (x = 44 + ph; x < PX - 10; x += SP) {
+      var o = x < SX + 36 ? .95 : .35;
+      if (x > SX - 30 && x < SX + 36) { el("path", { class: "wf", d: "M" + x + " " + (ax - 52) + " L" + x + " " + (ax - 30) + " M" + x + " " + (ax + 30) + " L" + x + " " + (ax + 52), "stroke-opacity": .4 }, w); continue; }
+      el("path", { class: "wf", d: "M" + x + " " + (ax - 52) + " L" + x + " " + (ax + 52), "stroke-opacity": o }, w);
+    }
+    // reflected: arcs shrinking toward the unfolded focus
+    for (r = PX - UF - 8 - ph; r > SX - UF + 22; r -= SP) {
+      var a = Math.asin(Math.min(.99, 52 * (r / (PX - UF)) / r));
+      el("path", { class: "wf", d: arc(UF, ax, r, -a, a), "stroke-width": 2 }, w);
+    }
+    // turned upward by the secondary, still shrinking to the real focus
+    var L1 = ax - 8 - FY, ang = Math.atan(30 / L1);
+    for (r = L1 - ((st.t * SPEED + 8) % SP); r > 3; r -= SP) el("path", { class: "wf", d: arc(SX, FY, r, Math.PI / 2 + ang, Math.PI / 2 - ang).replace(" 0 0 1 ", " 0 0 0 ") }, w);
+    // past the focus: growing arcs up to the eyepiece
+    var ang2 = Math.atan(hw / (FY - EY));
+    for (r = ph * .55 + 4; r < FY - EY - 2; r += SP * .55) el("path", { class: "wf", d: arc(SX, FY, r, -Math.PI / 2 - ang2, -Math.PI / 2 + ang2) }, w);
+    // out of the eyepiece: flat when in focus, bent when not
+    var sag = st.d * .35;
+    for (y = EY - 8 - (ph * .6); y > eyeY + 14; y -= SP * .6) el("path", { class: "wf", d: "M" + (SX - hw + 2) + " " + y + " Q " + SX + " " + (y + sag) + " " + (SX + hw - 2) + " " + y }, w);
+  }
+
+  /* ---------- 2. the focuser, cut open ---------- */
+  var Z = $("wv-zoom"), zS = el("g", {}, Z), zD = el("g", {}, Z), zF = 300;   // focus at (200, zF)
+  (function () {
+    var g = zS, i;
+    el("rect", { class: "brassL", x: 60, y: 420, width: 280, height: 36 }, g);
+    el("rect", { class: "metal", x: 110, y: 240, width: 180, height: 180 }, g);
+    for (i = 0; i < 12; i++) line(g, 116 + i * 14, 246, 106 + i * 14, 414, "lead");
+    txt(g, 368, 160, "調焦鈕"); txt(g, 368, 180, "轉它，抽筒就上下移動", "it");
+    txt(g, 20, zF + 5, "焦點");
+    txt(g, 20, 430, "抽筒");
+  })();
+  function drawZoom() {
+    var g = zD, i; g.textContent = "";
+    var dz = st.d * 1.6, top = 40 + dz, fe = st.f * 3.4 + 20, lens = zF - fe + dz;   // lens sits fe above the focus when in focus
+    el("rect", { class: "tube", x: 150, y: top + 110, width: 100, height: 310 - (top + 110) + 120 }, g);   // draw tube
+    for (var y = top + 120; y < 410; y += 10) line(g, 250, y, 262, y, "ln");
+    var ang = st.d * 6 * Math.PI / 180, kx = 286, ky = 300;
+    el("circle", { class: "brass", cx: kx, cy: ky, r: 24 }, g);
+    for (i = 0; i < 12; i++) { var t = i / 12 * Math.PI * 2 + ang; line(g, kx + 24 * Math.cos(t), ky + 24 * Math.sin(t), kx + 30 * Math.cos(t), ky + 30 * Math.sin(t), "ln"); }
+    el("circle", { cx: kx, cy: ky, r: 6, fill: "var(--ink)" }, g);
+    line(g, kx + 9 * Math.cos(ang), ky + 9 * Math.sin(ang), kx + 20 * Math.cos(ang), ky + 20 * Math.sin(ang), "ln").setAttribute("stroke-width", "3");
+    line(g, 366, 156, kx + 20, ky - 20, "lead");
+    // eyepiece barrel in the draw tube
+    el("rect", { class: "metal", x: 162, y: top, width: 76, height: lens - top + 60 }, g);
+    el("rect", { class: "dark", x: 154, y: top - 18, width: 92, height: 22, rx: 5 }, g);
+    el("ellipse", { class: "glass", cx: 200, cy: lens, rx: 32, ry: 7 }, g);
+    el("ellipse", { class: "glass", cx: 200, cy: lens - 30, rx: 30, ry: 6 }, g);
+    txt(g, 20, lens - 26, "目鏡 " + st.f + " mm"); line(g, 120, lens - 31, 166, lens - 30, "lead");
+    line(g, 60, zF, 194, zF, "lead"); line(g, 60, 425, 150, 410, "lead");
+    // light: up to the focus, on to the lens, out of the top
+    var hb = 34 / 150, ph = (st.t * SPEED) % SP, r;
+    el("path", { class: "beam", d: "M" + (200 - 150 * hb) + " 470 L200 " + zF + " L" + (200 + 150 * hb) + " 470Z" }, g);
+    var hw = (zF - lens) * hb;
+    el("path", { class: "beam", d: "M200 " + zF + " L" + (200 - hw) + " " + lens + " L" + (200 + hw) + " " + lens + "Z" }, g);
+    el("rect", { class: "beam", x: 200 - hw, y: Math.max(0, top - 60), width: 2 * hw, height: lens - Math.max(0, top - 60) }, g);
+    var a1 = Math.atan(hb);
+    for (r = 170 - ph; r > 4; r -= SP) el("path", { class: "wf", d: arc(200, zF, r, Math.PI / 2 + a1, Math.PI / 2 - a1).replace(" 0 0 1 ", " 0 0 0 ") }, g);
+    for (r = 4 + ph; r < zF - lens - 2; r += SP) el("path", { class: "wf", d: arc(200, zF, r, -Math.PI / 2 - a1, -Math.PI / 2 + a1) }, g);
+    var sag = Math.max(-hw * .9, Math.min(hw * .9, st.d * .5));
+    for (y = lens - 40 - ph; y > Math.max(4, top - 60); y -= SP) el("path", { class: "wf", d: "M" + (200 - hw + 2) + " " + y + " Q 200 " + (y + sag) + " " + (200 + hw - 2) + " " + y }, g);
+    el("circle", { class: "focus", cx: 200, cy: zF, r: 4.5 }, g);
+    // up and down
+    el("path", { class: "red", d: "M114 " + (top + 70) + " L114 " + (top + 150) + " M106 " + (top + 82) + " L114 " + (top + 70) + " L122 " + (top + 82) + " M106 " + (top + 138) + " L114 " + (top + 150) + " L122 " + (top + 138) }, g);
+  }
+
+  /* ---------- 3. the curve ---------- */
+  var Cv = $("wv-curve"), cS = el("g", {}, Cv), cD = el("g", {}, Cv), cx0 = 60, cy0 = 20, cw = 360, ch = 220;
+  var fx = function (f) { return cx0 + (f - 4) / (36 - 4) * cw; }, my = function (m) { return cy0 + ch - m / 170 * ch; };
+  (function () {
+    var g = cS, d = "", f;
+    line(g, cx0, cy0, cx0, cy0 + ch); line(g, cx0, cy0 + ch, cx0 + cw, cy0 + ch);
+    [50, 100, 150].forEach(function (m) { line(g, cx0 - 5, my(m), cx0, my(m)); txt(g, cx0 - 9, my(m) + 4, m + "×", "mono", "end"); });
+    [10, 20, 30].forEach(function (f) { line(g, fx(f), cy0 + ch, fx(f), cy0 + ch + 5); txt(g, fx(f), cy0 + ch + 20, f + " mm", "mono", "middle"); });
+    txt(g, cx0 + cw / 2, cy0 + ch + 44, "目鏡焦距", null, "middle"); txt(g, cx0 + 8, cy0 + 8, "倍率");
+    for (f = 4; f <= 36; f += .5) { var m = 650 / f; if (m > 170) continue; d += (d ? "L" : "M") + fx(f).toFixed(1) + " " + my(m).toFixed(1); }
+    el("path", { class: "ln", d: d, "stroke-width": 1.8 }, g);
+  })();
+  function drawCurve() {
+    var g = cD; g.textContent = "";
+    [32, 20, 10].forEach(function (f) { if (f !== st.f) el("circle", { cx: fx(f), cy: my(650 / f), r: 5, fill: "var(--paper)", stroke: "var(--ink)" }, g); });
+    var x = fx(st.f), y = my(650 / st.f), m = Math.round(650 / st.f * 10) / 10;
+    el("path", { class: "dash", d: "M" + cx0 + " " + y + " L" + x + " " + y + " L" + x + " " + (cy0 + ch) }, g);
+    el("circle", { cx: x, cy: y, r: 7, fill: "var(--wv-wave)" }, g);
+    txt(g, x + 12, y - 12, "650 ÷ " + st.f + " ＝ " + m + " 倍", null, st.f < 15 ? "start" : "start");
+  }
+
+  /* ---------- 4. the light path, unfolded ---------- */
+  var Fl = $("wv-flat"), fS = el("g", {}, Fl), fD = el("g", {}, Fl), uy = 90, ux = 60, uL = 760;
+  (function () {
+    var g = fS;
+    el("rect", { class: "tube", x: ux + 90, y: uy - 42, width: uL, height: 84 }, g);
+    el("path", { d: "M" + (ux + 90 + uL) + " " + (uy - 42) + " Q " + (ux + 76 + uL) + " " + uy + " " + (ux + 90 + uL) + " " + (uy + 42), stroke: "var(--wv-glass)", "stroke-width": 5, fill: "none" }, g);
+    txt(g, ux + 90 + uL, uy + 66, "主鏡", "mono", "middle");
+  })();
+  function drawFlat() {
+    var g = fD; g.textContent = "";
+    var F = uL - 30, Fx = ux + 90 + uL - F * 1, fe = st.f * 1.6 + 8, Ex = Fx - fe, ph = (st.t * SPEED) % SP, r;
+    var a = Math.atan(38 / F);
+    el("path", { class: "beam", d: "M" + (ux + 90 + uL) + " " + (uy - 38) + " L" + Fx + " " + uy + " L" + (ux + 90 + uL) + " " + (uy + 38) + "Z" }, g);
+    for (r = F - ph; r > 4; r -= SP) el("path", { class: "wf", d: arc(Fx, uy, r, -a, a) }, g);
+    var hw = fe * Math.tan(a);
+    el("path", { class: "beam", d: "M" + Fx + " " + uy + " L" + Ex + " " + (uy - hw) + " L" + Ex + " " + (uy + hw) + "Z" }, g);
+    for (r = 4 + ph * .5; r < fe - 2; r += SP * .5) el("path", { class: "wf", d: arc(Fx, uy, r, Math.PI - a, Math.PI + a) }, g);
+    el("rect", { class: "beam", x: Ex - 60, y: uy - hw, width: 60, height: 2 * hw }, g);
+    var sag = st.d * .3;
+    for (var x = Ex - 8 - ph * .5; x > Ex - 58; x -= SP * .5) el("path", { class: "wf", d: "M" + x + " " + (uy - hw + 1) + " Q " + (x - sag) + " " + uy + " " + x + " " + (uy + hw - 1) }, g);
+    el("ellipse", { class: "glass", cx: Ex, cy: uy, rx: 3.5, ry: Math.max(10, hw + 3) }, g);
+    el("circle", { class: "focus", cx: Fx, cy: uy, r: 3.4 }, g);
+    txt(g, Fx, uy + 66, "焦點", "mono", "middle"); txt(g, Ex, uy - Math.max(10, hw + 3) - 10, "目鏡 " + st.f + " mm", "mono", "middle");
+    el("path", { d: "M" + (Ex - 84) + " " + (uy - 12) + " Q " + (Ex - 64) + " " + (uy - 22) + " " + (Ex - 64) + " " + uy + " Q " + (Ex - 64) + " " + (uy + 22) + " " + (Ex - 84) + " " + (uy + 12), fill: "none", stroke: "var(--ink)" }, g);
+    txt(g, Ex - 92, uy + 5, "眼", null, "end");
+  }
+
+  /* ---------- 5. views and words ---------- */
+  function drawViews() {
+    var blur = Math.abs(st.d) * .09;
+    document.querySelectorAll("#wv-views li").forEach(function (li) {
+      var f = +li.dataset.f, on = f === st.f, i = li.querySelector("i");
+      li.classList.toggle("on", on);
+      i.style.setProperty("--s", (20 / f).toFixed(2));
+      i.style.filter = "blur(" + (on ? blur : 0).toFixed(1) + "px) brightness(" + Math.min(1, Math.pow(f / 20, .7)).toFixed(2) + ")";
+    });
+    var m = Math.round(650 / st.f * 10) / 10, cmp = { 32: "比 20 mm 小，但範圍最大、最亮，容易先找到目標。", 20: "比 32 mm 大、比 10 mm 小。操作步驟就是先用它找招牌。", 10: "招牌最大，但範圍最小、最暗，稍微一動就跑出視野。" }[st.f];
+    $("wv-say").textContent = st.f + " mm 目鏡：650 ÷ " + st.f + " ＝ " + m + " 倍。" + cmp + (st.d ? "　現在沒有對到焦點，字是糊的。" : "");
+    $("wv-knob-v").textContent = st.d === 0 ? "對到焦點" : (st.d < 0 ? "目鏡太靠近主鏡 " : "目鏡太遠 ") + Math.abs(st.d) + " mm";
+  }
+  function frame() { drawTube(); drawZoom(); drawCurve(); drawFlat(); drawViews(); }
+
+  document.querySelectorAll(".wv-pick [data-f]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      st.f = +b.dataset.f; st.d = 0; $("wv-knob").value = 0;
+      document.querySelectorAll(".wv-pick [data-f]").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      frame();
+    });
+  });
+  $("wv-knob").addEventListener("input", function () { st.d = +this.value; frame(); });
+  var playBtn = $("wv-play");
+  function setPlay(on) { st.play = on; playBtn.setAttribute("aria-pressed", String(on)); playBtn.textContent = on ? "暫停波前" : "播放波前"; }
+  playBtn.addEventListener("click", function () { setPlay(!st.play); });
+  setPlay(st.play);
+
+  // animate only while the block is on screen
+  var seen = false, last = 0;
+  if (window.IntersectionObserver) new IntersectionObserver(function (en) { seen = en[0].isIntersecting; }, { rootMargin: "100px" }).observe($("eyepiece")); else seen = true;
+  function loop(now) {
+    requestAnimationFrame(loop);
+    if (!st.play || !seen || document.hidden) { last = now; return; }
+    if (now - last < 33) return;
+    var dt = Math.min(.1, (now - last) / 1000); last = now;
+    st.t += dt * 2.2; frame();
+  }
+  frame(); requestAnimationFrame(loop);
+})();
+</script>
+<script>
 // Swap a video picture for the no-cookie YouTube player when it is chosen.
 // Without this script each picture still opens the video on YouTube.
 document.querySelectorAll(".thumb[data-video]").forEach(function (a) {
