@@ -128,27 +128,39 @@
     "sub": [
       {
         "title": "Parallel Cranks",
-        "link": "projects/linkage/parallel/"
+        "link": "projects/linkage/parallel/",
+        "image": "projects/linkage/img/ex-parallel.jpg",
+        "title_zh": "三曲柄平移"
       },
       {
         "title": "Wooden Fish",
-        "link": "projects/linkage/#sim"
+        "link": "projects/linkage/#sim",
+        "image": "projects/linkage/img/ex-fish.jpg",
+        "title_zh": "敲木魚"
       },
       {
         "title": "Horse Linkage",
-        "link": "projects/horse-linkage/"
+        "link": "projects/horse-linkage/",
+        "image": "projects/linkage/img/ex-horse.jpg",
+        "title_zh": "壢馬連桿"
       },
       {
         "title": "Beast",
-        "link": "projects/linkage/beast/"
+        "link": "projects/linkage/beast/",
+        "image": "projects/linkage/img/ex-beast.jpg",
+        "title_zh": "仿生獸"
       },
       {
         "title": "Quadruped",
-        "link": "projects/linkage/quadruped/"
+        "link": "projects/linkage/quadruped/",
+        "image": "projects/linkage/img/ex-quadruped.jpg",
+        "title_zh": "四腳獸"
       },
       {
         "title": "Excavator",
-        "link": "projects/linkage/excavator/"
+        "link": "projects/linkage/excavator/",
+        "image": "projects/linkage/img/ex-excavator.jpg",
+        "title_zh": "挖土機"
       }
     ]
   },

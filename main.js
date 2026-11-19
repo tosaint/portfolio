@@ -35,11 +35,14 @@ function renderWorks(projects) {
     const plate = w.image
       ? `<figure class="plate${w.image_style === "line" ? " line" : ""}"><img src="${esc(w.image)}" alt="${esc(w.title)}" loading="lazy"></figure>`
       : `<figure class="plate empty"><figcaption>Plate ${w.no} · image to come</figcaption></figure>`;
+    const subs = w.sub && w.sub.length
+      ? `<ul class="subs">${w.sub.map((s) => `<li><a href="${esc(s.link)}" target="_blank" rel="noopener"><img src="${esc(s.image)}" alt="" loading="lazy"><span>${esc(s.title)}</span></a></li>`).join("")}</ul>`
+      : "";
     const status = STATUS[w.status] ? w.status : "concept";
     return `
     <article class="work" id="work-${w.no}">
       <div class="no" aria-hidden="true">${w.no}</div>
-      ${plate}
+      <div class="plates">${plate}${subs}</div>
       <div class="label">
         <p class="label-top">No. ${w.no}<span class="status ${status}">${STATUS[status]}</span></p>
         <h3>${esc(w.title)}</h3>
@@ -53,7 +56,6 @@ function renderWorks(projects) {
         </dl>
         <p class="desc">${esc(w.summary)}</p>
         ${w.link ? `<a class="go" href="${esc(w.link)}" target="_blank" rel="noopener">View project →</a>` : ""}
-        ${w.sub && w.sub.length ? `<details class="sub"><summary>Examples · ${w.sub.length}</summary><ul>${w.sub.map((s) => `<li><a href="${esc(s.link)}" target="_blank" rel="noopener">${esc(s.title)}</a></li>`).join("")}</ul></details>` : ""}
       </div>
     </article>`;
   }).join("");
