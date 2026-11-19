@@ -151,5 +151,21 @@
         "link": "projects/linkage/excavator/"
       }
     ]
+  },
+  {
+    "title": "Dougong",
+    "title_zh": "斗栱",
+    "year": "2002 / 2026",
+    "status": "in-progress",
+    "medium": [
+      "Wood",
+      "Bamboo",
+      "three.js"
+    ],
+    "role": "Woodwork (2002), 3D reconstruction, development",
+    "summary": "A Song-style five-tier bracket set I cut and notched in wood in 2002, following the Yingzao Fashi. The model is gone and only photographs remain; here it is rebuilt in three.js, comes apart tier by tier as you scroll, and can be assembled step by step beside the original photos.",
+    "image": "projects/dougong/img/line.png",
+    "image_style": "line",
+    "link": "projects/dougong/"
   }
 ]

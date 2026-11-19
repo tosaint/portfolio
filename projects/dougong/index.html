@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>斗栱 · Dougong</title>
+<meta name="description" content="A Song-style bracket set made in wood in 2002, rebuilt in 3D in 2026 and taken apart step by step. 2002 年依《營造法式》製作的斗栱木模型，2026 年以 three.js 復原並可逐步拆解。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500;700&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Yuji+Boku&family=Zhi+Mang+Xing&family=LXGW+WenKai+TC&display=swap&text=%E3%83%BB%E4%BA%92%E4%BA%94%E4%BA%A4%E4%BB%A4%E4%BD%9C%E5%87%BA%E5%88%86%E5%8D%B7%E5%96%AE%E5%BF%83%E6%96%97%E6%98%82%E6%9D%90%E6%9D%AA%E6%A0%94%E6%A0%B1%E6%AB%A8%E6%AE%BA%E8%A8%88%E8%B7%B3%E9%87%8D%E9%8B%AA">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+
+/* Same paper, ink and type as the portfolio and Work 006: Chinese on the left, English on the right. */
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --mat: #faf9f5; --accent: #c8452e;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --accent: #ff6b4f; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --accent: #ff6b4f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html.noscroll { overflow: hidden; }
+html { scroll-padding-top: 60px; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans); padding: 0 16px 56px; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top a:hover { color: var(--ink); }
+
+.enter { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--ink); border: 1px solid var(--ink); margin-bottom: clamp(40px, 6vw, 72px); }
+.enter a { display: block; background: var(--paper); padding: clamp(18px, 3vw, 28px); text-decoration: none; transition: background .2s; }
+.enter a:hover { background: var(--rule); }
+.enter b { display: block; font: 500 clamp(18px, 2vw, 22px)/1.4 var(--serif); letter-spacing: .1em; }
+.enter small { display: block; margin-top: 6px; font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.enter p { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); }
+.enter i { font-style: normal; float: right; font-family: var(--mono); }
+
+.text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.text h2, .fig h2 { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.text p { margin: 0 0 1em; }
+.text .en { color: var(--ink-2); font-size: .95em; }
+
+.fig { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 56px); align-items: center; margin: 0; padding-block: 0 clamp(28px, 5vw, 56px); }
+.fig svg { display: block; width: 100%; height: auto; max-height: 360px; }
+.fig .side { font-size: 14px; color: var(--ink-2); }
+.fig .side p { margin: 0 0 10px; }
+.fig .side p span { display: block; color: var(--ink-3); font-size: 13px; }
+.fig svg text { font-family: var(--mono); fill: var(--ink-2); }
+
+/* Parts table */
+.parts { border-top: 1px solid var(--rule); padding-block: clamp(24px, 5vw, 56px); }
+.parts h2 { margin: 0 0 16px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tbl th { text-align: left; font: 400 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); padding: 0 12px 8px 0; border-bottom: 1px solid var(--ink); }
+.tbl td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: baseline; }
+.tbl td:first-child { font: 500 15px var(--serif); letter-spacing: .08em; white-space: nowrap; }
+.tbl td.n { font: 400 13px var(--mono); text-align: right; }
+.tbl td small { display: block; color: var(--ink-3); font-size: 12px; }
+.tbl tr { cursor: pointer; }
+.tbl tr:hover td { background: var(--rule); }
+.tbl-wrap { overflow-x: auto; }
+
+.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 2vw, 20px); margin: 0 0 clamp(28px, 4vw, 48px); padding-top: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.gallery h2 { grid-column: 1 / -1; margin: 0; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.gallery figure { margin: 0; min-width: 0; }
+.gallery img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.gallery figcaption { margin-top: 8px; font: 400 12px/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+
+.data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; border-top: 1px solid var(--rule); padding-top: clamp(24px, 5vw, 56px); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+.data dd span { display: block; color: var(--ink-3); font-size: 13px; }
+
+
+.top { z-index: 6; }
+
+/* Hero: pinned while the bracket set comes apart on scroll */
+.hero { position: relative; height: 260vh; margin: 0 -16px; }
+.pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.mq { position: absolute; left: 0; white-space: nowrap; font-family: var(--serif); line-height: 1; will-change: transform; pointer-events: none; user-select: none; }
+.mq span { display: inline-block; vertical-align: middle; margin-right: .22em; line-height: 1; }
+.mq .f1 { font-family: "Yuji Syuku", var(--serif); } .mq .f2 { font-family: "Yuji Boku", var(--serif); }
+.mq .f3 { font-family: "LXGW WenKai TC", var(--serif); } .mq .f4 { font-family: "Zhi Mang Xing", var(--serif); }
+.mq .fill { color: color-mix(in srgb, var(--rule) 80%, transparent); }
+.mq .line { color: transparent; -webkit-text-stroke: 1px color-mix(in srgb, var(--ink-3) 70%, transparent); }
+.mq.b .fill { color: color-mix(in srgb, var(--ink-3) 22%, transparent); }
+.mq.a { top: 20%; font-size: clamp(70px, 12vw, 170px); }
+.mq.b { top: 54%; font-size: clamp(64px, 11vw, 160px); opacity: .8; }
+.pin canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.vt { position: absolute; top: clamp(76px, 12vh, 120px); writing-mode: vertical-rl; font-family: var(--serif); letter-spacing: .32em; color: var(--ink-2); z-index: 2; pointer-events: none; }
+.vt.l { left: clamp(16px, 6vw, 80px); font-size: clamp(14px, 1.4vw, 17px); line-height: 2.2; }
+.vt.l small { font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); margin-top: 1.2em; }
+.vt.r { right: clamp(16px, 6vw, 80px); font-size: 12px; color: var(--ink-3); }
+.vt.r::after { content: ""; display: block; width: 1px; height: 80px; background: var(--ink-3); margin: 14px auto 0; }
+.ttl { position: absolute; left: clamp(16px, 6vw, 80px); bottom: clamp(24px, 6vh, 56px); z-index: 2; pointer-events: none; }
+.ttl small { display: block; font: 400 11px var(--mono); letter-spacing: .18em; color: var(--ink-3); }
+.ttl h1 { margin: 6px 0 0; font: 500 clamp(30px, 3.2vw, 42px)/1.2 var(--serif); letter-spacing: .2em; }
+.ttl h1 em { font: 400 12px var(--mono); font-style: normal; letter-spacing: .2em; color: var(--accent); margin-left: .6em; vertical-align: middle; }
+.ttl p { margin: 10px 0 0; font: 400 12px/1.7 var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+.ttl p b { font-weight: 400; color: var(--ink-2); }
+.ttl p b::before { content: ""; display: inline-block; width: 28px; height: 1px; background: var(--ink-3); vertical-align: middle; margin-right: 10px; }
+.meter { position: absolute; right: clamp(16px, 6vw, 80px); bottom: clamp(24px, 6vh, 56px); z-index: 2; text-align: right; font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); pointer-events: none; }
+.meter b { display: block; font: 300 28px var(--serif); letter-spacing: .1em; color: var(--ink); }
+.meter i { display: block; width: 120px; height: 1px; background: var(--rule); margin: 10px 0 0 auto; position: relative; }
+.meter i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--p, 0%); background: var(--ink); }
+.lede-blk { padding-block: clamp(40px, 7vw, 80px) clamp(28px, 4vw, 48px); max-width: 760px; }
+.lede-blk p { margin: 0; font: 300 clamp(18px, 2vw, 22px)/1.8 var(--serif); }
+.lede-blk p span { display: block; margin-top: 12px; font: 400 14px/1.8 var(--sans); color: var(--ink-3); }
+.photo { margin: 0 0 clamp(28px, 4vw, 48px); }
+.photo img { display: block; width: 100%; max-width: 640px; height: auto; }
+.photo figcaption { margin-top: 10px; font: 400 12px/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+
+/* Viewer: everything sits on the stage so the model stays in view */
+.sim { border-top: 1px solid var(--rule); padding-block: clamp(24px, 5vw, 56px); }
+.sim-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; margin-bottom: 16px; }
+.sim-head h2 { margin: 0; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.sim-head p { margin: 0; flex: 1 1 320px; font-size: 14px; color: var(--ink-2); }
+.sim-head p span { color: var(--ink-3); font-size: 13px; margin-left: .6em; }
+.btn { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--ink-2); border-radius: 0; padding: 6px 12px; cursor: pointer; }
+.btn:hover { border-color: var(--ink); }
+.btn:disabled { opacity: .35; cursor: default; }
+.stage { position: relative; background: var(--mat); border: 1px solid var(--rule); aspect-ratio: 16 / 10; overflow: hidden; }
+.stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.sim.full { position: fixed; inset: 0; z-index: 20; background: var(--paper); padding: 12px; border: 0; display: flex; flex-direction: column; }
+.sim.full .stage { aspect-ratio: auto; flex: 1; }
+.ov { position: absolute; z-index: 2; }
+.tl { left: 12px; top: 10px; width: min(220px, 46%); }
+.tl .tag { display: block; font: 400 11px var(--mono); letter-spacing: .12em; color: var(--ink-3); }
+.tl b { display: block; margin-top: 2px; font: 500 16px/1.4 var(--serif); letter-spacing: .08em; }
+.tl small { display: block; font: 400 11px/1.4 var(--mono); color: var(--ink-3); }
+.seg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 12px; width: 132px; }
+.seg button { all: unset; box-sizing: border-box; cursor: pointer; background: var(--paper); padding: 4px 6px; text-align: center; font-size: 13px; }
+.seg button small { display: block; font: 400 10px var(--mono); letter-spacing: .08em; color: var(--ink-3); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.seg button[aria-pressed="true"] small { color: var(--paper); opacity: .75; }
+.thumb { right: 12px; top: 10px; margin: 0; width: clamp(96px, 22%, 200px); cursor: zoom-in; transition: width .3s; }
+.thumb.big { width: min(62%, 520px); cursor: zoom-out; }
+.thumb img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); }
+.thumb figcaption { margin-top: 4px; font: 400 10px var(--mono); letter-spacing: .06em; color: var(--ink-3); text-align: right; }
+.ctrl { left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: auto auto auto 1fr; gap: 8px 12px; align-items: center; padding: 8px 12px; background: color-mix(in srgb, var(--paper) 90%, transparent); border-top: 1px solid var(--rule); }
+.ctrl output { font: 400 13px var(--mono); min-width: 3.4em; text-align: center; }
+.ctrl .btn { padding: 4px 12px; }
+.ctrl label { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-2); }
+.ctrl label span { font: 400 10px var(--mono); color: var(--ink-3); display: block; line-height: 1.2; }
+.ctrl label { min-width: 0; }
+.ctrl input { flex: 1; width: 100%; accent-color: var(--ink); min-width: 80px; }
+.info { left: 12px; bottom: 60px; width: min(360px, calc(100% - 24px)); background: var(--paper); border: 1px solid var(--ink); padding: 12px 14px; transform: translateY(12px); opacity: 0; pointer-events: none; transition: .25s; }
+.info.on { transform: none; opacity: 1; pointer-events: auto; }
+.info b { display: block; font: 500 20px var(--serif); letter-spacing: .12em; padding-right: 24px; }
+.info code { font: 400 11px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+.info p { margin: 6px 0 0; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+.info p span { display: block; color: var(--ink-3); }
+.info .x { all: unset; position: absolute; right: 10px; top: 8px; cursor: pointer; font: 400 16px var(--mono); color: var(--ink-3); }
+.unit { right: 12px; bottom: 62px; font: 400 10px var(--mono); letter-spacing: .08em; color: var(--ink-3); pointer-events: none; }
+
+@media (max-width: 760px) {
+  .hero { height: 230vh; }
+  .mq.a { top: 20%; } .mq.b { top: 58%; }
+  .vt.l { font-size: 13px; letter-spacing: .24em; }
+  .vt.r { display: none; }
+  .meter i { width: 72px; }
+  .text, .fig, .enter { grid-template-columns: 1fr; }
+  .stage { aspect-ratio: 3 / 4; }
+  .tl b { font-size: 14px; }
+  .thumb { width: 30%; }
+  .thumb.big { width: calc(100% - 24px); }
+  .info { bottom: 56px; left: 8px; width: calc(100% - 16px); }
+  .unit { display: none; }
+  .gallery { grid-template-columns: 1fr 1fr; }
+  .data { grid-template-columns: 1fr; gap: 2px; }
+  .data dd { margin-bottom: 12px; }
+}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <span>Work 008 · 2002 / 2026</span>
+</div></header>
+
+<section class="hero" id="hero" aria-label="斗栱 Dougong — the bracket set comes apart tier by tier as you scroll">
+  <div class="pin" id="pin">
+    <div class="mq a" id="mq-a" aria-hidden="true"></div>
+    <div class="mq b" id="mq-b" aria-hidden="true"></div>
+    <p class="vt l">凡構屋之制，皆以材為祖<small>《營造法式》卷四 大木作制度</small></p>
+    <p class="vt r" aria-hidden="true">木器製造・二〇〇二・呂書榮老師指導</p>
+    <div class="ttl">
+      <small>作品 捌 · WORK 008</small>
+      <h1>斗栱<em>DOUGONG</em></h1>
+      <p>宋式五鋪作單杪單昂・木作復原<br><b id="hint">往下捲動拆解・游標拂過見木色</b></p>
+    </div>
+    <div class="meter" aria-hidden="true"><span>TIER</span><b id="meter-n">1 / 7</b><i id="meter-i"></i></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="lede-blk">
+    <p>大三那年照著《營造法式》做的一組斗栱，木頭早已不在，只剩照片。二十四年後用 three.js 把它一件件搭回來，再一件件拆開。<span>A bracket set I made in wood in my third year of university, following the Yingzao Fashi. The wood is gone; only photographs remain. Twenty-four years later it is rebuilt piece by piece in three.js, and taken apart again.</span></p>
+  </section>
+  <nav class="enter" aria-label="Open the work">
+    <a href="#sim"><b>拆開看看 <i>↓</i></b><small>Take it apart</small><p>照當年的組裝順序，從櫨斗一層層疊上去；拉開爆炸圖，點任何一件看它叫什麼、做什麼。</p></a>
+    <a href="#orig"><b>原作照片 <i>↓</i></b><small>The 2002 photographs</small><p>2002 年拍下的組裝過程與完成照，3D 復原的依據。</p></a>
+  </nav>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>關於</h2>
+      <p>2002 年，高師大工業科技教育學系大三的「木器製造」課，在呂書榮老師指導下，我照《營造法式》的圖樣自己打樣、裁料、開口，做了這組斗栱。沒有釘子也沒有膠，每一件靠開口互相咬住，拆得開也裝得回去。</p>
+      <p>模型後來不在了，只剩一組小小的照片，也沒有比例尺。這次的復原以照片判讀為主，看不清楚的地方套回法式的標準尺寸；當年理解和法式不同的地方，照原作做，再另外註記。</p>
+    </div>
+    <div lang="en">
+      <h2>About</h2>
+      <p class="en">In 2002, in the Wood Products Manufacturing course of my third year in Industrial Technology Education at National Kaohsiung Normal University, under Prof. Lu Shu-Jung, I set out, cut and notched this bracket set from the drawings of the Yingzao Fashi. No nails and no glue: every piece locks into the next by its notches, so it comes apart and goes back together.</p>
+      <p class="en">The model itself is gone; what is left is a set of small photographs with no scale in them. This rebuild reads the proportions from the photos and falls back on the standard dimensions of the Fashi where the photos are unclear. Where my reading in 2002 differs from the Fashi, the rebuild follows the original and notes the difference.</p>
+    </div>
+  </section>
+  <figure class="photo">
+    <img src="img/p66.jpg" width="802" height="693" alt="The finished wooden bracket set from below at an angle: light wooden arms and small blocks stacked in tiers, dark wooden beams through the middle, two bamboo purlins on top" loading="lazy">
+    <figcaption>原作，2002 · The original model, 2002</figcaption>
+  </figure>
+
+  <section class="sim" id="sim">
+    <div class="sim-head">
+      <h2>3D 復原 · Rebuild</h2>
+      <p>左右拖曳旋轉，雙指或滾輪縮放，點構件看名稱。<span>Drag sideways to turn, pinch or scroll to zoom, tap a piece.</span></p>
+      <button class="btn" id="btn-full" type="button" aria-pressed="false">展開 ⤢</button>
+    </div>
+    <div class="stage" id="stage">
+      <div class="ov tl">
+        <span class="tag" id="tag">STEP 7 / 7</span>
+        <b id="step-zh"></b><small id="step-en"></small>
+        <div class="seg" id="mode">
+          <button type="button" data-m="line" aria-pressed="true">線稿<small>Line</small></button>
+          <button type="button" data-m="wood" aria-pressed="false">木色<small>Wood</small></button>
+        </div>
+      </div>
+      <figure class="ov thumb" id="thumb" title="放大 / 縮小">
+        <img id="step-img" alt="">
+        <figcaption id="step-cap"></figcaption>
+      </figure>
+      <div class="ov info" id="info" aria-live="polite"><button class="x" id="info-x" type="button" aria-label="Close">×</button><div id="info-body"></div></div>
+      <span class="ov unit">單位：分° · unit: fen</span>
+      <div class="ov ctrl">
+        <button class="btn" id="prev" type="button" aria-label="Previous step">◀</button>
+        <output id="step-out">7 / 7</output>
+        <button class="btn" id="next" type="button" aria-label="Next step">▶</button>
+        <label for="explode"><div>爆炸<span>Explode</span></div><input id="explode" type="range" min="0" max="100" value="0"></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>材分制</h2>
+      <p>《營造法式》不直接寫尺寸，而是先定一個「材」：一根栱的斷面，高 15 分、寬 10 分。上下兩層栱之間的空隙叫「栔」，高 6 分。材加栔是「足材」，21 分。</p>
+      <p>所有構件都用分來量：栱多長、斗多大、每一跳出去多遠。建築等級高，就把一分放大；等級低，就縮小。這個 3D 模型也只用分來建，所以畫面上沒有公分。</p>
+    </div>
+    <div lang="en">
+      <h2>The modular unit</h2>
+      <p class="en">The Yingzao Fashi does not give sizes directly. It first fixes the cai: the cross-section of one bracket arm, 15 fen high and 10 fen wide. The gap between one tier of arms and the next is the qi, 6 fen high. Cai plus qi makes a full cai of 21 fen.</p>
+      <p class="en">Everything is measured in fen: how long an arm is, how big a block is, how far each step reaches out. A grander building simply uses a larger fen. This model is built in fen alone, so there are no centimetres on screen.</p>
+    </div>
+  </section>
+  <figure class="fig">
+    <svg viewBox="0 0 420 230" role="img" aria-label="Cross-section of one bracket arm: a rectangle 10 fen wide and 15 fen high, with a 6 fen gap above it; together they make a full cai of 21 fen">
+      <g fill="none" stroke="currentColor" stroke-width="1" style="color:var(--ink)">
+        <rect x="60" y="78" width="80" height="120"/>
+        <rect x="60" y="30" width="80" height="48" stroke-dasharray="4 4"/>
+        <path d="M150 198v-120M146 198h8M146 78h8M150 78v-48M146 30h8" />
+        <path d="M60 210h80M60 206v8M140 206v8"/>
+        <path d="M250 198h120v-120h-120zM250 78l120-0" />
+        <path d="M250 78h28v-48h64v48h28" stroke-dasharray="0"/>
+      </g>
+      <text x="162" y="142" font-size="12">15 分 材</text>
+      <text x="162" y="58" font-size="12">6 分 栔</text>
+      <text x="76" y="226" font-size="12">10 分</text>
+      <text x="58" y="20" font-size="11">材 cai + 栔 qi = 21 分</text>
+      <text x="250" y="226" font-size="11">斗坐在栔裡 · a block fills the qi</text>
+      <text x="283" y="62" font-size="11">斗</text>
+      <text x="294" y="146" font-size="11">栱</text>
+    </svg>
+    <div class="side">
+      <p>左：一材的斷面，上面虛線是栔。<span>Left: one cai in section, the qi dashed above.</span></p>
+      <p>右：上下兩層栱之間的栔，由斗墊滿。<span>Right: between two tiers of arms, the qi is filled by a block.</span></p>
+    </div>
+  </figure>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>五鋪作怎麼數</h2>
+      <p>「鋪作」數的是一朵斗栱疊了幾層：櫨斗一、華栱一、昂一、耍頭一、襯方頭一，共五層，所以是五鋪作。往外出了兩跳，一跳是華栱（杪），一跳是昂，叫「單杪單昂」。橫向的栱在跳頭疊兩層（瓜子栱上加慢栱），叫「重栱」；每一跳都有橫栱，叫「計心」。</p>
+    </div>
+    <div lang="en">
+      <h2>Counting five tiers</h2>
+      <p class="en">Puzuo counts the tiers of one bracket set: the main block, the projecting arm, the ang, the nose piece and the piece above it — five, so this is a five-tier set. It reaches out twice, once with a projecting arm and once with an ang: one arm, one ang. The crosswise arms are doubled at each step (a short arm with a long one on top), and every step carries crosswise arms.</p>
+    </div>
+  </section>
+
+  <section class="parts">
+    <h2>構件 · Pieces</h2>
+    <div class="tbl-wrap"><table class="tbl" id="tbl">
+      <thead><tr><th>宋式</th><th>清式／台灣</th><th>English</th><th>件數</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="sub">清式與台灣匠師的稱呼為補充註記，地方用語各有不同。點一列可在上面的模型中標出。<br>Qing-style and Taiwanese craftsmen's names are added for reference; local usage varies. Tap a row to mark it on the model.</p>
+  </section>
+
+  <section class="text">
+    <div lang="zh-Hant">
+      <h2>和法式不一樣的地方</h2>
+      <p>宋式的昂是斜的：一根長料從外往內斜斜穿過好幾層，外端的昂嘴往下垂，內端的昂尾往上壓在槫下，像槓桿一樣平衡屋簷。當年的模型把昂做成水平的一層，只在外端削出昂嘴，比較接近明清以後的「假昂」。</p>
+      <p>昂和襯方頭的內端做成雲形，耍頭兩頭都削尖，槫用真的竹子。這些都照原作保留。</p>
+      <p>令栱是否裡外都有、內側深色方與外側竹槫的確切位置，照片看不清楚，當年的細節也已不記得，目前依照片判讀。</p>
+    </div>
+    <div lang="en">
+      <h2>Where it differs from the Fashi</h2>
+      <p class="en">A Song ang is sloped: one long timber runs down and out through several tiers, its beak dipping at the eave and its tail rising inside to press under a purlin, balancing the eave like a lever. The 2002 model makes the ang a level tier with a beak cut on its outer end, closer to the false ang of later Ming and Qing work.</p>
+      <p class="en">The cloud-shaped inner ends of the ang and the top piece, the nose pieces pointed at both ends, and the real bamboo purlins all follow the original.</p>
+      <p class="en">Whether the top arms sit on both sides, and exactly where the inner dark beam and the outer bamboo purlin lie, cannot be seen clearly in the photos and are no longer remembered; they follow my best reading of the photos.</p>
+    </div>
+  </section>
+
+  <section class="gallery" id="orig">
+    <h2>原作 2002 · The original</h2>
+    <figure><img src="img/p47.jpg" alt="A single light wooden bearing block with notches cut in its top" loading="lazy"><figcaption>① 櫨斗 · Main block</figcaption></figure>
+    <figure><img src="img/p52.jpg" alt="Top view of the first tier: two arms crossing with a small block on each end" loading="lazy"><figcaption>② 第一跳 · First tier</figcaption></figure>
+    <figure><img src="img/p55.jpg" alt="Side view of the ang tier: a long piece with a down-turned beak on the left and a cloud-shaped end on the right" loading="lazy"><figcaption>③ 昂層 · Ang tier</figcaption></figure>
+    <figure><img src="img/p60.jpg" alt="Side view with the nose-piece tier added, pointed ends at both sides and a dark beam in the middle" loading="lazy"><figcaption>④ 耍頭層 · Nose-piece tier</figcaption></figure>
+    <figure><img src="img/p59.jpg" alt="Top view of the upper grid: a long spine crossed by arms with small blocks, one dark beam across the middle" loading="lazy"><figcaption>④ 耍頭層俯視 · From above</figcaption></figure>
+    <figure><img src="img/p61.jpg" alt="Top view with four parallel beams laid across the spine, one of them dark" loading="lazy"><figcaption>⑤ 方 · Beams</figcaption></figure>
+    <figure><img src="img/p62.jpg" alt="Side view of the assembled tiers with three dark beam ends stacked in the middle" loading="lazy"><figcaption>⑥ 柱頭方 · Column-line beams</figcaption></figure>
+    <figure><img src="img/p63.jpg" alt="Two bamboo purlins resting on dark and light beams and a cloud-shaped piece" loading="lazy"><figcaption>⑦ 槫 · Bamboo purlins</figcaption></figure>
+    <figure><img src="img/p50.jpg" alt="Three loose pieces on a table: a long arm with notches, a piece with a cloud end, and a block" loading="lazy"><figcaption>拆開的構件 · Loose pieces</figcaption></figure>
+    <figure><img src="img/p67.jpg" alt="Front elevation: tiers of crosswise arms widening upward under a board and two bamboo purlins" loading="lazy"><figcaption>正立面 · Front</figcaption></figure>
+    <figure><img src="img/p70.jpg" alt="Side elevation: the beak of the ang dips at the left, cloud-shaped ends at the right, bamboo purlins on top" loading="lazy"><figcaption>側立面 · Side</figcaption></figure>
+    <figure><img src="img/p71.jpg" alt="Top view of the finished set with two bamboo purlins and parallel beams" loading="lazy"><figcaption>俯視 · From above</figcaption></figure>
+  </section>
+
+  <dl class="data">
+    <dt>Year</dt><dd>2002 製作 · 2026 數位復原<span>Made 2002 · rebuilt in 3D 2026</span></dd>
+    <dt>Course</dt><dd>國立高雄師範大學 工業科技教育學系「木器製造」，大三<span>Wood Products Manufacturing, Industrial Technology Education, National Kaohsiung Normal University</span></dd>
+    <dt>Advisor</dt><dd>呂書榮老師<span>Prof. Lu Shu-Jung</span></dd>
+    <dt>Type</dt><dd>宋式五鋪作單杪單昂，重栱計心<span>Song-style five-tier set, one arm and one ang, doubled crosswise arms on every step</span></dd>
+    <dt>Medium</dt><dd>原作：木、竹，無釘無膠；復原：three.js<span>Original: wood and bamboo, no nails or glue · Rebuild: three.js</span></dd>
+    <dt>Reference</dt><dd>李誡《營造法式》；梁思成《營造法式註釋》<span>Li Jie, Yingzao Fashi; Liang Sicheng, Annotated Yingzao Fashi</span></dd>
+    <dt>Tools</dt><dd>3D 復原與網頁與 AI 協作製作；比例依照片判讀，未確定處依法式標準<span>Rebuild and page made with AI assistance; proportions read from photos, standard Fashi sizes where unclear</span></dd>
+  </dl>
+
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+/* ---------- Piece names ---------- */
+const T = {
+  ludou:   { zh: '櫨斗', alt: '坐斗', en: 'Main bearing block · ludou', d: '整朵斗栱的底座，坐在柱頭上，十字開口接住第一層栱，上面所有的重量都從這裡進柱子。', de: 'The base of the whole set. It sits on the column head; its cross notch takes the first tier, and every load above passes through it into the column.' },
+  huagong: { zh: '華栱', alt: '翹', en: 'Projecting arm · huagong', d: '前後方向出跳的栱，裡外各出一跳 30 分，把重量一步步往外送。也叫「杪」。', de: 'The arm that steps out front and back, 30 fen each way, carrying the load out one step at a time.' },
+  nidao:   { zh: '泥道栱', alt: '正心瓜栱', en: 'Wall-line arm · nidao gong', d: '沿柱列方向的第一層橫栱，和華栱十字相交，一起卡在櫨斗口內。', de: 'The first crosswise arm along the column line; it crosses the projecting arm and both sit in the main block.' },
+  jiaohu:  { zh: '交互斗', alt: '十八斗', en: 'Crossing block · jiaohu dou', d: '坐在跳頭的斗，十字開口，同時接住前後與左右兩個方向的構件。', de: 'The block at the end of each step. Its cross notch holds pieces running both ways.' },
+  san:     { zh: '散斗', alt: '三才升 · 升', en: 'Small block · san dou', d: '坐在橫栱兩端的小斗，一字開口，墊滿栔的高度，承接上一層的栱或方。', de: 'The small block on each end of a crosswise arm. Its single notch fills the qi and holds the arm or beam above.' },
+  ang:     { zh: '昂', alt: '昂（本作為水平的假昂形）', en: 'Ang · cantilever beak', d: '第二跳。外端削成下垂的昂嘴，內端做成雲形。宋式的昂應該斜穿數層，原作做成水平，接近假昂。', de: 'The second step. Its outer end is cut into a dipping beak, its inner end into a cloud. A Song ang should slope through several tiers; the original keeps it level, like a false ang.' },
+  mangong: { zh: '慢栱', alt: '萬栱', en: 'Long arm · man gong', d: '疊在短栱上的長栱，和下面的瓜子栱或泥道栱合成「重栱」。', de: 'The long arm laid over a short one; together they make a doubled arm.' },
+  guazi:   { zh: '瓜子栱', alt: '瓜栱', en: 'Short step arm · guazi gong', d: '第一跳跳頭上的橫栱，重栱的下一層。', de: 'The crosswise arm on the first step; the lower half of a doubled arm.' },
+  linggong:{ zh: '令栱', alt: '廂栱', en: 'Top arm · ling gong', d: '最外一跳上的單層橫栱，直接托住上面的方。', de: 'The single crosswise arm on the outermost step, carrying the beam directly.' },
+  shuatou: { zh: '耍頭', alt: '螞蚱頭', en: 'Nose piece · shuatou', d: '令栱這一層前後方向的構件，兩端削尖伸出，把裡外拉在一起。', de: 'The front-to-back piece on the top-arm tier; its pointed ends stick out and tie the inner and outer sides together.' },
+  chenfang:{ zh: '襯方頭', alt: '—', en: 'Top tie · chenfangtou', d: '耍頭上面最後一層前後方向的構件，連起內外的方。原作內端做成雲形。', de: 'The last front-to-back piece, above the nose piece, linking the inner and outer beams. The original gives it a cloud-shaped inner end.' },
+  zhutou:  { zh: '柱頭方', alt: '枋', en: 'Column-line beam · zhutou fang', d: '沿柱列方向疊起的長方，把一朵朵斗栱連成一排。原作用深色木。', de: 'Long beams stacked along the column line, tying one bracket set to the next. Dark wood in the original.' },
+  luohan:  { zh: '羅漢方', alt: '枋', en: 'Intermediate beam · luohan fang', d: '第一跳上方的長方，介於柱頭方和外側的方之間。', de: 'The long beam over the first step, between the column line and the outer beam.' },
+  liaoyan: { zh: '橑檐方', alt: '挑簷枋', en: 'Eave beam · liaoyan fang', d: '最外一跳上的大方，托住屋簷的槫。', de: 'The large beam on the outermost step, under the eave purlin.' },
+  pingqi:  { zh: '平棊方', alt: '天花枋', en: 'Ceiling beam · pingqi fang', d: '內側的方，室內天花架在它上面。原作用深色木。', de: 'The beam on the inner side that a ceiling would rest on. Dark wood in the original.' },
+  tuan:    { zh: '槫', alt: '桁・檩 · 台灣稱楹', en: 'Purlin · tuan', d: '承托椽子與屋面的圓木，原作用竹子做。', de: 'The round timber that carries the rafters and roof. Bamboo in the original.' }
+};
+
+const STEPS = [
+  { zh: '櫨斗', en: 'Main block', img: 'p47' },
+  { zh: '第一跳：華栱・泥道栱', en: 'First tier: projecting arm and wall-line arm', img: 'p52' },
+  { zh: '昂層：昂・瓜子栱・慢栱', en: 'Ang tier: ang, short and long arms', img: 'p55' },
+  { zh: '耍頭層：耍頭・令栱・柱頭方', en: 'Nose-piece tier: nose piece, top arms, first beam', img: 'p60' },
+  { zh: '襯方頭與各方', en: 'Top tie and beams', img: 'p61' },
+  { zh: '第三層柱頭方', en: 'Third column-line beam', img: 'p62' },
+  { zh: '槫', en: 'Bamboo purlins', img: 'p63' }
+];
+
+/* ---------- Geometry helpers (unit: fen) ---------- */
+const box = (w, h, d, x = 0, y = 0, z = 0) => new THREE.BoxGeometry(w, h, d).translate(x, y + h / 2, z);
+function frustum(wt, dt, wb, db, h) {
+  const g = new THREE.BoxGeometry(1, 1, 1), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const top = p.getY(i) > 0;
+    p.setXYZ(i, p.getX(i) * (top ? wt : wb), top ? h : 0, p.getZ(i) * (top ? dt : db));
+  }
+  g.computeVertexNormals();
+  return g;
+}
+// A dou block: 40% sloped base (qi), 20% flat (ping), 40% ears (er). slot: 'x' | 'z' | 'cross'
+function dou(w, d, h, slot, inset, s = 10) {
+  const qi = h * .4, ping = h * .2, er = h * .4, y0 = qi + ping;
+  const g = [frustum(w, d, w - 2 * inset, d - 2 * inset, qi), box(w, ping, d, 0, qi, 0)];
+  const ew = (w - s) / 2, ed = (d - s) / 2;
+  if (slot === 'x') g.push(box(w, er, ed, 0, y0, (s + ed) / 2), box(w, er, ed, 0, y0, -(s + ed) / 2));
+  else if (slot === 'z') g.push(box(ew, er, d, (s + ew) / 2, y0, 0), box(ew, er, d, -(s + ew) / 2, y0, 0));
+  else for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.push(box(ew, er, ed, sx * (s + ew) / 2, y0, sz * (s + ed) / 2));
+  return mergeGeometries(g);
+}
+// 2D outline (u along the piece, v up) extruded to thickness t
+function profile(cmds, t = 10) {
+  const s = new THREE.Shape();
+  for (const c of cmds) {
+    if (c[0] === 'M') s.moveTo(c[1], c[2]);
+    else if (c[0] === 'L') s.lineTo(c[1], c[2]);
+    else s.quadraticCurveTo(c[1], c[2], c[3], c[4]);
+  }
+  s.closePath();
+  return new THREE.ExtrudeGeometry(s, { depth: t, bevelEnabled: false, curveSegments: 10 }).translate(0, 0, -t / 2);
+}
+const alongZ = g => g.rotateY(-Math.PI / 2);
+// Crosswise arm: top flat, ends drop 6 fen then curve (juansha) to the bottom
+const gong = (L, k = 14) => profile([['M', -L / 2, 15], ['L', L / 2, 15], ['L', L / 2, 9], ['Q', L / 2, 0, L / 2 - k, 0], ['L', -L / 2 + k, 0], ['Q', -L / 2, 0, -L / 2, 9]]);
+function bamboo(r, L) {
+  const g = [new THREE.CylinderGeometry(r, r, L, 28).rotateZ(Math.PI / 2)];
+  for (const x of [-L * .32, L * .3]) g.push(new THREE.TorusGeometry(r + .5, .9, 6, 28).rotateY(Math.PI / 2).translate(x, 0, 0));
+  return mergeGeometries(g);
+}
+
+/* ---------- The bracket set ---------- */
+const B = i => 12 + 21 * i;         // base height of tier i (top of the main block's flat = 12)
+function makePieces() {
+const pieces = [];                    // { geo, pos, type, step, wood }
+const add = (step, type, geo, x, y, z, wood = 'light') => pieces.push({ step, type, geo, pos: [x, y, z], wood });
+const sanX = (step, xs, y, z) => xs.forEach(x => add(step, 'san', dou(14, 16, 10, 'x', 2), x, y, z));
+
+// 1 main block
+add(0, 'ludou', dou(32, 32, 20, 'cross', 4), 0, 0, 0);
+// 2 first tier
+add(1, 'huagong', alongZ(profile([['M', -21, 21], ['L', 21, 21], ['L', 21, 15], ['L', 36, 15], ['L', 36, 9], ['Q', 36, 0, 22, 0], ['L', -22, 0], ['Q', -36, 0, -36, 9], ['L', -36, 15], ['L', -21, 15]])), 0, B(0), 0);
+add(1, 'nidao', gong(62), 0, B(0), 0);
+for (const z of [-30, 30]) add(1, 'jiaohu', dou(16, 16, 10, 'cross', 2), 0, B(0) + 15, z);
+sanX(1, [-24, 24], B(0) + 15, 0);
+// 3 ang tier
+add(2, 'ang', alongZ(profile([['M', -50, 21], ['L', 50, 21], ['L', 50, 15], ['L', 68, 15], ['L', 96, -14], ['L', 92, -16], ['L', 70, -6], ['L', 46, 0], ['L', -60, 0], ['Q', -72, 0, -72, 5], ['Q', -79, 7, -74, 10], ['Q', -78, 15, -68, 15], ['L', -50, 15]])), 0, B(1), 0);
+add(2, 'mangong', gong(92, 16), 0, B(1), 0);
+for (const z of [-30, 30]) { add(2, 'guazi', gong(62), 0, B(1), z); sanX(2, [-24, 24], B(1) + 15, z); }
+for (const z of [-60, 60]) add(2, 'jiaohu', dou(16, 16, 10, 'cross', 2), 0, B(1) + 15, z);
+sanX(2, [-39, 39], B(1) + 15, 0);
+// 4 nose-piece tier
+add(3, 'shuatou', alongZ(profile([['M', -72, 21], ['L', 76, 21], ['L', 94, 9], ['L', 78, 0], ['L', -74, 0], ['L', -88, 11]])), 0, B(2), 0);
+for (const z of [-30, 30]) { add(3, 'mangong', gong(92, 16), 0, B(2), z); sanX(3, [-39, 39], B(2) + 15, z); }
+for (const z of [-60, 60]) { add(3, 'linggong', gong(72, 15), 0, B(2), z); sanX(3, [-29, 29], B(2) + 15, z); }
+add(3, 'zhutou', box(150, 21, 12), 0, B(2), 0, 'dark');
+// 5 top tie and beams
+add(4, 'chenfang', alongZ(profile([['M', -60, 21], ['L', 70, 21], ['L', 70, 0], ['L', -60, 0], ['Q', -71, 0, -71, 6], ['Q', -78, 8, -73, 11], ['Q', -79, 15, -72, 17], ['Q', -70, 21, -60, 21]])), 0, B(3), 0);
+for (const z of [-30, 30]) add(4, 'luohan', box(150, 21, 10), 0, B(3), z);
+add(4, 'liaoyan', box(160, 30, 12), 0, B(3), 60);
+add(4, 'pingqi', box(150, 21, 12), 0, B(3), -60, 'dark');
+add(4, 'zhutou', box(150, 21, 12), 0, B(3), 0, 'dark');
+// 6 third column-line beam
+add(5, 'zhutou', box(150, 21, 12), 0, B(4), 0, 'dark');
+// 7 purlins
+add(6, 'tuan', bamboo(16, 170), 0, B(5) + 16, 0, 'bamboo');
+add(6, 'tuan', bamboo(13, 170), 0, B(3) + 30 + 13, 58, 'bamboo');
+return pieces;
+}
+
+
+/* ---------- Shared ---------- */
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const col = n => new THREE.Color(css(n));
+const WOOD = { light: 0xd8b27c, dark: 0x6b4a30, bamboo: 0xc8a45c };
+const FOV = 30, TAN = Math.tan(FOV * Math.PI / 360);
+const clamp01 = v => Math.max(0, Math.min(1, v));
+const ease = t => 1 - Math.pow(1 - t, 3);
+const SPREAD = 34;                                     // fen between tiers at full explode
+const modelH = e => 160 + e * 6 * SPREAD;              // visible height of the set
+const targetY = e => 62 + e * 3 * SPREAD;
+
+// Build one copy of the set into a scene; kind: 'line' | 'wood' | 'both'
+function buildSet(scene, kind) {
+  const meshes = [];
+  const groups = STEPS.map(() => { const g = new THREE.Group(); scene.add(g); return g; });
+  for (const p of makePieces()) {
+    const tint = new THREE.Color(WOOD[p.wood]).offsetHSL(0, 0, (p.pos[0] * 7 + p.pos[2] * 3 + p.step * 11) % 9 / 300 - .015);
+    const po = { polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 };
+    const mWood = new THREE.MeshStandardMaterial({ color: tint, roughness: .85, ...po });
+    const mLine = new THREE.MeshBasicMaterial({ color: 0xffffff, ...po });
+    const m = new THREE.Mesh(p.geo, kind === 'wood' ? mWood : mLine);
+    m.position.set(...p.pos);
+    const edges = new THREE.LineSegments(new THREE.EdgesGeometry(p.geo, 20), new THREE.LineBasicMaterial({ color: 0, transparent: true }));
+    m.add(edges);
+    m.userData = { type: p.type, step: p.step, mWood, mLine, edges, base: tint.clone(), y0: p.pos[1] };
+    groups[p.step].add(m); meshes.push(m);
+  }
+  if (kind !== 'line') {
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x8a7a66, 1.6));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(200, 400, 260); scene.add(sun);
+  }
+  return { meshes, groups };
+}
+function layout(set, e, now, drop) {
+  for (const m of set.meshes) {
+    let y = m.userData.y0 + e * m.userData.step * SPREAD;
+    const t0 = drop && drop.get(m);
+    if (t0 !== undefined) { const k = Math.min(1, (now - t0) / 450); y += (1 - ease(k)) * 60; if (k >= 1) drop.delete(m); }
+    m.position.y = y;
+  }
+}
+// distance that fits the set (height h, width w) in the view
+const fitDist = (h, w, aspect, pad) => Math.max(h / 2 / TAN, w / 2 / (TAN * aspect)) * pad;
+
+/* ---------- Hero ---------- */
+const pin = document.getElementById('pin'), hero = document.getElementById('hero');
+const mkRenderer = () => { const r = new THREE.WebGLRenderer({ antialias: true, alpha: true }); r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.setClearColor(0, 0); return r; };
+const hLine = mkRenderer(), hWood = mkRenderer();
+const mqA = document.getElementById('mq-a');
+document.getElementById('mq-b').after(hLine.domElement);
+hLine.domElement.after(hWood.domElement);
+const sLine = new THREE.Scene(), sWood = new THREE.Scene();
+const setL = buildSet(sLine, 'line'), setW = buildSet(sWood, 'wood');
+const hCam = new THREE.PerspectiveCamera(FOV, 1, 1, 5000);
+const woodCv = hWood.domElement;
+
+function paintHero() {
+  const paper = col('--paper'), ink = col('--ink');
+  for (const m of setL.meshes) { m.userData.mLine.color.copy(paper); m.userData.edges.material.color.copy(ink); }
+  for (const m of setW.meshes) { m.userData.edges.material.color.set(0x3a2a1c); m.userData.edges.material.opacity = .35; }
+}
+
+// Marquee rows: content repeated, moved by script so scrolling can speed them up
+const ROW_A = `<span class="f3 fill" style="font-size:1.0em;transform:translateY(0em)">斗栱</span><span class="f1 fill" style="font-size:0.4em;transform:translateY(0em)">・</span><span class="f2 line" style="font-size:0.62em;transform:translateY(-0.28em)">鋪作</span><span class="f4 fill" style="font-size:0.5em;transform:translateY(0.32em)">材</span><span class="f4 fill" style="font-size:0.42em;transform:translateY(-0.1em)">分</span><span class="f1 line" style="font-size:0.8em;transform:translateY(0.12em)">出跳</span><span class="f3 fill" style="font-size:0.46em;transform:translateY(-0.42em)">栔</span><span class="f4 fill" style="font-size:1.15em;transform:translateY(0.05em)">昂</span><span class="f1 line" style="font-size:0.5em;transform:translateY(0.36em)">卷殺</span><span class="f2 fill" style="font-size:0.7em;transform:translateY(-0.18em)">櫨斗</span><span class="f1 fill" style="font-size:0.4em;transform:translateY(0em)">・</span>`, ROW_B = `<span class="f2 line" style="font-size:0.9em;transform:translateY(0em)">五鋪作</span><span class="f1 fill" style="font-size:0.56em;transform:translateY(0.3em)">單杪單昂</span><span class="f1 line" style="font-size:0.42em;transform:translateY(-0.38em)">交互斗</span><span class="f3 line" style="font-size:0.78em;transform:translateY(0.08em)">重栱計心</span><span class="f4 fill" style="font-size:0.5em;transform:translateY(-0.3em)">昂</span><span class="f3 fill" style="font-size:0.6em;transform:translateY(0.34em)">令栱</span><span class="f1 line" style="font-size:0.4em;transform:translateY(0em)">・</span>`;
+mqA.innerHTML = ROW_A.repeat(6);
+const mqB = document.getElementById('mq-b'); mqB.innerHTML = ROW_B.repeat(4);
+let xA = 0, xB = 0, speed = 1, lastY = scrollY, lastT = performance.now();
+
+// Reveal: wood shows through a soft circle around the pointer or finger
+const rv = { x: -999, y: -999, r: 0, want: 0 };
+const isTouch = matchMedia('(hover: none)').matches;
+if (isTouch) document.getElementById('hint').textContent = '往下捲動拆解・手指滑過見木色';
+const at = (cx, cy) => { const b = pin.getBoundingClientRect(); rv.x = cx - b.left; rv.y = cy - b.top; };
+pin.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { at(e.clientX, e.clientY); rv.want = 130; } });
+pin.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') rv.want = 0; });
+pin.addEventListener('touchstart', e => { at(e.touches[0].clientX, e.touches[0].clientY); rv.want = 110; }, { passive: true });
+pin.addEventListener('touchmove', e => { at(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+pin.addEventListener('touchend', () => { rv.want = 0; }, { passive: true });
+let mx = 0;  // mouse parallax
+pin.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') mx = e.clientX / innerWidth - .5; });
+
+let heroOn = true;
+new IntersectionObserver(es => { heroOn = es[0].isIntersecting; }).observe(hero);
+const meterN = document.getElementById('meter-n'), meterI = document.getElementById('meter-i');
+
+function heroFrame(now, dt) {
+  const w = pin.clientWidth, h = pin.clientHeight;
+  if (hLine.domElement.width !== Math.round(w * hLine.getPixelRatio())) { hLine.setSize(w, h, false); hWood.setSize(w, h, false); }
+  // scroll progress through the pinned section
+  const rect = hero.getBoundingClientRect();
+  const p = clamp01(-rect.top / (rect.height - h));
+  const e = ease(clamp01(p / .8));
+  layout(setL, e); layout(setW, e);
+  // camera: three-quarter view turning to the side as it comes apart
+  const az = (38 + 34 * e + Math.sin(now / 5000) * 5 + mx * 10) * Math.PI / 180, el = (10 - 4 * e) * Math.PI / 180;
+  hCam.aspect = w / h; hCam.updateProjectionMatrix();
+  const d = fitDist(modelH(e) * 1.25, 300, w / h, w < 760 ? 1.25 : 1.55);
+  const ty = targetY(e) - (w < 760 ? 0 : 6);
+  hCam.position.set(Math.sin(az) * Math.cos(el) * d, ty + Math.sin(el) * d, Math.cos(az) * Math.cos(el) * d);
+  hCam.lookAt(0, ty, 0);
+  hLine.render(sLine, hCam); hWood.render(sWood, hCam);
+  // reveal mask
+  rv.r += (rv.want - rv.r) * Math.min(1, dt / 120);
+  const m = rv.r < 1 ? 'radial-gradient(circle 0px at 0 0, #000, transparent)' : `radial-gradient(circle ${rv.r.toFixed(1)}px at ${rv.x}px ${rv.y}px, #000 78%, transparent 100%)`;
+  woodCv.style.maskImage = woodCv.style.webkitMaskImage = m;
+  // marquee speeds up while scrolling
+  const v = Math.abs(scrollY - lastY) / Math.max(dt, 1); lastY = scrollY;
+  speed += ((1 + Math.min(v * 4, 4)) - speed) * Math.min(1, dt / 300);
+  xA -= .012 * dt * speed; xB += .009 * dt * speed;
+  const wa = mqA.scrollWidth / 6, wb = mqB.scrollWidth / 4;
+  if (wa) xA = ((xA % wa) - wa) % wa; if (wb) xB = ((xB % wb) - wb) % wb;
+  mqA.style.transform = `translate3d(${xA}px,${(-e * 60).toFixed(1)}px,0)`; mqB.style.transform = `translate3d(${xB}px,${(e * 60).toFixed(1)}px,0)`;
+  mqA.style.opacity = (1 - .55 * e).toFixed(3); mqB.style.opacity = (.8 - .45 * e).toFixed(3);
+  const n = Math.min(7, 1 + Math.floor(e * 6.999));
+  meterN.textContent = `${n} / 7`; meterI.style.setProperty('--p', (p * 100).toFixed(1) + '%');
+}
+
+/* ---------- Viewer ---------- */
+const stage = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(FOV, 16 / 10, 1, 5000);
+camera.position.set(380, 230, 440);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 62, 0);
+controls.enableDamping = true; controls.enablePan = false;
+controls.minDistance = 150; controls.maxDistance = 1400;
+controls.minPolarAngle = .35; controls.maxPolarAngle = 2.0;
+const setV = buildSet(scene, 'both');
+const meshes = setV.meshes, groups = setV.groups;
+// one finger: sideways turns the model, up-down scrolls the page
+const touchMode = () => { renderer.domElement.style.touchAction = sim.classList.contains('full') ? 'none' : 'pan-y'; };
+
+let mode = 'line', selected = null;
+function paint() {
+  const paper = col('--mat'), ink = col('--ink'), acc = col('--accent');
+  scene.background = paper;
+  for (const m of meshes) {
+    const u = m.userData, on = selected && u.type === selected;
+    m.material = mode === 'line' ? u.mLine : u.mWood;
+    u.mLine.color.copy(on ? paper.clone().lerp(acc, .28) : paper);
+    u.mWood.color.copy(on ? u.base.clone().lerp(acc, .55) : u.base);
+    u.edges.material.color.copy(on ? acc : (mode === 'line' ? ink : new THREE.Color(0x3a2a1c)));
+    u.edges.material.opacity = mode === 'line' ? 1 : (on ? .9 : .35);
+  }
+}
+
+let step = STEPS.length - 1, explode = 0;
+const drop = new Map();
+function setStep(n, animate = true) {
+  const prev = step; step = Math.max(0, Math.min(STEPS.length - 1, n));
+  groups.forEach((g, i) => { g.visible = i <= step; });
+  if (animate && step > prev) groups[step].children.forEach(m => drop.set(m, performance.now()));
+  const s = STEPS[step];
+  document.getElementById('step-out').textContent = `${step + 1} / ${STEPS.length}`;
+  document.getElementById('tag').textContent = `STEP ${step + 1} / ${STEPS.length}`;
+  document.getElementById('step-zh').textContent = `${'①②③④⑤⑥⑦'[step]} ${s.zh}`;
+  document.getElementById('step-en').textContent = s.en;
+  const img = document.getElementById('step-img');
+  img.src = `img/${s.img}.jpg`; img.alt = `Photo of the 2002 model at this step: ${s.en}`;
+  document.getElementById('step-cap').textContent = `原作 · ${s.img}`;
+  document.getElementById('prev').disabled = step === 0;
+  document.getElementById('next').disabled = step === STEPS.length - 1;
+}
+document.getElementById('prev').onclick = () => setStep(step - 1);
+document.getElementById('next').onclick = () => setStep(step + 1);
+document.getElementById('thumb').onclick = e => e.currentTarget.classList.toggle('big');
+
+// keep the whole set in view as it comes apart
+let wantDist = null;
+function refit() {
+  const a = stage.clientWidth / stage.clientHeight;
+  wantDist = fitDist(modelH(explode), 280, a, a < 1 ? 1.2 : 1.35);
+}
+const ex = document.getElementById('explode');
+ex.oninput = () => { explode = ex.value / 100; refit(); };
+
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+let down = null;
+renderer.domElement.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(meshes.filter(m => m.parent.visible), false)[0];
+  select(hit ? hit.object.userData.type : null);
+});
+const count = t => meshes.filter(m => m.userData.type === t).length;
+const info = document.getElementById('info'), infoBody = document.getElementById('info-body');
+function select(t) {
+  selected = t; paint();
+  info.classList.toggle('on', !!t);
+  if (!t) return;
+  const d = T[t];
+  infoBody.innerHTML = `<b>${d.zh}</b><code>${d.en}</code><p>清式／台灣：${d.alt}　·　共 ${count(t)} 件<span>${count(t)} in the set</span></p><p>${d.d}<span>${d.de}</span></p>`;
+}
+document.getElementById('info-x').onclick = () => select(null);
+
+const order = ['ludou', 'huagong', 'nidao', 'jiaohu', 'san', 'ang', 'guazi', 'mangong', 'linggong', 'shuatou', 'chenfang', 'zhutou', 'luohan', 'liaoyan', 'pingqi', 'tuan'];
+document.querySelector('#tbl tbody').innerHTML = order.map(t => `<tr data-t="${t}"><td>${T[t].zh}</td><td>${T[t].alt}</td><td>${T[t].en}</td><td class="n">${count(t)}</td></tr>`).join('') +
+  `<tr><td>合計</td><td></td><td>Total</td><td class="n">${meshes.length}</td></tr>`;
+document.querySelectorAll('#tbl tr[data-t]').forEach(tr => tr.onclick = () => {
+  setStep(STEPS.length - 1, false); select(tr.dataset.t);
+  document.getElementById('sim').scrollIntoView({ behavior: 'smooth' });
+});
+
+document.querySelectorAll('#mode button').forEach(b => b.onclick = () => {
+  mode = b.dataset.m;
+  document.querySelectorAll('#mode button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  paint();
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { paint(); paintHero(); });
+const sim = document.getElementById('sim'), fb = document.getElementById('btn-full');
+fb.onclick = () => {
+  const on = !sim.classList.contains('full');
+  sim.classList.toggle('full', on); document.documentElement.classList.toggle('noscroll', on);
+  fb.setAttribute('aria-pressed', on); fb.textContent = on ? '收合 ✕' : '展開 ⤢';
+  touchMode();
+};
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  refit();
+}
+new ResizeObserver(resize).observe(stage);
+let simOn = false;
+new IntersectionObserver(es => { simOn = es[0].isIntersecting; }).observe(stage);
+
+/* ---------- Loop ---------- */
+let last = performance.now();
+const off = new THREE.Vector3();
+function frame(now) {
+  const dt = Math.min(64, now - last); last = now;
+  if (heroOn) heroFrame(now, dt);
+  if (simOn || sim.classList.contains('full')) {
+    layout(setV, explode, now, drop);
+    controls.target.y += (targetY(explode) - controls.target.y) * .15;
+    if (wantDist) {
+      off.subVectors(camera.position, controls.target);
+      const dd = off.length(), nd = dd + (wantDist - dd) * .12;
+      camera.position.copy(controls.target).add(off.setLength(nd));
+      if (Math.abs(wantDist - nd) < 1) wantDist = null;
+    }
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  requestAnimationFrame(frame);
+}
+controls.addEventListener('start', () => { wantDist = null; });
+touchMode(); paintHero(); paint(); setStep(STEPS.length - 1, false); resize();
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>
