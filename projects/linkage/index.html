@@ -469,9 +469,19 @@ svg.plate.tone .k-hl { stroke: #e08a52 !important; stroke-width: .12 !important;
 svg.plate.tone .k-back { opacity: .42 !important; }
 svg.plate.tone .k-disc { stroke-opacity: .75 !important; stroke-width: .05px !important; }
 svg.plate.tone .r-disc { display: inline; fill: #a9c3cf !important; opacity: .7 !important; stroke: none !important; mix-blend-mode: normal !important; }
-svg.plate.tone .r-cush { display: inline; fill: #c8c7c3 !important; opacity: .8 !important; stroke: none !important; }
+
 svg.plate.tone .r-hit { display: inline; fill: #e08a52 !important; stroke: none !important; }
 svg.plate.tone .pl-accent { r: .3; }
+
+/* ── v3：木魚、蒲團、臉頰 ── */
+svg.plate .r-cush { display: inline; fill: #b49a7c !important; fill-opacity: 1 !important; opacity: 1 !important; stroke: none !important; mix-blend-mode: normal !important; }
+svg.plate .r-pad { display: inline; fill: #a9b8bf !important; fill-opacity: 1 !important; opacity: 1 !important; stroke: none !important; mix-blend-mode: normal !important; }
+svg.plate .r-fish { fill: #9a7a5c !important; }
+svg.plate .k-fish-slot { stroke: #5b4636 !important; stroke-width: .16 !important; stroke-linecap: round; fill: none; }
+svg.plate .k-feye { fill: #4a3a2e !important; }
+svg.plate .r-cheek { display: inline; fill: #e7a99a !important; opacity: .55; }
+svg.plate .k-stick { stroke-width: .2 !important; stroke-linecap: round; }
+svg.plate.tone .r-cush { display: inline; }
 
 </style>
 </head>
@@ -641,7 +651,7 @@ svg.plate.tone .pl-accent { r: .3; }
   <div class="cards">
     <a href="parallel/"><svg class="glyph" data-no="001" data-l="P / A / R" data-c="0.000,-0.500" data-r="6.200" data-ay="1.000" viewBox="-10.416 -7.010 20.832 13.020" aria-hidden="true"><path d="M-2.000 1.000L2.000 1.000" class="k-bar k-base"/><path d="M-2.000 1.000L-2.000 0.000" class="k-bar" style="stroke-width:.75"/><path d="M0.000 -1.000L0.000 -2.000" class="k-bar" style="stroke-width:.75"/><path d="M-4.000 0.000L4.000 0.000L0.000 -3.000Z" class="k-tri"/><circle cx="2.000" cy="1.000" r="1.800" class="k-disc"/><circle cx="-2.000" cy="1.000" r=".13" class="s-fixed"/><circle cx="0.000" cy="-1.000" r=".13" class="s-fixed"/><circle cx="2.000" cy="1.000" r=".13" class="s-fixed"/><circle cx="-2.000" cy="0.000" r=".13" class="s-joint"/><circle cx="0.000" cy="-2.000" r=".13" class="s-joint"/><circle cx="2.000" cy="0.000" r=".36" class="s-joint pl-accent"/></svg><b>三曲柄平移</b><small>Parallel Cranks</small><p>三根一樣長的曲柄帶著一塊板平移，板子不轉。最簡單的起點。</p><span class="meta">1 · 平行曲柄 · 5 片 · 圖釘 6 支</span></a>
     <a href="#sim"><svg id="card-fish" aria-hidden="true"></svg><b>敲木魚</b><small>Wooden Fish</small><p>小和尚慢慢舉槌、快速敲下，一組四連桿的急回。就在這一頁。</p><span class="meta">2 · 1 組四連桿 · 5 片 · 圖釘 4 支</span></a>
-    <a href="../horse-linkage/"><svg viewBox="-1 -1 22 13" aria-hidden="true"><path d="M1 10H21" class="k-floor"/><path d="M2 9L6 3L12 2L19 4L17 9Z" class="k-tri k-front"/><path d="M2 9L5 6" class="k-bar k-back"/><circle cx="17" cy="9" r="1.5" class="k-disc"/><path d="M2 9L6 3M6 3L18 8M17 9L18 8M2 9L17 9" class="k-skel"/><circle cx="2" cy="9" r=".3" class="s-fixed"/><circle cx="17" cy="9" r=".3" class="s-fixed"/></svg><b>壢馬連桿</b><small>Horse Linkage</small><p>校園銅馬跑起來。一組四連桿，前後半身一前一後擺動。</p><span class="meta">3 · 1 組四連桿 · 4 片 · 圖釘 4 支</span></a>
+    <a href="../horse-linkage/"><svg class="glyph" data-no="003" data-l="H / R / S" data-c="4.029,-6.782" data-r="10.397" data-ay="-0.000" viewBox="-13.438 -17.699 34.933 21.833" aria-hidden="true"><path d="M0.000 0.000L11.000 -0.000" class="k-bar k-base"/><path d="M-0.269 0.528L-0.437 0.462L-0.496 -0.058L-0.535 -0.253L-0.234 -0.565L-0.058 -0.582L-0.015 -0.776L-0.023 -1.129L-0.179 -1.562L-0.422 -2.208L-0.736 -2.549L-0.823 -2.773L-0.827 -2.773L-1.101 -3.221L-0.942 -3.485L-0.392 -3.723L0.225 -4.213L0.467 -4.463L0.686 -4.733L0.805 -4.966L0.645 -5.233L0.513 -5.379L0.393 -5.680L0.313 -5.962L0.141 -6.260L0.112 -6.750L0.104 -7.047L0.207 -7.382L0.218 -7.547L-0.215 -7.726L-0.525 -7.769L-1.164 -7.812L-1.501 -7.781L-1.858 -7.585L-2.278 -7.580L-2.859 -7.668L-3.094 -7.838L-3.531 -8.088L-3.900 -8.425L-4.356 -8.993L-3.125 -8.842L-2.527 -8.468L-2.235 -8.558L-1.754 -8.915L-1.296 -9.138L-0.942 -9.067L-0.500 -8.714L0.051 -8.265L0.597 -8.052L0.813 -8.209L1.422 -8.492L2.113 -8.606L2.835 -8.373L3.515 -7.491L3.533 -6.517L3.285 -6.040L3.642 -5.569L3.655 -4.851L3.303 -3.722L3.262 -3.726L3.105 -3.396L3.002 -2.879L3.157 -2.535L3.721 -2.291L4.325 -1.991L4.723 -1.744L4.783 -1.500L5.099 -1.001L5.064 -0.706L4.975 -0.452L4.532 -0.455L4.250 -0.626L4.041 -0.981L4.195 -1.306L4.012 -1.529L3.310 -2.012L2.784 -2.257L2.276 -2.579L2.094 -2.741L2.254 -3.186L2.371 -3.373L2.445 -3.641L2.471 -3.928L2.492 -4.565L2.442 -5.065L2.302 -4.820L1.895 -4.272L1.214 -3.810L0.354 -3.286L-0.005 -3.090L-0.090 -2.914L-0.045 -2.503L0.158 -1.848L0.462 -0.995L0.379 -0.677L0.526 -0.386L0.567 0.061L0.400 0.343L0.094 0.471Z" class="k-tri"/><path d="M2.271 -8.824L1.732 -7.732L2.272 -6.005L3.380 -5.877L3.753 -5.541L5.065 -5.443L6.235 -5.560L6.987 -5.825L7.449 -5.904L7.917 -5.892L8.365 -5.168L8.842 -4.279L9.276 -3.518L9.442 -3.191L9.655 -3.034L9.890 -2.486L10.127 -1.901L10.415 -1.374L10.639 -1.032L10.972 -1.086L11.091 -0.962L11.017 -0.584L11.178 -0.369L11.686 -0.303L12.156 -0.234L12.413 -0.322L12.181 -0.813L11.917 -1.210L11.361 -1.499L10.993 -1.760L10.619 -2.468L10.176 -3.080L10.073 -3.616L9.371 -4.513L9.475 -5.022L9.193 -5.773L9.140 -6.068L9.909 -6.352L10.608 -6.538L10.904 -6.255L11.125 -5.594L11.220 -5.207L11.231 -5.040L11.271 -4.969L11.055 -4.807L10.879 -4.610L10.754 -4.492L11.064 -3.949L11.243 -3.734L11.700 -4.128L11.784 -4.454L11.700 -4.972L11.739 -5.310L11.507 -5.802L11.164 -6.623L11.031 -7.028L10.776 -7.257L10.089 -7.203L9.505 -7.283L9.497 -7.432L9.285 -7.907L9.215 -8.538L9.098 -8.979L8.957 -9.532L8.728 -9.968L8.430 -10.663L8.549 -10.892L9.005 -11.104L9.153 -11.111L9.482 -10.904L9.668 -10.914L9.894 -10.889L10.252 -11.169L10.439 -11.515L10.277 -12.063L9.819 -12.305L9.243 -12.591L9.044 -12.823L8.576 -13.210L8.288 -13.344L7.925 -13.531L7.666 -13.815L7.260 -14.093L7.434 -13.616L7.299 -13.348L7.478 -13.133L7.585 -12.877L6.908 -12.598L7.235 -12.429L6.797 -12.219L6.283 -11.852L6.636 -11.763L6.275 -11.500L5.814 -11.047L6.384 -11.226L6.086 -10.856L5.700 -10.386L6.372 -10.385L5.390 -9.802L5.883 -9.763L6.082 -9.867L5.770 -9.421L5.378 -9.399L4.987 -9.378L4.875 -9.017L4.630 -9.060L4.090 -8.696L3.561 -8.799L3.109 -8.886L2.679 -8.901Z" class="k-tri"/><circle cx="11.000" cy="-0.000" r="1.800" class="k-disc"/><circle cx="0.000" cy="0.000" r=".13" class="s-fixed"/><circle cx="11.000" cy="-0.000" r=".13" class="s-fixed"/><circle cx="2.959" cy="-7.433" r=".13" class="s-joint"/><circle cx="11.682" cy="-0.731" r=".36" class="s-joint pl-accent"/></svg><b>壢馬連桿</b><small>Horse Linkage</small><p>校園銅馬跑起來。一組四連桿，前後半身一前一後擺動。</p><span class="meta">3 · 1 組四連桿 · 4 片 · 圖釘 4 支</span></a>
     <a href="beast/"><svg class="glyph" data-no="004" data-l="B / S / T" data-c="-0.000,3.500" data-r="14.569" data-ay="0.000" viewBox="-24.475 -11.797 48.951 30.594" aria-hidden="true"><path d="M0.000 0.000L-5.000 0.000" class="k-bar k-base"/><path d="M5.000 0.000L9.000 0.000L5.000 -4.000Z" class="k-tri"/><path d="M5.000 0.000L5.000 5.000" class="k-bar" style="stroke-width:.75"/><path d="M0.000 -1.000L5.000 -4.000" class="k-bar" style="stroke-width:.75"/><path d="M0.000 -1.000L5.000 5.000" class="k-bar" style="stroke-width:.75"/><path d="M9.000 0.000L9.000 5.000" class="k-bar" style="stroke-width:.75"/><path d="M5.000 11.000L9.000 5.000L5.000 5.000Z" class="k-tri"/><path d="M-9.000 0.000L-5.000 0.000L-5.000 -4.000Z" class="k-tri"/><path d="M-5.000 5.000L-5.000 0.000" class="k-bar" style="stroke-width:.75"/><path d="M0.000 -1.000L-5.000 -4.000" class="k-bar" style="stroke-width:.75"/><path d="M0.000 -1.000L-5.000 5.000" class="k-bar" style="stroke-width:.75"/><path d="M-9.000 0.000L-9.000 5.000" class="k-bar" style="stroke-width:.75"/><path d="M-9.000 5.000L-5.000 11.000L-5.000 5.000Z" class="k-tri"/><circle cx="0.000" cy="0.000" r="1.800" class="k-disc"/><circle cx="0.000" cy="0.000" r=".13" class="s-fixed"/><circle cx="5.000" cy="0.000" r=".13" class="s-fixed"/><circle cx="-5.000" cy="0.000" r=".13" class="s-fixed"/><circle cx="0.000" cy="-1.000" r=".36" class="s-joint pl-accent"/><circle cx="5.000" cy="-4.000" r=".13" class="s-joint"/><circle cx="9.000" cy="0.000" r=".13" class="s-joint"/><circle cx="5.000" cy="5.000" r=".13" class="s-joint"/><circle cx="-5.000" cy="-4.000" r=".13" class="s-joint"/><circle cx="-9.000" cy="0.000" r=".13" class="s-joint"/><circle cx="-5.000" cy="5.000" r=".13" class="s-joint"/><circle cx="9.000" cy="5.000" r=".13" class="s-joint"/><circle cx="-9.000" cy="5.000" r=".13" class="s-joint"/></svg><b>仿生獸</b><small>Beast</small><p>一個曲柄帶兩組四連桿和一個平行四邊形，腳掌畫出走路的軌跡。</p><span class="meta">4 · 2 組四連桿 · 一隻腳 7 片 · 圖釘 7 支</span></a>
     <a href="quadruped/"><svg class="glyph" data-no="005" data-l="Q / D / R" data-c="-2.157,-3.573" data-r="17.105" data-ay="0.000" viewBox="-30.894 -21.534 57.474 35.921" aria-hidden="true"><path d="M-4.500 0.000L4.500 0.000" class="k-bar k-base"/><path d="M-3.500 -6.000L4.500 0.000L2.500 -6.000Z" class="k-tri"/><path d="M4.500 0.000L7.500 6.000L8.120 -8.620L5.500 -6.000Z" class="k-tri"/><path d="M-5.500 6.000L-3.500 -6.000L-5.500 -0.000Z" class="k-tri"/><path d="M-5.500 -0.000L5.500 -6.000L-1.500 -6.000Z" class="k-tri"/><path d="M-7.500 -5.000L-5.500 -0.000L-4.500 -4.000Z" class="k-tri"/><path d="M-15.500 -7.000L-14.500 -6.000L-7.500 -5.000L-3.500 -6.000L-8.500 -13.000Z" class="k-tri"/><circle cx="-4.500" cy="0.000" r="1.800" class="k-disc"/><circle cx="-4.500" cy="0.000" r=".13" class="s-fixed"/><circle cx="4.500" cy="0.000" r=".13" class="s-fixed"/><circle cx="-5.500" cy="-0.000" r=".36" class="s-joint pl-accent"/><circle cx="5.500" cy="-6.000" r=".13" class="s-joint"/><circle cx="-3.500" cy="-6.000" r=".13" class="s-joint"/><circle cx="-7.500" cy="-5.000" r=".13" class="s-joint"/></svg><b>四腳獸</b><small>Quadruped</small><p>一個曲柄同時帶動前腳、後腳、點頭和搖尾巴。</p><span class="meta">5 · 多組連桿 · 8 片 · 圖釘 6 支</span></a>
     <a href="excavator/"><svg class="glyph" data-no="006" data-l="E / X / C" data-c="6.778,-4.027" data-r="15.923" data-ay="0.000" viewBox="-19.973 -20.747 53.502 33.439" aria-hidden="true"><path d="M-2.000 0.000L2.000 0.000" class="k-bar k-base"/><path d="M-5.649 -2.550L2.000 0.000L7.000 -6.000Z" class="k-tri"/><path d="M-1.000 -1.000L6.000 -8.000" class="k-bar" style="stroke-width:.75"/><path d="M6.000 -8.000L7.000 -6.000L13.000 -0.000L9.000 -7.000Z" class="k-tri"/><path d="M4.000 -3.000L14.000 -2.000" class="k-bar" style="stroke-width:.75"/><path d="M10.999 5.000L12.999 5.000L15.999 4.000L16.999 2.000L16.000 0.000L14.000 -2.000L13.000 -0.000Z" class="k-tri"/><circle cx="-2.000" cy="0.000" r="2.214" class="k-disc"/><circle cx="-2.000" cy="0.000" r=".13" class="s-fixed"/><circle cx="2.000" cy="0.000" r=".13" class="s-fixed"/><circle cx="-1.000" cy="-1.000" r=".36" class="s-joint pl-accent"/><circle cx="7.000" cy="-6.000" r=".13" class="s-joint"/><circle cx="4.000" cy="-3.000" r=".13" class="s-joint"/><circle cx="6.000" cy="-8.000" r=".13" class="s-joint"/><circle cx="13.000" cy="-0.000" r=".13" class="s-joint"/><circle cx="14.000" cy="-2.000" r=".13" class="s-joint"/></svg><b>挖土機</b><small>Excavator</small><p>曲柄銷在滑槽裡滑，大臂擺動，挖斗畫出挖土的軌跡。</p><span class="meta">6 · 滑槽 + 2 組四連桿 · 7 片 · 圖釘 8 支</span></a>
@@ -877,7 +887,7 @@ let PLATE_N=0;
 function plateize(svg,inkSel){
   const u='pl'+(PLATE_N++)+'-';svg.classList.remove('quiet');svg.classList.add('riso','plate');
   const defs=document.createElementNS(NS,'defs');
-  defs.innerHTML=`<filter id="${u}ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="7" numOctaves="2" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -30 21.5" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+  defs.innerHTML=`<filter id="${u}ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="6" numOctaves="2" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.3 1.1" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
     <filter id="${u}paper" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="5" numOctaves="2" seed="5"/><feColorMatrix type="matrix" values="0 0 0 0 .45  0 0 0 0 .4  0 0 0 0 .33  0 0 0 -1.4 .95"/></filter>`;
   svg.insertBefore(defs,svg.firstChild);
   let paper=svg.querySelector('.r-paper');if(!paper){paper=document.createElementNS(NS,'rect');paper.setAttribute('class','r-paper');for(const [k,v] of [['x',-200],['y',-200],['width',400],['height',400]])paper.setAttribute(k,v);svg.insertBefore(paper,defs.nextSibling);}
@@ -931,18 +941,24 @@ function toneize(svg,inkSel){plateize(svg,inkSel);svg.classList.add('tone');}
 
 const QR=["111111101010100000111101001111111", "100000101101101011001111101000001", "101110100010011100110000001011101", "101110101110100000100011101011101", "101110100010110010100100101011101", "100000100111101111100100101000001", "111111101010101010101010101111111", "000000001100100111110001000000000", "101101110001101111101100001001011", "000100001001011011011111001101101", "011110101110010010100011110111011", "001000011111000011001000001101001", "001001100010001010011000110111011", "010010001001101001001000100001110", "010110110000101001011000101100100", "010010000110011100100101111101100", "100000101010000000101100011011100", "010000011001101100100111101011011", "001110111011110100101010011110110", "110101000001001011100010001010000", "111010111010111110000010000101110", "111000001101111110001001001001101", "000001111110010101111111011000011", "010111001011110100001011110111001", "100100100110011001010011111110011", "000000001101001110010100100011010", "111111101101101001111101101010000", "100000101101010011111001100011100", "101110100101110111110011111110101", "101110101101101010010011100100011", "101110101110000111001001001101000", "100000100111101001001011100110001", "111111101001110011110101000011100"];
 /* ── 敲木魚・小和尚：D（肚子）在原點、A（肩膀）在右上 (2, 3)；長度 cm，y 向上 ── */
-const GA=[2,3],DEF={a:2,b:4,c:5},OFF=15*Math.PI/180,MAL=2.4,HEADR=0.65,FISH={rx:2.05,ry:1.6},TH0=Math.PI/2,U=(()=>{const v=[-0.25,-1],l=Math.hypot(...v);return [v[0]/l,v[1]/l];})();
+const GA=[2,3],DEF={a:2,b:4,c:5},OFF=-25*Math.PI/180,MAL=3.4,TAIL=0.8,HEADR=0.65,FISH={rx:2.05,ry:1.6},TH0=Math.PI/2,U=(()=>{const v=[-0.25,-1],l=Math.hypot(...v);return [v[0]/l,v[1]/l];})();
 const ROBE=[[-0.5,3.7],[0.6,4.35],[2.2,4.4],[3.3,3.8],[3.85,1.8],[4.05,-1.0],[3.6,-2.5],[1.5,-2.75],[-2.3,-2.7],[-3.2,-2.25],[-3.05,-1.45],[-1.6,-1.05],[-1.05,0.9],[-0.85,2.8]];
 const HEAD={c:[1.2,6.1],r:1.9};
+/* 木魚側面：左邊圓鼓、往右收尖，側面一道魚嘴縫，縫底一個圓孔（y 向上，原點在木魚中心） */
+const FISH_CP=[[-2.15,-0.15],[-1.85,0.95],[-0.95,1.5],[0.15,1.35],[1.25,0.55],[2.25,-0.55],[1.55,-1.3],[0,-1.45],[-1.55,-1.3]];
+let FISH_P=null;const fishPts=()=>FISH_P||(FISH_P=smoothPts(FISH_CP,8));
+const FISH_TOP=()=>fishPts().reduce((m,q)=>q[1]>m[1]?q:m);
 /* 平滑曲線（Catmull–Rom），讓身體圓一點 */
 function smoothPts(P,n=8){const out=[],N=P.length;for(let i=0;i<N;i++){const p0=P[(i-1+N)%N],p1=P[i],p2=P[(i+1)%N],p3=P[(i+2)%N];
   for(let k=0;k<n;k++){const t=k/n,t2=t*t,t3=t2*t;out.push([0,1].map(j=>0.5*((2*p1[j])+(-p0[j]+p2[j])*t+(2*p0[j]-5*p1[j]+4*p2[j]-p3[j])*t2+(-p0[j]+3*p1[j]-3*p2[j]+p3[j])*t3)));}}return out;}
-const ROBE_S=(()=>{const P=[[-2.6,-2.6],[3.8,-2.6],[3.8,1.2]];for(let k=0;k<=24;k++){const a=Math.PI*k/24;P.push([0.6+3.2*Math.cos(a),1.2+3.2*Math.sin(a)]);}P.push([-2.6,1.2]);return P;})();
+const ROBE_S=(()=>{const P=[[-2.6,-3.4],[3.8,-3.4],[3.8,1.2]];for(let k=0;k<=24;k++){const a=Math.PI*k/24;P.push([0.6+3.2*Math.cos(a),1.2+3.2*Math.sin(a)]);}P.push([-2.6,1.2]);return P;})();
 /* 臉、戒疤、袈裟、木魚的五官：y 向上，畫面上用 -y */
 function monkFace(o){const c=HEAD.c,x=c[0],y=c[1];
   return {eye:`M${x-1.25} ${-(y+0.05)}q.3 .32 .62 0`,cheek:[x-1.1,y-0.55,0.32],mouth:`M${x-1.62} ${-(y-0.6)}q.2 .2 .4 .02`,
     dots:[[x-0.2,y+1.55],[x+0.3,y+1.68],[x+0.8,y+1.62]],ear:[x+0.6,y-0.2,0.42],sash:`M-0.9 -3.9L3.6 0.6`};}
 function fishFace(F){const x=F[0],y=F[1];
+  return {path:'M'+fishPts().map(q=>f3(x+q[0])+' '+f3(-(y+q[1]))).join('L')+'Z',mouth:`M${f3(x-2.05)} ${f3(-(y-0.02))}L${f3(x-0.55)} ${f3(-(y-0.08))}`,eye:[x-0.38,y-0.08,0.3]};}
+function fishFaceOld(F){const x=F[0],y=F[1];
   return {mouth:`M${f3(x-1.95)} ${f3(-(y-0.15))}Q${f3(x-1.0)} ${f3(-(y-0.75))} ${f3(x-0.15)} ${f3(-(y-0.1))}`,eye:[x-0.75,y+0.45,0.26],glint:[x-0.82,y+0.53,0.08],
     scales:`M${f3(x+0.35)} ${f3(-(y+0.75))}q.35 .3 .7 0M${f3(x+0.55)} ${f3(-(y+0.15))}q.35 .3 .7 0M${f3(x+0.3)} ${f3(-(y-0.45))}q.35 .3 .7 0`,
     shine:`M${f3(x-1.3)} ${f3(-(y+1.05))}q.5 -.35 1.1 -.35`,knob:[x+0.9,y+FISH.ry-0.05,0.3]};}
@@ -960,15 +976,15 @@ function analyse(s){
   const list=sw.list;let iMax=0,iMin=0;
   list.forEach((g,i)=>{if(g.phi>list[iMax].phi)iMax=i;if(g.phi<list[iMin].phi)iMin=i;});
   let fish=null,floor=-5,ratio=null;
-  if(list.length){const H=list[iMax].H,rE=1/Math.sqrt(U[0]*U[0]/FISH.rx**2+U[1]*U[1]/FISH.ry**2),k=rE+HEADR;
-    const F=[H[0]+U[0]*k,H[1]+U[1]*k];fish={F,hit:[H[0]+U[0]*HEADR,H[1]+U[1]*HEADR]};floor=Math.min(F[1]-FISH.ry-0.1,-3.4);
+  if(list.length){const H=list[iMax].H,hit=[H[0]+U[0]*HEADR,H[1]+U[1]*HEADR],T=FISH_TOP();
+    const F=[hit[0]-T[0],hit[1]-T[1]];fish={F,hit};floor=Math.min(F[1]-1.45-0.6,-4.6);
     if(sw.full){const n=list.length,strike=((iMax-iMin)+n)%n;ratio=(n-strike)/strike;}}
   const g=grashof({a:s.a,b:s.b,c:s.c,d:dG},'a');
   let kind='none';
   if(list.length){kind=sw.full?(Math.abs(g.diff)<0.05?'crit':'ok'):(Math.abs(g.diff)<0.05&&g.crankShortest?'crit':'jam');}
   return {s:{...s},list,full:sw.full,iMax,iMin,swing:list.length?(list[iMax].phi-list[iMin].phi)*180/Math.PI:0,fish,floor,ratio,g,kind};
 }
-const cushion=fl=>({c:[0.6,(-2.6+fl)/2],rx:3.6,ry:Math.max(0.45,(-2.6-fl)/2)});
+const cushion=fl=>({c:[0.6,(-3.4+fl)/2],rx:3.7,ry:Math.max(0.45,(-3.4-fl)/2)});
 /* 一個畫面（hero、模擬器、小測驗共用）*/
 let VID=0;
 function view(svg,opt={}){
@@ -997,10 +1013,10 @@ function view(svg,opt={}){
   svgEl('circle','r-cheek',svg,{cx:mf.cheek[0],cy:-mf.cheek[1],r:mf.cheek[2]+0.08,fill:`url(#${u}htP)`});
   svgEl('path','k-face',svg,{d:mf.eye});svgEl('path','k-face thin',svg,{d:mf.mouth});
   for(const d of mf.dots)svgEl('circle','k-dot',svg,{cx:d[0],cy:-d[1],r:.11});
-  E.fishG=svgEl('g',null,svg);E.fpad=svgEl('ellipse','r-pad',E.fishG);E.knob=svgEl('circle','r-fish',E.fishG);
-  E.fish=svgEl('ellipse','r-fish',E.fishG,{id:u+'fish',filter:rough});E.fishHt=svgEl('ellipse','r-ht',E.fishG,{fill:`url(#${u}htC)`});
+  E.fpad=svgEl('rect','r-pad',svg,{rx:.45});E.fishG=svgEl('g',null,svg);
+  E.fish=svgEl('path','r-fish',E.fishG,{id:u+'fish',filter:rough});E.fishHt=svgEl('path','r-ht',E.fishG,{fill:`url(#${u}htC)`,transform:'translate(.35 .25)'});
   svgEl('use','r-line',E.fishG,{href:'#'+u+'fish',transform:'translate(-.1 -.07)'});
-  E.slot=svgEl('path','k-fish-slot',E.fishG);E.scale=svgEl('path','k-fish-line',E.fishG);E.feye=svgEl('circle','k-feye',E.fishG);E.fglint=svgEl('circle','k-glint',E.fishG);E.fshine=svgEl('path','k-shine',E.fishG);
+  E.slot=svgEl('path','k-fish-slot',E.fishG);E.feye=svgEl('circle','k-feye',E.fishG);
   E.disc=svgEl('circle','r-disc',svg,{cx:0,cy:0});E.beads=svgEl('circle','k-beads',svg,{cx:0,cy:0});
   E.coup=svgEl('path','r-coup',svg);
   E.arm=svgEl('path','r-arm',svg);E.stick=svgEl('path','k-stick',svg);E.mhead=svgEl('circle','r-mhead',svg,{r:HEADR});E.hand=svgEl('circle','r-hand',svg,{r:.42});
@@ -1015,22 +1031,18 @@ function view(svg,opt={}){
   const V={E,an:null,idx:0,dirPP:1,flash:0,merit:0,onHit:null,
     set(an){this.an=an;this.idx=0;this.dirPP=1;const s=an.s;
       E.disc.setAttribute('r',s.a+0.8);E.beads.setAttribute('r',s.a+0.45);
-      const cu=cushion(an.floor);for(const [e,dx,dy] of [[E.cush,0,0],[E.cushHt,.35,.2]]){e.setAttribute('x',cu.c[0]-cu.rx+dx);e.setAttribute('y',-cu.c[1]-cu.ry+dy);e.setAttribute('width',2*cu.rx);e.setAttribute('height',2*cu.ry);}
+      const cu=cushion(an.floor);E.cush.setAttribute('rx',.9);for(const [e,dx,dy] of [[E.cush,0,0],[E.cushHt,.35,.2]]){e.setAttribute('x',cu.c[0]-cu.rx+dx);e.setAttribute('y',-cu.c[1]-cu.ry+dy);e.setAttribute('width',2*cu.rx);e.setAttribute('height',2*cu.ry);}
       E.floor.setAttribute('x1',vb[0]);E.floor.setAttribute('x2',vb[0]+vb[2]);E.floor.setAttribute('y1',-an.floor);E.floor.setAttribute('y2',-an.floor);
-      if(an.fish){const F=an.fish.F;E.fish.setAttribute('cx',F[0]);E.fish.setAttribute('cy',-F[1]);E.fish.setAttribute('rx',FISH.rx);E.fish.setAttribute('ry',FISH.ry);
-        const ff=fishFace(F);E.slot.setAttribute('d',ff.mouth);E.scale.setAttribute('d',ff.scales);E.fshine.setAttribute('d',ff.shine);
+      if(an.fish){const F=an.fish.F,ff=fishFace(F);E.fish.setAttribute('d',ff.path);E.fishHt.setAttribute('d',ff.path);E.slot.setAttribute('d',ff.mouth);
         E.feye.setAttribute('cx',ff.eye[0]);E.feye.setAttribute('cy',-ff.eye[1]);E.feye.setAttribute('r',ff.eye[2]);
-        E.fglint.setAttribute('cx',ff.glint[0]);E.fglint.setAttribute('cy',-ff.glint[1]);E.fglint.setAttribute('r',ff.glint[2]);
-        E.knob.setAttribute('cx',ff.knob[0]);E.knob.setAttribute('cy',-ff.knob[1]);E.knob.setAttribute('r',ff.knob[2]);
-        E.fpad.setAttribute('cx',F[0]);E.fpad.setAttribute('cy',-(F[1]-FISH.ry+0.05));E.fpad.setAttribute('rx',FISH.rx*1.05);E.fpad.setAttribute('ry',0.35);
-        E.fishG.style.transformOrigin=`${F[0]}px ${-(F[1]-FISH.ry)}px`;E.fishG.style.display='';
-        E.plus.setAttribute('x',F[0]);E.plus.setAttribute('y',-F[1]-FISH.ry-0.8);E.plus2.setAttribute('x',F[0]+0.09);E.plus2.setAttribute('y',-F[1]-FISH.ry-0.74);
-        E.fishHt.setAttribute('cx',F[0]+0.45);E.fishHt.setAttribute('cy',-F[1]+0.3);E.fishHt.setAttribute('rx',FISH.rx*0.8);E.fishHt.setAttribute('ry',FISH.ry*0.75);}
-      else E.fishG.style.display='none';
+        const pb=F[1]-1.45;E.fpad.setAttribute('x',F[0]-2.6);E.fpad.setAttribute('y',-pb-0.05);E.fpad.setAttribute('width',5.2);E.fpad.setAttribute('height',Math.max(0.5,pb-an.floor+0.05));E.fpad.style.display='';
+        E.fishG.style.transformOrigin=`${F[0]}px ${-pb}px`;E.fishG.style.display='';
+        E.plus.setAttribute('x',F[0]);E.plus.setAttribute('y',-F[1]-2.4);E.plus2.setAttribute('x',F[0]+0.09);E.plus2.setAttribute('y',-F[1]-2.34);}
+      else{E.fishG.style.display='none';E.fpad.style.display='none';}
       const L=an.list;E.trace.setAttribute('d',L.length?'M'+L.filter((_,i)=>i%4===0).map(g=>f3(g.H[0])+' '+f3(-g.H[1])).join('L'):'');
       this.draw();},
     draw(){const an=this.an;if(!an||!an.list.length)return;const g=an.list[Math.floor(this.idx)%an.list.length];
-      E.coup.setAttribute('d',segD(g.C,g.B));E.arm.setAttribute('d',segD(g.A,g.B));E.stick.setAttribute('d',segD(g.B,g.H));
+      E.coup.setAttribute('d',segD(g.C,g.B));E.arm.setAttribute('d',segD(g.A,g.B));{const d=[g.H[0]-g.B[0],g.H[1]-g.B[1]],l=Math.hypot(...d);E.stick.setAttribute('d',segD([g.B[0]-d[0]/l*TAIL,g.B[1]-d[1]/l*TAIL],g.H));}
       E.mhead.setAttribute('cx',g.H[0]);E.mhead.setAttribute('cy',-g.H[1]);E.hand.setAttribute('cx',g.B[0]);E.hand.setAttribute('cy',-g.B[1]);
       const ln=(l,P,Q)=>{l.setAttribute('x1',P[0]);l.setAttribute('y1',-P[1]);l.setAttribute('x2',Q[0]);l.setAttribute('y2',-Q[1]);};
       ln(E.ground,g.D,g.A);ln(E.lAB,g.A,g.B);ln(E.lBC,g.B,g.C);ln(E.lCD,g.D,g.C);
@@ -1058,11 +1070,11 @@ const st={s:{...DEF},playing:!reduce,speed:0.5};
 const hero=view($('hero'),{vb:[-8.6,-9.8,15.2,17.4],noSkel:true});
 const main=view($('stage'),{vb:[-8,-8.9,14,15.4]});
 const qv=view($('fig-quiz'),{vb:[-8,-9.2,14,15.7]});
-{const INK='.r-robe,.r-skin,.r-fish,.r-arm,.r-coup,.r-hand,.k-stick';toneize($('stage'),INK);toneize($('fig-quiz'),INK);}
+{const INK='.r-cush,.r-pad,.r-robe,.r-skin,.r-fish,.r-arm,.r-coup,.r-hand,.k-stick';toneize($('stage'),INK);toneize($('fig-quiz'),INK);}
 main.onHit=m=>{$('merit').textContent=m;knock();};
 hero.set(analyse(DEF));
 (function(){const an=analyse(DEF);const trace='M'+an.list.filter((_,i)=>i%4===0).map(g=>f3(g.H[0])+' '+f3(-g.H[1])).join('L');
-  const INK='.r-robe,.r-skin,.r-fish,.r-arm,.r-coup,.r-hand,.k-stick';plateize($('hero'),INK);plateOverlay($('hero'),[-8.6,-9.8,15.2,17.4],{no:'002',letters:'W / F / M',phrase:'Malleus et Piscis',c:[-1,-1.1],R:6.6,ay:0});})();
+  const INK='.r-cush,.r-pad,.r-robe,.r-skin,.r-fish,.r-arm,.r-coup,.r-hand,.k-stick';plateize($('hero'),INK);plateOverlay($('hero'),[-8.6,-9.8,15.2,17.4],{no:'002',letters:'W / F / M',phrase:'Malleus et Piscis',c:[-1,-1.1],R:6.6,ay:0});})();
 const keys=['a','b','c'];
 function syncInputs(){for(const k of keys){$('in-'+k).value=st.s[k];$('out-'+k).textContent=n1(st.s[k])+' cm';}}
 const KIND={ok:['轉得動','曲柄可以轉一整圈。 The crank turns all the way round.'],
@@ -1117,15 +1129,15 @@ function partsSVG(s,an,full){
   const md=[Math.cos(OFF),Math.sin(OFF)],Bm=p.arm.B,Hs=[Bm[0]+MAL*md[0],Bm[1]-MAL*md[1]];
   o+=outline([...base,{circle:[...M(p.disc.D),p.disc.R*10]}]);
   if(full){
-    o+=outline([{pts:[M(p.coup.C),M(p.coup.B)]},{pts:[M(p.arm.A),M(p.arm.B)]},{pts:[M(p.arm.B),M(Hs)],w:3.5},{circle:[...M(Hs),HEADR*10]},{ellipse:[...M(p.fish),FISH.rx*10,FISH.ry*10]},{circle:[M(p.fish)[0]+9,M(p.fish)[1]-FISH.ry*10+0.5,3]}]);
-    const Fs=M(p.fish),fx=Fs[0],fy=Fs[1];o+=`<path d="M${f2(fx-19.5)} ${f2(fy+1.5)}Q${f2(fx-10)} ${f2(fy+7.5)} ${f2(fx-1.5)} ${f2(fy+1)}" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/><circle cx="${f2(fx-7.5)}" cy="${f2(fy-4.5)}" r="2.4" fill="${INK}"/><circle cx="${f2(fx-8.2)}" cy="${f2(fy-5.3)}" r="0.8" fill="#fff"/><path d="M${f2(fx+3.5)} ${f2(fy-7.5)}q3.5 3 7 0M${f2(fx+5.5)} ${f2(fy-1.5)}q3.5 3 7 0M${f2(fx+3)} ${f2(fy+4.5)}q3.5 3 7 0" fill="none" stroke="${INK}" stroke-width="0.35"/>`+T(Fs[0],Fs[1]+FISH.ry*10+5,'木魚（不打孔，貼在底座的虛線上）',{size:2.6,anchor:'middle',fill:MID});
+    o+=outline([{pts:[M(p.coup.C),M(p.coup.B)]},{pts:[M(p.arm.A),M(p.arm.B)]},{pts:[M([Bm[0]-TAIL*md[0],Bm[1]+TAIL*md[1]]),M(Hs)],w:3.5},{circle:[...M(Hs),HEADR*10]},{pts:fishPts().map(q=>M([p.fish[0]+q[0],p.fish[1]-q[1]])),closed:true,w:0.6}]);
+    const Fs=M(p.fish),fx=Fs[0],fy=Fs[1];o+=`<path d="M${f2(fx-20.5)} ${f2(fy+0.2)}L${f2(fx-5.5)} ${f2(fy+0.8)}" fill="none" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/><circle cx="${f2(fx-3.8)}" cy="${f2(fy+0.8)}" r="3" fill="${INK}"/>`+T(Fs[0],Fs[1]+19.5,'木魚（不打孔，貼在底座的虛線上）',{size:2.6,anchor:'middle',fill:MID});
     const mf=monkFace(),Q=q=>M(at(D,q)),e0=Q([HEAD.c[0]-1.25,HEAD.c[1]+0.05]),ck=Q(mf.cheek),mo=Q([HEAD.c[0]-1.62,HEAD.c[1]-0.6]);
     o+=`<path d="M${f2(e0[0])} ${f2(e0[1])}q3 3.2 6.2 0" fill="none" stroke="${INK}" stroke-width="0.5" stroke-linecap="round"/><circle cx="${f2(ck[0])}" cy="${f2(ck[1])}" r="3.2" fill="none" stroke="${INK}" stroke-width="0.2" stroke-dasharray="0.6 0.6"/><path d="M${f2(mo[0])} ${f2(mo[1])}q2 2 4 .2" fill="none" stroke="${INK}" stroke-width="0.35" stroke-linecap="round"/>`;
     for(const d of mf.dots){const q=Q(d);o+=`<circle cx="${f2(q[0])}" cy="${f2(q[1])}" r="0.9" fill="${INK}"/>`;}
     const s1=Q([-0.9,3.9]),s2=Q([3.6,-0.6]);o+=L(s1[0],s1[1],s2[0],s2[1],0.3);
     
   }
-  const Fb=M(at(D,F));o+=`<ellipse cx="${f2(Fb[0])}" cy="${f2(Fb[1])}" rx="${FISH.rx*10}" ry="${FISH.ry*10}" fill="none" stroke="${INK}" stroke-width="0.3" stroke-dasharray="1.2 1"/>`+T(Fb[0],Fb[1]+1,full?'木魚貼這裡':'被敲的東西放這裡',{size:2.6,anchor:'middle',fill:MID});
+  const Fb=M(at(D,F));o+=`<path d="M${fishPts().map(q=>{const m=M(at(D,[F[0]+q[0],F[1]+q[1]]));return f2(m[0])+' '+f2(m[1]);}).join('L')}Z" fill="none" stroke="${INK}" stroke-width="0.3" stroke-dasharray="1.2 1"/>`+T(Fb[0],Fb[1]+1,full?'木魚貼這裡':'被敲的東西放這裡',{size:2.6,anchor:'middle',fill:MID});
   if(!full){const h=M(at(D,an.fish?an.fish.hit:[-2.6,-1.4]));o+=L(h[0]-2,h[1]-2,h[0]+2,h[1]+2,0.35)+L(h[0]-2,h[1]+2,h[0]+2,h[1]-2,0.35)+T(h[0]+3,h[1]-2.5,'敲擊點',{size:2.8,fill:MID});
     o+=`<circle cx="${f2(M(Hs)[0])}" cy="${f2(M(Hs)[1])}" r="${HEADR*10}" fill="none" stroke="${INK}" stroke-width="0.25" stroke-dasharray="1 0.8"/>`+T(M(Hs)[0],M(Hs)[1]+11,'槌頭',{size:2.8,anchor:'middle',fill:MID});}
   const Dm=M(D),Am=M(at(D,GA));
@@ -1144,7 +1156,7 @@ function thumb(an){
   if(!an.list.length)return '';const g=an.list[an.iMax],k=1.25,tx=106,ty=25,P=q=>[tx+q[0]*k,ty-q[1]*k];let o='';
   o+=`<path d="M${ROBE.map(q=>P(q).map(f2).join(' ')).join('L')}Z" fill="#ececec" stroke="${INK}" stroke-width="0.15"/>`;
   const h=P(HEAD.c);o+=`<circle cx="${f2(h[0])}" cy="${f2(h[1])}" r="${HEAD.r*k}" fill="#ececec" stroke="${INK}" stroke-width="0.15"/>`;
-  if(an.fish){const F=P(an.fish.F);o+=`<ellipse cx="${f2(F[0])}" cy="${f2(F[1])}" rx="${FISH.rx*k}" ry="${FISH.ry*k}" fill="#d9d9d9" stroke="${INK}" stroke-width="0.15"/>`;}
+  if(an.fish){const F=an.fish.F;o+=`<path d="M${fishPts().map(q=>P([F[0]+q[0],F[1]+q[1]]).map(f2).join(' ')).join('L')}Z" fill="#d9d9d9" stroke="${INK}" stroke-width="0.15"/>`;}
   for(const [a,b] of [['A','B'],['B','C'],['C','D'],['A','D']]){const p1=P(g[a]),p2=P(g[b]);o+=L(p1[0],p1[1],p2[0],p2[1],0.3);}
   const B=P(g.B),H=P(g.H);o+=L(B[0],B[1],H[0],H[1],0.3)+`<circle cx="${f2(H[0])}" cy="${f2(H[1])}" r="${HEADR*k}" fill="#999" stroke="${INK}" stroke-width="0.15"/>`;
   for(const q of 'ABCD'){const m=P(g[q]);o+=`<circle cx="${f2(m[0])}" cy="${f2(m[1])}" r="0.6" fill="${q==='A'||q==='D'?INK:'#fff'}" stroke="${INK}" stroke-width="0.2"/>`;}
@@ -1164,7 +1176,7 @@ $('btn-ws-std').addEventListener('click',()=>{buildSheets(DEF);requestAnimationF
 
 /* 卡片小圖：用同一個畫面，停在敲下的那一刻 */
 (function(){const el=document.getElementById('card-fish');if(!el)return;const vb=[-11.6,-9.75,26,16.25];const v=view(el,{vb,noGrid:true,noSkel:true});const an=analyse(DEF);v.set(an);v.E.trace.style.display='none';v.idx=an.iMax;v.draw();
-  plateize(el,'.r-robe,.r-skin,.r-fish,.r-arm,.r-coup,.r-hand,.k-stick');plateOverlay(el,vb,{no:'002',letters:'W / F / M',c:[1.4,-1.6],R:6.4,ay:0});})();
+  plateize(el,'.r-cush,.r-pad,.r-robe,.r-skin,.r-fish,.r-arm,.r-coup,.r-hand,.k-stick');plateOverlay(el,vb,{no:'002',letters:'W / F / M',c:[1.4,-1.6],R:6.4,ay:0});})();
 /* ── 範例卡片：每張都是用自己的連桿算出來的符號 ── */
 document.querySelectorAll('.cards svg.glyph').forEach(s=>{plateize(s);const vb=s.getAttribute('viewBox').split(' ').map(Number),c=s.dataset.c.split(',').map(Number);plateOverlay(s,vb,{no:s.dataset.no,letters:s.dataset.l,c,R:+s.dataset.r,ay:+s.dataset.ay});});
 

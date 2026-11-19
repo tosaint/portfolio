@@ -116,16 +116,14 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .desc { margin: 0; font-size: 15px; color: var(--ink); max-width: 38em; }
 .go { justify-self: start; font: 400 12.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; color: var(--accent); border-bottom: 1px solid currentColor; padding-bottom: 2px; }
 .go:hover { color: var(--ink); }
-/* second level: examples inside one work, fold open */
-.sub { border-top: 1px solid var(--hair); padding-top: 10px; }
-.sub summary { cursor: pointer; list-style: none; font: 400 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-2); }
-.sub summary::-webkit-details-marker { display: none; }
-.sub summary::after { content: " +"; }
-.sub[open] summary::after { content: " −"; }
-.sub ul { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; }
-.sub li { border-left: 1px solid var(--hair); padding-left: 12px; }
-.sub a { font-size: 14.5px; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hair); }
-.sub a:hover { color: var(--accent); border-color: currentColor; }
+/* second level: the examples inside one work, as a small index of plates */
+.plates { display: grid; gap: 14px; min-width: 0; }
+.subs { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.subs a { display: grid; gap: 5px; text-decoration: none; color: var(--ink-2); }
+.subs img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; border: 1px solid var(--hair); transition: opacity .2s; }
+.subs span { font: 400 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.subs a:hover img { opacity: .8; }
+.subs a:hover span { color: var(--accent); }
 
 /* ---------- index (checklist of works) ---------- */
 .checklist-wrap { overflow-x: auto; margin-top: 18px; }
