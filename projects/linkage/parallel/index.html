@@ -1,0 +1,1128 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>三曲柄平移 · Parallel Cranks — 連桿機構 Linkages</title>
+<meta name="description" content="Three equal cranks carry a plate round without turning it. 三根一樣長的曲柄帶著一塊板平移。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+/* Same paper, ink and type as the portfolio. Every figure is a live line drawing in ink:
+   text on the left in Chinese, on the right in English; figures sit between sections. */
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --mat: #faf9f5; --grid: #dcd8ce; --grid-b: #bdb8ab; --front: #e9b82f; --back: #3fa7cf; --accent: #c8452e; --warn: #8a5200;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --mat: #1a1a17; --grid: #2a2926; --grid-b: #44423c; --front: #f2c94c; --back: #55c3e6; --accent: #ff6b4f; --warn: #f0b35a; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28;
+  --mat: #1a1a17; --grid: #2a2926; --grid-b: #44423c; --front: #f2c94c; --back: #55c3e6; --accent: #ff6b4f; --warn: #f0b35a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html.noscroll { overflow: hidden; }
+html { scroll-padding-top: 60px; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans); padding: 0 16px 56px; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+.top a:hover { color: var(--ink); }
+
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(48px, 8vw, 96px) clamp(40px, 6vw, 64px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(40px, 5.4vw, 64px)/1.25 var(--serif); letter-spacing: .14em; text-wrap: balance; }
+.en-title { margin: 14px 0 0; font: 300 clamp(18px, 2vw, 24px)/1.4 var(--serif); color: var(--ink-2); letter-spacing: .02em; }
+.lede { margin: 26px 0 0; font-size: 14px; color: var(--ink-2); }
+.lede span { display: block; color: var(--ink-3); font-size: 13px; }
+.plan { margin: 0; justify-self: end; width: 100%; }
+
+
+.enter { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--ink); border: 1px solid var(--ink); margin-bottom: clamp(40px, 6vw, 72px); }
+.enter a { display: block; background: var(--paper); padding: clamp(18px, 3vw, 28px); text-decoration: none; transition: background .2s; }
+.enter a:hover { background: var(--rule); }
+.enter b { display: block; font: 500 clamp(18px, 2vw, 22px)/1.4 var(--serif); letter-spacing: .1em; }
+.enter small { display: block; margin-top: 6px; font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.enter p { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); }
+.enter i { font-style: normal; float: right; font-family: var(--mono); }
+
+.text { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); padding-block: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.text h2, .fig h2 { margin: 0 0 12px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.text p { margin: 0 0 1em; }
+.text .en { color: var(--ink-2); font-size: .95em; }
+.text ol, .text ul { margin: 0 0 1em; padding-left: 1.3em; }
+.text li { margin-bottom: .5em; }
+
+/* Figures: drawing on the left, what to try on the right */
+.fig { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 56px); align-items: center; margin: 0; padding-block: 0 clamp(28px, 5vw, 56px); }
+.fig svg { display: block; width: 100%; height: auto; }
+.fig .side { display: flex; flex-direction: column; gap: 14px; font-size: 14px; }
+.fig .side p { margin: 0; color: var(--ink-2); }
+.fig .side p span { display: block; color: var(--ink-3); font-size: 13px; }
+.keys { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.keys button { all: unset; box-sizing: border-box; cursor: pointer; background: var(--paper); padding: 10px 12px; display: grid; grid-template-columns: 3.2em 1fr auto; gap: 0 10px; align-items: baseline; }
+.keys button code { font: 400 12px var(--mono); letter-spacing: .08em; color: var(--ink-3); }
+.keys button b { font-weight: 500; }
+.keys button small { grid-column: 2; font: 400 11px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+.keys button em { font: 400 12px var(--mono); font-style: normal; grid-row: 1; grid-column: 3; color: var(--ink-2); }
+.keys button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.keys button[aria-pressed="true"] code, .keys button[aria-pressed="true"] small, .keys button[aria-pressed="true"] em { color: var(--paper); opacity: .75; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.seg button { all: unset; box-sizing: border-box; cursor: pointer; background: var(--paper); padding: 10px 8px; text-align: center; }
+.seg button small { display: block; font: 400 11px var(--mono); letter-spacing: .08em; color: var(--ink-3); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.seg button[aria-pressed="true"] small { color: var(--paper); opacity: .75; }
+.keys button:focus-visible, .seg button:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 2px; }
+.slide label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.slide label span { color: var(--ink-3); font-size: 13px; display: block; }
+.slide output { font: 400 14px var(--mono); white-space: nowrap; }
+.slide input { width: 100%; accent-color: var(--ink); margin: 8px 0 0; }
+.verdict { border-top: 1px solid var(--ink); padding-top: 12px; }
+.verdict code { display: block; font: 400 20px var(--mono); font-variant-numeric: tabular-nums; }
+.verdict b { display: block; margin-top: 4px; font: 500 18px var(--serif); letter-spacing: .1em; }
+.verdict p { margin: 6px 0 0; font-size: 13px; color: var(--ink-2); min-height: 3.2em; }
+.verdict p span { display: block; color: var(--ink-3); }
+.fig.wide { grid-template-columns: 1fr; }
+.fig.wide .side { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 4vw, 56px); align-items: start; }
+.safe { position: relative; height: 26px; margin-top: 4px; }
+.safe i { position: absolute; left: 6.25%; right: 6.25%; top: 2px; height: 5px; border: 1px solid var(--ink-2); border-top: 0; }
+.safe span { position: absolute; left: 0; right: 0; top: 9px; text-align: center; font: 400 11px var(--mono); letter-spacing: .08em; color: var(--ink-3); }
+.verdict small { font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+
+/* Linkage drawings (units are cm) */
+.f-grid { stroke: var(--rule); stroke-width: .03; fill: none; }
+.f-part { fill: none; stroke: var(--ink); stroke-width: .07; stroke-linejoin: round; }
+.p-back { fill: var(--rule); fill-opacity: .55; }
+.f-aux { fill: none; stroke: var(--ink-3); stroke-width: .05; }
+.f-link { stroke: var(--ink); stroke-width: .1; stroke-linecap: round; }
+.l-DA { stroke-dasharray: .35 .22; }
+.f-joint { fill: var(--paper); stroke: var(--ink); stroke-width: .08; }
+.f-fixed { fill: var(--ink); }
+.f-trace { fill: none; stroke: var(--ink-2); stroke-width: .07; stroke-dasharray: .01 .22; stroke-linecap: round; }
+.f-dot { fill: var(--ink); }
+.f-limit { fill: none; stroke: var(--ink); stroke-width: .28; stroke-linecap: round; stroke-linejoin: round; }
+.f-note { font: 400 .62px var(--mono); fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: .22px; }
+.f-let { font: 500 .62px var(--serif); fill: var(--ink); paint-order: stroke; stroke: var(--paper); stroke-width: .2px; }
+svg.quiet .f-part { stroke: var(--ink-3); stroke-width: .05; }
+svg.quiet .p-back { fill: none; }
+svg[data-hl] .f-link { stroke: var(--ink-3); stroke-width: .07; }
+svg[data-hl] .f-part { stroke: var(--ink-3); stroke-width: .05; }
+svg[data-hl] .p-back { fill: none; }
+svg[data-hl="AB"] .l-AB, svg[data-hl="BC"] .l-BC, svg[data-hl="CD"] .l-CD, svg[data-hl="DA"] .l-DA { stroke: var(--ink); stroke-width: .2; }
+svg[data-hl="AB"] .p-back, svg[data-hl="BC"] .p-front, svg[data-hl="CD"] .p-disc, svg[data-hl="DA"] .p-base { stroke: var(--ink); stroke-width: .09; fill: var(--ink); fill-opacity: .1; }
+svg[data-mode="skeleton"] .f-part, svg[data-mode="skeleton"] .f-aux, svg[data-mode="skeleton"] .f-trace, svg[data-mode="skeleton"] .f-dot { display: none; }
+svg[data-mode="outline"] .f-trace, svg[data-mode="outline"] .f-dot { display: none; }
+svg[data-mode="paths"] .f-part { stroke: var(--ink-3); stroke-width: .05; }
+svg[data-mode="paths"] .p-back { fill: none; }
+
+/* The simulator, on the page itself; "展開" turns it into a full-window sheet */
+.sim { border-top: 1px solid var(--rule); padding-block: clamp(24px, 5vw, 56px); }
+.sim-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; margin-bottom: 16px; }
+.sim-head h2, .panel h3, .quiz h2 { margin: 0; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.sim-head p { margin: 0; flex: 1 1 320px; font-size: 14px; color: var(--ink-2); }
+.sim-head p span { color: var(--ink-3); font-size: 13px; margin-left: .6em; }
+.sim.full { position: fixed; inset: 0; z-index: 20; background: var(--paper); overflow: auto; padding: 16px; border: 0; }
+.sim.full .stage svg { max-height: calc(100vh - 110px); }
+.work { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+.stage { background: var(--mat); border: 1px solid var(--rule); position: relative; }
+.stage svg { display: block; width: 100%; height: auto; touch-action: none; cursor: crosshair; }
+.stage .hint { position: absolute; left: 10px; bottom: 8px; font-size: 12px; color: var(--ink-2); background: var(--mat); padding: 0 6px; }
+.panel { border: 1px solid var(--rule); padding: 16px; display: flex; flex-direction: column; gap: 16px; font-size: 15px; line-height: 1.6; }
+.group { display: flex; flex-direction: column; gap: 10px; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: baseline; }
+.row label { font-weight: 500; } .row label small { color: var(--ink-2); font-weight: 400; margin-left: 6px; }
+.row output { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.row input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); margin: 0; }
+.status { border-left: 4px solid var(--ink); padding: 6px 10px; background: color-mix(in srgb, var(--ink) 7%, transparent); font-size: 14px; }
+.status[data-k="crit"] { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, transparent); }
+.status[data-k="jam"], .status[data-k="none"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.status b { display: block; } .status span { font-size: 13px; color: var(--ink-2); }
+.notes { margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--warn); display: flex; flex-direction: column; gap: 4px; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { font: inherit; color: var(--ink); background: transparent; border: 1px solid var(--ink-2); border-radius: 0; padding: 6px 12px; cursor: pointer; }
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.checks { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; }
+.checks input { accent-color: var(--accent); }
+.fine { font-size: 12px; color: var(--ink-2); margin: 0; }
+.ws { border-top: 1px solid var(--rule); padding-block: clamp(24px, 5vw, 56px); }
+.ws-bar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.ws-bar .fine { font-size: 13px; max-width: 70ch; }
+a.btn { text-decoration: none; display: inline-block; }
+.fine a { color: inherit; }
+.sheets { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+.sheets > p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.sheets figure { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.sheets figcaption { font: 400 12px/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+.sheet svg { display: block; width: 100%; height: auto; background: #fff; border: 1px solid var(--rule); }
+.s-front { fill: var(--front); fill-opacity: .5; stroke: var(--front); stroke-width: .06; stroke-linejoin: round; }
+.s-back { fill: var(--back); fill-opacity: .45; stroke: var(--back); stroke-width: .06; stroke-linejoin: round; }
+.s-base { fill: var(--ink); fill-opacity: .08; stroke: var(--ink-2); stroke-width: .05; }
+.s-disc { fill: var(--accent); fill-opacity: .12; stroke: var(--accent); stroke-width: .05; }
+.s-link { stroke: var(--ink); stroke-width: .09; stroke-linecap: round; }
+.s-ground { stroke: var(--ink); stroke-width: .07; stroke-dasharray: .3 .2; }
+.s-crank { stroke: var(--accent); stroke-width: .12; stroke-linecap: round; }
+.s-trace { fill: none; stroke: var(--accent); stroke-width: .07; stroke-dasharray: .01 .2; stroke-linecap: round; }
+.s-arc { fill: none; stroke: var(--ink-2); stroke-width: .04; stroke-dasharray: .12 .12; }
+.s-joint { fill: var(--mat); stroke: var(--ink); stroke-width: .08; }
+.s-fixed { fill: var(--ink); stroke: var(--ink); stroke-width: .08; }
+.s-tp { fill: var(--accent); }
+.s-txt { font-family: var(--mono); font-size: .5px; fill: var(--ink); paint-order: stroke; stroke: var(--mat); stroke-width: .18px; stroke-linejoin: round; }
+.s-let { font-family: var(--serif); font-weight: 500; font-size: .62px; fill: var(--ink); paint-order: stroke; stroke: var(--mat); stroke-width: .2px; }
+
+/* Three questions: the drawing stays in view while the answers change it */
+.quiz { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 56px); align-items: start; border-top: 1px solid var(--rule); padding-block: clamp(24px, 5vw, 56px); }
+.quiz figure { margin: 0; position: sticky; top: 60px; background: var(--paper); z-index: 2; }
+.quiz figure svg { display: block; width: 100%; height: auto; max-height: 62vh; }
+.quiz figcaption { margin-top: 8px; font: 400 13px var(--mono); color: var(--ink-2); }
+.quiz .intro { margin: 10px 0 18px; font-size: 14px; color: var(--ink-2); }
+.q { border-top: 1px solid var(--rule); padding: 16px 0 18px; }
+.q-t { margin: 0 0 12px; display: grid; grid-template-columns: 1.6em 1fr; align-items: baseline; font-weight: 500; }
+.q-t b { font: 300 26px/1 var(--serif); }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; padding-left: 1.6em; }
+.opts button { all: unset; box-sizing: border-box; cursor: pointer; border: 1px solid var(--ink-2); padding: 6px 14px; }
+.opts button:hover { border-color: var(--ink); }
+.opts button[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.opts button:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 2px; }
+.fb { margin: 12px 0 0; padding-left: 1.6em; font-size: 14px; color: var(--ink-2); }
+.fb:empty { display: none; }
+.f-ref { fill: none; stroke: var(--ink-3); stroke-width: .07; stroke-dasharray: .28 .2; }
+
+@page { size: A4 landscape; margin: 0; }
+@media print {
+  body { padding: 0; background: #fff; }
+  .top, main > *:not(#ws), #ws > *:not(.sheets), .sheets figcaption { display: none !important; }
+  .wrap { max-width: none; } .ws { padding: 0; border: 0; }
+  .sheets { display: block !important; margin: 0; }
+  .sheet { break-inside: avoid; } .sheet + .sheet { break-before: page; }
+  .sheet svg { width: 297mm; height: 210mm; border: 0; }
+}
+
+.photo { margin: 0 0 clamp(28px, 4vw, 48px); }
+.photo img { display: block; width: 100%; height: auto; }
+.photo figcaption { margin-top: 10px; font: 400 12px/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+
+.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2vw, 20px); margin: 0 0 clamp(28px, 4vw, 48px); padding-top: clamp(24px, 5vw, 56px); border-top: 1px solid var(--rule); }
+.gallery figure { margin: 0; min-width: 0; }
+.gallery .blank { aspect-ratio: 4 / 3; border: 1px dashed var(--ink-3); display: grid; place-items: center; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); text-align: center; }
+.gallery figcaption { margin-top: 10px; font: 400 12px/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+
+.data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; padding-top: clamp(24px, 4vw, 40px); border-top: 1px solid var(--rule); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+.data dd span { color: var(--ink-2); margin-left: .6em; }
+
+@media (max-width: 760px) {
+  .head, .text, .fig, .enter, .fig.wide .side, .work, .quiz { grid-template-columns: 1fr; }
+  .quiz figure svg { max-height: 42vh; }
+  .plan { justify-self: start; order: -1; }
+  .gallery { grid-template-columns: 1fr; }
+}
+
+/* ── 連桿機構系列新增 ── */
+.crumb { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+.hero-fig { margin: 0; background: var(--mat); border: 1px solid var(--rule); }
+.hero-fig svg { display: block; width: 100%; height: auto; }
+.k-bar { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.2; stroke-opacity: .5; }
+.k-tri { stroke-linejoin: round; stroke-width: 1.2; stroke-opacity: .5; fill-opacity: .5; }
+.k-front { stroke: var(--front); fill: var(--front); }
+.k-back { stroke: var(--back); fill: var(--back); }
+.k-base { stroke: var(--ink); stroke-opacity: .12; fill: var(--ink); fill-opacity: .06; }
+.k-disc { fill: var(--accent); fill-opacity: .12; stroke: var(--accent); stroke-width: .05; }
+.k-fish { fill: var(--sand, #c9a46b); fill-opacity: .55; stroke: var(--ink-2); stroke-width: .06; }
+.k-fish-slot { fill: none; stroke: var(--ink); stroke-width: .28; stroke-linecap: round; }
+.k-head { fill: var(--back); fill-opacity: .8; stroke: var(--ink); stroke-width: .05; }
+.k-skel { stroke: var(--ink); stroke-width: .07; stroke-linecap: round; }
+.k-crank { stroke: var(--accent); stroke-width: .12; stroke-linecap: round; }
+.k-hl { stroke: var(--accent); stroke-width: .22; stroke-linecap: round; }
+.k-floor { stroke: var(--ink-3); stroke-width: .05; stroke-dasharray: .3 .2; }
+.k-hit { fill: var(--accent); font: 500 1.6px var(--serif); text-anchor: middle; }
+.k-jl { font: 400 .4px var(--mono); fill: var(--ink-2); paint-order: stroke; stroke: var(--mat); stroke-width: .15px; }
+.count { position: absolute; right: 12px; top: 8px; font: 400 13px var(--mono); color: var(--ink-2); background: var(--mat); padding: 0 6px; }
+.count b { font: 500 22px var(--serif); color: var(--ink); margin-left: 6px; }
+.readout { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.readout div { background: var(--paper); padding: 8px 10px; }
+.readout small { display: block; font: 400 11px var(--mono); letter-spacing: .08em; color: var(--ink-3); }
+.readout output { font: 400 18px var(--mono); }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--ink); border: 1px solid var(--ink); }
+.cards a { display: flex; flex-direction: column; background: var(--paper); padding: clamp(16px, 2.4vw, 24px); text-decoration: none; transition: background .2s; min-height: 100%; }
+.cards a:hover { background: var(--rule); }
+.cards svg { display: block; width: 100%; height: auto; margin-bottom: 14px; background: var(--mat); border: 1px solid var(--rule); }
+.cards b { font: 500 20px/1.4 var(--serif); letter-spacing: .1em; }
+.cards small { display: block; margin-top: 2px; font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.cards p { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); }
+.cards .meta { margin-top: auto; padding-top: 12px; font: 400 12px var(--mono); color: var(--ink-3); }
+.cards .soon { background: var(--paper); padding: clamp(16px, 2.4vw, 24px); display: grid; place-items: center; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); border: 1px dashed var(--ink-3); border-width: 0; }
+.ex-head { border-top: 1px solid var(--rule); padding-block: clamp(24px, 5vw, 56px) 20px; }
+.ex-head h2 { margin: 0; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.ex-head p { margin: 8px 0 0; font-size: 14px; color: var(--ink-2); }
+.refs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.refs li { display: grid; grid-template-columns: 7em minmax(0, 1fr); gap: 0 20px; padding: 12px 0; border-top: 1px solid var(--rule); font-size: 14px; }
+.refs li:last-child { border-bottom: 1px solid var(--rule); }
+.refs code { font: 400 11px/2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.refs b { font-weight: 500; }
+.refs span { display: block; color: var(--ink-2); }
+.refs .tag { display: inline; font: 400 11px var(--mono); letter-spacing: .06em; color: var(--ink-3); margin-left: 8px; }
+.layers { margin: 0 0 1em; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; font: 400 13px var(--mono); }
+.layers li { border: 1px solid var(--ink-2); padding: 2px 8px; }
+.layers li + li::before { content: "→ "; color: var(--ink-3); margin-left: -2px; }
+@media (max-width: 760px) { .cards { grid-template-columns: 1fr; } .refs li { grid-template-columns: 1fr; } }
+.k-c3 { stroke: var(--teal, #6f9696); fill: var(--teal, #6f9696); }
+.k-c4 { stroke: var(--accent); fill: var(--accent); }
+.k-c4.k-tri { fill-opacity: .25; }
+.k-slot { stroke: var(--paper); stroke-width: .5; stroke-linecap: round; fill: none; }
+.cards svg { aspect-ratio: 16 / 10; }
+.k-robe { fill: #d9c39b; fill-opacity: .6; stroke: var(--ink-2); stroke-width: .06; stroke-linejoin: round; }
+.k-cush { fill: #b5543f; fill-opacity: .35; stroke: #b5543f; stroke-opacity: .6; stroke-width: .05; }
+.k-face { fill: none; stroke: var(--ink); stroke-width: .09; stroke-linecap: round; }
+.k-fish { fill: #b98a4e; fill-opacity: .75; stroke: var(--ink-2); stroke-width: .06; }
+.k-fish-line { fill: none; stroke: var(--ink); stroke-opacity: .55; stroke-width: .08; stroke-linecap: round; }
+.k-stick { fill: none; stroke: #8a5a2b; stroke-width: .3; stroke-linecap: round; }
+.k-beads { fill: none; stroke: var(--ink-2); stroke-width: .16; stroke-dasharray: .02 .32; stroke-linecap: round; }
+.k-hit { font-size: 1.05px; }
+.snd { position: absolute; right: 12px; top: 44px; font: 400 12px var(--mono); color: var(--ink-2); background: var(--mat); border: 1px solid var(--rule); padding: 3px 8px; cursor: pointer; }
+.snd[aria-pressed="true"] { color: var(--ink); border-color: var(--ink-2); }
+.exnav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font: 400 13px var(--mono); color: var(--ink-2); }
+.exnav.bottom { border-bottom: 0; border-top: 1px solid var(--rule); margin-top: clamp(24px, 4vw, 40px); }
+.exnav a { text-decoration: none; color: var(--ink-2); } .exnav a:hover { color: var(--ink); }
+.exnav .next { text-align: right; } .exnav span { text-align: center; color: var(--ink-3); }
+.exnav span b { font: 500 15px var(--serif); color: var(--ink); letter-spacing: .08em; margin-left: 6px; }
+.swipe-hint { display: none; font: 400 11px var(--mono); color: var(--ink-3); letter-spacing: .1em; margin-top: 8px; }
+@media (hover: none) { .swipe-hint { display: block; } }
+.cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 1px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+.cards > a, .cards > div { flex: 0 0 min(340px, 82%); scroll-snap-align: start; }
+.car-btns { display: flex; gap: 8px; margin-top: 10px; }
+.car-btns button { font: 400 14px var(--mono); background: none; border: 1px solid var(--ink-2); color: var(--ink); padding: 2px 12px; cursor: pointer; }
+.k-mhead { fill: #c08a4d; stroke: var(--ink); stroke-width: .06; }
+.k-fish-slot { stroke-width: .2; stroke: #4a2e14; }
+.k-skin { fill: #f6dcc3; stroke: var(--ink-2); stroke-width: .06; }
+.k-robe { fill: #e8b04a; fill-opacity: .85; }
+.k-sash { fill: none; stroke: #b5543f; stroke-width: .38; stroke-linecap: round; stroke-opacity: .85; }
+.k-cheek { fill: #f08f86; fill-opacity: .55; }
+.k-face.thin { stroke-width: .07; }
+.k-dot { fill: var(--ink-2); }
+.k-arm { fill: none; stroke: #e8b04a; stroke-width: .75; stroke-linecap: round; stroke-opacity: .95; }
+.k-fish { fill: #c98b4b; fill-opacity: .95; stroke: #6b4320; stroke-width: .06; }
+.k-feye { fill: #3a2410; } .k-glint { fill: #fff; }
+.k-shine { fill: none; stroke: #fff; stroke-opacity: .6; stroke-width: .18; stroke-linecap: round; }
+.k-fish-slot { stroke: #3a2410; stroke-width: .16; fill: none; stroke-linecap: round; }
+.k-fish-line { stroke: #6b4320; stroke-opacity: .7; stroke-width: .07; }
+
+/* 敲木魚：網版印刷風。紙和油墨固定，不跟深色模式 */
+svg.riso { --ink: #2b2a27; --ink-2: #4a4640; --ink-3: #7a746a; --paper: #ebe4d6; --mat: #ebe4d6; --grid: rgba(43,42,39,.07); --grid-b: rgba(43,42,39,.13); --accent: #d9643a; isolation: isolate; }
+svg.riso .r-paper { fill: #ebe4d6; }
+svg.riso .r-grid { opacity: .9; }
+svg.riso .r-sun { opacity: .55; mix-blend-mode: multiply; }
+svg.riso .r-robe { fill: #ec8e63; mix-blend-mode: multiply; }
+svg.riso .r-ht { mix-blend-mode: multiply; opacity: .6; }
+svg.riso .r-shadow { opacity: .45; }
+svg.riso .r-ear { mix-blend-mode: multiply; opacity: .8; }
+svg.riso .r-line { fill: none; stroke: #2b2a27; stroke-width: .075; }
+svg.riso .r-sash { fill: none; stroke: #e27a9b; stroke-width: .42; stroke-linecap: round; mix-blend-mode: multiply; }
+svg.riso .r-skin { fill: #f4e6d4; }
+svg.riso .r-cheek { mix-blend-mode: multiply; }
+svg.riso .r-cush { fill: #6aa6ac; mix-blend-mode: multiply; opacity: .9; }
+svg.riso .r-pad { fill: #e27a9b; mix-blend-mode: multiply; opacity: .9; }
+svg.riso .r-fish { fill: #f2c14e; mix-blend-mode: multiply; }
+svg.riso .r-disc { fill: #e27a9b; fill-opacity: .35; stroke: #e27a9b; stroke-width: .07; mix-blend-mode: multiply; }
+svg.riso .k-beads { stroke: #2b2a27; }
+svg.riso .r-coup { fill: none; stroke: #6aa6ac; stroke-width: .62; stroke-linecap: round; mix-blend-mode: multiply; }
+svg.riso .r-arm { fill: none; stroke: #ec8e63; stroke-width: .78; stroke-linecap: round; mix-blend-mode: multiply; }
+svg.riso .k-stick { stroke: #2b2a27; stroke-width: .22; }
+svg.riso .r-mhead { fill: #f2c14e; stroke: #2b2a27; stroke-width: .07; mix-blend-mode: multiply; }
+svg.riso .r-hand { fill: #f4e6d4; stroke: #2b2a27; stroke-width: .06; }
+svg.riso .k-fish-line, svg.riso .k-fish-slot { stroke: #2b2a27; }
+svg.riso .k-feye { fill: #2b2a27; }
+svg.riso .k-shine { stroke: #fffaf0; stroke-opacity: .85; }
+svg.riso .r-hit { fill: #e8628c; font: 500 1.05px var(--serif); text-anchor: middle; mix-blend-mode: multiply; }
+svg.riso .r-hit2 { fill: #3f9aa6; font: 500 1.05px var(--serif); text-anchor: middle; mix-blend-mode: multiply; }
+svg.riso .r-grain { opacity: .16; mix-blend-mode: multiply; pointer-events: none; }
+svg.riso .s-trace { stroke: #e8628c; }
+svg.riso .k-floor { stroke: #2b2a27; stroke-opacity: .5; }
+/* ── 系列共用：網版紙＋瑞士網格（所有模擬圖都是印刷品，不跟深色模式） ── */
+svg.riso { --ink: #2b2a27; --ink-2: #4a4640; --ink-3: #7a746a; --paper: #ebe4d6; --mat: #ebe4d6; --rule: #cfc5b1; --grid: rgba(43,42,39,.07); --grid-b: rgba(43,42,39,.14); --accent: #d9643a; --front: #ec8e63; --back: #6aa6ac; --teal: #6aa6ac; isolation: isolate; }
+svg.riso .r-paper { fill: #ebe4d6; }
+svg.riso .r-grain { opacity: .16; mix-blend-mode: multiply; pointer-events: none; }
+svg.riso .k-tri, svg.riso .k-bar { mix-blend-mode: multiply; transform: translate(.09px, .06px); }
+svg.riso .k-tri { fill-opacity: .82; stroke-opacity: .82; }
+svg.riso .k-bar { stroke-opacity: .88; }
+svg.riso .k-front { stroke: #ec8e63; fill: #ec8e63; }
+svg.riso .k-back { stroke: #6aa6ac; fill: #6aa6ac; }
+svg.riso .k-c3 { stroke: #f2c14e; fill: #f2c14e; }
+svg.riso .k-c4 { stroke: #e27a9b; fill: #e27a9b; }
+svg.riso .k-c4.k-tri { fill-opacity: .7; }
+svg.riso .k-base { stroke: #2b2a27; fill: #2b2a27; stroke-opacity: .16; fill-opacity: .1; }
+svg.riso .k-disc { fill: #e27a9b; fill-opacity: .3; stroke: #e27a9b; mix-blend-mode: multiply; }
+svg.riso .s-trace { stroke: #e8628c; stroke-width: .09; }
+svg.riso .s-link, svg.riso .s-ground { stroke: #2b2a27; }
+svg.riso .s-joint { fill: #ebe4d6; stroke: #2b2a27; }
+svg.riso .s-fixed { fill: #2b2a27; stroke: #2b2a27; }
+svg.riso .k-crank { stroke: #d9643a; }
+svg.riso .k-jl { fill: #2b2a27; stroke: #ebe4d6; }
+svg.riso .k-slot { stroke: #ebe4d6; }
+svg.riso .pz-col { stroke: #2b2a27; stroke-opacity: .16; stroke-width: .03; }
+svg.riso .pz-bar { fill: #6aa6ac; mix-blend-mode: multiply; opacity: .9; }
+svg.riso .pz-no { fill: #e8628c; mix-blend-mode: multiply; opacity: .55; font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 400; letter-spacing: -.04em; }
+svg.riso .pz-ghost { fill: none; stroke: #3f9aa6; stroke-width: .5; stroke-opacity: .25; mix-blend-mode: multiply; stroke-linecap: round; }
+svg.riso .pz-reg circle, svg.riso .pz-reg line { fill: none; stroke: #2b2a27; stroke-width: .04; }
+svg.riso .pz-title { fill: #2b2a27; font-family: "Noto Serif TC", serif; font-weight: 500; letter-spacing: .25em; }
+svg.riso .pz-mono { fill: #2b2a27; font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .12em; }
+svg.riso .pz-v { fill: #d9643a; }
+svg.riso .pz-sym { stroke: #2b2a27; stroke-width: .06; }
+svg.riso .pz-fx { fill: #2b2a27; } svg.riso .pz-mv { fill: #ebe4d6; stroke: #2b2a27; stroke-width: .05; }
+.stage svg.riso, .hero-fig svg.riso, .cards svg.riso, .quiz figure svg.riso, .fig svg.riso { background: #ebe4d6; }
+/* ── 退一步：去掉紙紋，色層變淡，偏移變小 ── */
+svg.riso .r-grain { display: none; }
+svg.riso .k-tri, svg.riso .k-bar { transform: translate(.05px, .035px); }
+svg.riso .k-tri { fill-opacity: .55; stroke-opacity: .55; }
+svg.riso .k-bar { stroke-opacity: .6; }
+svg.riso .r-ht { opacity: .3; } svg.riso .r-shadow { opacity: .18; }
+svg.riso .r-robe { fill-opacity: .75; }
+/* 頁首與卡片：只有線稿＋一道軌跡 */
+svg.quiet .k-tri, svg.quiet .k-bar, svg.quiet .k-base { fill: none !important; stroke: #2b2a27 !important; stroke-width: .045px !important; stroke-opacity: .55 !important; fill-opacity: 0 !important; transform: none; mix-blend-mode: normal; }
+svg.quiet .k-disc { fill: none; stroke: #2b2a27; stroke-width: .04px; stroke-opacity: .45; }
+svg.quiet .s-trace, svg.quiet .k-floor, svg.quiet .r-grid, svg.quiet .pz-back, svg.quiet .pz-front, svg.quiet .k-slot { display: none; }
+svg.quiet .s-fixed { fill: #2b2a27; } svg.quiet .s-joint { fill: #ebe4d6; stroke: #2b2a27; stroke-width: .05; }
+svg.quiet .r-robe, svg.quiet .r-skin, svg.quiet .r-fish, svg.quiet .r-cush, svg.quiet .r-pad, svg.quiet .r-hand, svg.quiet .r-mhead, svg.quiet .r-disc { fill: none !important; stroke: #2b2a27; stroke-width: .045px; stroke-opacity: .6; mix-blend-mode: normal; filter: none; }
+svg.quiet .r-ht, svg.quiet .r-line, svg.quiet .r-cheek, svg.quiet .r-ear, svg.quiet .r-sash, svg.quiet .k-beads, svg.quiet .k-shine, svg.quiet .k-fish-line, svg.quiet .r-hit, svg.quiet .r-hit2 { display: none; }
+svg.quiet .r-arm, svg.quiet .r-coup { stroke: #2b2a27; stroke-width: .045px; stroke-opacity: .6; mix-blend-mode: normal; }
+svg.quiet .k-stick { stroke-width: .06; }
+svg.quiet .k-feye, svg.quiet .k-dot { fill: #2b2a27; }
+svg.quiet .mk-trace { fill: none; stroke: #e2603b; stroke-linecap: round; stroke-linejoin: round; mix-blend-mode: multiply; }
+svg.quiet .mk-t { fill: #2b2a27; fill-opacity: .7; font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .14em; }
+svg.quiet .mk-k { fill: #e2603b; fill-opacity: 1; }
+svg.quiet rect[fill^="url(#g"] { display: none; }
+/* ── 標識版面 ── */
+svg.plate .r-paper { fill: #ebe5d9; }
+svg.plate .pl-tex { opacity: .07; mix-blend-mode: multiply; pointer-events: none; }
+svg.plate .r-grain, svg.plate .s-trace, svg.plate .k-floor, svg.plate rect[fill^="url(#g"], svg.plate .mk, svg.plate .k-slot, svg.plate .k-jl, svg.plate .s-let { display: none; }
+svg.plate .pl-blk { mix-blend-mode: multiply; }
+svg.plate .pl-b1 { fill: #b9ccd2; opacity: .55; } svg.plate .pl-b2 { fill: #d8c8b0; opacity: .55; } svg.plate .pl-b3 { fill: #c9d8dc; opacity: .45; }
+svg.plate .pl-ring { fill: none; stroke: #2b2926; stroke-width: .035; stroke-opacity: .7; }
+svg.plate .pl-ring.pl-dot { stroke-width: .05; stroke-linecap: round; stroke-opacity: .55; }
+svg.plate .pl-axis { stroke: #2b2926; stroke-width: .035; stroke-opacity: .75; }
+svg.plate .pl-pt { fill: #2b2926; }
+svg.plate .pl-cross circle, svg.plate .pl-cross line { fill: none; stroke: #2b2926; stroke-width: .035; }
+svg.plate .pl-dots { stroke: #2b2926; stroke-width: .07; stroke-linecap: round; }
+svg.plate .pl-bleed { opacity: .45; } svg.plate .pl-pk { fill: #e27a9b; } svg.plate .pl-tl { fill: #8fb9c4; }
+svg.plate .pl-t { fill: #2b2926; font-family: "IBM Plex Mono", ui-monospace, monospace; letter-spacing: .32em; }
+svg.plate .pl-i { font-style: italic; letter-spacing: .12em; }
+svg.plate .k-tri, svg.plate .k-bar { fill: #2b2926 !important; stroke: #2b2926 !important; fill-opacity: .94 !important; stroke-opacity: .94 !important; mix-blend-mode: normal !important; transform: none !important; }
+svg.plate .k-tri { stroke-width: .5px !important; }
+svg.plate .k-base { stroke: #2b2926 !important; stroke-opacity: .5 !important; stroke-width: .06px !important; fill: none !important; }
+svg.plate .k-disc { fill: none !important; stroke: #2b2926 !important; stroke-width: .035px !important; stroke-opacity: .6 !important; stroke-dasharray: .05 .18; }
+svg.plate .s-joint, svg.plate .s-fixed { fill: #ebe5d9; stroke: none; }
+svg.plate .k-crank, svg.plate .s-link, svg.plate .s-ground { display: none; }
+svg.plate .pl-accent { fill: #e2603b !important; stroke: none !important; }
+/* 小沙彌：剪影 */
+svg.plate .r-robe, svg.plate .r-skin, svg.plate .r-fish, svg.plate .r-hand { fill: #2b2926 !important; fill-opacity: .94 !important; stroke: none !important; mix-blend-mode: normal !important; }
+svg.plate .r-arm, svg.plate .r-coup { stroke: #2b2926 !important; stroke-opacity: .94 !important; mix-blend-mode: normal !important; }
+svg.plate .k-stick { stroke: #2b2926; }
+svg.plate .r-cush, svg.plate .r-pad, svg.plate .r-ht, svg.plate .r-line, svg.plate .r-sash, svg.plate .r-cheek, svg.plate .r-ear, svg.plate .k-beads, svg.plate .k-shine, svg.plate .k-fish-line, svg.plate .r-hit, svg.plate .r-hit2, svg.plate .r-disc { display: none; }
+svg.plate .k-face, svg.plate .k-fish-slot { stroke: #ebe5d9; } svg.plate .k-feye, svg.plate .k-dot { fill: #ebe5d9; } svg.plate .k-glint { fill: #2b2926; }
+svg.plate .r-mhead { fill: #e2603b !important; stroke: none !important; mix-blend-mode: normal !important; }
+
+/* ── 標識版面 v2：橘綠棕藍、版印質感 ── */
+svg.plate .r-paper { fill: #ece6da; }
+svg.plate .pl-bleed { display: none; }
+svg.plate .pl-b1 { fill: #a9c3cf; opacity: .78; } svg.plate .pl-b2 { fill: #c8c7c3; opacity: .7; }
+svg.plate .pl-hs, svg.plate .pl-hd { opacity: .75; }
+svg.plate .pl-ring { stroke-opacity: .65; stroke-width: .03; }
+svg.plate .pl-axis { stroke-opacity: .7; stroke-width: .03; }
+svg.plate .pl-t { letter-spacing: .14em; }
+svg.plate .pl-or { fill: #e08a52; } svg.plate .pl-sq { fill: #8fb0c0; }
+svg.plate .pl-d0 { fill: #8fb0c0; } svg.plate .pl-d1 { fill: #6c6b68; } svg.plate .pl-d2 { fill: #e08a52; }
+svg.plate .k-tri.pl-c0, svg.plate .k-bar.pl-c0 { fill: #6f7350 !important; stroke: #6f7350 !important; }
+svg.plate .k-tri.pl-c1, svg.plate .k-bar.pl-c1 { fill: #8a7764 !important; stroke: #8a7764 !important; }
+svg.plate .k-tri.pl-c2, svg.plate .k-bar.pl-c2 { fill: #4a4946 !important; stroke: #4a4946 !important; }
+svg.plate .k-tri.pl-c3, svg.plate .k-bar.pl-c3 { fill: #b49a7c !important; stroke: #b49a7c !important; }
+svg.plate .k-tri.pl-c4, svg.plate .k-bar.pl-c4 { fill: #7f97a3 !important; stroke: #7f97a3 !important; }
+svg.plate .pl-accent { fill: #e08a52 !important; }
+svg.plate .r-robe { fill: #6f7350 !important; } svg.plate .r-skin, svg.plate .r-hand { fill: #ecd0b4 !important; }
+svg.plate .r-fish { fill: #8a7764 !important; } svg.plate .r-arm, svg.plate .r-coup, svg.plate .k-stick { stroke: #4a4946 !important; }
+svg.plate .r-mhead { fill: #e08a52 !important; }
+svg.plate > .k-face { stroke: #4a4946 !important; } svg.plate > .k-dot { fill: #b49a7c !important; }
+
+/* ── 說明圖、模擬器：同色調、保留教學標示 ── */
+svg.plate.tone rect[fill^="url(#g"] { display: inline; opacity: .32; }
+svg.plate.tone .s-trace { display: inline; fill: none !important; stroke: #e08a52 !important; stroke-width: .07 !important; stroke-dasharray: .12 .16; opacity: .9; mix-blend-mode: normal !important; }
+svg.plate.tone .k-floor { display: inline; stroke: #6c6b68 !important; stroke-width: .04 !important; stroke-dasharray: .3 .2; }
+svg.plate.tone .k-slot { display: inline; stroke: #ece6da !important; }
+svg.plate.tone .k-jl, svg.plate.tone .s-let { display: inline; fill: #3b3a38 !important; stroke: #ece6da !important; stroke-width: .12px !important; paint-order: stroke; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+svg.plate.tone .s-joint, svg.plate.tone .s-fixed { fill: #ece6da !important; stroke: #3b3a38 !important; stroke-width: .05 !important; }
+svg.plate.tone .s-fixed { fill: #3b3a38 !important; }
+svg.plate.tone .k-crank { display: inline; stroke: #e08a52 !important; stroke-width: .14 !important; stroke-linecap: round; mix-blend-mode: normal !important; }
+svg.plate.tone .s-link, svg.plate.tone .s-ground { display: inline; stroke: #3b3a38 !important; stroke-width: .045 !important; stroke-dasharray: .14 .1; mix-blend-mode: normal !important; }
+svg.plate.tone .k-hl { stroke: #e08a52 !important; stroke-width: .12 !important; mix-blend-mode: normal !important; opacity: 1 !important; }
+svg.plate.tone .k-back { opacity: .42 !important; }
+svg.plate.tone .k-disc { stroke-opacity: .75 !important; stroke-width: .05px !important; }
+svg.plate.tone .r-disc { display: inline; fill: #a9c3cf !important; opacity: .7 !important; stroke: none !important; mix-blend-mode: normal !important; }
+svg.plate.tone .r-cush { display: inline; fill: #c8c7c3 !important; opacity: .8 !important; stroke: none !important; }
+svg.plate.tone .r-hit { display: inline; fill: #e08a52 !important; stroke: none !important; }
+svg.plate.tone .pl-accent { r: .3; }
+
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../">← 連桿機構 Linkages</a>
+  <span>Work 007 · 2026</span>
+</div></header>
+
+<main class="wrap">
+<nav class="exnav" aria-label="範例"><a class="prev" href="../">‹ 總覽</a><span>1 / 6<b>三曲柄平移</b></span><a class="next" href="../#sim">敲木魚 ›</a></nav><p class="swipe-hint">在下方大圖上左右滑，可以換範例</p>
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 007 · Linkages · Example 1</p>
+      <h1>三曲柄平移</h1>
+      <p class="en-title">Parallel Cranks</p>
+      <p class="lede">三根一樣長的曲柄，帶著一塊板繞小圓。板子不會轉，只會平移。<span>Three equal cranks carry a plate round a small circle. The plate never turns; it only shifts.</span></p>
+    </div>
+    <figure class="plan hero-fig"><svg id="hero" role="img" aria-label="一塊三角板架在三根曲柄上，繞小圓平移 A plate on three cranks shifting round a small circle"></svg></figure>
+  </section>
+
+  <nav class="enter" aria-label="Open the work">
+    <a href="#sim"><b>開始操作 <i>↓</i></b><small>Go to the simulator</small><p>三根曲柄一起改長度，或拿掉一根，看板子還動不動得了。</p></a>
+    <a href="#ws"><b>看學習單 <i>↓</i></b><small>Worksheet · A4 · 1:1</small><p>5 片零件：底座、平移板、三根曲柄（其中一根做成圓盤）。</p></a>
+  </nav>
+
+  <section class="text">
+    <div lang="zh-Hant"><h2>關於</h2><p>這是最簡單的一個範例。底座上三個固定孔，各接一根 1 公分的曲柄，三根曲柄的另一端一起接到同一塊板上。</p><p>因為三根曲柄一樣長、而且互相平行，板子轉動時永遠保持同一個方向：板上每一點都畫出一樣大的圓。這叫做平行曲柄。</p></div>
+    <div lang="en"><h2>About</h2><p class="en">The simplest example. Three fixed holes on the base each carry a 1 cm crank, and the other ends of all three meet the same plate.</p><p class="en">Because the cranks are equal and parallel, the plate keeps the same direction as it moves: every point on it traces the same circle. This is a parallel-crank linkage.</p></div>
+  </section>  <section class="text">
+    <div lang="zh-Hant"><h2>三根是不是太多？</h2><p>其實兩根曲柄就能決定板子的位置，第三根是「多的」。數學上剛好接得上，所以模擬器轉得動；但紙卡的孔位只要差一點，三根就會互相拉扯、卡住。</p><p>可以先做三根試試看，再拆掉一根比較。</p></div>
+    <div lang="en"><h2>Is three too many?</h2><p class="en">Two cranks already fix the plate; the third is redundant. On paper it fits exactly, so the simulator turns, but in card a tiny hole error makes the three fight and jam.</p><p class="en">Try it with three, then take one away and compare.</p></div>
+  </section>
+
+  <section class="sim" id="sim">
+    <div class="sim-head">
+      <h2>模擬器 · Simulator</h2>
+      <p>三根曲柄預設一起改。<span>By default all three cranks change together.</span></p>
+      <button class="btn" id="btn-full" type="button" aria-pressed="false">展開 ⤢</button>
+    </div>
+    <div class="work">
+      <div class="stage"><svg id="stage" role="img" aria-label="三曲柄平移作動圖"></svg></div>
+      <div class="panel">
+        <div class="group">
+          <h3>曲柄 · Crank</h3>
+          <div class="row"><label for="in-a">曲柄 J3–J6<small>圓盤</small></label><output id="out-a"></output><input id="in-a" type="range"></div>
+          <div class="checks"><label><input id="ck-linked" type="checkbox" checked> 三根一起改</label><label><input id="ck-drop" type="checkbox"> 拿掉 J1–J4 那根</label></div>
+          <div class="btns"><button class="btn" id="btn-reset" type="button">回到原始尺寸</button></div>
+        </div>
+        <div id="status" class="status"><b></b><span></span></div>
+        <div class="readout" id="readout"></div>
+        <div class="group">
+          <h3>作動 · Motion</h3>
+          <div class="btns"><button class="btn primary" id="btn-play" type="button">暫停</button></div>
+          <div class="row"><label for="in-sp">速度</label><output id="out-sp"></output><input id="in-sp" type="range" min="0.1" max="1.5" step="0.1" value="0.5"></div>
+          <div class="checks"><label><input id="ck-skel" type="checkbox" checked> 骨架與代號</label><label><input id="ck-trace" type="checkbox" checked> 軌跡</label></div>
+        </div>
+        <div class="group">
+          <h3>學習單 · Worksheet</h3>
+          <p class="fine">曲柄改了，學習單上的圓盤也會跟著改。<a href="#ws">看下面的學習單 ↓</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quiz" id="quiz">
+    <figure><svg id="fig-quiz" role="img" aria-label="依勾選的答案改變的機構圖"></svg><figcaption id="quiz-read"></figcaption></figure>
+    <div id="qs">
+      <h2>想一想 · Questions</h2>
+      <p class="intro">先猜，再勾；左邊的圖會換成你選的答案。</p>
+      <div class="q" data-q="1"><p class="q-t"><b>1</b><span>板上每一點畫出的圓，大小怎樣？</span></p><div class="opts"><button type="button" data-v="same" aria-pressed="false">一樣大</button><button type="button" data-v="far" aria-pressed="false">離中心越遠越大</button><button type="button" data-v="none" aria-pressed="false">板子不會動</button></div><p class="fb" aria-live="polite"></p></div>
+      <div class="q" data-q="2"><p class="q-t"><b>2</b><span>拿掉 J1–J4 那根曲柄，板子還動得了嗎？</span></p><div class="opts"><button type="button" data-v="yes" aria-pressed="false">可以</button><button type="button" data-v="no" aria-pressed="false">不行</button></div><p class="fb" aria-live="polite"></p></div>
+      <div class="q" data-q="3"><p class="q-t"><b>3</b><span>只把圓盤那根改成 1.5 cm，另外兩根還是 1 cm？</span></p><div class="opts"><button type="button" data-v="ok" aria-pressed="false">照轉</button><button type="button" data-v="stuck" aria-pressed="false">卡住</button><button type="button" data-v="bigger" aria-pressed="false">轉更大圈</button></div><p class="fb" aria-live="polite"></p></div>
+
+    </div>
+  </section>
+
+  <section class="ws" id="ws">
+    <div class="sim-head">
+      <h2>學習單 · Worksheet</h2>
+      <p>一張 A4 橫向、1:1，雙面列印後對折成 A5。<span>One A4 sheet, 1:1, printed on both sides and folded to A5.</span></p>
+    </div>
+    <div class="ws-bar">
+      <div class="btns"><button class="btn primary" id="btn-ws-std" type="button">下載標準版</button><button class="btn" id="btn-ws" type="button">列印目前曲柄的版本</button></div>
+      <p class="fine" id="ws-state"></p>
+      <p class="fine">列印時紙張選 A4 橫向、縮放 100%（實際大小）、邊界無；雙面列印選短邊翻面。上方 4 公分正反面都不放零件，裁切前先留下來。</p>
+    </div>
+    <div class="sheets" id="sheets">
+      <figure class="sheet"><figcaption>第 1 面（外側）：三曲柄平移裁切版<br>Side 1, outside: ready to cut</figcaption><div id="sh-out"></div></figure>
+      <figure class="sheet"><figcaption>第 2 面（內側跨頁）：只有格子和孔位，畫自己的造型<br>Side 2, inside: grid and holes only, for your own figure</figcaption><div id="sh-in"></div></figure>
+    </div>
+  </section>
+
+  <section class="text" id="make">
+    <div lang="zh-Hant"><h2>動手做</h2><p>材料：紙卡（厚 1–2 mm）、圖釘 6 支、珍珠板、剪刀、口紅膠。</p><ol><li>在內頁格子上畫自己的造型，孔位不動，交給老師確認。</li><li>沿虛線裁下上方的保留帶留著，把零件頁貼到紙卡上，或描到紙卡上，剪下所有零件。</li><li>底座用固定孔（實心）的圖釘釘在珍珠板上。</li><li>同名的孔疊在一起，用圖釘串起來，順時鐘轉圓盤。</li></ol></div>
+    <div lang="en"><h2>Make one</h2><p class="en">You need card, six thumbtacks, foam board, scissors and a glue stick.</p><ol class="en"><li>Draw your own shapes on the grid inside. Leave the holes where they are and have the teacher check it.</li><li>Cut off the top strip and keep it. Glue the parts page onto card, or trace it, and cut out every part.</li><li>Pin the base to the foam board through the fixed (solid) holes.</li><li>Stack holes with the same name, pin them together and turn the disc clockwise.</li></ol></div>
+  </section>
+
+<nav class="exnav bottom" aria-label="範例"><a class="prev" href="../">‹ 總覽</a><span>1 / 6<b>三曲柄平移</b></span><a class="next" href="../#sim">敲木魚 ›</a></nav>
+  <dl class="data">
+    <dt>Series</dt><dd><a href="../">連桿機構 Linkages</a><span>範例 1 · Example 1</span></dd>
+    <dt>Course</dt><dd>國立中央大學附屬中壢高中 生活科技「機構實作」<span>Technology, Zhongli Senior High School</span></dd>
+    <dt>Medium</dt><dd>SVG, JavaScript；紙卡、圖釘、珍珠板<span>card, thumbtacks, foam board</span></dd>
+    <dt>Bars</dt><dd>曲柄 1 cm × 3；底座三個固定孔 J1、J2、J3；平移板上的孔和底座的孔形狀相同<span>Three 1 cm cranks; the plate repeats the base's hole pattern</span></dd>
+    <dt>Worksheet</dt><dd>A4 雙面對折，1:1，每格 1 cm；軸孔都在格點上<span>A4, double-sided and folded; every pivot on a grid point</span></dd>
+    <dt>Tools</dt><dd>機構原型以 MotionGen 設計；網頁與學習單與 AI 協作製作<span>Linkage first drawn in MotionGen; page and worksheet made with AI assistance</span></dd>
+    <dt>Purpose</dt><dd>非營利教育用途<span>Non-commercial, for teaching</span></dd>
+  </dl>
+</main>
+<script>
+/* ── 兩頁共用：幾何、學習單繪圖（mm，A4 橫向 297×210，1 cm = 10 mm）、小測驗 ── */
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const n1=v=>String(Math.round(v*10)/10);
+const f2=v=>(+v).toFixed(2);
+const f3=v=>(+v).toFixed(3);
+const hyp=(P,Q)=>Math.hypot(P[0]-Q[0],P[1]-Q[1]);
+/* 兩圓交點：取離 ref 最近的那一個，讓機構連續、不會突然翻面 */
+function cc(c1,r1,c2,r2,ref){
+  const dx=c2[0]-c1[0],dy=c2[1]-c1[1],d=Math.hypot(dx,dy);
+  if(d===0||d>r1+r2+1e-9||d<Math.abs(r1-r2)-1e-9)return null;
+  const a=(r1*r1-r2*r2+d*d)/(2*d),h=Math.sqrt(Math.max(0,r1*r1-a*a)),ux=dx/d,uy=dy/d,bx=c1[0]+a*ux,by=c1[1]+a*uy;
+  const p=[bx-h*uy,by+h*ux],q=[bx+h*uy,by-h*ux];
+  return hyp(p,ref)<hyp(q,ref)?p:q;
+}
+/* 從起始角度往順時鐘、逆時鐘各走一圈，收集接得起來的姿勢。
+   走得完一整圈 → full；中途卡住 → 只能在兩個極限之間來回 */
+function sweep(solve,th0,ref0,N=720){
+  const step=2*Math.PI/N;
+  const first=solve(th0,ref0);if(!first)return {full:false,list:[]};
+  const cw=[first];let r=first;
+  for(let i=1;i<=N;i++){const g=solve(th0-i*step,r.ref);if(!g)break;cw.push(g);r=g;}
+  if(cw.length>N){cw.length=N;return {full:true,list:cw};}
+  const ccw=[];r=first;
+  for(let i=1;i<=N;i++){const g=solve(th0+i*step,r.ref);if(!g)break;ccw.push(g);r=g;}
+  return {full:false,list:ccw.reverse().concat(cw)};
+}
+/* 葛拉索夫判斷：最短 + 最長 對 其餘兩根 */
+function grashof(bars,crankKey){
+  const v=Object.values(bars).sort((x,y)=>x-y),s=v[0],l=v[3],pq=v[1]+v[2],diff=pq-(s+l);
+  const crankShortest=bars[crankKey]<=s+1e-9;
+  return {s,l,pq,diff,crankShortest};
+}
+
+/* ── 學習單 ── */
+const INK='#111',MID='#666',SERIF='"Noto Serif TC","Noto Serif CJK TC","Songti TC","PMingLiU",serif',
+  SANS='"Noto Sans TC","Noto Sans CJK TC","PingFang TC","Microsoft JhengHei",sans-serif',
+  MONO='"IBM Plex Mono","Noto Sans Mono CJK TC",ui-monospace,Menlo,monospace';
+function T(x,y,str,o={}){
+  const a=[`x="${f2(x)}"`,`y="${f2(y)}"`,`font-size="${o.size||3.1}"`,`font-family='${o.font||SANS}'`,`fill="${o.fill||INK}"`];
+  if(o.anchor)a.push(`text-anchor="${o.anchor}"`);
+  if(o.weight)a.push(`font-weight="${o.weight}"`);
+  if(o.ls)a.push(`letter-spacing="${o.ls}"`);
+  if(o.rot!=null)a.push(`transform="rotate(${f2(o.rot)} ${f2(x)} ${f2(y)})"`);
+  return `<text ${a.join(' ')}>${str}</text>`;
+}
+const L=(x1,y1,x2,y2,w=0.2,c=INK,extra='')=>`<line x1="${f2(x1)}" y1="${f2(y1)}" x2="${f2(x2)}" y2="${f2(y2)}" stroke="${c}" stroke-width="${w}" ${extra}/>`;
+const FOLD=148.5,STRIP=40,RING=4;
+const toMM=p=>[FOLD+p[0]*10,STRIP+p[1]*10];
+function gridMM(ax,ay){
+  let fine='',bold='';
+  for(let x=ax%10;x<=297;x+=10){const k=Math.round((x-ax)/10);(k%5===0?(bold+=`M${f2(x)} 0V210`):(fine+=`M${f2(x)} 0V210`));}
+  for(let y=ay%10;y<=210;y+=10){const k=Math.round((y-ay)/10);(k%5===0?(bold+=`M0 ${f2(y)}H297`):(fine+=`M0 ${f2(y)}H297`));}
+  return `<path d="${fine}" stroke="#8c8c8c" stroke-width="0.16" fill="none"/><path d="${bold}" stroke="#4d4d4d" stroke-width="0.28" fill="none"/>`;
+}
+function sheetOpen(id){
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210" role="img"><defs>
+  <marker id="tick-${id}" viewBox="-2 -2 4 4" markerWidth="4" markerHeight="4" orient="auto"><path d="M-1.2 1.2L1.2-1.2" stroke="${INK}" stroke-width="0.5"/></marker>
+  </defs><rect width="297" height="210" fill="#fff"/>`;
+}
+function qrSVG(Q,x,y,size){const n=Q.length,m=size/n;let d='';
+  Q.forEach((row,r)=>{let c=0;while(c<n){if(row[c]==='1'){let e=c;while(e<n&&row[e]==='1')e++;d+=`M${f2(x+c*m)} ${f2(y+r*m)}h${f2((e-c)*m)}v${f2(m)}h${f2(-(e-c)*m)}z`;c=e;}else c++;}});
+  return `<path d="${d}" fill="${INK}"/>`;}
+function scaleBar(x,y){let o=L(x,y,x+50,y,0.35);
+  for(let i=0;i<=5;i++)o+=L(x+i*10,y-2.2,x+i*10,y,0.35)+T(x+i*10,y+4,String(i),{size:2.6,anchor:'middle',font:MONO});
+  for(let i=0;i<50;i++)if(i%10)o+=L(x+i,y-(i%5?0.9:1.5),x+i,y,0.15);
+  return o+T(x+54,y+4,'cm',{size:2.6,font:MONO});}
+const cutLine=note=>L(0,STRIP,297,STRIP,0.3,INK,'stroke-dasharray="3 1.5"')+`<rect x="118" y="${STRIP-2.2}" width="61" height="4.4" fill="#fff"/>`+T(FOLD,STRIP+1,note,{size:2.6,anchor:'middle',fill:MID})+L(FOLD,0,FOLD,4,0.15,MID)+L(FOLD,206,FOLD,210,0.15,MID);
+function holeAt(P,k,dx,dy){
+  return `<circle cx="${f2(P[0])}" cy="${f2(P[1])}" r="${RING}" fill="#fff" fill-opacity="0.75" stroke="${INK}" stroke-width="0.2" stroke-dasharray="0.8 0.6"/>`+
+    L(P[0]-2.6,P[1],P[0]+2.6,P[1],0.2)+L(P[0],P[1]-2.6,P[0],P[1]+2.6,0.2)+`<circle cx="${f2(P[0])}" cy="${f2(P[1])}" r="1" fill="none" stroke="${INK}" stroke-width="0.3"/>`+
+    T(P[0]+dx,P[1]+dy,k,{size:k.length>1?3.4:4.4,font:k.length>1?MONO:SERIF,weight:700});
+}
+const tagAt=(x,y,name,sub)=>`<rect x="${f2(x-1.5)}" y="${f2(y-4.2)}" width="${f2(name.length*3.5+sub.length*2.75+7)}" height="6" fill="#fff"/>`+T(x,y,name,{size:3.4,weight:700})+T(x+name.length*3.5+3,y,sub,{size:2.9,fill:MID});
+const spanLine=(P,Q)=>L(P[0],P[1],Q[0],Q[1],0.2,INK,'stroke-dasharray="1.6 1.2"');
+/* 零件外形：把桿子（線段）、三角板（多邊形）、圓盤畫成「加寬 w mm」的形狀。
+   先畫一層稍粗的黑色，再蓋一層白色，重疊的零件合併成一條剪裁線。 */
+function outline(shapes,w=6){
+  let k='',wt='';
+  for(const s of shapes){
+    if(s.circle){const [x,y,r]=s.circle;k+=`<circle cx="${f2(x)}" cy="${f2(y)}" r="${f2(r+0.35)}" fill="${INK}"/>`;wt+=`<circle cx="${f2(x)}" cy="${f2(y)}" r="${f2(r)}" fill="#fff"/>`;continue;}
+    if(s.ellipse){const [x,y,rx,ry]=s.ellipse;k+=`<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(rx+0.35)}" ry="${f2(ry+0.35)}" fill="${INK}"/>`;wt+=`<ellipse cx="${f2(x)}" cy="${f2(y)}" rx="${f2(rx)}" ry="${f2(ry)}" fill="#fff"/>`;continue;}
+    const ww=s.w||w,d='M'+s.pts.map(p=>f2(p[0])+' '+f2(p[1])).join('L')+(s.closed?'Z':'');
+    k+=`<path d="${d}" fill="${s.closed?INK:'none'}" stroke="${INK}" stroke-width="${f2(2*ww+0.7)}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    wt+=`<path d="${d}" fill="${s.closed?'#fff':'none'}" stroke="#fff" stroke-width="${f2(2*ww)}" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+  return k+wt;
+}
+/* 外側表頭：比例尺、組合示意、學校與標題、QR、班級座號姓名、教師確認 */
+function headOutside({sub,qr,thumb,label,custom}){
+  let o=`<rect x="0" y="0" width="297" height="${STRIP}" fill="#fff"/>`+cutLine('裁切零件前，先沿此線裁下，上方留存');
+  const bx=10;
+  o+=T(bx,12,'比例尺',{size:2.6,weight:700,ls:0.6,fill:MID});
+  o+=T(bx,19.5,'1 : 1',{size:5.5,font:MONO,weight:500})+T(bx+18,19.5,'每格 1 cm',{size:3.2});
+  o+=scaleBar(bx,27.5)+T(bx,36.2,'列印選「實際大小 100%」，這條線應為 5 cm。',{size:2.5,fill:MID});
+  o+=T(86,12,'組起來的樣子',{size:2.6,weight:700,ls:0.6,fill:MID})+thumb;
+  const cx=157;
+  o+=T(cx,9.5,'國立中央大學附屬中壢高中',{size:3.1,weight:500,ls:0.35});
+  o+=T(cx,14.3,'生活科技　機構實作',{size:2.9,ls:0.35,fill:MID});
+  o+=T(cx-0.5,27,'四連桿機構',{size:10,font:SERIF,weight:700,ls:0.3});
+  o+=T(cx+56,27,sub,{size:4.4,font:SERIF,weight:700,fill:MID});
+  o+=qrSVG(qr,238,4.5,19)+T(247.5,27.4,'說明與模擬器',{size:2.3,anchor:'middle',fill:MID});
+  let fx=cx;const fy=35.5;
+  for(const [lb,w] of [['班級',20],['座號',14],['姓名',32]]){o+=T(fx,fy,lb,{size:3.2,weight:500});o+=L(fx+8,fy+0.8,fx+8+w,fy+0.8,0.25);fx+=8+w+4;}
+  o+=`<rect x="264" y="15" width="24" height="21" fill="none" stroke="${INK}" stroke-width="0.25"/>`+T(276,13,'教師確認',{size:2.6,anchor:'middle',fill:MID});
+  o+=`<rect x="8" y="${STRIP+4}" width="${label.length*3.7+6}" height="7" fill="#fff"/>`+T(10,STRIP+9,label,{size:3.6,font:SERIF,weight:700,ls:0.3});
+  if(custom)o+=`<rect x="${label.length*3.7+16}" y="${STRIP+4}" width="${f2(custom.length*2.95+6)}" height="7" fill="#fff" stroke="${INK}" stroke-width="0.2"/>`+T(label.length*3.7+19,STRIP+8.8,custom,{size:2.9,weight:500});
+  return o;
+}
+/* 內側表頭：標題、說明、三條規則、圖例 */
+function headInside({lines,rules,custom}){
+  let o=`<rect x="0" y="0" width="297" height="${STRIP}" fill="#fff"/>`+cutLine('裁切零件前，先沿此線裁下，上方留存');
+  o+=T(10,16,'畫你的造型',{size:8,font:SERIF,weight:700,ls:0.4});
+  o+=T(10,23,'1 : 1　每格 1 cm',{size:2.8,font:MONO,fill:MID});
+  o+=T(10,31,lines[0],{size:2.9})+T(10,35.3,lines[1],{size:2.9});
+  rules.forEach((ru,i)=>{const x=92+i*68;o+=T(x,19.5,String(i+1),{size:9,font:SERIF,weight:700})+T(x+8,15.5,ru[0],{size:3.4,weight:700})+T(x+8,20.5,ru[1],{size:2.8,fill:MID});});
+  o+=`<circle cx="96" cy="30" r="${RING}" fill="none" stroke="${INK}" stroke-width="0.2" stroke-dasharray="0.8 0.6"/>`+L(93.4,30,98.6,30,0.2)+L(96,27.4,96,32.6,0.2)+`<circle cx="96" cy="30" r="1" fill="none" stroke="${INK}" stroke-width="0.3"/>`;
+  o+=T(103,31,'孔位與保護圈',{size:2.8,fill:MID})+L(134,30,142,30,0.2,INK,'stroke-dasharray="1.6 1.2"')+T(145,31,'孔距（桿長）',{size:2.8,fill:MID});
+  if(custom)o+=`<rect x="8" y="${STRIP+4}" width="${f2(custom.length*2.95+6)}" height="7" fill="#fff" stroke="${INK}" stroke-width="0.2"/>`+T(11,STRIP+8.8,custom,{size:2.9,weight:500});
+  return o;
+}
+
+/* ── 想一想：點選答案，畫面立刻回應 ── */
+function quiz(cfg,onPick){
+  document.querySelectorAll('#qs .q').forEach(q=>{
+    const n=q.dataset.q,fb=q.querySelector('.fb');
+    q.querySelectorAll('.opts button').forEach(b=>b.addEventListener('click',()=>{
+      q.querySelectorAll('.opts button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+      const v=b.dataset.v,c=cfg[n];fb.textContent=(v===c.ok?'✓ ':'')+(c.fb[v]||'');
+      onPick&&onPick(n,v);
+    }));
+  });
+}
+
+/* ── 展開模擬器、主題 ── */
+function fullToggle(btn,sec){btn.addEventListener('click',()=>{const on=!sec.classList.contains('full');sec.classList.toggle('full',on);document.documentElement.classList.toggle('noscroll',on);btn.setAttribute('aria-pressed',on);btn.textContent=on?'收合 ⤡':'展開 ⤢';});}
+function svgEl(tag,cls,parent,attrs){const e=document.createElementNS(NS,tag);if(cls)e.setAttribute('class',cls);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);parent.appendChild(e);return e;}
+const gridDefs='<defs><pattern id="g1" width="1" height="1" patternUnits="userSpaceOnUse"><path d="M1 0H0V1" fill="none" stroke="var(--grid)" stroke-width=".03"/></pattern><pattern id="g5" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M5 0H0V5" fill="none" stroke="var(--grid-b)" stroke-width=".05"/></pattern></defs>';
+const segD=(P,Q)=>`M${f3(P[0])} ${f3(-P[1])}L${f3(Q[0])} ${f3(-Q[1])}`;
+const polyD=pts=>'M'+pts.map(p=>f3(p[0])+' '+f3(-p[1])).join('L')+'Z';
+
+/* ── 視覺：post-digital／解構瑞士網格／生成符號／圖解抽象，加網版印刷的紙紋、網點、套色偏移 ── */
+let RISO_N=0;
+function risoize(svg){
+  const u='rz'+(RISO_N++)+'-';svg.classList.add('riso');
+  const defs=document.createElementNS(NS,'defs');
+  defs.innerHTML=`<filter id="${u}grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="16" numOctaves="1" seed="9"/><feColorMatrix type="matrix" values="0 0 0 0 .17  0 0 0 0 .16  0 0 0 0 .15  0 0 0 -2.2 1.25"/></filter>
+    <pattern id="${u}htP" width=".3" height=".3" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><circle cx=".15" cy=".15" r=".08" fill="#e8628c"/></pattern>
+    <pattern id="${u}htT" width=".3" height=".3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><circle cx=".15" cy=".15" r=".075" fill="#3f9aa6"/></pattern>`;
+  svg.insertBefore(defs,svg.firstChild);
+  const paper=document.createElementNS(NS,'rect');paper.setAttribute('class','r-paper');for(const [k,v] of [['x',-200],['y',-200],['width',400],['height',400]])paper.setAttribute(k,v);
+  svg.insertBefore(paper,defs.nextSibling);
+  const grain=document.createElementNS(NS,'rect');grain.setAttribute('class','r-grain');grain.setAttribute('filter',`url(#${u}grain)`);for(const [k,v] of [['x',-200],['y',-200],['width',400],['height',400]])grain.setAttribute(k,v);
+  svg.appendChild(grain);
+  return u;
+}
+/* 海報式外框：大號碼、瑞士網格欄線、對位記號、直排標題、資料欄、生成符號列 */
+function posterOverlay(svg,vb,o){
+  const [x0,y0,W,H]=vb,u=o.u||'',s=H/20,back=document.createElementNS(NS,'g'),front=document.createElementNS(NS,'g');
+  back.setAttribute('class','pz-back');front.setAttribute('class','pz-front');
+  let b='';
+  for(let i=1;i<6;i++)b+=`<line x1="${f3(x0+W*i/6)}" y1="${y0}" x2="${f3(x0+W*i/6)}" y2="${y0+H}" class="pz-col"/>`;
+  b+=`<rect x="${f3(x0)}" y="${f3(y0+s*4.4)}" width="${f3(W*0.42)}" height="${f3(s*0.32)}" class="pz-bar"/>`;
+  b+=`<text x="${f3(x0-s*0.6)}" y="${f3(y0+H+s*1.4)}" class="pz-no" font-size="${f3(H*0.58)}">${o.no}</text>`;
+  if(o.trace)b+=`<path d="${o.trace}" class="pz-ghost"/>`;
+  back.innerHTML=b;
+  let f='';
+  const reg=(x,y)=>`<g class="pz-reg"><circle cx="${f3(x)}" cy="${f3(y)}" r="${f3(s*0.32)}"/><line x1="${f3(x-s*0.55)}" y1="${f3(y)}" x2="${f3(x+s*0.55)}" y2="${f3(y)}"/><line x1="${f3(x)}" y1="${f3(y-s*0.55)}" x2="${f3(x)}" y2="${f3(y+s*0.55)}"/></g>`;
+  f+=reg(x0+s*0.9,y0+s*0.9)+reg(x0+W-s*0.9,y0+H-s*0.9);
+  const tx=x0+W-s*0.7;
+  f+=`<text transform="translate(${f3(tx)} ${f3(y0+s*1.6)}) rotate(90)" class="pz-title" font-size="${f3(s*1.05)}">${o.zh}</text>`;
+  f+=`<text transform="translate(${f3(tx-s*1.25)} ${f3(y0+s*1.6)}) rotate(90)" class="pz-mono" font-size="${f3(s*0.42)}">${o.en.toUpperCase()} · LINKAGES ${o.no}/06</text>`;
+  (o.data||[]).forEach(([k,v],i)=>{const y=y0+s*(1.2+i*0.75);f+=`<text x="${f3(x0+s*1.8)}" y="${f3(y)}" class="pz-mono" font-size="${f3(s*0.42)}">${k}</text><text x="${f3(x0+s*5.6)}" y="${f3(y)}" class="pz-mono pz-v" font-size="${f3(s*0.42)}">${v}</text>`;});
+  /* 生成符號：每根桿一個記號，長度照比例；實心點是固定軸，空心是活動軸 */
+  if(o.bars){let x=x0+s*1.8;const y=y0+H-s*0.45,k=s*0.32;
+    for(const [len,fixedA,fixedB] of o.bars){f+=`<circle cx="${f3(x)}" cy="${f3(y)}" r="${f3(s*0.16)}" class="${fixedA?'pz-fx':'pz-mv'}"/><line x1="${f3(x)}" y1="${f3(y)}" x2="${f3(x+len*k)}" y2="${f3(y)}" class="pz-sym"/>`;x+=len*k;f+=`<circle cx="${f3(x)}" cy="${f3(y)}" r="${f3(s*0.16)}" class="${fixedB?'pz-fx':'pz-mv'}"/>`;x+=s*0.6;}}
+  front.innerHTML=f;
+  const after=svg.querySelector('.r-paper')||svg.firstChild;
+  svg.insertBefore(back,after?after.nextSibling:svg.firstChild);
+  const grain=svg.querySelector('.r-grain');svg.insertBefore(front,grain||null);
+}
+/* 克制版標識：只留一個主體符號（關鍵點的軌跡），加極小的編號與短句 */
+function markOverlay(svg,vb,o){
+  const [x0,y0,W,H]=vb,s=H/20,g=document.createElementNS(NS,'g');g.setAttribute('class','mk');
+  let h='';
+  if(o.trace)h+=`<path d="${o.trace}" class="mk-trace" style="stroke-width:${f3(s*(o.tw||0.55))}"/>`;
+  h+=`<text x="${f3(x0+s*1.1)}" y="${f3(y0+s*1.6)}" class="mk-t" font-size="${f3(s*0.5)}">${o.no}</text>`;
+  if(o.key)h+=`<text x="${f3(x0+s*1.1)}" y="${f3(y0+s*2.4)}" class="mk-t mk-k" font-size="${f3(s*0.5)}">${o.key}</text>`;
+  if(o.say)h+=`<text x="${f3(x0+W-s*1.1)}" y="${f3(y0+H-s*1.0)}" class="mk-t" font-size="${f3(s*0.5)}" text-anchor="end">${o.say}</text>`;
+  g.innerHTML=h;
+  const grain=svg.querySelector('.r-grain');svg.insertBefore(g,grain||null);
+  svg.classList.add('quiet');
+}
+
+/* ── 標識版面（參考：銅馬圖版）：深色剪影＋淡色色塊＋構成線＋一點橘 ── */
+let PLATE_N=0;
+function plateize(svg,inkSel){
+  const u='pl'+(PLATE_N++)+'-';svg.classList.remove('quiet');svg.classList.add('riso','plate');
+  const defs=document.createElementNS(NS,'defs');
+  defs.innerHTML=`<filter id="${u}ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="7" numOctaves="2" seed="11" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -30 21.5" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+    <filter id="${u}paper" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="5" numOctaves="2" seed="5"/><feColorMatrix type="matrix" values="0 0 0 0 .45  0 0 0 0 .4  0 0 0 0 .33  0 0 0 -1.4 .95"/></filter>`;
+  svg.insertBefore(defs,svg.firstChild);
+  let paper=svg.querySelector('.r-paper');if(!paper){paper=document.createElementNS(NS,'rect');paper.setAttribute('class','r-paper');for(const [k,v] of [['x',-200],['y',-200],['width',400],['height',400]])paper.setAttribute(k,v);svg.insertBefore(paper,defs.nextSibling);}
+  const tex=document.createElementNS(NS,'rect');tex.setAttribute('class','pl-tex');tex.setAttribute('filter',`url(#${u}paper)`);for(const [k,v] of [['x',-200],['y',-200],['width',400],['height',400]])tex.setAttribute(k,v);
+  paper.after(tex);
+  const els=[...svg.querySelectorAll(inkSel||'.k-tri,.k-bar')].filter(e=>!e.classList.contains('k-base'));
+  if(els.length){const g=document.createElementNS(NS,'g');g.setAttribute('class','pl-ink');g.setAttribute('filter',`url(#${u}ink)`);els[0].before(g);els.forEach((e,k)=>{g.appendChild(e);e.classList.add('pl-c'+(k%5));});}
+  svg.dataset.pl=u;
+  return u;
+}
+function plateOverlay(svg,vb,o){
+  const u=svg.dataset.pl||'pl-',[x0,y0,W,H]=vb,s=Math.min(W,H)/20,c=o.c||[x0+W/2,y0+H/2],R=o.R||Math.min(W,H)*0.4,ay=o.ay??c[1],F=f3;
+  const defs=document.createElementNS(NS,'defs');
+  defs.innerHTML=`<clipPath id="${u}half"><rect x="${F(c[0]-R*2)}" y="${F(c[1]-R*2)}" width="${F(R*2)}" height="${F(R*2+ (ay-c[1]))}"/></clipPath>
+   <pattern id="${u}hd" width="${F(s*0.32)}" height="${F(s*0.32)}" patternUnits="userSpaceOnUse"><circle cx="${F(s*0.16)}" cy="${F(s*0.16)}" r="${F(s*0.05)}" fill="#3b3a38"/></pattern>
+   <pattern id="${u}hs" width="${F(s*0.22)}" height="${F(s*0.22)}" patternUnits="userSpaceOnUse"><rect width="${F(s*0.22)}" height="${F(s*0.09)}" fill="#a7bfca"/></pattern>`;
+  svg.insertBefore(defs,svg.firstChild);
+  const back=document.createElementNS(NS,'g');back.setAttribute('class','pl-back');
+  const cross=(x,y,r)=>`<g class="pl-cross"><circle cx="${F(x)}" cy="${F(y)}" r="${F(r)}"/><line x1="${F(x-r*1.8)}" y1="${F(y)}" x2="${F(x+r*1.8)}" y2="${F(y)}"/><line x1="${F(x)}" y1="${F(y-r*1.8)}" x2="${F(x)}" y2="${F(y+r*1.8)}"/></g>`;
+  const dot=(x,y)=>`<circle cx="${F(x)}" cy="${F(y)}" r="${F(s*0.09)}" class="pl-pt"/>`;
+  let b='';
+  b+=`<circle cx="${F(c[0]-R*0.08)}" cy="${F(c[1]-R*0.05)}" r="${F(R*0.86)}" class="pl-blk pl-b1" clip-path="url(#${u}half)"/>`;
+  b+=`<rect x="${F(c[0]-R*1.02)}" y="${F(c[1]-R*0.36)}" width="${F(R*0.5)}" height="${F(R*0.42)}" class="pl-blk pl-b2"/>`;
+  b+=`<path d="M${F(c[0])} ${F(c[1]-R*0.98)}H${F(c[0]+R*1.0)}L${F(c[0]+R*0.82)} ${F(c[1]-R*0.74)}H${F(c[0])}Z" class="pl-blk pl-b2"/>`;
+  b+=`<path d="M${F(c[0]+R*0.22)} ${F(c[1]-R*0.92)}H${F(c[0]+R*0.96)}L${F(c[0]+R*0.8)} ${F(c[1]-R*0.74)}H${F(c[0]+R*0.06)}Z" fill="url(#${u}hs)" class="pl-hs"/>`;
+  b+=`<rect x="${F(c[0]+R*0.72)}" y="${F(c[1]+R*0.1)}" width="${F(R*0.3)}" height="${F(R*0.3)}" fill="url(#${u}hd)" class="pl-hd"/>`;
+  b+=`<circle cx="${F(c[0])}" cy="${F(c[1])}" r="${F(R)}" class="pl-ring"/>`;
+  b+=`<line x1="${F(c[0])}" y1="${F(c[1]-R*1.12)}" x2="${F(c[0])}" y2="${F(c[1]+R*1.12)}" class="pl-axis"/>`;
+  b+=`<line x1="${F(c[0]-R*0.8)}" y1="${F(c[1]-R*1.0)}" x2="${F(c[0]-R*0.8)}" y2="${F(c[1]+R*0.1)}" class="pl-axis"/>${dot(c[0]-R*0.8,c[1]-R*0.4)}`;
+  b+=`<line x1="${F(c[0]-R*1.18)}" y1="${F(ay)}" x2="${F(c[0]+R*1.25)}" y2="${F(ay)}" class="pl-axis"/>${dot(c[0]+R*1.25,ay)}`;
+  b+=`<line x1="${F(c[0]-R*1.1)}" y1="${F(c[1]+R*0.86)}" x2="${F(c[0]-R*0.55)}" y2="${F(c[1]+R*0.86)}" class="pl-axis"/>${dot(c[0]-R*1.0,c[1]+R*0.86)}`;
+  b+=`<line x1="${F(c[0]-R*0.2)}" y1="${F(c[1]+R*1.02)}" x2="${F(c[0]+R*0.9)}" y2="${F(c[1]+R*1.02)}" class="pl-axis"/>${dot(c[0]+R*0.9,c[1]+R*1.02)}`;
+  back.innerHTML=b;(svg.querySelector('.pl-tex')||svg.querySelector('.r-paper')).after(back);
+  const front=document.createElementNS(NS,'g');front.setAttribute('class','pl-front');const fs=s*0.44,m=s*1.3,lh=fs*1.6;
+  let t=cross(x0+W-m*1.1,y0+H-m*1.05,s*0.32);
+  t+=[0,1,2].map(k=>`<circle cx="${F(x0+W-m*2.1-k*s*0.42)}" cy="${F(y0+H-m*1.05)}" r="${F(s*0.12)}" class="pl-d${2-k}"/>`).join('');
+  if(!o.noText){
+    const code=(o.letters||'').replace(/[\s\/]/g,''),n=String(o.no).replace(/^0/,'');
+    t+=`<text x="${F(x0+m)}" y="${F(y0+m*1.3)}" class="pl-t" font-size="${F(fs)}">N.${o.no}</text>`;
+    if(code)t+=`<text x="${F(x0+m)}" y="${F(y0+m*1.3+lh*1.3)}" class="pl-t" font-size="${F(fs)}">${code}</text><text x="${F(x0+m)}" y="${F(y0+m*1.3+lh*2.3)}" class="pl-t" font-size="${F(fs)}">A-${n}</text>`;
+    t+=`<rect x="${F(x0+m)}" y="${F(y0+m*1.3+lh*3)}" width="${F(s*0.9)}" height="${F(s*0.2)}" class="pl-or"/>`;
+    t+=`<rect x="${F(x0+W-m*1.2)}" y="${F(y0+m*0.9)}" width="${F(s*0.26)}" height="${F(s*0.26)}" class="pl-sq"/>`;
+    t+=`<text x="${F(x0+W-m*2.3)}" y="${F(y0+m*2)}" class="pl-t" font-size="${F(fs)}">${n}</text><line x1="${F(x0+W-m*1.75)}" y1="${F(y0+m*2.35)}" x2="${F(x0+W-m*1.3)}" y2="${F(y0+m*1.6)}" class="pl-axis"/><text x="${F(x0+W-m*1.5)}" y="${F(y0+m*2.75)}" class="pl-t" font-size="${F(fs)}">06</text>`;
+    t+=`<text x="${F(x0+m)}" y="${F(y0+H-m*0.95)}" class="pl-t" font-size="${F(fs)}">K.26</text><line x1="${F(x0+m+fs*3.6)}" y1="${F(y0+H-m*0.95-fs*0.1)}" x2="${F(x0+m+fs*7)}" y2="${F(y0+H-m*0.95-fs*0.1)}" class="pl-axis"/>`;
+  }
+  front.innerHTML=t;svg.appendChild(front);
+}
+
+/* 說明圖、模擬器：同一套色調，但留下格線、標籤、軌跡 */
+function toneize(svg,inkSel){plateize(svg,inkSel);svg.classList.add('tone');}
+
+/* ── 通用單曲柄連桿：從 MotionGen 的接點表求解（Levenberg–Marquardt），支援滑槽 ── */
+function Mech(cfg){
+  const J=cfg.joints,names=Object.keys(J),bodies=cfg.bodies,ground=bodies.find(b=>b.id===cfg.ground),crank=cfg.crank;
+  const fixed=new Set(ground.joints);
+  const a0=hyp(J[crank.pin],J[crank.center]),th0=Math.atan2(J[crank.pin][1]-J[crank.center][1],J[crank.pin][0]-J[crank.center][0]);
+  const unk=names.filter(n=>!fixed.has(n)&&n!==crank.pin),idx={};unk.forEach((n,i)=>idx[n]=i);
+  /* 剛體：同一片上任兩點的距離固定 */
+  const cons=[];
+  for(const b of bodies){if(b.id===ground.id||b.id===crank.body)continue;
+    const js=b.joints;for(let i=0;i<js.length;i++)for(let k=i+1;k<js.length;k++)cons.push({t:'d',a:js[i],b:js[k],d:hyp(J[js[i]],J[js[k]])});}
+  for(const s of (cfg.slots||[]))cons.push({t:'s',p:s.pin,a:s.from,b:s.to});
+  function pos(x,pin){return n=>n===crank.pin?pin:fixed.has(n)?J[n]:[x[2*idx[n]],x[2*idx[n]+1]];}
+  function resid(x,pin){const P=pos(x,pin);return cons.map(c=>{
+    if(c.t==='d')return hyp(P(c.a),P(c.b))-c.d;
+    const A=P(c.a),B=P(c.b),K=P(c.p),L=hyp(A,B)||1;return ((K[0]-A[0])*(B[1]-A[1])-(K[1]-A[1])*(B[0]-A[0]))/L;});}
+  function solve(x0,pin){
+    let x=x0.slice(),r=resid(x,pin),err=Math.max(...r.map(Math.abs)),lam=1e-3;const n=x.length,m=r.length;
+    for(let it=0;it<40&&err>1e-9;it++){
+      const Jm=[];for(let j=0;j<n;j++){const h=1e-6,xp=x.slice();xp[j]+=h;const rp=resid(xp,pin);Jm.push(rp.map((v,i)=>(v-r[i])/h));}
+      const A=[],g=[];for(let p=0;p<n;p++){A.push(new Array(n).fill(0));let s=0;for(let i=0;i<m;i++)s+=Jm[p][i]*r[i];g.push(-s);
+        for(let q=0;q<=p;q++){let t=0;for(let i=0;i<m;i++)t+=Jm[p][i]*Jm[q][i];A[p][q]=A[q][p]=t;}}
+      let ok=false;
+      for(let tries=0;tries<8;tries++){
+        const M=A.map((row,p)=>row.map((v,q)=>v+(p===q?lam*(1+v):0))),bb=g.slice();
+        for(let c=0;c<n;c++){let piv=c;for(let rr=c+1;rr<n;rr++)if(Math.abs(M[rr][c])>Math.abs(M[piv][c]))piv=rr;
+          [M[c],M[piv]]=[M[piv],M[c]];[bb[c],bb[piv]]=[bb[piv],bb[c]];const d=M[c][c]||1e-12;
+          for(let rr=c+1;rr<n;rr++){const f=M[rr][c]/d;if(f)for(let k=c;k<n;k++)M[rr][k]-=f*M[c][k];bb[rr]-=f*bb[c];}}
+        const dx=new Array(n);for(let c=n-1;c>=0;c--){let s=bb[c];for(let k=c+1;k<n;k++)s-=M[c][k]*dx[k];dx[c]=s/(M[c][c]||1e-12);}
+        const xn=x.map((v,i)=>v+dx[i]),rn=resid(xn,pin),en=Math.max(...rn.map(Math.abs));
+        if(en<err){x=xn;r=rn;err=en;lam=Math.max(lam/5,1e-9);ok=true;break;}lam*=8;
+      }
+      if(!ok)break;
+    }
+    return {x,err};
+  }
+  const x0=unk.flatMap(n=>J[n]);
+  const pinAt=(a,th)=>[J[crank.center][0]+a*Math.cos(th),J[crank.center][1]+a*Math.sin(th)];
+  function slotOK(P){for(const s of (cfg.slots||[])){const A=P(s.from),B=P(s.to),K=P(s.pin),L2=(B[0]-A[0])**2+(B[1]-A[1])**2,t=((K[0]-A[0])*(B[0]-A[0])+(K[1]-A[1])*(B[1]-A[1]))/L2;if(t<(s.tmin??0.06)||t>(s.tmax??0.94))return false;}return true;}
+  function frame(x,pin,th){const P=pos(x,pin),o={th,pin,P:{}};for(const n of names)o.P[n]=P(n);return o;}
+  /* 從靜止姿勢出發，曲柄長度慢慢調到 a，再往順時鐘、逆時鐘各掃一圈 */
+  function analyse(a,N=360){
+    let x=x0.slice();
+    for(let k=1;k<=12;k++){const ak=a0+(a-a0)*k/12,r=solve(x,pinAt(ak,th0));if(r.err>1e-5)return {a,list:[],full:false};x=r.x;}
+    const step=2*Math.PI/N,first=frame(x,pinAt(a,th0),th0);
+    if(!slotOK(n=>first.P[n]))return {a,list:[],full:false};
+    const go=(dir)=>{const out=[];let xx=x,prev=first;
+      for(let i=1;i<=N;i++){const th=th0+dir*i*step,pin=pinAt(a,th),r=solve(xx,pin);if(r.err>1e-5)break;
+        const f=frame(r.x,pin,th);let jump=0;for(const n of unk)jump=Math.max(jump,hyp(f.P[n],prev.P[n]));
+        if(jump>0.6||!slotOK(n=>f.P[n]))break;out.push(f);xx=r.x;prev=f;}
+      return out;};
+    const cw=go(-1);
+    if(cw.length>=N){cw.length=N-1;return {a,list:[first,...cw],full:true};}
+    const ccw=go(1);return {a,list:ccw.reverse().concat([first],cw),full:false};
+  }
+  const pivots=names.filter(n=>bodies.filter(b=>b.joints.includes(n)).length>=2||fixed.has(n));
+  return {cfg,J,names,bodies,ground,crank,a0,th0,analyse,pivots,fixed};
+}
+/* 外形：多邊形的凸包（以頂點順序畫，三點以上封閉） */
+function hull2(pts){
+  const P=pts.map(p=>[+p[0],+p[1]]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]);if(P.length<3)return P;
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
+  for(const p of P){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=1e-9)lo.pop();lo.push(p);}
+  for(const p of P.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=1e-9)up.pop();up.push(p);}
+  return lo.slice(0,-1).concat(up.slice(0,-1));
+}
+/* ── 畫面：任何單曲柄機構 ── */
+function mechView(svg,M,opt={}){
+  svg.innerHTML=gridDefs;const vb=opt.vb;svg.setAttribute('viewBox',vb.join(' '));
+  if(!opt.noGrid){svgEl('rect',null,svg,{x:vb[0],y:vb[1],width:vb[2],height:vb[3],fill:'url(#g1)'});svgEl('rect',null,svg,{x:vb[0],y:vb[1],width:vb[2],height:vb[3],fill:'url(#g5)'});}
+  const E={body:{},trace:{},slot:{}};
+  if(opt.floor)E.floor=svgEl('line','k-floor',svg);
+  for(const t of (M.cfg.traces||[]))E.trace[t]=svgEl('path','s-trace',svg);
+  const order=[...M.bodies].sort((a,b)=>(a.z||0)-(b.z||0));
+  for(const b of order){
+    if(b.id===M.crank.body){E.disc=svgEl('circle','k-disc',svg);continue;}
+    const cls=b.id===M.ground.id?'k-base':('k-'+(b.color||'front'));
+    E.body[b.id]=svgEl('path',(b.joints.length>2&&!b.bar?'k-tri ':'k-bar ')+cls,svg);
+    for(const s of (M.cfg.slots||[]))if(s.body===b.id)E.slot[b.id]=svgEl('path','k-slot',svg);
+  }
+  E.sk=svgEl('g',null,svg);E.crank=svgEl('line','k-crank',E.sk);E.j={};E.t={};
+  for(const n of M.pivots){E.j[n]=svgEl('circle',M.fixed.has(n)?'s-fixed':'s-joint',E.sk,{r:opt.jr||.2});if(!opt.noLabels){E.t[n]=svgEl('text','k-jl',E.sk);E.t[n].textContent=n;}}
+  if(opt.noSkel)E.sk.style.display='none';
+  const V={E,an:null,idx:0,dirPP:1,
+    set(an){this.an=an;this.idx=an.list.length?an.list.findIndex(f=>Math.abs(f.th-M.th0)<1e-9):0;if(this.idx<0)this.idx=0;this.dirPP=1;
+      E.disc&&E.disc.setAttribute('r',an.a+0.8);const C=M.J[M.crank.center];E.disc&&(E.disc.setAttribute('cx',C[0]),E.disc.setAttribute('cy',-C[1]));
+      for(const t in E.trace)E.trace[t].setAttribute('d',an.list.length?'M'+an.list.filter((_,i)=>i%2===0).map(f=>f3(f.P[t][0])+' '+f3(-f.P[t][1])).join('L')+(an.full?'Z':''):'');
+      if(E.floor&&an.list.length){let lo=1e9;for(const f of an.list)for(const t of M.cfg.floorBy)lo=Math.min(lo,f.P[t][1]);E.floor.setAttribute('x1',vb[0]);E.floor.setAttribute('x2',vb[0]+vb[2]);E.floor.setAttribute('y1',-lo);E.floor.setAttribute('y2',-lo);}
+      this.draw();},
+    draw(){const an=this.an;if(!an||!an.list.length)return;const f=an.list[Math.floor(this.idx)%an.list.length],P=f.P;
+      for(const b of M.bodies){const e=E.body[b.id];if(!e)continue;const pts=b.joints.map(n=>P[n]);
+        e.setAttribute('d',pts.length===2||b.bar?segD(pts[0],pts[pts.length-1]):polyD(hull2(pts)));
+        if(E.slot[b.id]){const s=M.cfg.slots.find(q=>q.body===b.id),A=P[s.from],B=P[s.to],u=s.tmin??0.06,v=s.tmax??0.94;
+          E.slot[b.id].setAttribute('d',segD([A[0]+(B[0]-A[0])*u,A[1]+(B[1]-A[1])*u],[A[0]+(B[0]-A[0])*v,A[1]+(B[1]-A[1])*v]));}}
+      const C=M.J[M.crank.center];E.crank.setAttribute('x1',C[0]);E.crank.setAttribute('y1',-C[1]);E.crank.setAttribute('x2',P[M.crank.pin][0]);E.crank.setAttribute('y2',-P[M.crank.pin][1]);
+      for(const n of M.pivots){E.j[n].setAttribute('cx',P[n][0]);E.j[n].setAttribute('cy',-P[n][1]);if(E.t[n]){E.t[n].setAttribute('x',P[n][0]+.28);E.t[n].setAttribute('y',-P[n][1]-.28);}}},
+    step(sp){const an=this.an;if(!an||!an.list.length)return;const n=an.list.length,d=sp*3;
+      if(an.full)this.idx=(this.idx+d)%n;else{this.idx+=d*this.dirPP;if(this.idx>=n-1){this.idx=n-1;this.dirPP=-1;}if(this.idx<=0){this.idx=0;this.dirPP=1;}}
+      this.draw();}
+  };
+  return V;
+}
+
+/* ── 學習單：零件自動排版。每片照組好的方向，必要時轉 90°，平移整數公分，孔都留在格點上 ── */
+function mechParts(M,a){
+  const sh=M.cfg.sheetShift||[0,0],J=n=>[M.J[n][0]+sh[0],-(M.J[n][1]+sh[1])];
+  const parts=[];
+  for(const b of M.bodies){
+    if(b.id===M.crank.body){parts.push({b,disc:true,R:a+0.8,holes:[[M.crank.center,[0,0]],[M.crank.pin,[a,0]]]});continue;}
+    const holes=b.joints.filter(n=>M.pivots.includes(n)).map(n=>[n,J(n)]),pts=b.joints.map(J);
+    parts.push({b,pts,holes,slot:(M.cfg.slots||[]).find(s=>s.body===b.id)});
+  }
+  return parts;
+}
+function rot90(p,k){let [x,y]=p;for(let i=0;i<k;i++)[x,y]=[-y,x];return [x,y];}
+function mechSheetParts(M,a,full,placed){
+  let o='';const solid=[],cuts=[];
+  const tr=(pl,q)=>{const r=rot90(q,pl.k);return toMM([r[0]+pl.t[0],r[1]+pl.t[1]]);};
+  for(const pl of placed){const p=pl.p;
+    if(p.disc){solid.push({circle:[...toMM(pl.t),p.R*10]});continue;}
+    if(p.b.id===M.ground.id||full){const pts=p.pts.map(q=>tr(pl,q));solid.push(pts.length===2||p.b.bar?{pts:[pts[0],pts[pts.length-1]]}:{pts:hull2(pts),closed:true});}
+    if(p.slot){const s=p.slot,sh=M.cfg.sheetShift||[0,0],J=n=>[M.J[n][0]+sh[0],-(M.J[n][1]+sh[1])],A=tr(pl,J(s.from)),B=tr(pl,J(s.to)),u=s.tmin??0.06,v=s.tmax??0.94;
+      cuts.push([[A[0]+(B[0]-A[0])*u,A[1]+(B[1]-A[1])*u],[A[0]+(B[0]-A[0])*v,A[1]+(B[1]-A[1])*v]]);}
+  }
+  o+=outline(solid);
+  for(const c of cuts)o+=`<path d="M${f2(c[0][0])} ${f2(c[0][1])}L${f2(c[1][0])} ${f2(c[1][1])}" stroke="${INK}" stroke-width="4.7" stroke-linecap="round"/><path d="M${f2(c[0][0])} ${f2(c[0][1])}L${f2(c[1][0])} ${f2(c[1][1])}" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`+T((c[0][0]+c[1][0])/2,(c[0][1]+c[1][1])/2+1,'滑槽',{size:2.6,anchor:'middle',fill:MID});
+  for(const pl of placed){const p=pl.p,hs=p.disc?p.holes.map(([n,q])=>[n,toMM([pl.t[0]+q[0],pl.t[1]+q[1]])]):p.holes.map(([n,q])=>[n,tr(pl,q)]);
+    for(let i=0;i<hs.length;i++)for(let k=i+1;k<hs.length;k++)o+=spanLine(hs[i][1],hs[k][1]);
+    for(const [n,P] of hs)o+=holeAt(P,n,P[0]>285?-5.2-n.length*2.2:5.2,-2.2);
+    let cx,cy;const nm=p.b.name||'',sub=nm+(p.disc?`　${n1(a)} cm`:''),w=p.b.id.length*3.5+sub.length*2.75+4;
+    if(p.disc){const c=toMM(pl.t);cx=c[0];cy=c[1]+Math.max(7,p.R*5);}
+    else{const hp=hull2(p.pts.map(q=>tr(pl,q)));cx=hp.reduce((s,q)=>s+q[0],0)/hp.length;cy=hp.reduce((s,q)=>s+q[1],0)/hp.length;
+      if(hs.some(([n,P])=>Math.abs(P[0]-cx)<w/2+5&&Math.abs(P[1]-cy)<7))cy+=8;}
+    o+=tagAt(cx-w/2,cy+1.5,p.b.id,sub);}
+  return o;
+}
+function mechThumb(M,an,box=[86,15,62,22]){
+  if(!an.list.length)return '';const f=an.list[0];let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
+  for(const n of M.names){const p=f.P[n];x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);}
+  const k=Math.min(box[2]/(x1-x0),box[3]/(y1-y0)),P=q=>[box[0]+(q[0]-x0)*k,box[1]+(y1-q[1])*k];let o='';
+  for(const b of M.bodies){if(b.id===M.crank.body)continue;const pts=b.joints.map(n=>P(f.P[n]));
+    if(pts.length===2||b.bar)o+=L(pts[0][0],pts[0][1],pts[pts.length-1][0],pts[pts.length-1][1],0.3);else o+=`<path d="M${hull2(pts).map(q=>f2(q[0])+' '+f2(q[1])).join('L')}Z" fill="#ececec" stroke="${INK}" stroke-width="0.15"/>`;}
+  const c=P(M.J[M.crank.center]);o+=`<circle cx="${f2(c[0])}" cy="${f2(c[1])}" r="${f2((an.a+0.8)*k)}" fill="none" stroke="${INK}" stroke-width="0.15"/>`;
+  for(const n of M.pivots){const m=P(f.P[n]);o+=`<circle cx="${f2(m[0])}" cy="${f2(m[1])}" r="0.55" fill="${M.fixed.has(n)?INK:'#fff'}" stroke="${INK}" stroke-width="0.18"/>`;}
+  return o;
+}
+/* 依形狀排版：零件外形（凸包外擴）點陣化，由上往下、由左往右找第一個放得下的整數公分位置 */
+function packParts(parts,W=29.7,H=17,top=1.3){
+  const C=0.25,M=0.72,nx=Math.floor(W/C),ny=Math.floor(H/C),X0=-W/2,occ=new Uint8Array(nx*ny);
+  const inPoly=(p,poly)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+  const dSeg=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L=dx*dx+dy*dy||1e-12;let t=((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L;t=Math.max(0,Math.min(1,t));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy);};
+  function mask(poly,disc){const xs=poly.map(q=>q[0]),ys=poly.map(q=>q[1]),E=M+(disc||0),x0=Math.min(...xs)-E,y0=Math.min(...ys)-E,x1=Math.max(...xs)+E,y1=Math.max(...ys)+E,cells=[];
+    for(let y=Math.floor(y0/C)*C;y<=y1;y+=C)for(let x=Math.floor(x0/C)*C;x<=x1;x+=C){const p=[x+C/2,y+C/2];let ok;
+      if(disc)ok=Math.hypot(p[0],p[1])<=disc+M;else{ok=poly.length>2&&inPoly(p,poly);if(!ok)for(let i=0;i<poly.length&&!ok;i++)if(dSeg(p,poly[i],poly[(i+1)%poly.length])<=M)ok=true;}
+      if(ok)cells.push([Math.round(x/C),Math.round(y/C)]);}
+    return cells;}
+  const items=parts.map(p=>{const opts=[];for(let k=0;k<(p.disc?1:4);k++){const poly=p.disc?[[0,0]]:hull2(p.pts.map(q=>rot90(q,k)));opts.push({k,cells:mask(poly,p.disc?p.R:0)});}
+    return {p,opts,n:opts[0].cells.length};}).sort((a,b)=>b.n-a.n);
+  const placed=[],step=Math.round(1/C);
+  for(const it of items){let best=null;
+    for(const o of it.opts){let mnx=1e9,mny=1e9,mxx=-1e9,mxy=-1e9;for(const [cx,cy] of o.cells){mnx=Math.min(mnx,cx);mny=Math.min(mny,cy);mxx=Math.max(mxx,cx);mxy=Math.max(mxy,cy);}
+      const ox=Math.round(X0/C);
+      for(let ty=Math.ceil((top/C-mny)/step);ty*step+mxy<ny;ty++){if(best&&ty>best.ty)break;
+        const txMin=Math.ceil((ox-mnx)/step),txMax=Math.floor((ox+nx-1-mxx)/step);
+        for(let tx=txMin;tx<=txMax;tx++){let ok=true;
+          for(const [cx,cy] of o.cells){const gx=cx+tx*step-ox,gy=cy+ty*step;if(gx<0||gy<0||gx>=nx||gy>=ny||occ[gy*nx+gx]){ok=false;break;}}
+          if(ok){if(!best||ty<best.ty||(ty===best.ty&&tx<best.tx))best={o,tx,ty};break;}}
+      }}
+    if(!best)return null;
+    for(const [cx,cy] of best.o.cells)occ[(cy+best.ty*step)*nx+(cx+best.tx*step-Math.round(X0/C))]=1;
+    placed.push({p:it.p,k:best.o.k,t:[best.tx,best.ty]});
+  }
+  return placed;
+}
+
+const CFG_DOG={joints:{J1:[-4.5,0],J2:[4.5,0],J3:[-5.5,0],J4:[5.5,6],J5:[7.5,-6],J6:[6.5,2],J7:[-3.5,6],J8:[2.5,6],J9:[-1.5,6],J10:[-5.5,-6],J11:[8.12,8.62],J12:[-7.5,5],J13:[-4.5,4],J14:[-7.5,9],J15:[-8.5,6],J16:[-10.5,10],J17:[-8.5,13],J18:[-15.5,7],J19:[-14.5,6]},
+ bodies:[{id:'L2',joints:['J1','J2'],name:'底座'},{id:'L1',joints:['J1','J3'],name:'曲柄圓盤'},
+  {id:'L4',joints:['J2','J7','J8'],name:'背',color:'back',z:1},
+  {id:'L3',joints:['J2','J4','J5','J6','J11'],name:'後腿與尾巴',color:'front',z:2},
+  {id:'L6',joints:['J7','J3','J10'],name:'前腿',color:'front',z:3},
+  {id:'L5',joints:['J3','J4','J9'],name:'後連桿',color:'c3',z:4},
+  {id:'L8',joints:['J3','J12','J13'],name:'頸連桿',color:'c3',z:5},
+  {id:'L9',joints:['J12','J7','J14','J15','J16','J17','J18','J19'],name:'頭',color:'back',z:6}],
+ ground:'L2',crank:{body:'L1',center:'J1',pin:'J3'},traces:['J10','J5','J18'],floorBy:['J10','J5'],sheetShift:[0.5,0]};
+const CFG_EXC={joints:{J1:[-2,0],J2:[2,0],J3:[-5.649,2.55],J4:[-1,1],J5:[7,6],J6:[4,3],J7:[6,8],J8:[9,7],J9:[13,0],J10:[14,2],J11:[16,0],J12:[17,-2],J13:[16,-4],J14:[11,-5],J15:[13,-5]},
+ bodies:[{id:'L1',joints:['J1','J2'],name:'底座'},{id:'L2',joints:['J1','J4'],name:'曲柄圓盤'},
+  {id:'L3',joints:['J3','J2','J5','J6'],name:'大臂（滑槽）',color:'c4',z:1},
+  {id:'L5',joints:['J4','J7'],name:'推桿',color:'back',z:2},
+  {id:'L4',joints:['J7','J5','J8','J9'],name:'小臂',color:'front',z:3},
+  {id:'L6',joints:['J6','J10'],name:'拉桿',color:'back',z:4},
+  {id:'L8',joints:['J9','J10','J11','J12','J13','J14','J15'],name:'挖斗',color:'c3',z:5}],
+ ground:'L1',crank:{body:'L2',center:'J1',pin:'J4'},slots:[{pin:'J4',body:'L3',from:'J3',to:'J2',tmin:0.09,tmax:0.91}],traces:['J14']};
+function CFG_PAR(a=1,drop=false){const up=a;const J={J1:[-2,-1],J2:[0,1],J3:[2,-1],J4:[-2,-1+up],J5:[0,1+up],J6:[2,-1+up],J7:[0,2+up],J8:[-4,-1+up],J9:[4,-1+up]};
+ const bodies=[{id:'L2',joints:['J1','J2','J3'],name:'底座'},{id:'L4',joints:['J3','J6'],name:'曲柄圓盤'},
+  {id:'L3',joints:['J2','J5'],name:'曲柄',color:'c4',z:1},
+  {id:'L5',joints:['J4','J5','J6','J7','J8','J9'],name:'平移板',color:'front',z:3}];
+ if(!drop)bodies.splice(2,0,{id:'L1',joints:['J1','J4'],name:'曲柄',color:'c4',z:1});
+ return {joints:J,bodies,ground:'L2',crank:{body:'L4',center:'J3',pin:'J6'},traces:['J7','J8','J9']};}
+
+
+const QR=["111111101111001010100110001111111", "100000101010100010011110001000001", "101110101101000000110100101011101", "101110100101000101001101101011101", "101110101001011100110000001011101", "100000100101011000000101001000001", "111111101010101010101010101111111", "000000000110010000010000100000000", "100111111110001111001000110010111", "101111000110100100010001000011100", "110001101011001111000111010011111", "111100011100101011011001111100111", "011111110011111010001011101100000", "110111010101000010100001010000000", "110010110010010011111100001000000", "100110011111010100101011110011101", "101001101000101000001000111111000", "011011010010011100010110011010101", "010001110110011111010001000101101", "101010010111010010110011111011110", "100111110001010001100000100001010", "101101000001010010110101000111100", "100101110111001111001011111100111", "101110011010101011110010000110100", "111101110000000110011000111111010", "000000001000011111100001100010100", "111111101011010101011111101010100", "100000101101110100010011100011101", "101110101110000001110011111110001", "101110101111100001111010010101111", "101110100000111010010010010110011", "100000100011000110111010010111111", "111111101010110011010001100111000"];
+const PAGE={poster:{no:'001',letters:'P / A / R',phrase:'Translatio Parallela'},cfg:o=>CFG_PAR(o.L||1,!!o.drop),def:1,defOpts:{L:1,drop:false},range:[0.5,2,0.1],
+ vbHero:[-7.5,-7,15,12],vbSim:[-6.5,-6.2,13,10],sub:'三曲柄平移',
+ read:(an,st)=>an.list.length?[['圓的半徑 · Radius',n1(st.a)+' cm'],['移動範圍 · Span',n1(2*st.a)+' cm']]:[['圓的半徑 · Radius','—'],['移動範圍 · Span','—']],
+ kindText:{none:['卡住','三根曲柄不一樣長，板子動不了。 The cranks differ in length, so the plate cannot move.']},
+ bind(st,re){const lk=$('ck-linked'),dr=$('ck-drop');
+   lk.addEventListener('change',()=>{st.opts={...st.opts,L:lk.checked?st.a:1};re();});
+   dr.addEventListener('change',()=>{st.opts={...st.opts,drop:dr.checked};re();});
+   $('in-a').addEventListener('input',()=>{if(lk.checked)st.opts={...st.opts,L:st.a};});},
+ syncOpts(o){$('ck-linked').checked=true;$('ck-drop').checked=false;},
+ quizRead:an=>'板上每一點都畫出半徑 '+n1(an.a)+' cm 的圓',
+ qcfg:{'1':{ok:'same',fb:{same:'對。板子不轉，所以每一點走的路都一樣：半徑等於曲柄長的圓。',far:'那是「轉動」的情形。這塊板只平移不轉，每一點的圓都一樣大。',none:'會動。三根曲柄一起轉，板子就跟著繞圈。'},show:{same:{a:1},far:{a:1},none:{a:1}}},
+  '2':{ok:'yes',fb:{yes:'對。兩根就能決定板子的位置，第三根是多的。',no:'可以。圖上已經拿掉那根，板子照樣平移。'},show:{yes:{a:1,opts:{L:1,drop:true},label:'拿掉一根'},no:{a:1,opts:{L:1,drop:true},label:'拿掉一根'}}},
+  '3':{ok:'stuck',fb:{ok:'轉不動。三根要一樣長，板子才能平移。',stuck:'對。長度不一樣，三根互相拉扯，一點都動不了。',bigger:'不會。長度不一樣，板子根本動不了。'},show:{ok:{a:1.5,opts:{L:1,drop:false}},stuck:{a:1.5,opts:{L:1,drop:false}},bigger:{a:1.5,opts:{L:1,drop:false}}}}},
+ insideLines:['只有孔位：圍著孔畫平移板的造型，','三根曲柄和底座照孔位剪。裁切版在背面。'],
+ rules:[['十字孔位不能移動','板上孔的排列要和底座一樣。'],['輪廓畫在虛線圈外','離孔中心至少 4 mm，才不會裂。'],['板子會整塊平移','畫一個會搖擺的角色試試。']]};
+/* ── 共用頁面邏輯 ── */
+const mechCache={},anCache={};
+const optKey=o=>JSON.stringify(o||{});
+function getMech(opts){const k=optKey(opts);return mechCache[k]||(mechCache[k]=Mech(PAGE.cfg(opts)));}
+function getAn(a,opts){const k=a.toFixed(3)+optKey(opts);if(!anCache[k])anCache[k]=getMech(opts).analyse(a);return anCache[k];}
+const st={a:PAGE.def,opts:{...(PAGE.defOpts||{})},playing:!reduce,speed:0.5};
+const views={};
+function makeView(key,svg,opt,opts){const M=getMech(opts);const v=mechView(svg,M,opt);if(key==='hero')risoize(svg);else{toneize(svg);const pe=v.E.j[M.crank.pin];if(pe)pe.classList.add('pl-accent');}views[key]={v,opt,svg,mkey:optKey(opts)};return v;}
+function viewFor(key,svg,opt,opts){const cur=views[key];if(cur&&cur.mkey===optKey(opts))return cur.v;return makeView(key,svg,opt,opts);}
+let hero=makeView('hero',$('hero'),{vb:PAGE.vbHero,noLabels:true,floor:!!PAGE.cfgFloor},PAGE.defOpts);hero.E.crank.style.display='none';hero.set(getAn(PAGE.def,PAGE.defOpts));
+(function(){const M=getMech(PAGE.defOpts),an=getAn(PAGE.def,PAGE.defOpts),t=(M.cfg.traces||[])[0];
+  const trace=t&&an.list.length?'M'+an.list.filter((_,i)=>i%3===0).map(f=>f3(f.P[t][0])+' '+f3(-f.P[t][1])).join('L')+'Z':'';
+  const bars=M.bodies.filter(b=>b.id!==M.ground.id).map(b=>{let best=[0,b.joints[0],b.joints[1]];for(const p of b.joints)for(const q of b.joints){const d=hyp(M.J[p],M.J[q]);if(d>best[0])best=[d,p,q];}return [best[0],M.fixed.has(best[1]),M.fixed.has(best[2])];}).sort((x,y)=>y[0]-x[0]);
+  let bx0=1e9,bx1=-1e9,by0=1e9,by1=-1e9;for(const fr of an.list)for(const n of M.names){const p=fr.P[n];bx0=Math.min(bx0,p[0]);bx1=Math.max(bx1,p[0]);by0=Math.min(by0,p[1]);by1=Math.max(by1,p[1]);}
+  plateize($('hero'));const pinEl=hero.E.j[M.crank.pin];if(pinEl){pinEl.classList.add('pl-accent');pinEl.setAttribute('r',.36);}
+  plateOverlay($('hero'),PAGE.vbHero,{no:PAGE.poster.no,letters:PAGE.poster.letters,phrase:PAGE.poster.phrase,c:[(bx0+bx1)/2,-(by0+by1)/2],R:Math.min(Math.min(PAGE.vbHero[2],PAGE.vbHero[3])*0.4,Math.max(bx1-bx0,by1-by0)*0.58),ay:-M.J[M.crank.center][1]});})();
+let main,qv;
+const KIND={ok:['轉得動','曲柄可以轉一整圈。 The crank turns all the way round.'],jam:['轉不了整圈','曲柄只能在兩個極限之間來回擺。 The crank can only rock between two limits.'],none:['接不起來','這組尺寸圍不成封閉的連桿。 The bars cannot close.']};
+const kindOf=an=>an.list.length?(an.full?'ok':'jam'):'none';
+const inA=$('in-a');inA.min=PAGE.range[0];inA.max=PAGE.range[1];inA.step=PAGE.range[2];inA.value=st.a;
+let pend=null;
+function rebuild(){
+  main=viewFor('main',$('stage'),{vb:PAGE.vbSim,floor:!!PAGE.cfgFloor},st.opts);
+  const an=getAn(st.a,st.opts);main.set(an);$('ck-skel').dispatchEvent(new Event('change'));$('ck-trace').dispatchEvent(new Event('change'));
+  const k=kindOf(an),S=$('status');S.dataset.k=k;S.querySelector('b').textContent=(PAGE.kindText&&PAGE.kindText[k]?PAGE.kindText[k][0]:KIND[k][0]);S.querySelector('span').textContent=(PAGE.kindText&&PAGE.kindText[k]?PAGE.kindText[k][1]:KIND[k][1]);
+  $('readout').innerHTML=PAGE.read(an,st).map(([l,v])=>`<div><small>${l}</small><output>${v}</output></div>`).join('');
+  $('out-a').textContent=n1(st.a)+' cm';
+  $('ws-state').textContent=isCustom()?`目前曲柄 ${n1(st.a)} cm（和標準版不同，列印出來會標示「自訂曲柄」）`:`目前是標準尺寸（曲柄 ${n1(PAGE.def)} cm）。`;
+  sheetsDirty=true;if(sheetsShown)buildSheets();
+}
+function schedule(){$('out-a').textContent=n1(st.a)+' cm';clearTimeout(pend);pend=setTimeout(rebuild,60);}
+inA.addEventListener('input',e=>{st.a=+e.target.value;schedule();});
+$('btn-reset').addEventListener('click',()=>{st.a=PAGE.def;st.opts={...(PAGE.defOpts||{})};inA.value=st.a;PAGE.syncOpts&&PAGE.syncOpts(st.opts);rebuild();});
+$('btn-play').addEventListener('click',()=>{st.playing=!st.playing;$('btn-play').textContent=st.playing?'暫停':'播放';});
+$('in-sp').addEventListener('input',e=>{st.speed=+e.target.value;$('out-sp').textContent=st.speed.toFixed(1);});
+$('out-sp').textContent=st.speed.toFixed(1);
+$('ck-skel').addEventListener('change',e=>{if(main)main.E.sk.style.display=e.target.checked?'':'none';});
+$('ck-trace').addEventListener('change',e=>{if(main)for(const t in main.E.trace)main.E.trace[t].style.display=e.target.checked?'':'none';});
+fullToggle($('btn-full'),$('sim'));
+PAGE.bind&&PAGE.bind(st,()=>rebuild());
+
+/* 想一想 */
+function quizShow(sel){const opts=sel.opts||PAGE.defOpts;qv=viewFor('quiz',$('fig-quiz'),{vb:PAGE.vbQuiz||PAGE.vbSim,floor:!!PAGE.cfgFloor},opts);
+  const an=getAn(sel.a,opts);qv.set(an);const k=kindOf(an);
+  $('quiz-read').textContent=(sel.label||`曲柄 ${n1(sel.a)} cm`)+` · ${(PAGE.kindText&&PAGE.kindText[k]?PAGE.kindText[k][0]:KIND[k][0])}`+(an.list.length&&PAGE.quizRead?' · '+PAGE.quizRead(an):'');}
+quiz(PAGE.qcfg,(n,v)=>quizShow(PAGE.qcfg[n].show[v]));
+quizShow({a:PAGE.def});
+
+/* 學習單 */
+const isCustom=()=>Math.abs(st.a-PAGE.def)>1e-9||optKey(st.opts)!==optKey(PAGE.defOpts);
+let sheetsDirty=true,sheetsShown=false;
+function sheetSVGs(a,opts){
+  const M=getMech(opts),an=getAn(a,opts),placed=packParts(mechParts(M,a),29.7,17,0.3);
+  const custom=Math.abs(a-PAGE.def)>1e-9?`自訂曲柄 ${n1(a)} cm`:'';
+  const label=(t)=>T(86,38.4,t,{size:2.6,weight:700,fill:MID});
+  if(!placed){const msg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210"><rect width="297" height="210" fill="#fff"/>'+T(148.5,105,'這個曲柄長度的零件放不進一張 A4，請改回標準尺寸。',{size:5,anchor:'middle'})+'</svg>';return [msg,msg];}
+  const thumb=mechThumb(M,an,[86,14.5,48,20])+T(137,20,'同名的孔疊在一起，',{size:2.4,fill:MID})+T(137,24,'用圖釘串起來。',{size:2.4,fill:MID});
+  let out=sheetOpen('o')+gridMM(FOLD,STRIP)+mechSheetParts(M,a,true,placed)+headOutside({sub:PAGE.sub,qr:QR,thumb,label:'',custom:''})+label(PAGE.sub+'　裁切版'+(custom?'　'+custom:''))+'</svg>';
+  let ins=sheetOpen('i')+gridMM(FOLD,STRIP)+mechSheetParts(M,a,false,placed)+headInside({lines:PAGE.insideLines,rules:PAGE.rules,custom:''})+(custom?T(10,38.4,custom,{size:2.6,weight:700}):'')+'</svg>';
+  out=out.replace(/<rect x="8" y="44" width="6" height="7" fill="#fff"\/><text[^>]*><\/text>/,'');
+  return [out,ins];
+}
+function buildSheets(a=st.a,opts=st.opts){const [o,i]=sheetSVGs(a,opts);$('sh-out').innerHTML=o;$('sh-in').innerHTML=i;sheetsDirty=false;}
+new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){sheetsShown=true;if(sheetsDirty)buildSheets();}},{rootMargin:'400px'}).observe($('sheets'));
+$('btn-ws').addEventListener('click',()=>{buildSheets();requestAnimationFrame(()=>print());});
+$('btn-ws-std').addEventListener('click',()=>{buildSheets(PAGE.def,PAGE.defOpts);requestAnimationFrame(()=>{print();buildSheets();});});
+
+rebuild();
+function loop(){if(st.playing){main&&main.step(st.speed);hero.step(0.45);qv&&qv.step(0.6);}requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+</script>
+<script>(function(){const P=document.querySelector('.exnav .prev').href,N=document.querySelector('.exnav .next').href;let x0=null,y0=0;
+const h=document.querySelector('.head');h.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+h.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)>60&&Math.abs(dy)<45)location.href=dx<0?N:P;},{passive:true});
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;if(e.key==='ArrowLeft')location.href=P;if(e.key==='ArrowRight')location.href=N;});})();</script>
+</body>
+</html>

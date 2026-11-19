@@ -53,6 +53,7 @@ function renderWorks(projects) {
         </dl>
         <p class="desc">${esc(w.summary)}</p>
         ${w.link ? `<a class="go" href="${esc(w.link)}" target="_blank" rel="noopener">View project →</a>` : ""}
+        ${w.sub && w.sub.length ? `<details class="sub"><summary>Examples · ${w.sub.length}</summary><ul>${w.sub.map((s) => `<li><a href="${esc(s.link)}" target="_blank" rel="noopener">${esc(s.title)}</a></li>`).join("")}</ul></details>` : ""}
       </div>
     </article>`;
   }).join("");

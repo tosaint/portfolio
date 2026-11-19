@@ -110,5 +110,46 @@
     "summary": "A four-bar linkage dressed as a horse, made for a high school mechanism lesson. Students change the four bar lengths in the browser, watch whether the crank can still turn, then print a 1:1 sheet to draw and cut their own figure.",
     "image": "projects/horse-linkage/img/plate.jpg",
     "link": "projects/horse-linkage/"
+  },
+  {
+    "title": "Linkages",
+    "title_zh": "連桿機構",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "SVG",
+      "JavaScript",
+      "Paper card"
+    ],
+    "role": "Teaching design, mechanism design, development",
+    "summary": "A series of linkage examples for a high school mechanism lesson, from the four-bar basics to walking beasts and an excavator. Each example has a simulator to adjust, a short question to guess first, and a 1:1 A4 worksheet to cut and pin together.",
+    "image": "projects/linkage/img/plate.jpg",
+    "link": "projects/linkage/",
+    "sub": [
+      {
+        "title": "Parallel Cranks",
+        "link": "projects/linkage/parallel/"
+      },
+      {
+        "title": "Wooden Fish",
+        "link": "projects/linkage/#sim"
+      },
+      {
+        "title": "Horse Linkage",
+        "link": "projects/horse-linkage/"
+      },
+      {
+        "title": "Beast",
+        "link": "projects/linkage/beast/"
+      },
+      {
+        "title": "Quadruped",
+        "link": "projects/linkage/quadruped/"
+      },
+      {
+        "title": "Excavator",
+        "link": "projects/linkage/excavator/"
+      }
+    ]
   }
 ]
