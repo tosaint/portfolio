@@ -844,6 +844,7 @@ function plateOverlay(svg,vb,o){
 function toneize(svg,inkSel){plateize(svg,inkSel);svg.classList.add('tone');}
 
 /* ── 通用單曲柄連桿：從 MotionGen 的接點表求解（Levenberg–Marquardt），支援滑槽 ── */
+let CUR_A=1;
 function Mech(cfg){
   const J=cfg.joints,names=Object.keys(J),bodies=cfg.bodies,ground=bodies.find(b=>b.id===cfg.ground),crank=cfg.crank;
   const fixed=new Set(ground.joints);
@@ -854,9 +855,11 @@ function Mech(cfg){
   for(const b of bodies){if(b.id===ground.id||b.id===crank.body)continue;
     const js=b.joints;for(let i=0;i<js.length;i++)for(let k=i+1;k<js.length;k++)cons.push({t:'d',a:js[i],b:js[k],d:hyp(J[js[i]],J[js[k]])});}
   for(const s of (cfg.slots||[]))cons.push({t:'s',p:s.pin,a:s.from,b:s.to});
+  /* 圓盤上的其他銷：和中心、主銷的距離跟著曲柄長度等比例 */
+  for(const e of (crank.extra||[]))for(const o of [crank.center,crank.pin])cons.push({t:'d',a:e,b:o,d:hyp(J[e],J[o]),sa:true});
   function pos(x,pin){return n=>n===crank.pin?pin:fixed.has(n)?J[n]:[x[2*idx[n]],x[2*idx[n]+1]];}
   function resid(x,pin){const P=pos(x,pin);return cons.map(c=>{
-    if(c.t==='d')return hyp(P(c.a),P(c.b))-c.d;
+    if(c.t==='d')return hyp(P(c.a),P(c.b))-(c.sa?c.d*CUR_A/a0:c.d);
     const A=P(c.a),B=P(c.b),K=P(c.p),L=hyp(A,B)||1;return ((K[0]-A[0])*(B[1]-A[1])-(K[1]-A[1])*(B[0]-A[0]))/L;});}
   function solve(x0,pin){
     let x=x0.slice(),r=resid(x,pin),err=Math.max(...r.map(Math.abs)),lam=1e-3;const n=x.length,m=r.length;
@@ -884,8 +887,8 @@ function Mech(cfg){
   function frame(x,pin,th){const P=pos(x,pin),o={th,pin,P:{}};for(const n of names)o.P[n]=P(n);return o;}
   /* 從靜止姿勢出發，曲柄長度慢慢調到 a，再往順時鐘、逆時鐘各掃一圈 */
   function analyse(a,N=360){
-    let x=x0.slice();
-    for(let k=1;k<=12;k++){const ak=a0+(a-a0)*k/12,r=solve(x,pinAt(ak,th0));if(r.err>1e-5)return {a,list:[],full:false};x=r.x;}
+    let x=x0.slice();CUR_A=a0;
+    for(let k=1;k<=12;k++){const ak=a0+(a-a0)*k/12;CUR_A=ak;const r=solve(x,pinAt(ak,th0));if(r.err>1e-5)return {a,list:[],full:false};x=r.x;}
     const step=2*Math.PI/N,first=frame(x,pinAt(a,th0),th0);
     if(!slotOK(n=>first.P[n]))return {a,list:[],full:false};
     const go=(dir)=>{const out=[];let xx=x,prev=first;
@@ -954,7 +957,9 @@ function mechParts(M,a){
   const sh=M.cfg.sheetShift||[0,0],J=n=>[M.J[n][0]+sh[0],-(M.J[n][1]+sh[1])];
   const parts=[];
   for(const b of M.bodies){
-    if(b.id===M.crank.body){parts.push({b,disc:true,R:a+0.8,holes:[[M.crank.center,[0,0]],[M.crank.pin,[a,0]]]});continue;}
+    if(b.id===M.crank.body){const C=M.J[M.crank.center],Pn=M.J[M.crank.pin],base=Math.atan2(Pn[1]-C[1],Pn[0]-C[0]);
+      const ex=(M.crank.extra||[]).map(e=>{const q=M.J[e],ang=Math.atan2(q[1]-C[1],q[0]-C[0])-base,rr=hyp(q,C)*a/M.a0;return [e,[rr*Math.cos(ang),-rr*Math.sin(ang)]];});
+      parts.push({b,disc:true,R:a+0.8,holes:[[M.crank.center,[0,0]],[M.crank.pin,[a,0]],...ex]});continue;}
     const holes=b.joints.filter(n=>M.pivots.includes(n)).map(n=>[n,J(n)]),pts=b.shape?b.shape.map(q=>[q[0]+sh[0],-(q[1]+sh[1])]):b.joints.map(J);
     parts.push({b,pts,holes,slot:(M.cfg.slots||[]).find(s=>s.body===b.id)});
   }
@@ -993,8 +998,8 @@ function mechThumb(M,an,box=[86,15,62,22]){
   return o;
 }
 /* 依形狀排版：零件外形（凸包外擴）點陣化，由上往下、由左往右找第一個放得下的整數公分位置 */
-function packParts(parts,W=29.7,H=17,top=1.3){
-  const C=0.25,M=0.72,nx=Math.floor(W/C),ny=Math.floor(H/C),X0=-W/2,occ=new Uint8Array(nx*ny);
+function packParts(parts,W=29.7,H=17,top=1.3,gap){
+  const C=0.25,M=gap||0.72,nx=Math.floor(W/C),ny=Math.floor(H/C),X0=-W/2,occ=new Uint8Array(nx*ny);
   const inPoly=(p,poly)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
   const dSeg=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L=dx*dx+dy*dy||1e-12;let t=((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L;t=Math.max(0,Math.min(1,t));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy);};
   function mask(poly,disc){const xs=poly.map(q=>q[0]),ys=poly.map(q=>q[1]),E=M+(disc||0),x0=Math.min(...xs)-E,y0=Math.min(...ys)-E,x1=Math.max(...xs)+E,y1=Math.max(...ys)+E,cells=[];
@@ -1048,6 +1053,9 @@ function CFG_PAR(a=1,drop=false){const up=a;const J={J1:[-2,-1],J2:[0,1],J3:[2,-
   {id:'L5',joints:['J4','J5','J6','J7','J8','J9'],name:'平移板',color:'front',z:3}];
  if(!drop)bodies.splice(2,0,{id:'L1',joints:['J1','J4'],name:'曲柄',color:'c4',z:1});
  return {joints:J,bodies,ground:'L2',crank:{body:'L4',center:'J3',pin:'J6'},traces:['J7','J8','J9']};}
+/* 三曲柄平移的延伸：波浪（單銷三連桿）、光圈（光圈環三連桿） */
+const CFG_WAVE={"packGap":1.1,"joints": {"J1": [0, 0], "J2": [1, 0], "G1": [0, 6.5], "R1": [-2, 5.5], "T1": [1.2, 9.3], "G2": [-5.5, -3.5], "R2": [-3.5, -4], "T2": [-8.52, -3.86], "G3": [5.5, -3.5], "R3": [7, -1.5], "T3": [7.32, -5.94]}, "bodies": [{"id": "L0", "joints": ["J1", "G1", "G2", "G3"], "name": "底座"}, {"id": "L1", "joints": ["J1", "J2"], "name": "曲柄圓盤"}, {"id": "K1", "joints": ["J2", "R1"], "name": "連桿 1", "color": "c3", "z": 5}, {"id": "W1", "joints": ["G1", "R1", "T1"], "name": "三角形 1", "color": "front", "z": 1}, {"id": "K2", "joints": ["J2", "R2"], "name": "連桿 2", "color": "c3", "z": 6}, {"id": "W2", "joints": ["G2", "R2", "T2"], "name": "三角形 2", "color": "back", "z": 2}, {"id": "K3", "joints": ["J2", "R3"], "name": "連桿 3", "color": "c3", "z": 7}, {"id": "W3", "joints": ["G3", "R3", "T3"], "name": "三角形 3", "color": "c4", "z": 3}], "ground": "L0", "crank": {"body": "L1", "center": "J1", "pin": "J2"}, "traces": ["T1", "T2", "T3"]};
+const CFG_IRIS={"joints": {"O": [0.0, 0.0], "G1": [-3.086, 3.677], "Q1": [-3.413, 2.706], "S1": [-1.029, -1.226], "G2": [-1.642, -4.51], "Q2": [-0.637, -4.309], "S2": [1.576, -0.278], "G3": [4.727, 0.834], "Q3": [4.05, 1.602], "S3": [-0.547, 1.503], "H": [-5.6, 0.0], "C": [-3.003, -6.544], "P": [-1.883, -6.544]}, "bodies": [{"id": "L0", "joints": ["O", "G1", "G2", "G3", "C"], "name": "底座", "shape": [[-2.622, -6.954], [-2.914, -7.097], [-3.237, -7.053], [-3.414, -6.925], [-3.528, -6.738], [-3.548, -6.414], [-0.657, -0.089], [-3.514, 3.317], [-3.62, 3.508], [-3.643, 3.726], [-3.522, 4.027], [-3.355, 4.168], [-3.146, 4.234], [-2.929, 4.214], [-2.735, 4.114], [0.221, 0.608], [4.63, 1.385], [4.848, 1.38], [5.132, 1.221], [5.249, 1.037], [5.274, 0.713], [5.114, 0.429], [4.93, 0.312], [0.416, -0.495], [-1.115, -4.702], [-1.31, -4.962], [-1.509, -5.054], [-1.708, -5.065], [-2.494, -6.778]]}, {"id": "K1", "joints": ["S1", "Q1"], "name": "連桿 1", "color": "c3", "z": 3}, {"id": "B1", "joints": ["G1", "Q1"], "shape": [[-3.727, 1.39], [-3.355, 1.741], [-3.327, 1.84], [-3.59, 2.234], [-3.739, 2.333], [-3.856, 2.484], [-3.904, 2.773], [-3.517, 3.922], [-3.388, 4.07], [-3.212, 4.156], [-3.022, 4.169], [-2.841, 4.108], [-2.642, 3.897], [-2.594, 3.613], [-2.798, 2.938], [-2.762, 2.869], [-2.47, 2.633], [-2.382, 2.657], [-1.978, 3.038], [-1.718, 3.423], [-1.414, 3.769], [-1.074, 4.067], [-0.692, 4.323], [-0.278, 4.527], [0.157, 4.675], [0.608, 4.766], [1.067, 4.797], [1.527, 4.767], [1.978, 4.678], [2.414, 4.53], [2.828, 4.327], [3.211, 4.072], [3.558, 3.769], [3.862, 3.423], [4.12, 3.037], [1.314, 1.137]], "name": "葉片 1", "color": "front", "z": 5}, {"id": "K2", "joints": ["S2", "Q2"], "name": "連桿 2", "color": "c3", "z": 3}, {"id": "B2", "joints": ["G2", "Q2"], "shape": [[-4.69, 2.05], [-1.642, 0.57], [0.659, -3.923], [0.17, -3.777], [0.071, -3.802], [-0.138, -4.226], [-0.178, -4.498], [-0.361, -4.721], [-0.542, -4.796], [-1.547, -4.997], [-1.738, -4.997], [-1.918, -4.922], [-2.054, -4.786], [-2.128, -4.608], [-2.128, -4.414], [-2.056, -4.238], [-1.832, -4.053], [-1.145, -3.891], [-1.037, -3.526], [-1.062, -3.426], [-1.642, -3.231], [-2.105, -3.2], [-2.557, -3.109], [-2.985, -2.964], [-3.398, -2.761], [-3.782, -2.506], [-4.127, -2.202], [-4.432, -1.857], [-4.688, -1.474], [-4.892, -1.061], [-5.04, -0.626], [-5.13, -0.174], [-5.162, 0.286], [-5.131, 0.745], [-5.042, 1.197], [-4.895, 1.633]], "name": "葉片 2", "color": "back", "z": 6}, {"id": "K3", "joints": ["S3", "Q3"], "name": "連桿 3", "color": "c3", "z": 3}, {"id": "B3", "joints": ["G3", "Q3"], "shape": [[0.328, -1.706], [3.067, 2.533], [3.226, 1.978], [3.302, 1.954], [3.51, 1.998], [3.718, 1.99], [3.988, 2.094], [4.269, 2.047], [4.425, 1.928], [5.156, 1.082], [5.222, 0.805], [5.172, 0.615], [4.978, 0.406], [4.793, 0.342], [4.6, 0.354], [4.426, 0.44], [3.943, 0.954], [3.572, 0.864], [3.502, 0.803], [3.615, 0.207], [3.824, -0.223], [3.969, -0.651], [4.059, -1.103], [4.09, -1.57], [4.059, -2.03], [3.971, -2.474], [3.821, -2.917], [3.616, -3.33], [3.365, -3.706], [3.056, -4.058], [2.716, -4.357], [2.334, -4.613], [1.921, -4.817], [1.485, -4.965], [1.034, -5.055], [0.57, -5.086]], "name": "葉片 3", "color": "c4", "z": 7}, {"id": "L1", "joints": ["C", "P"], "name": "曲柄圓盤"}, {"id": "K0", "joints": ["P", "H"], "name": "推桿", "color": "c3", "z": 4}, {"id": "L2", "joints": ["O", "H", "S1", "S2", "S3"], "name": "光圈環", "color": "c4", "z": 2, "shape": [[-5.71, -0.55], [-5.996, -0.396], [-6.15, -0.11], [-6.15, 0.11], [-6.066, 0.311], [-5.814, 0.518], [-5.6, 0.56], [-2.002, 0.56], [-1.922, 0.796], [-1.73, 1.155], [-1.319, 1.608], [-0.796, 1.922], [-0.204, 2.07], [0.204, 2.07], [0.604, 1.99], [0.981, 1.834], [1.319, 1.608], [1.608, 1.319], [1.834, 0.981], [1.99, 0.604], [2.07, 0.204], [2.07, -0.204], [1.99, -0.604], [1.834, -0.981], [1.608, -1.319], [1.319, -1.608], [0.981, -1.834], [0.604, -1.99], [0.204, -2.07], [-0.204, -2.07], [-0.604, -1.99], [-1.155, -1.73], [-1.47, -1.47], [-1.73, -1.155], [-1.922, -0.796], [-2.002, -0.56]]}], "ground": "L0", "crank": {"body": "L1", "center": "C", "pin": "P"}, "traces": []};
 
 
 const QR=["111111101000011011100110001111111", "100000101010111010111110001000001", "101110101011011000010100101011101", "101110100111101111001101101011101", "101110101110110110010000001011101", "100000100010011110000101001000001", "111111101010101010101010101111111", "000000000110110110000000100000000", "100111111000001011011000110010111", "000110001111110100010001000011100", "011000110000010111000111010011111", "011011010100010011111001111100111", "011000101001110000000011101100000", "101101000011011000100001010000000", "010100101000101101111100001000000", "010001011110010010101011110011101", "011110111101100100001000111111000", "111100000011000100010110011010101", "111111101101100110010001000101101", "100111001100010010010011111011110", "001010110001011011000000100001010", "101110000001111000010111000111100", "101100110101001001000011111100111", "101100001010011101110010000110110", "110011101100100010011000111111010", "000000001110100110100001100010100", "111111101010101101111101101010100", "100000101001110100110001100011101", "101110101101001000111011111110001", "101110101001111011111000010101111", "101110100111110100011010010110011", "100000100101001110111010010111111", "111111101010101011000001100111000"];
@@ -1111,7 +1119,7 @@ quizShow({a:PAGE.def});
 const isCustom=()=>Math.abs(st.a-PAGE.def)>1e-9||optKey(st.opts)!==optKey(PAGE.defOpts);
 let sheetsDirty=true,sheetsShown=false;
 function sheetSVGs(a,opts){
-  const M=getMech(opts),an=getAn(a,opts),placed=packParts(mechParts(M,a),29.7,17,0.3);
+  const M=getMech(opts),an=getAn(a,opts),placed=packParts(mechParts(M,a),29.7,17,0.3,M.cfg.packGap);
   const custom=Math.abs(a-PAGE.def)>1e-9?`自訂曲柄 ${n1(a)} cm`:'';
   const label=(t)=>T(86,38.4,t,{size:2.6,weight:700,fill:MID});
   if(!placed){const msg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210"><rect width="297" height="210" fill="#fff"/>'+T(148.5,105,'這個曲柄長度的零件放不進一張 A4，請改回標準尺寸。',{size:5,anchor:'middle'})+'</svg>';return [msg,msg];}
