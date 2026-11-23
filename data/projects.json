@@ -122,7 +122,7 @@
       "Paper card"
     ],
     "role": "Teaching design, mechanism design, development",
-    "summary": "A series of linkage examples for a high school mechanism lesson, from the four-bar basics to walking beasts and an excavator. Each example has a simulator to adjust, a short question to guess first, and a 1:1 A4 worksheet to cut and pin together.",
+    "summary": "A series of linkage examples for a high school mechanism lesson, from the four-bar basics to walking beasts, an excavator and a paper dog. Each example has a simulator to adjust, a short question to guess first, and a 1:1 A4 worksheet to cut and pin together.",
     "image": "projects/linkage/img/plate.jpg",
     "link": "projects/linkage/",
     "sub": [
@@ -161,6 +161,12 @@
         "link": "projects/linkage/excavator/",
         "image": "projects/linkage/img/ex-excavator.jpg",
         "title_zh": "挖土機"
+      },
+      {
+        "title": "Dog",
+        "link": "projects/linkage/dog/",
+        "image": "projects/linkage/img/ex-dog.jpg",
+        "title_zh": "狗"
       }
     ]
   },
