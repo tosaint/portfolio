@@ -301,8 +301,10 @@ a.btn { text-decoration: none; display: inline-block; }
 .exnav span b { font: 500 15px var(--serif); color: var(--ink); letter-spacing: .08em; margin-left: 6px; }
 .swipe-hint { display: none; font: 400 11px var(--mono); color: var(--ink-3); letter-spacing: .1em; margin-top: 8px; }
 @media (hover: none) { .swipe-hint { display: block; } }
-.cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 1px; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
-.cards > a, .cards > div { flex: 0 0 min(340px, 82%); scroll-snap-align: start; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; background: none; border: 0; border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+.cards > a { border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+@media (max-width: 1000px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
 .car-btns { display: flex; gap: 8px; margin-top: 10px; }
 .car-btns button { font: 400 14px var(--mono); background: none; border: 1px solid var(--ink-2); color: var(--ink); padding: 2px 12px; cursor: pointer; }
 .k-mhead { fill: #c08a4d; stroke: var(--ink); stroke-width: .06; }
@@ -492,7 +494,7 @@ svg.plate.tone .r-cush { display: inline; }
 </div></header>
 
 <main class="wrap">
-<nav class="exnav" aria-label="範例"><a class="prev" href="../">‹ 總覽</a><span>1 / 6<b>三曲柄平移</b></span><a class="next" href="../#sim">敲木魚 ›</a></nav><p class="swipe-hint">在下方大圖上左右滑，可以換範例</p>
+<nav class="exnav" aria-label="範例"><a class="prev" href="../">‹ 總覽</a><span>1 / 7<b>三曲柄平移</b></span><a class="next" href="../#sim">敲木魚 ›</a></nav><p class="swipe-hint">在下方大圖上左右滑，可以換範例</p>
   <section class="head">
     <div>
       <p class="eyebrow">Work 007 · Linkages · Example 1</p>
@@ -580,7 +582,7 @@ svg.plate.tone .r-cush { display: inline; }
     <div lang="en"><h2>Make one</h2><p class="en">You need card, six thumbtacks, foam board, scissors and a glue stick.</p><ol class="en"><li>Draw your own shapes on the grid inside. Leave the holes where they are and have the teacher check it.</li><li>Cut off the top strip and keep it. Glue the parts page onto card, or trace it, and cut out every part.</li><li>Pin the base to the foam board through the fixed (solid) holes.</li><li>Stack holes with the same name, pin them together and turn the disc clockwise.</li></ol></div>
   </section>
 
-<nav class="exnav bottom" aria-label="範例"><a class="prev" href="../">‹ 總覽</a><span>1 / 6<b>三曲柄平移</b></span><a class="next" href="../#sim">敲木魚 ›</a></nav>
+<nav class="exnav bottom" aria-label="範例"><a class="prev" href="../">‹ 總覽</a><span>1 / 7<b>三曲柄平移</b></span><a class="next" href="../#sim">敲木魚 ›</a></nav>
   <dl class="data">
     <dt>Series</dt><dd><a href="../">連桿機構 Linkages</a><span>範例 1 · Example 1</span></dd>
     <dt>Course</dt><dd>國立中央大學附屬中壢高中 生活科技「機構實作」<span>Technology, Zhongli Senior High School</span></dd>
@@ -835,7 +837,7 @@ function plateOverlay(svg,vb,o){
     if(code)t+=`<text x="${F(x0+m)}" y="${F(y0+m*1.3+lh*1.3)}" class="pl-t" font-size="${F(fs)}">${code}</text><text x="${F(x0+m)}" y="${F(y0+m*1.3+lh*2.3)}" class="pl-t" font-size="${F(fs)}">A-${n}</text>`;
     t+=`<rect x="${F(x0+m)}" y="${F(y0+m*1.3+lh*3)}" width="${F(s*0.9)}" height="${F(s*0.2)}" class="pl-or"/>`;
     t+=`<rect x="${F(x0+W-m*1.2)}" y="${F(y0+m*0.9)}" width="${F(s*0.26)}" height="${F(s*0.26)}" class="pl-sq"/>`;
-    t+=`<text x="${F(x0+W-m*2.3)}" y="${F(y0+m*2)}" class="pl-t" font-size="${F(fs)}">${n}</text><line x1="${F(x0+W-m*1.75)}" y1="${F(y0+m*2.35)}" x2="${F(x0+W-m*1.3)}" y2="${F(y0+m*1.6)}" class="pl-axis"/><text x="${F(x0+W-m*1.5)}" y="${F(y0+m*2.75)}" class="pl-t" font-size="${F(fs)}">06</text>`;
+    t+=`<text x="${F(x0+W-m*2.3)}" y="${F(y0+m*2)}" class="pl-t" font-size="${F(fs)}">${n}</text><line x1="${F(x0+W-m*1.75)}" y1="${F(y0+m*2.35)}" x2="${F(x0+W-m*1.3)}" y2="${F(y0+m*1.6)}" class="pl-axis"/><text x="${F(x0+W-m*1.5)}" y="${F(y0+m*2.75)}" class="pl-t" font-size="${F(fs)}">07</text>`;
     t+=`<text x="${F(x0+m)}" y="${F(y0+H-m*0.95)}" class="pl-t" font-size="${F(fs)}">K.26</text><line x1="${F(x0+m+fs*3.6)}" y1="${F(y0+H-m*0.95-fs*0.1)}" x2="${F(x0+m+fs*7)}" y2="${F(y0+H-m*0.95-fs*0.1)}" class="pl-axis"/>`;
   }
   front.innerHTML=t;svg.appendChild(front);
@@ -966,13 +968,13 @@ function mechParts(M,a){
   }
   return parts;
 }
-function rot90(p,k){let [x,y]=p;for(let i=0;i<k;i++)[x,y]=[-y,x];return [x,y];}
+function rot90(p,k){if(k%90===0&&k>3)k=k/90;if(Number.isInteger(k)&&k<4){let [x,y]=p;for(let i=0;i<k;i++)[x,y]=[-y,x];return [x,y];}const a=k*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return [c*p[0]-s*p[1],s*p[0]+c*p[1]];}
 function mechSheetParts(M,a,full,placed){
   let o='';const solid=[],cuts=[];
   const tr=(pl,q)=>{const r=rot90(q,pl.k);return toMM([r[0]+pl.t[0],r[1]+pl.t[1]]);};
   for(const pl of placed){const p=pl.p;
     if(p.disc){solid.push({circle:[...toMM(pl.t),p.R*10]});continue;}
-    if(p.b.id===M.ground.id||full){const pts=p.pts.map(q=>tr(pl,q));solid.push(p.b.shape?{pts,closed:true}:pts.length===2||p.b.bar?{pts:[pts[0],pts[pts.length-1]]}:{pts:hull2(pts),closed:true});}
+    if(p.b.id===M.ground.id||full){const pts=p.pts.map(q=>tr(pl,q));solid.push(p.b.shape?{pts,closed:true,w:0.6}:pts.length===2||p.b.bar?{pts:[pts[0],pts[pts.length-1]]}:{pts:hull2(pts),closed:true});}
     if(p.slot){const s=p.slot,sh=M.cfg.sheetShift||[0,0],J=n=>[M.J[n][0]+sh[0],-(M.J[n][1]+sh[1])],A=tr(pl,J(s.from)),B=tr(pl,J(s.to)),u=s.tmin??0.06,v=s.tmax??0.94;
       cuts.push([[A[0]+(B[0]-A[0])*u,A[1]+(B[1]-A[1])*u],[A[0]+(B[0]-A[0])*v,A[1]+(B[1]-A[1])*v]]);}
   }
@@ -991,6 +993,7 @@ function mechSheetParts(M,a,full,placed){
 function mechThumb(M,an,box=[86,15,62,22]){
   if(!an.list.length)return '';const f=an.list[0];let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;
   for(const n of M.names){const p=f.P[n];x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);}
+  for(const b of M.bodies)if(b.shape)for(const p of shapeAt(M,b,f.P)){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);}
   const k=Math.min(box[2]/(x1-x0),box[3]/(y1-y0)),P=q=>[box[0]+(q[0]-x0)*k,box[1]+(y1-q[1])*k];let o='';
   for(const b of M.bodies){if(b.id===M.crank.body)continue;const pts=b.shape?shapeAt(M,b,f.P).map(P):b.joints.map(n=>P(f.P[n]));
     if(b.shape)o+=`<path d="M${pts.map(q=>f2(q[0])+' '+f2(q[1])).join('L')}Z" fill="#ececec" stroke="${INK}" stroke-width="0.15"/>`;else if(pts.length===2||b.bar)o+=L(pts[0][0],pts[0][1],pts[pts.length-1][0],pts[pts.length-1][1],0.3);else o+=`<path d="M${hull2(pts).map(q=>f2(q[0])+' '+f2(q[1])).join('L')}Z" fill="#ececec" stroke="${INK}" stroke-width="0.15"/>`;}
@@ -999,7 +1002,7 @@ function mechThumb(M,an,box=[86,15,62,22]){
   return o;
 }
 /* 依形狀排版：零件外形（凸包外擴）點陣化，由上往下、由左往右找第一個放得下的整數公分位置 */
-function packParts(parts,W=29.7,H=17,top=1.3,gap){
+function packParts(parts,W=29.7,H=17,top=1.3,gap,stepCm,tries,angles){
   const C=0.25,M=gap||0.72,nx=Math.floor(W/C),ny=Math.floor(H/C),X0=-W/2,occ=new Uint8Array(nx*ny);
   const inPoly=(p,poly)=>{let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
   const dSeg=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],L=dx*dx+dy*dy||1e-12;let t=((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L;t=Math.max(0,Math.min(1,t));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy);};
@@ -1008,10 +1011,10 @@ function packParts(parts,W=29.7,H=17,top=1.3,gap){
       if(disc)ok=Math.hypot(p[0],p[1])<=disc+M;else{ok=poly.length>2&&inPoly(p,poly);if(!ok)for(let i=0;i<poly.length&&!ok;i++)if(dSeg(p,poly[i],poly[(i+1)%poly.length])<=M)ok=true;}
       if(ok)cells.push([Math.round(x/C),Math.round(y/C)]);}
     return cells;}
-  const items=parts.map(p=>{const opts=[];for(let k=0;k<(p.disc?1:4);k++){const poly=p.disc?[[0,0]]:p.b.shape?p.pts.map(q=>rot90(q,k)):hull2(p.pts.map(q=>rot90(q,k)));opts.push({k,cells:mask(poly,p.disc?p.R:0)});}
+  const items=parts.map(p=>{const opts=[];for(const k of (p.disc?[0]:(p.b.packAngles||angles||[0,1,2,3]))){const poly=p.disc?[[0,0]]:p.b.shape?p.pts.map(q=>rot90(q,k)):hull2(p.pts.map(q=>rot90(q,k)));opts.push({k,cells:mask(poly,p.disc?p.R:0)});}
     return {p,opts,n:opts[0].cells.length};}).sort((a,b)=>b.n-a.n);
-  const step=Math.round(1/C);let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-  for(let tryN=0;tryN<80;tryN++){
+  const step=Math.max(1,Math.round((stepCm||1)/C));let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  for(let tryN=0;tryN<(tries||80);tryN++){
   const order=tryN?items.map(it=>[it,it.n*(0.6+0.8*rnd())]).sort((a,b)=>b[1]-a[1]).map(x=>x[0]):items;
   occ.fill(0);const placed=[];let fail=false;
   for(const it of order){let best=null;
@@ -1025,7 +1028,7 @@ function packParts(parts,W=29.7,H=17,top=1.3,gap){
       }}
     if(!best){fail=true;break;}
     for(const [cx,cy] of best.o.cells)occ[(cy+best.ty*step)*nx+(cx+best.tx*step-Math.round(X0/C))]=1;
-    placed.push({p:it.p,k:best.o.k,t:[best.tx,best.ty]});
+    placed.push({p:it.p,k:best.o.k,t:[best.tx*step*C,best.ty*step*C]});
   }
   if(!fail)return placed;}
   return null;
@@ -1040,6 +1043,8 @@ const CFG_DOG={joints:{J1:[-4.5,0],J2:[4.5,0],J3:[-5.5,0],J4:[5.5,6],J5:[7.5,-6]
   {id:'L8',joints:['J3','J12','J13'],name:'頸連桿',color:'c3',z:5},
   {id:'L9',joints:['J12','J7','J14','J15','J16','J17','J18','J19'],name:'頭',color:'back',z:6}],
  ground:'L2',crank:{body:'L1',center:'J1',pin:'J3'},traces:['J10','J5','J18'],floorBy:['J10','J5'],sheetShift:[0.5,0]};
+/* 狗：外形和孔位照余老師的 MotionGen 檔（1:1），孔不在格點上 */
+const CFG_HOUND={"packW":29.0,"packGap":0.5,"packStep":0.25,"packTries":600,"joints": {"J1": [-4.204, 0.057], "J2": [4.204, -0.057], "J3": [-2.503, -0.454], "J4": [4.854, 4.371], "J5": [7.342, -5.913], "J6": [-3.735, 4.251], "J7": [3.756, -6.052], "J8": [-4.732, -5.734], "J9": [-9.041, 6.465], "J10": [-2.68, -5.46]}, "bodies": [{"id": "L2", "joints": ["J1", "J2"], "name": "底座"}, {"id": "L1", "joints": ["J1", "J3"], "name": "曲柄圓盤"}, {"id": "L4", "joints": ["J2", "J6", "J7"], "name": "身體和後腳", "color": "back", "z": 1, "shape": [[-4.761, 4.345], [-4.244, 4.948], [-3.57, 5.064], [-2.964, 5.064], [-2.267, 4.66], [-0.762, 4.66], [0.384, 5.199], [1.756, 4.948], [2.586, 3.649], [3.35, 2.413], [3.956, 1.717], [4.631, 0.661], [5.102, -0.418], [4.756, -1.052], [4.923, -1.586], [5.237, -2.372], [5.417, -3.001], [5.776, -3.563], [5.756, -4.052], [5.552, -4.282], [5.574, -4.821], [5.372, -5.136], [5.102, -5.698], [4.756, -6.052], [4.631, -6.327], [4.339, -6.349], [3.485, -6.461], [3.08, -6.349], [3.058, -5.877], [3.35, -5.585], [3.912, -5.495], [4.226, -5.563], [4.698, -4.776], [4.676, -4.349], [4.361, -3.294], [3.777, -2.35], [2.923, -1.541], [2.756, -1.052], [2.182, -0.687], [1.597, -0.822], [1.62, -0.845], [0.721, -0.665], [0.339, -1.092], [-0.919, -0.463], [-2.244, 0.948], [-3.39, 1.717], [-4.536, 2.66], [-4.851, 3.851]], "packAngles": [40.21, 130.21, 220.21, 310.21]}, {"id": "L3", "joints": ["J4", "J2", "J5"], "name": "後腳和尾巴", "color": "c4", "z": 2, "shape": [[2.757, 4.948], [3.754, 5.198], [4.757, 4.948], [5.757, 4.948], [6.502, 4.157], [6.873, 3.39], [7.096, 2.523], [7.071, 1.384], [7.492, 0.864], [8.037, -0.152], [8.556, -0.35], [9.646, -0.325], [10.756, -0.053], [10.909, -0.301], [10.756, -1.053], [10.488, -1.712], [9.755, -2.053], [8.755, -2.053], [8.011, -1.489], [7.756, -1.053], [7.269, 0.022], [6.823, 0.567], [6.897, -0.25], [7.294, -0.845], [7.293, -1.34], [7.368, -2.033], [7.566, -2.504], [7.541, -2.875], [7.755, -3.053], [7.937, -3.494], [7.755, -4.053], [7.887, -4.534], [8.036, -5.327], [8.035, -5.921], [7.961, -6.367], [7.614, -6.565], [6.822, -6.565], [6.45, -6.565], [6.054, -6.218], [6.178, -5.797], [6.599, -5.797], [7.02, -5.475], [7.07, -4.98], [6.872, -4.41], [6.755, -4.052], [6.55, -3.717], [6.278, -3.519], [6.154, -3.024], [5.758, -2.702], [5.238, -2.38], [4.755, -2.052], [4.52, -1.76], [4.223, -1.092], [3.756, -1.052], [3.307, -0.299], [3.183, 0.889], [3.756, 1.948], [3.406, 2.573], [2.887, 3.291], [2.887, 4.208]], "packAngles": [24.9, 114.9, 204.9, 294.9]}, {"id": "L6", "joints": ["J3", "J4", "J10"], "name": "前腳", "color": "c3", "z": 3, "shape": [[-2.895, -6.035], [-2.243, -6.053], [-1.547, -5.968], [-1.03, -5.788], [-0.603, -5.226], [-0.558, -4.575], [-0.243, -4.053], [0.026, -4.238], [0.048, -3.609], [-0.019, -3.339], [0.408, -3.833], [0.498, -3.339], [0.071, -2.89], [0.757, -3.052], [0.7, -2.71], [0.363, -2.148], [1.104, -2.171], [1.059, -1.676], [0.757, -1.052], [1.576, -1.362], [1.194, -0.531], [1.733, -0.441], [2.25, -0.486], [3.216, 0.57], [3.912, 1.626], [5.485, 3.267], [6.271, 4.592], [5.103, 5.693], [3.036, 5.199], [0.564, 5.154], [-0.244, 4.947], [-1.244, 3.947], [-1.75, 2.952], [-3.008, 1.244], [-3.142, 0.548], [-2.985, -0.329], [-2.918, -1.295], [-1.862, -1.834], [-1.524, -2.575], [-1.457, -3.249], [-1.547, -4.081], [-1.502, -4.755], [-1.951, -4.934], [-2.243, -5.053], [-2.738, -5.024], [-3.097, -5.429]], "packAngles": [54.43, 144.43, 234.43, 324.43]}, {"id": "L5", "joints": ["J6", "J3", "J8", "J9"], "name": "頭和前腳", "color": "front", "z": 4, "shape": [[-11.472, 5.623], [-11.232, 5.209], [-10.927, 4.882], [-10.244, 4.947], [-10.244, 4.947], [-10.244, 4.947], [-10.731, 4.62], [-10.775, 4.228], [-10.644, 4.119], [-10.382, 4.25], [-10.244, 3.947], [-10.244, 3.947], [-9.728, 3.901], [-9.244, 3.947], [-9.402, 3.661], [-9.816, 3.443], [-9.244, 2.947], [-8.857, 3.226], [-8.66, 2.942], [-8.769, 2.746], [-9.401, 2.746], [-9.075, 2.441], [-8.748, 2.245], [-8.246, 2.376], [-7.985, 2.18], [-8.244, 1.947], [-8.682, 2.049], [-8.573, 1.613], [-8.116, 1.46], [-7.614, 1.591], [-7.244, 1.947], [-7.113, 1.264], [-7.658, 1.09], [-8.203, 1.199], [-7.854, 0.828], [-7.614, 0.567], [-7.331, 0.545], [-6.939, 0.567], [-6.764, 0.349], [-7.047, 0.131], [-7.571, 0.109], [-7.418, -0.349], [-6.568, -0.457], [-6.001, -0.457], [-5.914, -0.719], [-6.437, -0.741], [-5.827, -0.98], [-5.243, -1.052], [-5.26, -1.591], [-5.243, -2.052], [-4.824, -3.16], [-4.889, -4.097], [-4.998, -4.882], [-5.086, -5.383], [-5.369, -5.579], [-5.63, -5.623], [-5.87, -5.579], [-6.11, -5.797], [-6.243, -6.053], [-6.371, -6.451], [-5.87, -6.56], [-4.955, -6.516], [-4.366, -6.472], [-3.974, -6.124], [-3.778, -6.08], [-3.996, -5.622], [-3.8, -5.339], [-3.712, -5.622], [-3.451, -5.644], [-3.243, -5.052], [-3.713, -4.772], [-3.451, -4.38], [-3.211, -4.554], [-2.972, -4.554], [-2.797, -3.922], [-3.233, -3.574], [-3.243, -3.052], [-2.95, -3.247], [-2.754, -3.595], [-2.601, -3.356], [-2.47, -2.898], [-2.906, -2.593], [-2.95, -1.983], [-2.732, -2.113], [-2.383, -2.31], [-2.243, -2.052], [-2.243, -2.052], [-2.471, -1.503], [-2.165, -1.481], [-1.882, -1.394], [-1.555, -0.936], [-1.381, -0.326], [-1.599, 0.851], [-1.97, 1.439], [-2.514, 1.897], [-2.471, 2.333], [-1.97, 3.139], [-1.948, 3.967], [-2.244, 4.948], [-2.493, 5.013], [-3.244, 4.948], [-3.757, 5.035], [-4.244, 4.948], [-4.89, 5.187], [-5.108, 5.427], [-5.697, 5.71], [-5.762, 5.994], [-6.133, 6.255], [-6.263, 6.691], [-6.244, 6.947], [-6.285, 7.214], [-6.242, 7.606], [-6.244, 7.947], [-6.329, 8.522], [-6.244, 8.947], [-6.591, 9.176], [-6.896, 9.001], [-7.397, 8.238], [-7.789, 7.977], [-8.244, 7.947], [-8.029, 8.195], [-8.051, 8.522], [-8.244, 8.947], [-8.334, 8.652], [-8.596, 8.129], [-8.857, 7.802], [-9.228, 7.519], [-9.772, 7.192], [-9.968, 6.822], [-9.968, 6.364], [-10.244, 5.947], [-10.84, 6.037], [-11.244, 5.947]], "packAngles": [22.9, 112.9, 202.9, 292.9]}], "ground": "L2", "crank": {"body": "L1", "center": "J1", "pin": "J3"}, "traces": ["J8", "J5", "J9"], "floorBy": ["J8", "J10", "J7", "J5"], "sheetShift": [0, 0]};
 const CFG_EXC={joints:{J1:[-2,0],J2:[2,0],J3:[-5.649,2.55],J4:[-1,1],J5:[7,6],J6:[4,3],J7:[6,8],J8:[9,7],J9:[13,0],J10:[14,2],J11:[16,0],J12:[17,-2],J13:[16,-4],J14:[11,-5],J15:[13,-5]},
  bodies:[{id:'L1',joints:['J1','J2'],name:'底座'},{id:'L2',joints:['J1','J4'],name:'曲柄圓盤'},
   {id:'L3',joints:['J3','J2','J5','J6'],name:'大臂（滑槽）',color:'c4',z:1},
@@ -1127,7 +1132,7 @@ quizShow({a:PAGE.def});
 const isCustom=()=>Math.abs(st.a-PAGE.def)>1e-9||optKey(st.opts)!==optKey(PAGE.defOpts);
 let sheetsDirty=true,sheetsShown=false;
 function sheetSVGs(a,opts){
-  const M=getMech(opts),an=getAn(a,opts),placed=packParts(mechParts(M,a),29.7,17,0.3,M.cfg.packGap);
+  const M=getMech(opts),an=getAn(a,opts),placed=packParts(mechParts(M,a),M.cfg.packW||29.7,17,0.3,M.cfg.packGap,M.cfg.packStep,M.cfg.packTries);
   const custom=Math.abs(a-PAGE.def)>1e-9?`自訂曲柄 ${n1(a)} cm`:'';
   const label=(t)=>T(86,38.4,t,{size:2.6,weight:700,fill:MID});
   if(!placed){const msg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210"><rect width="297" height="210" fill="#fff"/>'+T(148.5,105,'這個曲柄長度的零件放不進一張 A4，請改回標準尺寸。',{size:5,anchor:'middle'})+'</svg>';return [msg,msg];}
