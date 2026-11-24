@@ -36,6 +36,8 @@ projects/zhongli-shrine/ work page: 中壢神社 古今對照; the 3D view on to
 projects/telescope/     work page: 望遠鏡實境操作室 Telescope Lab; the simulator is built into the page itself (3D view, then steps and tools as page content; 展開 makes it full screen). sim.html is its source and still runs alone; app/ only redirects to #sim
 projects/horse-linkage/ work page: 壢馬連桿 Horse Linkage, a four-bar linkage horse; explanation, simulator
                        and three questions on one page, worksheet.pdf is the A4 folded worksheet
+projects/tt-motor/      work page: TT 減速馬達 TT Gear Motor, an animated slide deck (motor, gear train, axles, case),
+                       with sim.html (3D simulator and Onshape guide) and tt-motor-drawings.pdf
 projects/clhs4bar/      redirect only: the old address of Horse Linkage, kept for worksheets already printed
 images/                other images
 ```
