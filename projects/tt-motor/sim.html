@@ -1,0 +1,821 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TT 減速馬達模擬器</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>[hidden]{display:none!important}
+/* Layout: a dark 3D stage (left, top on phones) beside an instrument panel that reads like a bench meter. */
+:root{
+  --bg:#eef0ec; --surface:#ffffff; --fg:#1b2024; --muted:#5b646c; --line:#d5d9d2;
+  --accent:#dcb558; --accent-ink:#2a2100; --accent-text:#8a6800;
+  --stage:#12161a; --stage-2:#1f262d; --stage-fg:#e8ecef; --stage-muted:#9aa5ae; --stage-line:#313a43; --hl:#d9643a;
+  --warn:#b3261e; --warn-bg:#fbe9e7; --amp:#2f8fd6;
+  --g-m:#c9a06f; --g-c:#93b2c0; --g-36:#a6a77a; --g-28:#b98f7b; --g-out:#f6f3ec;
+  --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1114; --surface:#171c21; --fg:#e8ecef; --muted:#9aa5ae; --line:#2b333b;
+  --accent:#dcb558; --accent-ink:#2a2100; --accent-text:#f2bd16;
+  --stage:#080a0c; --stage-2:#161b20; --stage-fg:#e8ecef; --stage-muted:#9aa5ae; --stage-line:#2b333b; --hl:#d9643a;
+  --warn:#ff8a80; --warn-bg:#3a1512; --amp:#6db6ee;
+  --g-m:#c9a06f; --g-c:#93b2c0; --g-36:#a6a77a; --g-28:#b98f7b; --g-out:#f6f3ec;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0e1114; --surface:#171c21; --fg:#e8ecef; --muted:#9aa5ae; --line:#2b333b;
+  --accent:#dcb558; --accent-ink:#2a2100; --accent-text:#f2bd16;
+  --stage:#080a0c; --stage-2:#161b20; --stage-fg:#e8ecef; --stage-muted:#9aa5ae; --stage-line:#2b333b; --hl:#d9643a;
+  --warn:#ff8a80; --warn-bg:#3a1512; --amp:#6db6ee;
+  --g-m:#c9a06f; --g-c:#93b2c0; --g-36:#a6a77a; --g-28:#b98f7b; --g-out:#f6f3ec;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.55;
+  padding-block:16px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.app{max-width:1180px;margin:0 auto;display:grid;gap:16px;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}
+header{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.titles{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;flex:1 1 260px;min-width:0}
+h1{font-size:22px;font-weight:700;margin:0;letter-spacing:.01em;text-wrap:balance}
+.sub{margin:0;color:var(--muted);font-size:13px}
+h2{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--muted);margin:0 0 8px}
+h3{font-size:19px;font-weight:700;margin:0;text-wrap:balance}
+button{font-family:inherit}
+
+.tabs{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:3px}
+.tabs button{font-size:14px;font-weight:500;color:var(--fg);background:none;border:0;border-radius:6px;padding:6px 14px;cursor:pointer;min-height:36px}
+.tabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+
+.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);background:radial-gradient(120% 90% at 50% 35%,var(--stage-2),var(--stage));
+  border-radius:10px;overflow:hidden;aspect-ratio:4/3;max-width:100%;min-width:0}
+#view{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+#view:active{cursor:grabbing}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.dimlabel{position:absolute;left:0;top:0;font-family:var(--mono);font-size:12px;line-height:1.3;color:var(--stage-fg);
+  background:color-mix(in srgb,var(--stage) 82%,transparent);border:1px solid var(--stage-line);border-radius:4px;padding:1px 6px;white-space:nowrap;will-change:transform}
+.overlay{position:absolute;display:flex;gap:8px;align-items:center;pointer-events:none}
+.overlay > *{pointer-events:auto}
+.ov-tl{top:10px;left:10px} .ov-bl{bottom:10px;left:10px} .ov-br{bottom:12px;right:12px} .ov-tr{top:10px;right:10px}
+.hint{color:var(--stage-muted);font-size:12px;pointer-events:none}
+.seg{display:inline-flex;background:color-mix(in srgb,var(--stage) 70%,transparent);border:1px solid var(--stage-line);border-radius:8px;padding:2px;backdrop-filter:blur(6px)}
+.seg button{font-size:13px;color:var(--stage-fg);background:none;border:0;border-radius:6px;padding:5px 11px;cursor:pointer;min-height:32px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.stallbadge{background:var(--warn-bg);color:var(--warn);font-weight:700;font-size:13px;border-radius:8px;padding:6px 10px;border:1px solid var(--warn)}
+.stepchip{color:var(--stage-fg);font-size:13px;font-weight:700;background:color-mix(in srgb,var(--stage) 70%,transparent);border:1px solid var(--stage-line);border-radius:8px;padding:6px 11px}
+.stepchip b{color:var(--accent);font-family:var(--mono);margin-right:6px}
+.fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--stage-fg);padding:24px;text-align:center}
+
+.panel{display:grid;gap:14px;min-width:0}
+.block{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.ctl{display:grid;gap:12px}
+.row{display:grid;grid-template-columns:5.2em minmax(0,1fr) 6.2em;align-items:center;gap:10px}
+.row label{font-weight:500}
+.row output{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;font-size:14px}
+input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
+.power{font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:7px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:14px}
+.power .led{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.power[aria-pressed="true"] .led{background:#2fb35a;box-shadow:0 0 0 3px color-mix(in srgb,#2fb35a 25%,transparent)}
+.ctlhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+
+.meters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.meter{background:var(--surface);padding:10px 14px}
+.meter .k{font-size:12px;color:var(--muted)}
+.meter .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:24px;font-weight:500;line-height:1.2}
+.meter .u{font-size:12px;color:var(--muted);margin-left:4px;font-family:var(--font)}
+.meter .s{font-size:12px;color:var(--muted)}
+.alert{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);border-radius:10px;padding:10px 14px;font-size:14px}
+.alert b{display:block}
+
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-size:12px;font-weight:500;color:var(--muted);text-align:right;padding:4px 0 6px 10px;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;padding-left:0}
+td{padding:7px 0 7px 10px;border-top:1px solid var(--line);text-align:right;white-space:nowrap}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:baseline;border:1px solid color-mix(in srgb,var(--fg) 40%,transparent)}
+.mesh{color:var(--muted);font-family:var(--mono);font-size:13px}
+
+.chart svg{display:block;width:100%;height:auto}
+.chart text{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+.chart .grid{stroke:var(--line);stroke-width:1;fill:none}
+.chart .axis{stroke:var(--muted);stroke-width:1;fill:none}
+.chart .spd{stroke:var(--accent-text);stroke-width:2.2;fill:none}
+.chart .cur{stroke:var(--amp);stroke-width:1.8;fill:none;stroke-dasharray:5 4}
+.chart .pt-spd{fill:var(--accent-text);stroke:var(--surface);stroke-width:2}
+.chart .pt-cur{fill:var(--amp);stroke:var(--surface);stroke-width:2}
+.chart .guide{stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3;fill:none}
+.chart .lbl-spd{fill:var(--accent-text)} .chart .lbl-cur{fill:var(--amp)}
+.note{color:var(--muted);font-size:12.5px;margin:8px 0 0}
+
+/* build guide */
+.stephead{display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
+.stepno{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.steps{display:flex;flex-wrap:wrap;gap:6px}
+.steps button{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-family:var(--mono);font-size:14px;cursor:pointer}
+.steps button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.steps button.done{background:color-mix(in srgb,var(--accent) 22%,var(--surface))}
+.nav{display:flex;gap:8px;margin-top:12px}
+.nav button{flex:1;min-height:40px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:14px;font-weight:500;cursor:pointer}
+.nav button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.nav button:disabled{opacity:.4;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:color-mix(in srgb,var(--accent) 14%,var(--surface))}
+.block ol,.block ul{margin:0;padding-left:1.3em;display:grid;gap:4px}
+.block .dimlist{list-style:none;padding-left:0;gap:0}
+.dimlist li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:6px 0}
+.dimlist li:first-child{border-top:0;padding-top:0}
+.dimlist .val{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.block p{margin:0}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+.check input{width:18px;height:18px;accent-color:var(--accent);margin:0}
+.est{font-size:12px;color:var(--muted)}
+
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .stage{position:relative;top:0;aspect-ratio:1/1}
+  h1{font-size:19px}
+}
+@media (max-width:420px){ .seg button{padding:5px 9px} .hint{display:none} .meter .v{font-size:21px} .dimlabel{font-size:11px} }
+
+.embed body{padding-block:10px 16px}
+.embed .titles{display:none}
+.embed header{justify-content:flex-end}
+</style>
+
+<main class="app">
+  <header>
+    <div class="titles">
+      <h1>TT 減速馬達模擬器</h1>
+      <p class="sub">130 直流馬達 + 四級減速齒輪箱，標稱 1:48</p>
+    </div>
+    <div class="tabs" role="group" aria-label="模式">
+      <button type="button" id="tab-run" aria-pressed="true">運作</button>
+      <button type="button" id="tab-build" aria-pressed="false">外殼建模</button>
+    </div>
+  </header>
+
+  <section class="stage" aria-label="3D 模型">
+    <canvas id="view"></canvas>
+    <div id="labels"></div>
+    <div class="overlay ov-tl">
+      <div class="seg" id="modeseg" role="group" aria-label="外殼顯示">
+        <button type="button" id="mode-solid" data-mode="solid" aria-pressed="false">實體</button>
+        <button type="button" id="mode-xray" data-mode="xray" aria-pressed="true">透視</button>
+        <button type="button" id="mode-explode" data-mode="explode" aria-pressed="false">爆炸</button>
+      </div>
+      <div class="stepchip" id="stepchip" hidden></div>
+    </div>
+    <div class="overlay ov-tr"><div class="stallbadge" id="stallbadge" hidden>堵轉</div></div>
+    <div class="overlay ov-bl">
+      <div class="seg" id="spdseg" role="group" aria-label="播放速度">
+        <button type="button" id="spd-50" data-scale="0.02" aria-pressed="true">慢 1/50</button>
+        <button type="button" id="spd-10" data-scale="0.1" aria-pressed="false">慢 1/10</button>
+        <button type="button" id="spd-1" data-scale="1" aria-pressed="false">實速</button>
+      </div>
+    </div>
+    <div class="overlay ov-br"><span class="hint">拖曳旋轉・滾輪或雙指縮放</span></div>
+    <div class="fallback" id="fallback" hidden>3D 元件載入失敗，請重新整理頁面。</div>
+  </section>
+
+  <div class="panel" id="run-panel">
+    <section class="block ctl">
+      <div class="ctlhead">
+        <h2 style="margin:0">操作</h2>
+        <button type="button" class="power" id="power" aria-pressed="true"><span class="led"></span><span id="powerlabel">電源：開</span></button>
+      </div>
+      <div class="row">
+        <label for="volt">電壓</label>
+        <input type="range" id="volt" min="3" max="6" step="0.1" value="6">
+        <output id="voltout" for="volt">6.0 V</output>
+      </div>
+      <div class="row">
+        <label for="load">負載扭力</label>
+        <input type="range" id="load" min="0" max="1" step="0.01" value="0.2">
+        <output id="loadout" for="load">0.20 kg·cm</output>
+      </div>
+    </section>
+
+    <div class="alert" id="alert" hidden><b>堵轉</b><span id="alerttext"></span></div>
+
+    <section class="meters" aria-label="即時讀數">
+      <div class="meter"><div class="k">輸出軸轉速</div><div><span class="v" id="m-n">0</span><span class="u">rpm</span></div><div class="s" id="m-n-s">&nbsp;</div></div>
+      <div class="meter"><div class="k">馬達轉速</div><div><span class="v" id="m-nm">0</span><span class="u">rpm</span></div><div class="s">輸出軸的 <span id="m-ratio"></span> 倍</div></div>
+      <div class="meter"><div class="k">電流</div><div><span class="v" id="m-i">0</span><span class="u">A</span></div><div class="s" id="m-i-s">&nbsp;</div></div>
+      <div class="meter"><div class="k">輸出功率</div><div><span class="v" id="m-p">0</span><span class="u">W</span></div><div class="s" id="m-p-s">&nbsp;</div></div>
+    </section>
+
+    <section class="block">
+      <h2>逐級減速</h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>零件</th><th>嚙合（齒）</th><th>轉速 rpm</th><th>扭力倍率</th></tr></thead>
+          <tbody id="stages"></tbody>
+        </table>
+      </div>
+      <p class="note">轉速每降一級，扭力就放大同樣的倍數（未計摩擦損失）。同一根軸上的兩顆齒輪各自空轉，轉速不同。</p>
+    </section>
+
+    <section class="block chart">
+      <h2>特性曲線</h2>
+      <svg id="chart" viewBox="0 0 340 190" role="img" aria-label="轉速與電流對扭力的特性曲線"></svg>
+      <p class="note">線性直流馬達模型，參數取自 Adafruit 公布的 3、4.5、6 V 實測值；實際每顆馬達約有 ±10% 差異。</p>
+    </section>
+  </div>
+
+  <div class="panel" id="build-panel" hidden>
+    <section class="block">
+      <div class="stephead"><span class="stepno" id="b-no"></span><h3 id="b-title"></h3></div>
+      <div class="steps" id="b-steps" role="group" aria-label="建模步驟"></div>
+      <div class="nav">
+        <button type="button" id="b-prev">上一步</button>
+        <button type="button" id="b-next" class="primary">下一步</button>
+      </div>
+    </section>
+    <section class="block">
+      <h2>ONSHAPE 做法</h2>
+      <div class="chips" id="b-tools"></div>
+      <ol id="b-how"></ol>
+    </section>
+    <section class="block">
+      <h2>這一步的尺寸（mm）</h2>
+      <ul class="dimlist" id="b-dims"></ul>
+    </section>
+    <section class="block">
+      <h2>為什麼是這個尺寸</h2>
+      <p id="b-why"></p>
+    </section>
+    <label class="check" for="ghost"><input type="checkbox" id="ghost" checked> 顯示內部零件（半透明）</label>
+    <section class="block">
+      <h2>進階任務</h2>
+      <ul>
+        <li>圓角端兩角的定位銷：下殼立一根約 Ø1.8 的銷，上殼對應位置做約 Ø2.8 的圓柱座並開盲孔。</li>
+        <li>C 形凸環：下殼輸出軸孔內側，約 Ø7.6、高 2.4，開口寬 1.2，撐住輸出軸，也把齒輪墊高。</li>
+        <li>軸銷座：下殼軸銷孔外的小圓管，約 Ø3.8、高 1.5，固定金屬軸銷。</li>
+        <li>馬達座槽底的凸肋、卡榫與透明固定片。</li>
+      </ul>
+      <p class="est" style="margin-top:8px">括號與「約」的數字是從照片估計的。內部細節依本校使用的 TT 馬達，其他廠牌可能不同。</p>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+
+/* ---------- gear train data ---------- */
+var Z = { m:8, crown:26, cp:9, g36:36, p16:16, g28:28, p14:14, out:30 };
+var R1 = Z.crown/Z.m, R2 = Z.g36/Z.cp, R3 = Z.g28/Z.p16, R4 = Z.out/Z.p14;
+var RATIO = R1*R2*R3*R4;                     // 48.75
+var CD = 11.15;                              // measured centre distance, mm
+var XB = 11.18, XA = XB + CD;                // output axis, pin axis
+var M_A = 2*CD/(Z.cp+Z.g36);                 // module of the 9/36 pair
+var M_B = 2*CD/(Z.p16+Z.g28);                // module of the 16/28 and 14/30 pairs
+var M_C = 0.5, RC = M_C*Z.crown/2;           // crown pair
+var L = 37.2, W = 11.15, H = 9.4, WALL = 1;  // housing: length, half width, half thickness, wall
+
+/* ---------- motor model (output-shaft values) ---------- */
+function model(V, T, on){
+  var n0 = 250*V/6, Ts = 0.8*V/6;
+  var I0 = 0.14 + V/300;
+  var Is = V <= 4.5 ? 1.1 + (V-3)*0.1/1.5 : 1.2 + (V-4.5)*0.3/1.5;
+  var k = Math.min(T/Ts, 1);
+  var n = n0*(1-k), I = I0 + (Is-I0)*k;
+  if(!on){ n = 0; I = 0; }
+  var Pout = T*0.0980665*n*2*Math.PI/60, Pin = V*I;
+  return { n0:n0, Ts:Ts, I0:I0, Is:Is, n:n, I:I, Pout:Pout, Pin:Pin, eff: Pin>0 ? Pout/Pin : 0, stall: on && k>=1 };
+}
+
+var EMB = new URLSearchParams(location.search).get('embed'); if(EMB) document.documentElement.classList.add('embed');
+var state = { V:6, T:0.2, on: !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
+              mode:'xray', scale:0.02, page: EMB === 'build' ? 'build' : 'run', step:1, ghost:true };
+var cur = model(state.V, state.T, state.on);
+
+/* ---------- build guide content ---------- */
+var STEPS = [
+  { title:'外輪廓草圖', tools:['草圖 Sketch','草圖圓角 Sketch fillet'],
+    how:['在 Top 平面建立草圖。','把原點當作輸出軸中心，矩形左邊距原點 11.18。','畫 37.2 × 22.3 的矩形，上下對稱於原點。','左側兩個角加上 R5 圓角。'],
+    dims:[['長','37.2'],['寬','22.3'],['圓角（輸出軸端兩角）','R5'],['原點到圓角端','11.18']],
+    why:'寬度是被最大的 36 齒齒輪撐出來的：它的外徑約 19，加上兩側各 1 的壁厚和一點間隙，就是 22.3。長度則要排得下兩根軸，再留位置給馬達小齒輪。',
+    marks:[['lin',[0,-W,0],[L,-W,0],[0,-17,0],[L,-17,0],'37.2'],['lin',[L,-W,0],[L,W,0],[43,-W,0],[43,W,0],'22.3'],
+           ['lead',[1.46,9.69,0],[-5,17,0],'R5'],['lead',[XB,0,0],[XB,18,0],'原點＝輸出軸中心']] },
+  { title:'對稱擠出', tools:['擠出 Extrude','對稱 Symmetric'],
+    how:['選取步驟 1 的草圖區域。','擠出類型選「對稱」，深度輸入 18.8。','確認實體在 Top 平面上下各 9.4。'],
+    dims:[['總厚度','18.8'],['Top 平面上下各','9.4']],
+    why:'殼內由下往上疊了冠狀齒輪和三層正齒輪，加起來需要約 16.8 的內部高度，再加上下各 1 的壁厚。用對稱擠出，是為了讓 Top 平面剛好落在厚度中央，第 8 步分件時可以直接拿來用。',
+    marks:[['lin',[L,W,-H],[L,W,H],[43,15,-H],[43,15,H],'18.8'],['lin',[L,-W,0],[L,-W,H],[43,-15,0],[43,-15,H],'9.4']] },
+  { title:'薄殼', tools:['薄殼 Shell','中空 Hollow'],
+    how:['選取實體，執行薄殼。','厚度輸入 1，方向朝內。','勾選中空，不移除任何面，得到封閉的空殼。','靠馬達那一端的殼壁會留下來，成為齒輪箱和馬達座之間的隔板。'],
+    dims:[['壁厚','1'],['內部高度','16.8'],['內部寬度','20.3']],
+    why:'射出成型的塑膠件壁厚要均勻：太厚冷卻時會縮水凹陷，太薄又撐不住軸。1 mm 是這類小外殼常見的厚度。藍線是薄殼後的內壁位置。',
+    marks:[['lead',[18,W,0],[18,20,3],'壁厚 1'],['lin',[L-WALL,-W+WALL,H-WALL],[L-WALL,W-WALL,H-WALL],[45,-W+WALL,H-WALL],[45,W-WALL,H-WALL],'內寬 20.3']] },
+  { title:'軸孔與凸環', tools:['草圖 Sketch','擠出移除 Remove','擠出新增 Add'],
+    how:['在外殼頂面畫草圖：原點一個 Ø5.4 的圓，沿中心線往馬達方向 11.15 處一個 Ø2 的圓。','擠出移除，貫穿整個殼體。','在原點再畫 Ø6.4 與 Ø5.4 的同心圓，把環形區域往外擠出 0.8，上下兩面都做。'],
+    dims:[['輸出軸孔','Ø5.4'],['凸環外徑 × 高','Ø6.4 × 0.8'],['軸銷孔','Ø2'],['兩軸中心距','11.15']],
+    why:'兩根軸的距離由齒輪決定：一對齒輪的中心距＝（兩齒數相加 × 模數）÷ 2。這裡是 44 × 0.5 ÷ 2 ＝ 11，實際量到 11.15，多出來的就是齒輪之間預留的間隙。孔距畫錯，齒輪不是卡死就是咬不到。',
+    marks:[['lin',[0,0,H],[XB,0,H],[0,-16,H],[XB,-16,H],'11.18'],['lin',[XB,0,H],[XA,0,H],[XB,-16,H],[XA,-16,H],'11.15'],
+           ['lead',[XB-2.26,2.26,H+0.8],[5,19,H+0.8],'軸孔 Ø5.4・凸環 Ø6.4'],['lead',[XA,1,H],[XA+3,19,H],'Ø2']] },
+  { title:'螺絲孔與圓管', tools:['草圖 Sketch','擠出 Extrude','擠出移除 Remove'],
+    how:['在頂面畫草圖：兩個 Ø4 的圓（螺絲用），上下對稱，圓心相距 15.3、距馬達端 2；再畫兩個 Ø2.9 的圓（定位銷用），圓心距側邊 1.5、距軸銷孔 11。',
+         '往內擠出到殼底內面（Up to face），殼內長出四根圓柱。','在同樣的圓心畫 Ø3 與 Ø2 的圓，擠出移除貫穿，圓柱就變成圓管。'],
+    dims:[['螺絲孔','2×Ø3'],['螺絲圓管外徑','(Ø4)'],['螺絲孔間距','15.3'],['螺絲孔距馬達端','2'],['定位銷孔','2×Ø2'],['定位銷圓管外徑','(Ø2.9)'],['定位銷孔距側邊','1.5']],
+    why:'Ø3 的孔讓 M3 螺絲穿過整顆外殼，把馬達鎖在車架上。外殼是空心的，只在殼板上開孔的話，螺絲一鎖緊就會把殼壓扁；做成貫穿的圓管，鎖緊的力量就由圓管承受。旁邊的 Ø2 孔是定位銷孔，第 8 步會用到。這幾個孔都放在靠馬達端的角落，因為那裡沒有齒輪。',
+    marks:[['lin',[35.2,-7.65,H],[35.2,7.65,H],[45,-7.65,H],[45,7.65,H],'15.3'],['lin',[35.2,7.65,H],[L,W,H],[35.2,18,H],[L,18,H],'2'],
+           ['lead',[34.1,-8.7,H],[29,-19,H],'Ø3 × 2・圓管 Ø4'],['lead',[33.33,10.65,H],[26,19,H],'Ø2 × 2']] },
+  { title:'固定耳', tools:['草圖 Sketch','擠出 Extrude','對稱 Symmetric'],
+    how:['在 Top 平面畫草圖：圓角端外側一個 5 × 5 的正方形，對稱於中心線。','正方形中心畫 Ø2.5 的圓。','對稱擠出 2.5，與外殼合併。'],
+    dims:[['長 × 寬','5 × 5'],['厚度（置中）','2.5'],['孔','Ø2.5']],
+    why:'只靠馬達端的兩顆螺絲，外殼受力時會繞著螺絲擺動。固定耳在另一端加上第三個固定點，三點成一個三角形，馬達就穩了。',
+    marks:[['lin',[-5,-2.5,1.25],[0,-2.5,1.25],[-5,-10,1.25],[0,-10,1.25],'5'],['lin',[-5,-2.5,1.25],[-5,2.5,1.25],[-11,-2.5,1.25],[-11,2.5,1.25],'5'],
+           ['lead',[-2.5,1.25,1.25],[-7,11,1.25],'Ø2.5'],['lead',[-1,2.5,0],[1,17,5],'厚 2.5']] },
+  { title:'隔板與馬達座', tools:['草圖 Sketch','擠出 Extrude','擠出移除 Remove'],
+    how:['在隔板（馬達端的殼壁）上畫草圖：圓心在中心線上，畫 Ø7 的圓，擠出移除，讓馬達前端的軸承座和馬達軸穿過。',
+         '在馬達端的面上畫草圖：寬 22.3、高 16.8 的矩形，置中，往外擠出 11。',
+         '畫馬達的扁圓斷面（直徑 20、兩側削平成厚 14.8），四周各留 0.1 間隙，擠出移除貫穿馬達座。','在上下兩面各開一個 2.8 × 4 的卡扣開口。'],
+    dims:[['馬達軸孔（在隔板上）','(Ø7)'],['隔板厚度','1'],['馬達座長度','11'],['馬達座高度','16.8'],['卡扣開口','2.8 × 4'],['馬達斷面','Ø20，削平成 14.8']],
+    why:'130 馬達的斷面是扁圓形。馬達座包住馬達前段；隔板擋住馬達，不讓它往齒輪箱裡滑，中間的孔只讓軸承座和馬達軸穿過，馬達小齒輪就剛好對準冠狀齒輪。卡扣開口讓固定片扣住馬達，不會往後退。',
+    marks:[['lin',[L,-W,8.4],[L+11,-W,8.4],[L,-18,8.4],[L+11,-18,8.4],'11'],['lin',[L+11,W,-8.4],[L+11,W,8.4],[54,16,-8.4],[54,16,8.4],'16.8'],
+           ['lead',[L+3.3,0,8.4],[44,19,8.4],'開口 2.8 × 4'],['lead',[L-0.5,0,-3.5],[30,-19,-3.5],'馬達軸孔 (Ø7)']] },
+  { title:'分成上下殼', tools:['分割 Split','擠出 Extrude'],
+    how:['執行分割，目標選整個外殼，分割工具選 Top 平面，得到上殼與下殼兩個零件，各自命名。','上殼：第 5 步的 2×Ø2 孔保留，作為定位銷孔。',
+         '下殼：在同樣圓心畫 Ø2 的圓，從殼底外面擠出到分模面上方 2.5，把孔填回並長出定位銷。','隱藏上殼檢查內部空間，再顯示，確認定位銷對準銷孔。'],
+    dims:[['上殼厚度','9.4'],['下殼厚度','9.4'],['定位銷','2×Ø2'],['定位銷高出分模面','(2.5)']],
+    why:'齒輪要放得進去，外殼就必須能打開。因為第 2 步用了對稱擠出，最初畫草圖的 Top 平面正好是分模面，一刀切下去上下兩半完全對稱。定位銷讓兩半殼合起來時自動對準，鎖螺絲前不會錯位，這是塑膠外殼常見的做法。',
+    marks:[['lin',[L,-W,-H],[L,-W,0],[43,-15,-H],[43,-15,0],'9.4'],['lead',[18,W,0],[18,21,0],'分模面＝Top 平面'],['lead',[33.33,-9.65,2.5],[20,-22,2.5],'定位銷 Ø2']] }
+];
+
+/* ---------- panel ---------- */
+var css = getComputedStyle(document.documentElement);
+function tok(n){ return css.getPropertyValue(n).trim(); }
+var STAGES = [
+  { name:'馬達小齒輪', mesh:'8',        col:'--g-m',   div:1 },
+  { name:'冠狀齒輪',   mesh:'8 → 26',   col:'--g-c',   div:R1 },
+  { name:'第二級齒輪', mesh:'9 → 36',   col:'--g-36',  div:R1*R2 },
+  { name:'第三級齒輪', mesh:'16 → 28',  col:'--g-28',  div:R1*R2*R3 },
+  { name:'輸出軸',     mesh:'14 → 30',  col:'--g-out', div:RATIO }
+];
+(function buildTable(){
+  var h = '';
+  STAGES.forEach(function(s, i){
+    h += '<tr><td><span class="dot" style="background:var('+s.col+')"></span>'+s.name+'</td><td class="mesh">'+s.mesh+
+         '</td><td class="num" id="st-n'+i+'"></td><td class="num">× '+s.div.toFixed(2)+'</td></tr>';
+  });
+  $('stages').innerHTML = h;
+})();
+$('m-ratio').textContent = RATIO.toFixed(2);
+
+var CH = { x0:38, x1:302, y0:14, y1:150, tmax:1.0, nmax:250, imax:1.5 };
+function cx(t){ return CH.x0 + (CH.x1-CH.x0)*t/CH.tmax; }
+function cyN(n){ return CH.y1 - (CH.y1-CH.y0)*n/CH.nmax; }
+function cyI(i){ return CH.y1 - (CH.y1-CH.y0)*i/CH.imax; }
+function drawChart(){
+  var m = model(state.V, state.T, true), s = '';
+  for(var i=0;i<=5;i++){ var y = cyN(i*50);
+    s += '<line class="grid" x1="'+CH.x0+'" x2="'+CH.x1+'" y1="'+y+'" y2="'+y+'"/>';
+    s += '<text class="lbl-spd" x="'+(CH.x0-5)+'" y="'+(y+3.5)+'" text-anchor="end">'+(i*50)+'</text>';
+  }
+  for(i=0;i<=3;i++){ s += '<text class="lbl-cur" x="'+(CH.x1+5)+'" y="'+(cyI(i*0.5)+3.5)+'">'+(i*0.5).toFixed(1)+'</text>'; }
+  for(i=0;i<=5;i++){ var x = cx(i*0.2);
+    s += '<line class="axis" x1="'+x+'" x2="'+x+'" y1="'+CH.y1+'" y2="'+(CH.y1+4)+'"/>';
+    s += '<text x="'+x+'" y="'+(CH.y1+15)+'" text-anchor="middle">'+(i*0.2).toFixed(1)+'</text>';
+  }
+  s += '<line class="axis" x1="'+CH.x0+'" x2="'+CH.x1+'" y1="'+CH.y1+'" y2="'+CH.y1+'"/>';
+  s += '<text x="'+((CH.x0+CH.x1)/2)+'" y="'+(CH.y1+30)+'" text-anchor="middle">負載扭力 kg·cm</text>';
+  s += '<text class="lbl-spd" x="'+CH.x0+'" y="9" text-anchor="end">rpm</text>';
+  s += '<text class="lbl-cur" x="'+CH.x1+'" y="9">A</text>';
+  var xs = cx(Math.min(m.Ts, CH.tmax));
+  s += '<polyline class="spd" points="'+cx(0)+','+cyN(m.n0)+' '+xs+','+cyN(0)+' '+cx(CH.tmax)+','+cyN(0)+'"/>';
+  s += '<polyline class="cur" points="'+cx(0)+','+cyI(m.I0)+' '+xs+','+cyI(m.Is)+' '+cx(CH.tmax)+','+cyI(m.Is)+'"/>';
+  s += '<text class="lbl-spd" x="'+(cx(0.3*m.Ts)+7)+'" y="'+(cyN(0.7*m.n0)-3)+'">轉速</text>';
+  s += '<text class="lbl-cur" x="'+(cx(CH.tmax)-2)+'" y="'+(cyI(m.Is)+13)+'" text-anchor="end">電流</text>';
+  var xt = cx(state.T);
+  s += '<line class="guide" x1="'+xt+'" x2="'+xt+'" y1="'+CH.y0+'" y2="'+CH.y1+'"/>';
+  s += '<circle class="pt-cur" cx="'+xt+'" cy="'+cyI(m.I)+'" r="4.5"/>';
+  s += '<circle class="pt-spd" cx="'+xt+'" cy="'+cyN(m.n)+'" r="5"/>';
+  $('chart').innerHTML = s;
+}
+function refresh(){
+  cur = model(state.V, state.T, state.on);
+  $('voltout').textContent = state.V.toFixed(1)+' V';
+  $('loadout').textContent = state.T.toFixed(2)+' kg·cm';
+  $('m-n').textContent = cur.n.toFixed(0);
+  $('m-nm').textContent = Math.round(cur.n*RATIO).toLocaleString('en-US');
+  $('m-i').textContent = cur.I.toFixed(2);
+  $('m-p').textContent = cur.Pout.toFixed(2);
+  $('m-n-s').textContent = '空載 '+cur.n0.toFixed(0)+' rpm';
+  $('m-i-s').textContent = '堵轉時 '+cur.Is.toFixed(2)+' A';
+  $('m-p-s').textContent = state.on ? '效率 '+(cur.eff*100).toFixed(0)+'%（輸入 '+cur.Pin.toFixed(2)+' W）' : '電源關閉';
+  STAGES.forEach(function(s, i){
+    var n = cur.n*RATIO/s.div;
+    $('st-n'+i).textContent = n >= 1000 ? Math.round(n).toLocaleString('en-US') : n.toFixed(n<100?1:0);
+  });
+  var run = state.page === 'run';
+  $('alert').hidden = !cur.stall; $('stallbadge').hidden = !(cur.stall && run);
+  if(cur.stall){
+    $('alerttext').textContent = '負載超過這個電壓的最大扭力 '+cur.Ts.toFixed(2)+' kg·cm，齒輪停住，電流升到 '+cur.Is.toFixed(2)+
+      ' A。Arduino 腳位只能供應約 0.04 A，所以一定要經過馬達驅動模組；長時間堵轉會讓馬達過熱。';
+  }
+  $('power').setAttribute('aria-pressed', state.on ? 'true' : 'false');
+  $('powerlabel').textContent = state.on ? '電源：開' : '電源：關';
+  drawChart();
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function refreshBuild(){
+  var s = STEPS[state.step-1];
+  $('b-no').textContent = '步驟 '+state.step+'／'+STEPS.length;
+  $('b-title').textContent = s.title;
+  $('stepchip').innerHTML = '<b>'+state.step+'</b>'+esc(s.title);
+  $('b-tools').innerHTML = s.tools.map(function(t){ return '<span class="chip">'+esc(t)+'</span>'; }).join('');
+  $('b-how').innerHTML = s.how.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join('');
+  $('b-dims').innerHTML = s.dims.map(function(d){ return '<li><span>'+esc(d[0])+'</span><span class="val">'+esc(d[1])+'</span></li>'; }).join('');
+  $('b-why').textContent = s.why;
+  Array.prototype.forEach.call($('b-steps').children, function(b, i){
+    b.setAttribute('aria-pressed', i+1 === state.step ? 'true' : 'false');
+    b.className = i+1 < state.step ? 'done' : '';
+  });
+  $('b-prev').disabled = state.step === 1;
+  $('b-next').disabled = state.step === STEPS.length;
+}
+function sync(){
+  var run = state.page === 'run';
+  $('run-panel').hidden = !run; $('build-panel').hidden = run;
+  $('modeseg').hidden = !run; $('spdseg').hidden = !run; $('stepchip').hidden = run;
+  $('tab-run').setAttribute('aria-pressed', run ? 'true' : 'false');
+  $('tab-build').setAttribute('aria-pressed', run ? 'false' : 'true');
+  refresh(); refreshBuild();
+  if(window.__ttApply) window.__ttApply();
+}
+STEPS.forEach(function(s, i){
+  var b = document.createElement('button'); b.type = 'button'; b.id = 'b-step-'+(i+1); b.textContent = String(i+1);
+  b.setAttribute('aria-label', '步驟 '+(i+1)+' '+s.title);
+  b.addEventListener('click', function(){ state.step = i+1; sync(); });
+  $('b-steps').appendChild(b);
+});
+$('b-prev').addEventListener('click', function(){ if(state.step > 1){ state.step--; sync(); } });
+$('b-next').addEventListener('click', function(){ if(state.step < STEPS.length){ state.step++; sync(); } });
+$('ghost').addEventListener('change', function(e){ state.ghost = e.target.checked; sync(); });
+$('tab-run').addEventListener('click', function(){ state.page = 'run'; sync(); });
+$('tab-build').addEventListener('click', function(){ state.page = 'build'; sync(); });
+$('volt').addEventListener('input', function(e){ state.V = parseFloat(e.target.value); refresh(); });
+$('load').addEventListener('input', function(e){ state.T = parseFloat(e.target.value); refresh(); });
+$('power').addEventListener('click', function(){ state.on = !state.on; refresh(); });
+function bindSeg(ids, key, parse){
+  ids.forEach(function(id){
+    $(id).addEventListener('click', function(){
+      ids.forEach(function(o){ $(o).setAttribute('aria-pressed', o===id ? 'true' : 'false'); });
+      state[key] = parse($(id)); if(window.__ttApply) window.__ttApply();
+    });
+  });
+}
+bindSeg(['mode-solid','mode-xray','mode-explode'], 'mode', function(b){ return b.dataset.mode; });
+bindSeg(['spd-50','spd-10','spd-1'], 'scale', function(b){ return parseFloat(b.dataset.scale); });
+sync();
+
+/* ---------- 3D ---------- */
+if(!window.THREE){ $('fallback').hidden = false; return; }
+var THREE = window.THREE, canvas = $('view'), renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas:canvas, antialias:true, alpha:true }); }
+catch(err){ $('fallback').hidden = false; $('fallback').textContent = '這個瀏覽器無法顯示 3D（WebGL 未啟用）。'; return; }
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(32, 4/3, 1, 2000);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x39424c, 0.95));
+var key = new THREE.DirectionalLight(0xffffff, 0.85); key.position.set(60, 120, 80); scene.add(key);
+var fill = new THREE.DirectionalLight(0xbfd4ff, 0.35); fill.position.set(-80, 40, -60); scene.add(fill);
+
+var mech = new THREE.Group();               // local frame: x length, y width, z thickness (gear axes)
+mech.rotation.x = -Math.PI/2; mech.position.set(-30, 0, 0); scene.add(mech);
+
+function plastic(tokenName){ return new THREE.MeshStandardMaterial({ color:new THREE.Color(tok(tokenName)), roughness:0.55, metalness:0.02 }); }
+var MAT = {
+  m:plastic('--g-m'), c:plastic('--g-c'), g36:plastic('--g-36'), g28:plastic('--g-28'), out:plastic('--g-out'),
+  steel:new THREE.MeshStandardMaterial({ color:0xb9c0c7, roughness:0.35, metalness:0.55 }),
+  can:new THREE.MeshStandardMaterial({ color:0xa9b0b7, roughness:0.4, metalness:0.6 }),
+  cap:new THREE.MeshStandardMaterial({ color:0x2a2d31, roughness:0.7 }),
+  brass:new THREE.MeshStandardMaterial({ color:0xc9a24a, roughness:0.4, metalness:0.6 }),
+  shell:new THREE.MeshStandardMaterial({ color:new THREE.Color(tok('--accent')), roughness:0.5, side:THREE.DoubleSide }),
+  hi:new THREE.MeshStandardMaterial({ color:new THREE.Color(tok('--hl')), roughness:0.5, side:THREE.DoubleSide, transparent:true, opacity:0.55, depthWrite:false }),
+  sketch:new THREE.MeshBasicMaterial({ color:new THREE.Color(tok('--accent')), side:THREE.DoubleSide, transparent:true, opacity:0.22, depthWrite:false }),
+  hiLine:new THREE.LineBasicMaterial({ color:new THREE.Color(tok('--hl')), depthTest:false, transparent:true }),
+  dimLine:new THREE.LineBasicMaterial({ color:new THREE.Color(tok('--stage-fg')), depthTest:false, transparent:true, opacity:0.85 })
+};
+var INNER = [MAT.m, MAT.c, MAT.g36, MAT.g28, MAT.out, MAT.steel, MAT.can, MAT.cap, MAT.brass];
+
+function gearShape(z, m, hole, extra){
+  var r = m*z/2, pa = 20*Math.PI/180, rb = r*Math.cos(pa), ra = r + 0.9*m, rf = r - 1.15*m;
+  var half = 0.92*Math.PI/(2*z) + (Math.tan(pa) - pa);
+  var tA = Math.sqrt(Math.max(ra*ra/(rb*rb) - 1, 0)), t0 = rf > rb ? Math.sqrt(rf*rf/(rb*rb) - 1) : 0, N = 5;
+  var fl = [];
+  for(var i=0;i<=N;i++){ var t = t0 + (tA-t0)*i/N; fl.push([rb*Math.sqrt(1+t*t), Math.max(half - (t - Math.atan(t)), 0.004)]); }
+  var pts = [], pitch = 2*Math.PI/z;
+  function P(rad, a){ pts.push(new THREE.Vector2(rad*Math.cos(a), rad*Math.sin(a))); }
+  for(var k=0;k<z;k++){
+    var c = k*pitch;
+    P(rf, c - fl[0][1]);
+    for(i=0;i<=N;i++) P(fl[i][0], c - fl[i][1]);
+    for(i=N;i>=0;i--) P(fl[i][0], c + fl[i][1]);
+    P(rf, c + fl[0][1]);
+    P(rf, c + pitch/2);
+  }
+  var shape = new THREE.Shape(pts);
+  function ring(x, y, rad){ var p = new THREE.Path(); p.absarc(x, y, rad, 0, Math.PI*2, true); shape.holes.push(p); }
+  if(hole) ring(0, 0, hole);
+  if(extra) for(k=0;k<extra.n;k++){ var a = k*2*Math.PI/extra.n + (extra.off||0); ring(extra.r*Math.cos(a), extra.r*Math.sin(a), extra.rad); }
+  return shape;
+}
+function extrude(shape, depth){ return new THREE.ExtrudeGeometry(shape, { depth:depth, bevelEnabled:false, curveSegments:28 }); }
+function gearMesh(z, m, depth, z0, mat, hole, extra){ var g = new THREE.Mesh(extrude(gearShape(z, m, hole, extra), depth), mat); g.position.z = z0; return g; }
+function cylZ(rad, zA, zB, mat, seg){ var g = new THREE.CylinderGeometry(rad, rad, zB-zA, seg||28); g.rotateX(Math.PI/2); var me = new THREE.Mesh(g, mat); me.position.z = (zA+zB)/2; return me; }
+function cylX(rad, xA, xB, mat){ var g = new THREE.CylinderGeometry(rad, rad, xB-xA, 28); g.rotateZ(Math.PI/2); var me = new THREE.Mesh(g, mat); me.position.x = (xA+xB)/2; return me; }
+
+var parts = [];                              // { obj, ex } explode offsets along z
+function add(obj, ex){ mech.add(obj); parts.push({ obj:obj, ex:ex||0, z0:obj.position.z }); return obj; }
+
+/* crown gear: disk + 26 face teeth + 9T pinion */
+var crown = new THREE.Group(); crown.position.set(XA, 0, 0);
+(function(){
+  var disk = new THREE.Shape(); disk.absarc(0, 0, 7.4, 0, Math.PI*2, false);
+  var h = new THREE.Path(); h.absarc(0, 0, 1.05, 0, Math.PI*2, true); disk.holes.push(h);
+  for(var k=0;k<4;k++){ var a = k*Math.PI/2 + Math.PI/4, p = new THREE.Path(); p.absarc(3.9*Math.cos(a), 3.9*Math.sin(a), 0.75, 0, Math.PI*2, true); disk.holes.push(p); }
+  var d = new THREE.Mesh(extrude(disk, 1.8), MAT.c); d.position.z = -4.4; crown.add(d);
+  var tp = new THREE.Shape([new THREE.Vector2(-0.42,0), new THREE.Vector2(0.42,0), new THREE.Vector2(0.2,1.05), new THREE.Vector2(-0.2,1.05)]);
+  var tg = new THREE.ExtrudeGeometry(tp, { depth:2.0, bevelEnabled:false });
+  tg.applyMatrix4(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,1,0), new THREE.Vector3(0,0,1), new THREE.Vector3(1,0,0)));
+  tg.translate(5.3, 0, -2.6);
+  for(k=0;k<Z.crown;k++){ var t = new THREE.Mesh(tg, MAT.c); t.rotation.z = k*2*Math.PI/Z.crown; crown.add(t); }
+  crown.add(gearMesh(Z.cp, M_A, 3.5, -2.6, MAT.c, 1.05));
+  crown.add(cylZ(2.2, -6.8, -4.4, MAT.c));
+})();
+add(crown, 0);
+
+var g36 = new THREE.Group(); g36.position.set(XB, 0, 0);
+g36.add(gearMesh(Z.g36, M_A, 1.8, -1.2, MAT.g36, 2.9, { n:6, r:6.4, rad:1.25 }));
+g36.add(gearMesh(Z.p16, M_B, 4.2, 0.6, MAT.g36, 2.9));
+add(g36, 7);
+
+var g28 = new THREE.Group(); g28.position.set(XA, 0, 0);
+g28.add(gearMesh(Z.g28, M_B, 1.8, 3.0, MAT.g28, 1.05, { n:5, r:5.25, rad:0.8 }));
+g28.add(gearMesh(Z.p14, M_B, 2.8, 4.8, MAT.g28, 1.05));
+add(g28, 14);
+
+var out = new THREE.Group(); out.position.set(XB, 0, 0);
+out.add(gearMesh(Z.out, M_B, 2.0, 5.6, MAT.out, 2.6, { n:5, r:5.3, rad:1.0 }));
+(function(){
+  var a0 = Math.asin(1.85/2.7), s = new THREE.Shape();
+  s.absarc(0, 0, 2.7, -a0, a0, false); s.absarc(0, 0, 2.7, Math.PI-a0, Math.PI+a0, false);
+  var h = new THREE.Path(); h.absarc(0, 0, 1.0, 0, Math.PI*2, true); s.holes.push(h);
+  var sh = new THREE.Mesh(extrude(s, 35.8), MAT.out); sh.position.z = -17.9; out.add(sh);
+})();
+add(out, 21);
+
+var pinA = cylZ(1.0, -H, H, MAT.steel); pinA.position.x = XA; add(pinA, 0);
+
+/* motor */
+var XM = L;
+function canShape(k){ var a1 = Math.acos(7.4/10), s = new THREE.Shape(); s.absarc(0, 0, 10*k, a1, Math.PI-a1, false); s.absarc(0, 0, 10*k, Math.PI+a1, 2*Math.PI-a1, false); return s; }
+function alongX(geom, x0, mat){ var me = new THREE.Mesh(geom, mat); me.rotation.y = Math.PI/2; me.position.x = x0; return me; }
+var motor = new THREE.Group();
+motor.add(alongX(extrude(canShape(1), 25), XM, MAT.can));
+motor.add(alongX(extrude(canShape(0.97), 2.2), XM+25, MAT.cap));
+motor.add(cylX(3.0, XM-1.4, XM, MAT.can));
+[-1,1].forEach(function(sgn){ var b = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.6, 0.5), MAT.brass); b.position.set(XM+27.6, sgn*6.5, 0); motor.add(b); });
+add(motor, 0);
+var rotor = new THREE.Group();
+rotor.add(cylX(1.0, 26.2, XM-1.4, MAT.steel));
+var pinOuter = new THREE.Group(); pinOuter.rotation.y = Math.PI/2; pinOuter.position.x = XA + RC - 2.3;
+var pinion = new THREE.Mesh(extrude(gearShape(Z.m, M_C, 0), 4.6), MAT.m); pinOuter.add(pinion);
+rotor.add(pinOuter);
+add(rotor, 0);
+var INTERNALS = [crown, g36, g28, out, pinA, motor, rotor];
+
+/* ---------- housing, rebuilt per build step ---------- */
+function outline(inset, xEnd){
+  var x0 = inset, w = W - inset, rc = 5 - inset, s = new THREE.Shape();
+  s.moveTo(xEnd, -w); s.lineTo(x0+rc, -w);
+  s.absarc(x0+rc, -w+rc, rc, -Math.PI/2, Math.PI, true);
+  s.lineTo(x0, w-rc);
+  s.absarc(x0+rc, w-rc, rc, Math.PI, Math.PI/2, true);
+  s.lineTo(xEnd, w); s.lineTo(xEnd, -w);
+  return s;
+}
+function hole(shape, x, y, rad){ var p = new THREE.Path(); p.absarc(x, y, rad, 0, Math.PI*2, true); shape.holes.push(p); }
+var shellBottom = new THREE.Group(), shellTop = new THREE.Group(), hiGroup = new THREE.Group(), hiTop = new THREE.Group();
+add(shellBottom, 0); add(shellTop, 30); mech.add(hiGroup); shellTop.add(hiTop);
+var dimLines = new THREE.LineSegments(new THREE.BufferGeometry(), MAT.dimLine); dimLines.renderOrder = 20; mech.add(dimLines);
+var labels = [];
+
+function clearGroup(g, keep){
+  for(var i=g.children.length-1;i>=0;i--){ var c = g.children[i]; if(c === keep) continue; g.remove(c); if(c.geometry) c.geometry.dispose(); }
+}
+function segs(points, z){ var a = []; for(var i=0;i<points.length;i++){ var p = points[i], q = points[(i+1)%points.length]; a.push(p.x, p.y, z, q.x, q.y, z); } return a; }
+function circleSegs(x, y, r, z){ var pts = []; for(var i=0;i<40;i++){ var t = i*Math.PI/20; pts.push(new THREE.Vector2(x + r*Math.cos(t), y + r*Math.sin(t))); } return segs(pts, z); }
+function lines(arr, mat, order){
+  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3));
+  var l = new THREE.LineSegments(g, mat); l.renderOrder = order || 15; return l;
+}
+var RN = 3.5, WX0 = L + 1.9, WX1 = L + 4.7, CRL = 11;   // motor-shaft hole radius in the partition, clip window, cradle length
+function V2(a){ return a.map(function(p){ return new THREE.Vector2(p[0], p[1]); }); }
+function put(group, geom, mat, x, y, z){ var m = new THREE.Mesh(geom, mat); m.position.set(x, y, z); group.add(m); return m; }
+function discShape(r){ var s = new THREE.Shape(); s.absarc(0, 0, r, 0, Math.PI*2, false); return s; }
+function ringShape(ro, ri){ var s = discShape(ro); hole(s, 0, 0, ri); return s; }
+function cShape(ro, ri, gap){                       // split collar, opening toward -y
+  var a = Math.asin(gap/2/ro), b = Math.asin(gap/2/ri), base = -Math.PI/2, s = new THREE.Shape();
+  s.absarc(0, 0, ro, base + a, base + 2*Math.PI - a, false);
+  s.absarc(0, 0, ri, base + 2*Math.PI - b, base + b, true);
+  return s;
+}
+/* profiles drawn in the (sx, sy) plane and laid along +x by alongX(): world z = -sx, so s = +1 is the lower shell */
+function partitionShape(s, notch){
+  var p = [[0,-W],[s*H,-W],[s*H,W],[0,W]];
+  if(notch){ p.push([0,RN]); for(var i=1;i<16;i++){ var t = i*Math.PI/16; p.push([s*RN*Math.sin(t), RN*Math.cos(t)]); } p.push([0,-RN]); }
+  return new THREE.Shape(V2(p));
+}
+function cradleShapes(s, win){
+  var f = 8.4, R = 10.2, fl = 7.4*1.02, p1 = Math.asin(fl/R);
+  function arcPts(a0, a1, sy){ var a = []; for(var i=0;i<=10;i++){ var t = a0 + (a1-a0)*i/10; a.push([s*R*Math.sin(t), sy*R*Math.cos(t)]); } return a; }
+  if(!win) return [new THREE.Shape(V2([[0,W]].concat(arcPts(0, p1, 1), arcPts(p1, 0, -1), [[0,-W],[s*f,-W],[s*f,W]])))];
+  return [new THREE.Shape(V2([[0,W]].concat(arcPts(0, p1, 1), [[s*fl,2],[s*f,2],[s*f,W]]))),
+          new THREE.Shape(V2([[0,-W]].concat(arcPts(0, p1, -1), [[s*fl,-2],[s*f,-2],[s*f,-W]])))];
+}
+function buildHousing(step, hl){
+  clearGroup(shellBottom); clearGroup(shellTop, hiTop); clearGroup(hiGroup); clearGroup(hiTop);
+  var hi = [], hiT = [], full = outline(0, L).getPoints(10), inner = outline(WALL, L-WALL).getPoints(10);
+  function M(isNew){ return isNew && hl ? MAT.hi : MAT.shell; }
+  if(step === 1){
+    var f = new THREE.Mesh(new THREE.ShapeGeometry(outline(0, L)), MAT.sketch); shellBottom.add(f);
+    hi = hi.concat(segs(full, 0), [XB-1.5,0,0, XB+1.5,0,0, XB,-1.5,0, XB,1.5,0]);
+  } else if(step === 2){
+    var blk = new THREE.Mesh(extrude(outline(0, L), 2*H), MAT.shell); blk.position.z = -H; shellBottom.add(blk);
+    hi = hi.concat(segs(full, H), segs(full, -H), segs(full, 0));
+  } else {
+    var D = H - WALL;
+    var plate = function(top){
+      var s = outline(0, L);
+      if(step >= 4){ hole(s, XB, 0, 2.75); hole(s, XA, 0, 1.0); }
+      if(step >= 5){
+        hole(s, 35.2, 7.65, 1.5); hole(s, 35.2, -7.65, 1.5);
+        if(top || step < 8){ hole(s, 33.33, 9.65, 1.0); hole(s, 33.33, -9.65, 1.0); }
+      }
+      return s;
+    };
+    var uWall = function(){ return new THREE.Shape(outline(0, L).getPoints(10).concat(outline(WALL, L).getPoints(10).reverse())); };
+    put(shellBottom, extrude(plate(false), WALL), MAT.shell, 0, 0, -H);
+    put(shellTop, extrude(plate(true), WALL), MAT.shell, 0, 0, D);
+    put(shellBottom, extrude(uWall(), D), MAT.shell, 0, 0, -D);
+    put(shellTop, extrude(uWall(), D), MAT.shell, 0, 0, 0);
+    shellBottom.add(alongX(extrude(partitionShape(1, step >= 7), WALL), L-WALL, M(step === 7)));
+    shellTop.add(alongX(extrude(partitionShape(-1, step >= 7), WALL), L-WALL, M(step === 7)));
+    if(step === 3){ hi = hi.concat(segs(inner, D), segs(inner, -D), segs(inner, 0)); }
+    if(step >= 4){
+      var rm = M(step === 4);
+      put(shellTop, extrude(ringShape(3.2, 2.75), 0.8), rm, XB, 0, H);
+      put(shellBottom, extrude(ringShape(3.2, 2.75), 0.8), rm, XB, 0, -H-0.8);
+      if(step === 4){
+        hiT = hiT.concat(circleSegs(XB,0,2.75,H+0.8), circleSegs(XB,0,3.2,H+0.8), circleSegs(XA,0,1.0,H));
+        hi = hi.concat(circleSegs(XB,0,2.75,-H-0.8), circleSegs(XB,0,3.2,-H-0.8), circleSegs(XA,0,1.0,-H));
+      }
+    }
+    if(step >= 5){
+      var tm = M(step === 5);
+      [1, -1].forEach(function(sg){
+        put(shellBottom, extrude(ringShape(2.0, 1.5), D), tm, 35.2, sg*7.65, -D);
+        put(shellTop, extrude(ringShape(2.0, 1.5), D), tm, 35.2, sg*7.65, 0);
+        put(shellTop, extrude(ringShape(1.45, 1.0), D), tm, 33.33, sg*9.65, 0);
+        put(shellBottom, extrude(step >= 8 ? discShape(1.45) : ringShape(1.45, 1.0), D), tm, 33.33, sg*9.65, -D);
+      });
+      if(step === 5){
+        [[35.2,7.65,1.5],[35.2,-7.65,1.5],[33.33,9.65,1.0],[33.33,-9.65,1.0]].forEach(function(c){
+          hiT = hiT.concat(circleSegs(c[0],c[1],c[2],H)); hi = hi.concat(circleSegs(c[0],c[1],c[2],-H)); });
+      }
+    }
+    if(step >= 6){
+      var tab = new THREE.Shape(); tab.moveTo(-5,-2.5); tab.lineTo(0,-2.5); tab.lineTo(0,2.5); tab.lineTo(-5,2.5); tab.lineTo(-5,-2.5); hole(tab, -2.5, 0, 1.25);
+      put(shellBottom, extrude(tab, 1.25), M(step === 6), 0, 0, -1.25);
+      put(shellTop, extrude(tab, 1.25), M(step === 6), 0, 0, 0);
+      if(step === 6){ hi = hi.concat(circleSegs(-2.5,0,1.25,1.25), segs(tab.getPoints(), 1.25)); }
+    }
+    if(step >= 7){
+      var cm = M(step === 7);
+      [[1, shellBottom], [-1, shellTop]].forEach(function(h){
+        cradleShapes(h[0], false).forEach(function(sh){ h[1].add(alongX(extrude(sh, WX0-L), L, cm)); });
+        cradleShapes(h[0], true).forEach(function(sh){ h[1].add(alongX(extrude(sh, WX1-WX0), WX0, cm)); });
+        cradleShapes(h[0], false).forEach(function(sh){ h[1].add(alongX(extrude(sh, L+CRL-WX1), WX1, cm)); });
+      });
+      if(step === 7){
+        var rect = [new THREE.Vector2(WX0,-2), new THREE.Vector2(WX1,-2), new THREE.Vector2(WX1,2), new THREE.Vector2(WX0,2)];
+        hi = hi.concat(segs(rect, -8.4)); hiT = hiT.concat(segs(rect, 8.4));
+      }
+    }
+    if(step >= 8){
+      var pm = M(step === 8);
+      [1, -1].forEach(function(sg){
+        put(shellBottom, extrude(discShape(1.0), 2.5), pm, 33.33, sg*9.65, 0);           // locating pins beside the screw tubes
+        put(shellBottom, extrude(discShape(1.4), D), MAT.shell, 2.74, sg*8.41, -D);      // corner posts at the rounded end
+        put(shellBottom, extrude(discShape(0.9), 2.5), pm, 2.74, sg*8.41, 0);
+        put(shellTop, extrude(ringShape(1.4, 1.0), D), MAT.shell, 2.74, sg*8.41, 0);
+      });
+      put(shellBottom, extrude(cShape(3.8, 2.75, 1.2), 2.4), MAT.shell, XB, 0, -D);    // split collar around the output shaft
+      put(shellBottom, extrude(ringShape(1.9, 1.0), 1.5), MAT.shell, XA, 0, -D);        // pin boss
+      if(hl){ hi = hi.concat(segs(full, 0)); hiT = hiT.concat(segs(full, 0)); }
+    }
+  }
+  if(hl){
+    if(hi.length) hiGroup.add(lines(hi, MAT.hiLine));
+    if(hiT.length) hiTop.add(lines(hiT, MAT.hiLine));
+  }
+}
+function setMarks(list){
+  var arr = [], host = $('labels'); host.innerHTML = ''; labels = [];
+  list.forEach(function(m){
+    var pos;
+    if(m[0] === 'lin'){
+      var a = m[1], b = m[2], ea = m[3], eb = m[4];
+      arr.push(a[0],a[1],a[2], ea[0],ea[1],ea[2],  b[0],b[1],b[2], eb[0],eb[1],eb[2],  ea[0],ea[1],ea[2], eb[0],eb[1],eb[2]);
+      pos = new THREE.Vector3((ea[0]+eb[0])/2, (ea[1]+eb[1])/2, (ea[2]+eb[2])/2);
+    } else {
+      var at = m[1], to = m[2];
+      arr.push(at[0],at[1],at[2], to[0],to[1],to[2]);
+      pos = new THREE.Vector3(to[0], to[1], to[2]);
+    }
+    var el = document.createElement('div'); el.className = 'dimlabel'; el.textContent = m[m.length-1]; host.appendChild(el);
+    labels.push({ el:el, p:pos });
+  });
+  dimLines.geometry.dispose();
+  dimLines.geometry = new THREE.BufferGeometry();
+  dimLines.geometry.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3));
+}
+
+/* ---------- view state ---------- */
+var explode = 0, topLift = 0, orbit = { az:-0.62, pol:1.02, zoom:1 }, ptrs = new Map(), pinch = 0;
+function apply(){
+  var build = state.page === 'build', solid = !build && state.mode === 'solid';
+  MAT.shell.transparent = !solid; MAT.shell.opacity = solid ? 1 : (build ? 0.26 : 0.2); MAT.shell.depthWrite = solid; MAT.shell.needsUpdate = true;
+  var ghost = build && state.ghost;
+  INNER.forEach(function(m){ m.transparent = ghost; m.opacity = ghost ? 0.45 : 1; m.depthWrite = !ghost; m.needsUpdate = true; });
+  INTERNALS.forEach(function(o){ o.visible = !build || state.ghost; });
+  buildHousing(build ? state.step : 8, build);
+  setMarks(build ? STEPS[state.step-1].marks : []);
+}
+window.__ttApply = apply; apply();
+
+canvas.addEventListener('pointerdown', function(e){ canvas.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x:e.clientX, y:e.clientY }); pinch = 0; });
+canvas.addEventListener('pointermove', function(e){
+  var p = ptrs.get(e.pointerId); if(!p) return;
+  if(ptrs.size === 1){
+    orbit.az -= (e.clientX - p.x)*0.008;
+    orbit.pol = Math.min(Math.PI-0.12, Math.max(0.12, orbit.pol - (e.clientY - p.y)*0.008));
+  }
+  p.x = e.clientX; p.y = e.clientY;
+  if(ptrs.size === 2){
+    var a = Array.from(ptrs.values()), d = Math.hypot(a[0].x-a[1].x, a[0].y-a[1].y);
+    if(pinch) orbit.zoom = Math.min(2.2, Math.max(0.35, orbit.zoom*pinch/d));
+    pinch = d;
+  }
+});
+function up(e){ ptrs.delete(e.pointerId); pinch = 0; }
+canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
+canvas.addEventListener('wheel', function(e){ e.preventDefault(); orbit.zoom = Math.min(2.2, Math.max(0.35, orbit.zoom*Math.exp(e.deltaY*0.0012))); }, { passive:false });
+
+var vw = 1, vh = 1;
+function resize(){
+  var w = canvas.clientWidth, h = canvas.clientHeight; if(!w || !h) return;
+  vw = w; vh = h; renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix();
+}
+if(window.ResizeObserver) new ResizeObserver(resize).observe(canvas); else window.addEventListener('resize', resize);
+resize();
+
+/* ---------- kinematics ---------- */
+var thM = 0, last = performance.now(), tmp = new THREE.Vector3();
+function pose(){
+  var thC  = thM*Z.m/Z.crown + Math.PI/Z.crown;                                  // crown: pinion tooth meets crown gap
+  var th36 = 2*Math.PI + Math.PI/Z.g36 - (thC - Math.PI)*Z.cp/Z.g36;             // A -> B, direction pi
+  var th28 = Math.PI + Math.PI/Z.g28 - th36*Z.p16/Z.g28;                          // B -> A, direction 0
+  var thO  = 2*Math.PI + Math.PI/Z.out - (th28 - Math.PI)*Z.p14/Z.out;            // A -> B, direction pi
+  pinion.rotation.z = thM; crown.rotation.z = thC; g36.rotation.z = th36; g28.rotation.z = th28; out.rotation.z = thO;
+}
+function frame(now){
+  var dt = Math.min((now - last)/1000, 0.05); last = now;
+  var build = state.page === 'build';
+  thM += cur.n*RATIO*2*Math.PI/60*(build ? 0.02 : state.scale)*dt;
+  if(thM > 1e6) thM -= 2*Math.PI*Z.crown*Z.g36*Z.g28*Z.out;
+  pose();
+  var k = Math.min(1, dt*6);
+  explode += ((!build && state.mode === 'explode' ? 1 : 0) - explode)*k;
+  topLift += ((build && state.step === 8 ? 14 : 0) - topLift)*k;
+  for(var i=0;i<parts.length;i++) parts[i].obj.position.z = parts[i].z0 + parts[i].ex*explode;
+  shellTop.position.z += topLift;
+  var asp = camera.aspect, fit = (build ? 54 : 46)/(Math.tan(camera.fov*Math.PI/360)*Math.min(asp, 1.4));
+  var dist = fit*orbit.zoom*(1 + 0.42*explode), ty = 13*explode + topLift*0.3;
+  var sp = Math.sin(orbit.pol);
+  camera.position.set(dist*sp*Math.sin(orbit.az), ty + dist*Math.cos(orbit.pol), dist*sp*Math.cos(orbit.az));
+  camera.lookAt(0, ty, 0);
+  renderer.render(scene, camera);
+  for(i=0;i<labels.length;i++){
+    tmp.copy(labels[i].p).applyMatrix4(mech.matrixWorld).project(camera);
+    labels[i].el.style.transform = 'translate('+((tmp.x+1)/2*vw).toFixed(1)+'px,'+((1-tmp.y)/2*vh).toFixed(1)+'px) translate(-50%,-50%)';
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body></html>

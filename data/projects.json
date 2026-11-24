@@ -201,5 +201,21 @@
     "image": "projects/fire-station-green/img/axon.png",
     "image_style": "line",
     "link": "projects/fire-station-green/"
+  },
+  {
+    "title": "TT Gear Motor",
+    "title_zh": "TT 減速馬達",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "three.js",
+      "SVG animation",
+      "Engineering drawing"
+    ],
+    "role": "Measurement, drawing, development",
+    "summary": "An animated slide deck on the small yellow gear motor found in school robots. Each chapter takes one group of parts: the 130 motor inside, the four gear stages unrolled flat to show how 3.25 × 4 × 1.75 × 2.14 makes 48.75, the two axles the gears stack on, the double-D shaft and the case. The deck also holds a 3D simulator, an eight-step guide to modelling the case in Onshape, and two engineering drawings measured from a real motor.",
+    "image": "projects/tt-motor/img/line.png",
+    "image_style": "line",
+    "link": "projects/tt-motor/"
   }
 ]
