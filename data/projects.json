@@ -185,5 +185,21 @@
     "image": "projects/dougong/img/line.png",
     "image_style": "line",
     "link": "projects/dougong/"
+  },
+  {
+    "title": "Fire Station Green Retrofit",
+    "title_zh": "消防分隊廳舍 綠建築改善前後比較",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "three.js",
+      "Sun-path simulation",
+      "EEWH indicators"
+    ],
+    "role": "Analysis, 3D modelling, development",
+    "summary": "A midterm study for the course Green Building Development Practice. One 3D model of a three-storey fire station near the Tropic of Cancer compares passive design (sun, planting, daylight, ventilation, shading) and active systems (walls, roof, glazing, lighting, air conditioning, rainwater) against a code-minimum baseline. It switches between colour, plain and night views, and the same page plays as a slide deck.",
+    "image": "projects/fire-station-green/img/axon.png",
+    "image_style": "line",
+    "link": "projects/fire-station-green/"
   }
 ]
