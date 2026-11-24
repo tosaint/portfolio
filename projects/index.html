@@ -199,6 +199,18 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
 .demo { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 28px; }
 .demo span { font: 400 12px var(--mono); color: var(--ink-2); letter-spacing: .08em; margin-right: 6px; }
 .pdfl { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--verm); }
+.hsec { padding-top: clamp(56px, 8vw, 96px); }
+.hgrid { display: flex; gap: 32px; align-items: flex-end; margin-top: 14px; }
+.hthumb { display: block; width: 260px; flex: none; border: 1px solid var(--hair); padding: 6px; background: var(--ground-2); position: relative; }
+.hthumb::after { content: ""; position: absolute; left: 12px; top: -10px; right: -10px; bottom: 12px; border: 1px solid var(--hair); z-index: -1; }
+.hthumb img { display: block; width: 100%; height: auto; }
+.hthumb:hover { border-color: var(--ink-2); }
+.hmeta h2 { margin: 0 0 8px; font: 300 clamp(22px, 2.6vw, 30px)/1.35 var(--zh); letter-spacing: .18em; }
+.hmeta p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.hbtn { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 8px; }
+.hbtn .chip { text-decoration: none; padding: 6px 12px; }
+.hsmall { font: 400 12px var(--mono) !important; letter-spacing: .06em; }
+@media (max-width: 759px) { .hgrid { flex-direction: column; align-items: flex-start; } .hthumb { width: min(320px, 100%); } }
 .vers { margin: 8px 0 36px; }
 .vgrid { display: flex; gap: 28px; margin-top: 12px; }
 .vcard { display: flex; gap: 16px; align-items: flex-end; }
@@ -344,7 +356,7 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
   .trow { opacity: 1 !important; }
   #track path { stroke-dashoffset: 0 !important; }
   .zone, .zone > .wrap, .papers { margin: 0 !important; padding: 0 !important; }
-  .story, .course, .demo, .pnote, .ztitle, .vers { display: none !important; }
+  .story, .course, .demo, .pnote, .ztitle, .vers, .hsec { display: none !important; }
   .sheet { transform: none !important; outline: none; --bg: #ece6d9; --sink: #2b2a27; --smut: #6f6b63; --rule: #d3cbbd; --stone: #2b2a27; }
 }
 </style>
@@ -476,6 +488,19 @@ section.blk { padding-top: clamp(64px, 10vw, 120px); }
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap hsec" id="handout">
+  <p class="eyebrow">Course handout · 課程說明</p>
+  <div class="hgrid">
+    <a class="hthumb" href="115-1-course.png" target="_blank" rel="noopener" aria-label="放大查看課程說明"><img src="115-1-course.png" alt="115-1 生活科技課程說明，A4 一頁：教學進度、五種能力、分數與學習程度、注意事項" loading="lazy"></a>
+    <div class="hmeta">
+      <h2>一頁課程說明</h2>
+      <p>本學期的教學進度、計分方式與注意事項，可下載列印或存在手機裡。</p>
+      <div class="hbtn"><a class="chip" href="115-1-course.pdf" download>下載 PDF（A4）</a><a class="chip" href="115-1-course.png" download>下載圖片（PNG）</a></div>
+      <p class="hsmall">點縮圖可放大查看整頁。</p>
     </div>
   </div>
 </div>
