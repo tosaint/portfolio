@@ -37,6 +37,8 @@ projects/telescope/     work page: 望遠鏡實境操作室 Telescope Lab; the s
 projects/horse-linkage/ work page: 壢馬連桿 Horse Linkage, a four-bar linkage horse; explanation, simulator
                        and three questions on one page, worksheet.pdf is the A4 folded worksheet
 projects/clhs4bar/      redirect only: the old address of Horse Linkage, kept for worksheets already printed
+projects/curiosity/     work page: 好奇心，才是第一個指令 Curiosity Is the First Prompt, a talk for teachers
+                       on AI; reads as a page, press P to play it as slides (N notes, arrows to move)
 images/                other images
 ```
 
