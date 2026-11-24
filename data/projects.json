@@ -185,5 +185,21 @@
     "image": "projects/dougong/img/line.png",
     "image_style": "line",
     "link": "projects/dougong/"
+  },
+  {
+    "title": "Curiosity Is the First Prompt",
+    "title_zh": "好奇心，才是第一個指令",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "role": "Talk design, slides, development",
+    "summary": "A two-hour talk for teachers on AI in school, made as one page that reads like an essay and plays as slides. It opens with four bowls of beef noodles: AI can rate a photo, but not the story of a bowl you ate as a child. When answers get cheap, the questions are what count.",
+    "image": "projects/curiosity/img/line.svg",
+    "image_style": "line",
+    "link": "projects/curiosity/"
   }
 ]

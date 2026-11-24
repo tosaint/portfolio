@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>好奇心，才是第一個指令 · Curiosity Is the First Prompt</title>
+<meta name="description" content="A talk for teachers on AI in school, made as one page that reads like an essay and plays as slides. 一場給老師的 AI 分享，可以閱讀，也可以按 P 播放成簡報。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500;700&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+/* Same paper, ink and type as the portfolio. Chinese first, English beside or under it. */
+:root {
+  --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc;
+  --mat: #faf9f5; --accent: #c8452e;
+  --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
+  --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --accent: #ff6b4f; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --accent: #ff6b4f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.8 var(--sans); padding: 0 16px 56px; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 4px; }
+.wrap { max-width: 1080px; margin: 0 auto; }
+.en { display: block; color: var(--ink-3); font: 400 .78em/1.6 var(--sans); letter-spacing: .01em; }
+.mono { font-family: var(--mono); }
+.btn { color: var(--ink); background: var(--paper); border: 1px solid var(--ink-2); border-radius: 0; padding: 6px 14px; cursor: pointer; }
+.btn:hover { border-color: var(--ink); }
+.btn.dark { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
+
+/* ---------- Hero (reading mode only) ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 64px); align-items: center; padding-block: clamp(40px, 8vw, 96px); }
+.hero small { font: 400 11px var(--mono); letter-spacing: .18em; color: var(--ink-3); text-transform: uppercase; }
+.hero h1 { margin: 10px 0 6px; font: 500 clamp(30px, 4.4vw, 52px)/1.3 var(--serif); letter-spacing: .12em; }
+.hero h1 .en { font: 400 clamp(14px, 1.6vw, 18px)/1.5 var(--mono); letter-spacing: .08em; margin-top: 8px; }
+.hero p { margin: 18px 0 0; max-width: 560px; }
+.hero .keys { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; align-items: center; }
+.hero .keys span { font: 400 12px var(--mono); color: var(--ink-3); }
+kbd { font: 400 11px var(--mono); border: 1px solid var(--rule); padding: 1px 6px; }
+.steam path { stroke-dasharray: 160; animation: steam 4.5s ease-in-out infinite; }
+.steam path:nth-child(2) { animation-delay: .8s; } .steam path:nth-child(3) { animation-delay: 1.6s; }
+@keyframes steam { 0% { stroke-dashoffset: 160; opacity: 0; } 30% { opacity: 1; } 70% { opacity: .8; } 100% { stroke-dashoffset: -160; opacity: 0; } }
+.bowl { width: 100%; max-width: 420px; justify-self: center; color: var(--ink); }
+.cover { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 56px); align-items: center; }
+.cover-bowl { display: none; max-height: 56vh; }
+
+/* ---------- Slides in reading mode ---------- */
+.slide { position: relative; border-top: 1px solid var(--rule); padding-block: clamp(40px, 7vw, 80px); }
+.slide .in { max-width: 1080px; margin: 0 auto; }
+.sn { display: flex; gap: 14px; font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); text-transform: uppercase; margin-bottom: 18px; }
+.sn b { font-weight: 400; color: var(--ink-2); }
+.slide h2 { margin: 0 0 18px; font: 500 clamp(24px, 3vw, 38px)/1.4 var(--serif); letter-spacing: .08em; }
+.slide h2 .en { font: 400 clamp(13px, 1.3vw, 16px)/1.5 var(--mono); letter-spacing: .04em; margin-top: 6px; }
+.slide p { margin: 0 0 1em; max-width: 760px; }
+.big { font: 500 clamp(30px, 5vw, 64px)/1.35 var(--serif); letter-spacing: .1em; margin: 0; }
+.big .en { font: 400 clamp(14px, 1.6vw, 20px)/1.5 var(--mono); letter-spacing: .04em; margin-top: 12px; }
+.cap { font: 400 12px/1.6 var(--mono); color: var(--ink-3); letter-spacing: .04em; }
+.demo-tag { display: inline-block; font: 400 10px var(--mono); letter-spacing: .12em; border: 1px solid var(--rule); color: var(--ink-3); padding: 1px 8px; text-transform: uppercase; }
+.note { display: none; }
+body.show-notes .note { display: block; margin-top: 24px; padding: 12px 16px; border-left: 2px solid var(--accent); background: var(--mat); font-size: 14px; color: var(--ink-2); max-width: 760px; }
+.note::before { content: "講者備註 · Notes"; display: block; font: 400 10px var(--mono); letter-spacing: .14em; color: var(--accent); }
+
+/* Things that move in when a slide plays. --d = delay order */
+.fx { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease; transition-delay: calc(var(--d, 0) * 180ms); }
+.run .fx { opacity: 1; transform: none; }
+
+/* ---------- Presentation mode ---------- */
+body.present { padding: 0; overflow: hidden; }
+body.present .top, body.present .hero, body.present footer, body.present .data { display: none; }
+body.present .slide { position: fixed; inset: 0; z-index: 10; display: none; border: 0; padding: 5vh 6vw 9vh; background: var(--paper); overflow: hidden; }
+body.present .slide.active { display: flex; flex-direction: column; justify-content: center; }
+body.present .slide .in { width: 100%; max-width: 1240px; }
+body.present .slide h2 { font-size: clamp(26px, 3.6vw, 52px); }
+body.present .slide p:not([class]) { font-size: clamp(16px, 1.5vw, 22px); }
+body.present .big { font-size: clamp(40px, 6.2vw, 92px); }
+body.present .punch { font-size: clamp(22px, 2.6vw, 38px); }
+body.present .end p { font-size: clamp(20px, 2.3vw, 34px); }
+body.present .link-svg { max-height: 50vh; }
+body.present .story img, body.present .end img { max-height: 62vh; width: auto; max-width: 100%; justify-self: center; }
+body.present .works img, body.present .works .txt { aspect-ratio: 16 / 10; }
+body.present .works { gap: 10px 16px; }
+body.present .flip { min-height: clamp(230px, 34vh, 320px); }
+body.present .cover-bowl { display: block; }
+body.present .sn { position: absolute; top: 3vh; left: 6vw; margin: 0; }
+body.present.show-notes .slide .note { display: none; }
+.hud { display: none; }
+body.present .hud { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; align-items: center; gap: 16px; padding: 8px 16px; font: 400 12px var(--mono); color: var(--ink-3); background: color-mix(in srgb, var(--paper) 88%, transparent); border-top: 1px solid var(--rule); }
+.hud .sec { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hud .over { color: var(--accent); }
+.hud button { all: unset; cursor: pointer; padding: 0 6px; color: var(--ink-2); }
+.hud button:hover { color: var(--ink); }
+.hud .bar { position: absolute; left: 0; top: -1px; height: 1px; background: var(--ink); width: var(--p, 0%); transition: width .4s; }
+.notes-panel { display: none; }
+body.present.show-notes .notes-panel { display: block; position: fixed; left: 0; right: 0; bottom: 37px; z-index: 29; max-height: 32vh; overflow: auto; padding: 12px 6vw; background: var(--mat); border-top: 1px solid var(--accent); font-size: 15px; color: var(--ink-2); }
+.notes-panel::before { content: "講者備註 · Notes"; display: block; font: 400 10px var(--mono); letter-spacing: .14em; color: var(--accent); }
+
+/* ---------- Components ---------- */
+.bowls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(8px, 1.4vw, 18px); }
+.bowls figure { margin: 0; position: relative; transition: opacity .6s, transform .6s; }
+.bowls img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.bowls figcaption { margin-top: 6px; display: flex; justify-content: space-between; align-items: baseline; font: 400 13px var(--mono); color: var(--ink-2); }
+.bowls figcaption b { font: 500 18px var(--serif); }
+.bowls .name { opacity: 0; transition: opacity .6s; font: 500 15px var(--serif); color: var(--ink); }
+.bowls .name small { font: 400 11px var(--mono); color: var(--ink-3); margin-left: 4px; }
+.reveal.run .name { opacity: 1; transition-delay: calc(var(--d) * 250ms); }
+.reveal.run.focus figure:not(.me) { opacity: .28; }
+.reveal.run.focus figure.me { transform: scale(1.06); z-index: 1; }
+.vote { margin-top: 18px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(8px, 1.4vw, 18px); }
+.vote button { position: relative; border: 1px solid var(--ink-2); background: var(--paper); padding: 8px; cursor: pointer; text-align: left; overflow: hidden; }
+.vote button i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--w, 0%); background: var(--rule); transition: width .6s ease; z-index: 0; }
+.vote button span { position: relative; z-index: 1; display: flex; justify-content: space-between; font: 400 13px var(--mono); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+
+.ai-box { border: 1px solid var(--rule); background: var(--mat); padding: clamp(14px, 2vw, 24px); font-size: clamp(15px, 1.4vw, 19px); }
+.ai-box .who { font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); margin-bottom: 8px; }
+.ai-line { display: grid; grid-template-columns: 2em 1fr auto; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--rule); min-height: 2.6em; }
+.ai-line b { font: 500 1.1em var(--serif); }
+.ai-line .stars { font: 400 13px var(--mono); color: var(--accent); opacity: 0; transition: opacity .4s; }
+.ai-line.done .stars { opacity: 1; }
+.ai-line .t::after { content: "▍"; opacity: 0; }
+.ai-line.typing .t::after { opacity: 1; animation: blink .8s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.ai-line .en { opacity: 0; transition: opacity .5s; }
+.ai-line.done .en { opacity: 1; }
+.punch { margin-top: 18px; font: 500 clamp(20px, 2.4vw, 32px)/1.4 var(--serif); letter-spacing: .08em; }
+
+.story { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(20px, 4vw, 56px); align-items: center; }
+.story img { width: 100%; aspect-ratio: 1; object-fit: cover; filter: grayscale(.2); }
+
+.cards { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: clamp(10px, 1.6vw, 20px); }
+.card { border: 1px solid var(--ink-2); padding: clamp(14px, 2vw, 22px); background: var(--paper); }
+.card .k { font: 400 11px var(--mono); letter-spacing: .14em; color: var(--ink-3); }
+.card h3 { margin: 4px 0 8px; font: 500 clamp(18px, 1.8vw, 24px)/1.4 var(--serif); letter-spacing: .08em; }
+.card p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.card svg { width: 46px; height: 46px; display: block; margin-bottom: 10px; color: var(--ink); }
+
+/* answer rain */
+.rain { position: relative; height: min(52vh, 420px); overflow: hidden; border-block: 1px solid var(--rule); }
+.rain .w { position: absolute; top: -2em; font: 400 14px var(--mono); color: var(--ink-3); animation: fall linear forwards; white-space: nowrap; }
+@keyframes fall { to { transform: translateY(calc(min(52vh, 420px) + 4em)); opacity: .2; } }
+.rain .q { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.2); opacity: 0; font: 300 clamp(90px, 14vw, 180px)/1 var(--serif); color: var(--accent); transition: transform 1.6s cubic-bezier(.2,.8,.2,1), opacity 1.2s; }
+.rain.asking .q { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+.rain.asking .w { opacity: .08 !important; transition: opacity 1s; }
+
+/* flip cards */
+.flips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(10px, 1.6vw, 18px); perspective: 1200px; }
+.flip { position: relative; min-height: 250px; cursor: pointer; }
+.flip > div { position: absolute; inset: 0; border: 1px solid var(--ink-2); padding: 16px; background: var(--paper); backface-visibility: hidden; transition: transform .9s cubic-bezier(.3,.7,.2,1); transition-delay: calc(var(--d, 0) * 400ms); }
+.flip .back { transform: rotateY(180deg); background: var(--mat); }
+.run .flip .front, .flip.on .front { transform: rotateY(-180deg); }
+.run .flip .back, .flip.on .back { transform: rotateY(0); }
+.flip b { display: block; font: 500 clamp(17px, 1.6vw, 22px)/1.4 var(--serif); letter-spacing: .06em; }
+.flip .k { font: 400 28px var(--serif); color: var(--ink-3); }
+.flip p { margin: 8px 0 0; font-size: 14px; }
+.flip .role { margin-top: 10px; font: 400 12px var(--mono); color: var(--accent); }
+
+/* thresholds */
+.bars2 { display: flex; gap: clamp(30px, 8vw, 120px); align-items: flex-end; justify-content: center; height: min(42vh, 320px); padding-top: 20px; }
+.bar2 { width: clamp(70px, 10vw, 120px); height: 100%; position: relative; display: flex; align-items: flex-end; }
+.bar2 .ghost { position: absolute; inset: 10% 0 0; border: 1px dashed var(--ink-3); }
+.bar2 .fill { width: 100%; height: 90%; background: var(--ink); transition: height 2.2s cubic-bezier(.4,0,.2,1) .6s; }
+.run .bar2.exec .fill { height: 18%; }
+.bar2 label { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 10px; text-align: center; white-space: nowrap; font: 500 16px var(--serif); }
+
+/* linkage */
+.link-wrap { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(16px, 3vw, 40px); align-items: center; }
+.link-svg { width: 100%; height: auto; background: var(--mat); border: 1px solid var(--rule); display: block; }
+.link-svg line, .link-svg path, .link-svg circle { vector-effect: non-scaling-stroke; }
+.ctl label { display: block; font-size: 14px; color: var(--ink-2); }
+.ctl input { width: 100%; accent-color: var(--ink); }
+.ctl output { font: 400 22px var(--mono); }
+.verdict { margin-top: 10px; font: 500 18px var(--serif); }
+.verdict.bad { color: var(--accent); }
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2vw, 28px); }
+.duo h3 { margin: 0 0 8px; font: 500 18px var(--serif); letter-spacing: .06em; }
+.readout { margin-top: 8px; font: 400 14px var(--mono); color: var(--ink-2); visibility: hidden; }
+.duo.shown .readout { visibility: visible; }
+
+/* photo branches */
+.branch { position: relative; aspect-ratio: 16 / 8.5; max-height: 62vh; margin: 0 auto; }
+.branch img { position: absolute; left: 50%; top: 50%; width: 34%; transform: translate(-50%, -50%); border: 1px solid var(--rule); }
+.branch svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.branch svg path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1s ease; transition-delay: calc(var(--d) * 400ms + .4s); }
+.run .branch svg path { stroke-dashoffset: 0; }
+.branch .lb { position: absolute; width: 27%; font-size: 14px; }
+.branch .lb b { display: block; font: 500 clamp(16px, 1.6vw, 22px) var(--serif); letter-spacing: .1em; }
+.branch .lb.l1 { left: 0; top: 2%; } .branch .lb.l2 { right: 0; top: 2%; text-align: right; }
+.branch .lb.l3 { left: 0; bottom: 2%; } .branch .lb.l4 { right: 0; bottom: 2%; text-align: right; }
+
+/* campus rain */
+.drizzle { position: relative; }
+.drizzle::before { content: ""; position: absolute; inset: -20px; pointer-events: none; opacity: 0; background: repeating-linear-gradient(105deg, transparent 0 22px, color-mix(in srgb, var(--ink-3) 30%, transparent) 22px 23px); background-size: 200% 200%; transition: opacity 1s; }
+.run .drizzle::before { opacity: .5; animation: drizzle 1.4s linear infinite; }
+@keyframes drizzle { to { background-position: -46px 120px; } }
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; position: relative; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 2.4em 1fr; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--rule); font-size: clamp(15px, 1.5vw, 20px); }
+.steps li::before { content: counter(s, decimal-leading-zero); font: 400 13px var(--mono); color: var(--ink-3); padding-top: .3em; }
+
+.works { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(10px, 1.6vw, 18px); }
+.works a { text-decoration: none; display: block; }
+.works img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--rule); background: var(--mat); }
+.works b { display: block; margin-top: 6px; font: 500 15px var(--serif); letter-spacing: .06em; }
+.works small { font: 400 11px var(--mono); color: var(--ink-3); }
+.works .txt { border: 1px dashed var(--ink-3); aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; text-align: center; padding: 10px; font: 400 13px var(--mono); color: var(--ink-3); }
+
+/* sync mock */
+.sync { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: clamp(10px, 2vw, 24px); align-items: end; }
+.scr { border: 1px solid var(--ink-2); background: var(--mat); aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center; position: relative; }
+.scr .lb { position: absolute; left: 8px; top: 4px; font: 400 10px var(--mono); letter-spacing: .1em; color: var(--ink-3); }
+.scr svg { width: 55%; height: auto; transition: transform .9s cubic-bezier(.3,.7,.2,1); }
+.scr.lag svg { transition-delay: .25s; }
+.modes { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.modes button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+/* quiz */
+.quiz { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.quiz button { position: relative; overflow: hidden; text-align: left; border: 1px solid var(--ink-2); background: var(--paper); padding: 12px 14px; cursor: pointer; font-size: clamp(15px, 1.4vw, 19px); }
+.quiz button i { position: absolute; inset: 0 auto 0 0; width: var(--w, 0%); background: var(--rule); transition: width .8s; z-index: 0; }
+.quiz button span { position: relative; z-index: 1; }
+.quiz button em { position: relative; z-index: 1; float: right; font: 400 13px var(--mono); font-style: normal; }
+.quiz button.pick { border-color: var(--ink); border-width: 2px; }
+.quiz.done button.ok { border-color: var(--accent); border-width: 2px; }
+.timer { height: 3px; background: var(--rule); margin-top: 12px; position: relative; }
+.timer i { position: absolute; inset: 0 auto 0 0; background: var(--ink); width: 100%; }
+
+/* clustering */
+.pool { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; }
+.chip { border: 1px solid var(--ink-2); padding: 6px 10px; background: var(--paper); font-size: clamp(13px, 1.2vw, 16px); }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.col { border-top: 2px solid var(--ink); padding-top: 8px; min-height: 120px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.col h3 { margin: 0; font: 500 16px var(--serif); letter-spacing: .06em; }
+.col.warn { border-top-color: var(--accent); }
+.col.warn h3 { color: var(--accent); }
+
+.flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 10px; }
+.flow .arrow { font: 300 30px var(--serif); color: var(--ink-3); }
+
+/* friction */
+.fric { display: grid; gap: 10px; }
+.fric > div { display: grid; grid-template-columns: 9em 1fr 7em; gap: 14px; align-items: center; border: 1px solid var(--ink-2); padding: 14px 16px; position: relative; overflow: hidden; transition: opacity 1s 1.8s, filter 1s 1.8s; }
+.fric b { font: 500 clamp(17px, 1.7vw, 22px) var(--serif); letter-spacing: .06em; }
+.fric .act { font: 400 13px var(--mono); text-align: right; }
+.fric .one::after { content: ""; position: absolute; left: 0; top: 50%; height: 2px; width: 0; background: var(--accent); transition: width 1.2s ease .6s; }
+.run .fric .one::after { width: 100%; }
+.run .fric .one { opacity: .35; }
+
+.tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.tiles div { border: 1px solid var(--ink-2); padding: 12px; min-height: 96px; }
+.tiles b { display: block; font: 500 16px var(--serif); letter-spacing: .04em; }
+.tiles small { color: var(--ink-3); font-size: 12px; }
+
+.ask { margin-top: 24px; padding: 16px 20px; border: 1px solid var(--accent); font: 500 clamp(17px, 1.8vw, 24px)/1.5 var(--serif); }
+
+.neq { font: 300 clamp(60px, 10vw, 140px)/1 var(--serif); color: var(--accent); display: inline-block; transform: scale(0) rotate(-30deg); transition: transform 1s cubic-bezier(.2,1.4,.4,1) .8s; }
+.run .neq { transform: none; }
+.two { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 4vw, 48px); text-align: center; }
+.two .big { font-size: clamp(26px, 4vw, 54px); }
+
+.tbl { width: 100%; border-collapse: collapse; font-size: clamp(14px, 1.4vw, 18px); }
+.tbl th { text-align: left; font: 400 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); padding: 0 12px 8px 0; border-bottom: 1px solid var(--ink); }
+.tbl td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.tbl td .en { font-size: 12px; }
+.tbl tr.fx { display: table-row; }
+
+.words { display: flex; justify-content: center; gap: clamp(24px, 6vw, 90px); flex-wrap: wrap; }
+.words div { text-align: center; }
+.words b { position: relative; display: inline-block; font: 500 clamp(32px, 5vw, 64px)/1.3 var(--serif); letter-spacing: .12em; }
+.words b::after { content: ""; position: absolute; left: 0; bottom: -6px; height: 2px; width: 0; background: var(--accent); transition: width 1s ease; transition-delay: calc(var(--d) * 500ms + .6s); }
+.run .words b::after { width: 100%; }
+.words p { margin: 12px auto 0; font-size: 14px; color: var(--ink-2); max-width: 15em; }
+
+.bubbles { display: flex; flex-wrap: wrap; gap: 10px; }
+.bubbles span { border: 1px solid var(--ink-2); border-radius: 18px; padding: 6px 14px; font-size: clamp(13px, 1.3vw, 17px); }
+.bubbles span small { color: var(--ink-3); margin-right: 6px; font: 400 11px var(--mono); }
+
+.end { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(20px, 4vw, 56px); align-items: center; }
+.end img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+.end p { font: 400 clamp(18px, 2vw, 28px)/1.7 var(--serif); letter-spacing: .06em; }
+.end p .en { font-size: .6em; }
+.fx.slow { transition-duration: 1.4s; transition-delay: calc(var(--d, 0) * 900ms); }
+
+.clock { font: 300 clamp(60px, 12vw, 160px)/1 var(--mono); letter-spacing: .04em; text-align: center; }
+
+.data { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 10px 28px; border-top: 1px solid var(--rule); padding-top: clamp(24px, 5vw, 56px); font-size: 14px; }
+.data dt { font: 400 11px/2.1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.data dd { margin: 0; }
+.data dd span { display: block; color: var(--ink-3); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .hero, .story, .link-wrap, .end, .cover { grid-template-columns: 1fr; }
+  .bowls, .vote { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .flips, .works { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards, .cols, .duo { grid-template-columns: 1fr; }
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sync { grid-template-columns: 1fr 1fr; } .sync .scr:first-child { grid-column: 1 / -1; }
+  .quiz { grid-template-columns: 1fr; }
+  .fric > div { grid-template-columns: 1fr; gap: 4px; } .fric .act { text-align: left; }
+  .flow { grid-template-columns: 1fr; } .flow .arrow { transform: rotate(90deg); justify-self: center; }
+  .branch { aspect-ratio: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .branch img { position: static; transform: none; width: 100%; grid-column: 1 / -1; order: -1; }
+  .branch svg { display: none; } .branch .lb { position: static; width: auto; text-align: left !important; }
+  .data { grid-template-columns: 1fr; gap: 2px; } .data dd { margin-bottom: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation: none !important; }
+}
+@media print {
+  .top, .hud, .keys, .vote, .modes, .row { display: none !important; }
+  .fx { opacity: 1 !important; transform: none !important; }
+  .slide { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a href="../../">← tosaint</a>
+  <span>Work 010 · 2026</span>
+</div></header>
+
+<main>
+<section class="hero wrap">
+  <div>
+    <small>A talk for teachers · 給老師的 AI 分享</small>
+    <h1>好奇心，才是第一個指令<span class="en">Curiosity Is the First Prompt</span></h1>
+    <p>一位生活科技老師的兩小時分享。從四碗牛肉麵開始：AI 可以評論一張照片，卻吃不到一碗麵的故事。當答案越來越便宜，真正稀缺的是想問的問題。<span class="en">A two-hour talk by a technology teacher. It starts with four bowls of beef noodles: AI can rate a photo, but it cannot taste the story behind a bowl. When answers get cheap, the questions are what count.</span></p>
+    <p>這一頁可以往下讀，也可以按 <kbd>P</kbd> 播放成簡報。<span class="en">Read it as a page, or press P to play it as slides.</span></p>
+    <div class="keys">
+      <button class="btn dark" id="go">▶ 簡報模式 Present</button>
+      <button class="btn" id="notesBtn">講者備註 Notes</button>
+      <span><kbd>P</kbd> 播放 · <kbd>←</kbd><kbd>→</kbd> 換頁 · <kbd>N</kbd> 備註 · <kbd>Esc</kbd> 離開</span>
+    </div>
+  </div>
+  <svg class="bowl" viewBox="0 -30 400 330" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true">
+    <g id="bowlArt"><g class="steam" stroke-width="1.6"><path d="M160 110 C140 85 185 65 165 40 C150 20 180 5 170 -10"/><path d="M200 105 C180 80 225 60 205 30 C190 10 220 -5 210 -20"/><path d="M240 110 C220 85 265 65 245 40 C230 20 260 5 250 -10"/></g>
+    <g stroke-width="1.6"><ellipse cx="200" cy="140" rx="150" ry="28"/><path d="M50 140 C58 225 125 268 200 268 C275 268 342 225 350 140"/><path d="M158 268 L162 286 L238 286 L242 268"/><path d="M300 70 L190 158 M314 78 L204 166"/></g>
+    <g stroke-width="1.1"><path d="M90 144 C120 134 145 152 175 142 C205 132 225 152 255 143 C285 134 305 150 325 140"/><path d="M118 132 q14 -12 32 -3 q9 9 -4 14 q-18 5 -28 -11 z"/><path d="M236 128 q18 -9 33 1 q6 10 -10 13 q-19 2 -23 -14 z"/></g>
+    <path d="M10 286 L390 286" stroke-width="1"/></g>
+  </svg>
+</section>
+
+<!-- ============ 一、開場 ============ -->
+<section class="slide" data-sec="1" data-fx="cover">
+  <div class="in cover">
+    <div>
+      <p class="big fx">好奇心，<br>才是第一個指令<span class="en">Curiosity is the first prompt</span></p>
+      <p class="cap fx" style="--d:2">一位生活科技老師的 AI 教學實驗 · A technology teacher's experiments with AI</p>
+    </div>
+    <svg class="bowl cover-bowl fx" style="--d:1" viewBox="0 -30 400 330" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true"><g class="steam" stroke-width="1.6"><path d="M160 110 C140 85 185 65 165 40 C150 20 180 5 170 -10"/><path d="M200 105 C180 80 225 60 205 30 C190 10 220 -5 210 -20"/><path d="M240 110 C220 85 265 65 245 40 C230 20 260 5 250 -10"/></g>
+    <g stroke-width="1.6"><ellipse cx="200" cy="140" rx="150" ry="28"/><path d="M50 140 C58 225 125 268 200 268 C275 268 342 225 350 140"/><path d="M158 268 L162 286 L238 286 L242 268"/><path d="M300 70 L190 158 M314 78 L204 166"/></g>
+    <g stroke-width="1.1"><path d="M90 144 C120 134 145 152 175 142 C205 132 225 152 255 143 C285 134 305 150 325 140"/><path d="M118 132 q14 -12 32 -3 q9 9 -4 14 q-18 5 -28 -11 z"/><path d="M236 128 q18 -9 33 1 q6 10 -10 13 q-19 2 -23 -14 z"/></g>
+    <path d="M10 286 L390 286" stroke-width="1"/></svg>
+  </div>
+  <aside class="note">開場一句話就好，不要自我介紹太久。直接進牛肉麵。</aside>
+</section>
+
+<section class="slide" data-sec="1" data-fx="vote">
+  <div class="in">
+    <h2 class="fx">中壢的四碗牛肉麵，哪一碗最好吃？<span class="en">Four bowls of beef noodles in Zhongli. Which one tastes best?</span></h2>
+    <div class="bowls">
+      <figure class="fx" style="--d:1"><img src="img/a.jpg" alt="Beef noodle soup with beef, tendon and tripe in a dark red broth, a side dish behind"><figcaption><b>A</b></figcaption></figure>
+      <figure class="fx" style="--d:2"><img src="img/b.jpg" alt="Beef noodle soup in a lighter broth topped with pickled mustard greens and chilli oil"><figcaption><b>B</b></figcaption></figure>
+      <figure class="fx" style="--d:3"><img src="img/c.jpg" alt="Beef noodle soup with large beef chunks and plenty of spring onion"><figcaption><b>C</b></figcaption></figure>
+      <figure class="fx" style="--d:4"><img src="img/d.jpg" alt="Spicy beef noodle soup with thick noodles in a metal bowl"><figcaption><b>D</b></figcaption></figure>
+    </div>
+    <div class="vote fx" style="--d:5" id="vote">
+      <button data-k="0"><i></i><span>投 A<em class="n">0</em></span></button>
+      <button data-k="1"><i></i><span>投 B<em class="n">0</em></span></button>
+      <button data-k="2"><i></i><span>投 C<em class="n">0</em></span></button>
+      <button data-k="3"><i></i><span>投 D<em class="n">0</em></span></button>
+    </div>
+    <div class="row fx" style="--d:6"><span class="demo-tag">介面示範，尚未連線 · Demo, not connected</span><button class="btn" id="voteDemo">放入示範票數</button><button class="btn" id="voteReset">清除</button></div>
+  </div>
+  <aside class="note">先請大家投票（之後會接上即時投票）。店名已經模糊，先不要說哪家是哪家。</aside>
+</section>
+
+<section class="slide" data-sec="1" data-fx="ai">
+  <div class="in">
+    <h2 class="fx">再問 AI<span class="en">Now ask AI</span></h2>
+    <div class="ai-box fx" style="--d:1">
+      <div class="who">AI · 依照片評分 · Rating from the photos</div>
+      <div class="ai-line" data-s="★★★★★"><b>A</b><div><span class="t" data-t="湯色深紅油亮，牛肉、牛筋、牛肚三樣齊全，還配了小菜，層次最豐富。"></span><span class="en">Deep red, glossy broth; beef, tendon and tripe together, with a side dish. The richest bowl.</span></div><span class="stars"></span></div>
+      <div class="ai-line" data-s="★★★"><b>B</b><div><span class="t" data-t="湯色較淺，加了酸菜和辣油，偏清爽，肉量看起來較少。"></span><span class="en">A lighter broth with pickled greens and chilli oil. Fresh, but less meat.</span></div><span class="stars"></span></div>
+      <div class="ai-line" data-s="★★★★"><b>C</b><div><span class="t" data-t="肉塊大而多，蔥花新鮮，湯色清亮紅潤，份量實在。"></span><span class="en">Big, generous beef chunks, fresh spring onion, a clear red broth.</span></div><span class="stars"></span></div>
+      <div class="ai-line" data-s="★★★★½"><b>D</b><div><span class="t" data-t="湯頭濃郁偏辣，粗麵像手工麵，牛腱帶筋，有老店的味道。"></span><span class="en">Rich and spicy, thick noodles that look handmade, shank with tendon. An old-shop feel.</span></div><span class="stars"></span></div>
+    </div>
+    <p class="punch fx" id="aiPunch" style="--d:0">可是，AI 一口都沒吃過。<span class="en">But AI has never tasted any of them.</span></p>
+    <p class="cap">以上為預先寫好的示範評語；現場可以改成直接問 AI。 · Sample text written in advance; on the day, ask AI live.</p>
+  </div>
+  <aside class="note">現場可以真的問 AI（上傳四張照片，請它像美食評審一樣排名）。重點：它只是在評「照片」，光線、角度、擺盤都會影響它。若它選了 A，就說「它選對了，但理由是燈光和擺盤」。</aside>
+</section>
+
+<section class="slide reveal" data-sec="1" data-fx="reveal">
+  <div class="in">
+    <h2>揭曉<span class="en">The reveal</span></h2>
+    <div class="bowls">
+      <figure class="me"><img src="img/a.jpg" alt=""><figcaption><b>A</b><span class="name" style="--d:1">老袁<small>Lao Yuan</small></span></figcaption></figure>
+      <figure><img src="img/b.jpg" alt=""><figcaption><b>B</b><span class="name" style="--d:2">中壢<small>Zhongli</small></span></figcaption></figure>
+      <figure><img src="img/c.jpg" alt=""><figcaption><b>C</b><span class="name" style="--d:3">新明<small>Xinming</small></span></figcaption></figure>
+      <figure><img src="img/d.jpg" alt=""><figcaption><b>D</b><span class="name" style="--d:4">永川<small>Yongchuan</small></span></figcaption></figure>
+    </div>
+    <p class="cap" style="margin-top:14px">A 是我兒時的回憶。 · A is the bowl from my childhood.</p>
+  </div>
+  <aside class="note">店名依序出現，最後老袁那碗放大。</aside>
+</section>
+
+<section class="slide" data-sec="1">
+  <div class="in story">
+    <img class="fx" src="img/a.jpg" alt="The Lao Yuan bowl">
+    <div>
+      <p class="big fx" style="--d:1">吃的是故事。<span class="en">What we taste is the story.</span></p>
+      <p class="fx" style="--d:3">答案變便宜了，經驗沒有。<span class="en">Answers got cheap. Experience did not.</span></p>
+    </div>
+  </div>
+  <aside class="note">這裡講老袁的兒時回憶。</aside>
+</section>
+
+<section class="slide" data-sec="1">
+  <div class="in">
+    <h2 class="fx">換一個問題：如果這家老店生意越來越差，我想幫它？<span class="en">Ask a different question: what if this old shop is struggling, and I want to help?</span></h2>
+    <div class="cards">
+      <div class="card fx" style="--d:1"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="10" y="6" width="28" height="36"/><path d="M15 14h18M15 20h12M15 32 l6-6 5 4 7-8"/></svg><span class="k">01 · POSTER</span><h3>做海報</h3><p>AI 生出十張，選哪一張靠你的眼光。<span class="en">AI makes ten; your eye picks one.</span></p></div>
+      <div class="card fx" style="--d:2"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="14" y="4" width="20" height="40" rx="3"/><path d="M19 13h10M19 19h10M19 25h6M21 37h6"/></svg><span class="k">02 · ORDERING</span><h3>線上點餐</h3><p>點餐、加總、出單，流程一次理清。<span class="en">Order, total, ticket: the whole flow made clear.</span></p></div>
+      <div class="card fx" style="--d:3"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 10h28M10 20h28M10 30h28M10 40h18"/><path d="M6 10h0M6 20h0M6 30h0M6 40h0" stroke-width="3"/></svg><span class="k">03 · SOP</span><h3>出餐 SOP</h3><p>有步驟的事，AI 做得很好。<span class="en">Work with clear steps is where AI shines.</span></p></div>
+    </div>
+    <p class="punch fx" style="--d:4">同一個 AI：第一個問題它只能猜，第二個問題它是好幫手。<span class="en">Same AI: it could only guess the first question; it is a real help with the second.</span></p>
+  </div>
+  <aside class="note">差別不在 AI，而在我們有沒有一個真正想解決的問題。</aside>
+</section>
+
+<!-- ============ 二、主張 ============ -->
+<section class="slide" data-sec="2" data-fx="rain">
+  <div class="in">
+    <h2>當答案不再稀缺<span class="en">When answers are no longer scarce</span></h2>
+    <div class="rain" id="rain"><div class="q">？</div></div>
+    <p class="fx" style="--d:10;margin-top:16px">好的問題，就變得珍貴。<span class="en">Good questions become precious.</span></p>
+  </div>
+  <aside class="note">OECD 2026 數位教育展望：用 AI 把任務外包，表現變好不等於學到東西；拿掉 AI 後，優勢可能消失。</aside>
+</section>
+
+<section class="slide" data-sec="2">
+  <div class="in">
+    <h2 class="fx">四種未知的問題<span class="en">Four kinds of unknown</span></h2>
+    <div class="flips">
+      <div class="flip" style="--d:1"><div class="front"><span class="k">1</span><b>人類知道，<br>我不知道</b><span class="en">Known, just not to me</span></div><div class="back"><b>連桿什麼時候能整圈轉？</b><p>壢馬連桿<span class="en">When can a linkage turn a full circle?</span></p><div class="role">AI：解說者 · Explainer</div></div></div>
+      <div class="flip" style="--d:2"><div class="front"><span class="k">2</span><b>答案還沒<br>被整理出來</b><span class="en">Not yet put together</span></div><div class="back"><b>進度、成績、學習歷程怎麼串成一頁？</b><p>學習壢程<span class="en">One page for schedule, grades and portfolio</span></p><div class="role">AI：工程師 · Engineer</div></div></div>
+      <div class="flip" style="--d:3"><div class="front"><span class="k">3</span><b>答案要<br>探索與驗證</b><span class="en">Must be explored and checked</span></div><div class="back"><b>消失的中壢神社有多高？</b><p>中壢神社<span class="en">How tall was the vanished shrine?</span></p><div class="role">AI：研究助理 · Research aide</div></div></div>
+      <div class="flip" style="--d:4"><div class="front"><span class="k">4</span><b>問題本身<br>還沒被定義</b><span class="en">The question itself is unclear</span></div><div class="back"><b>AI 普及後，學校該教什麼？</b><p>今天的題目<span class="en">What should schools teach now?</span></p><div class="role">AI：思考夥伴 · Thinking partner</div></div></div>
+    </div>
+    <p class="cap fx" style="--d:6;margin-top:14px">越往右，人要負責的越多。點卡片可翻面。 · The further right, the more is on us. Tap a card to flip it.</p>
+  </div>
+  <aside class="note">每一種都對應一件我的作品。重點：越往右，定義問題、判斷證據、選擇方向越需要人。</aside>
+</section>
+
+<section class="slide" data-sec="2">
+  <div class="in">
+    <h2 class="fx">AI 降低的是執行門檻，不是判斷門檻<span class="en">AI lowers the bar for doing, not for judging</span></h2>
+    <div class="bars2">
+      <div class="bar2 exec"><div class="ghost"></div><div class="fill"></div><label>執行門檻<span class="en">Doing</span></label></div>
+      <div class="bar2"><div class="ghost"></div><div class="fill"></div><label>判斷門檻<span class="en">Judging</span></label></div>
+    </div>
+    <p class="cap" style="margin-top:64px;text-align:center">示意圖，不是數據。 · An illustration, not data.</p>
+  </div>
+  <aside class="note">沒有一定的知識與經驗，就分不出 AI 給的是很棒的線索，還是看似合理的錯誤。</aside>
+</section>
+
+<!-- ============ 三、教學現場 ============ -->
+<section class="slide" data-sec="3" data-fx="linkage">
+  <div class="in">
+    <h2 class="fx">只改曲柄，頭能擺更大、又能整圈轉嗎？<span class="en">Change only the crank: can the head swing more and still turn a full circle?</span></h2>
+    <div class="link-wrap">
+      <svg class="link-svg" id="lk1" viewBox="-12 -19 38 30" aria-label="A four-bar linkage turning; the head traces a path"></svg>
+      <div class="ctl">
+        <label>曲柄長度 Crank <output id="lk1o">1.0</output> cm
+          <input type="range" id="lk1r" min="1" max="10" step="0.5" value="1"></label>
+        <div class="verdict" id="lk1v"></div>
+        <p class="cap">其他三根固定：連桿 11、搖桿 8、固定桿 11 cm。 · Other bars fixed: coupler 11, rocker 8, ground 11 cm.</p>
+        <p style="font-size:14px">先猜，再拉，最後剪紙板做出來。<span class="en">Guess first, then slide, then cut it from card.</span></p>
+      </div>
+    </div>
+  </div>
+  <aside class="note">學生先猜，再用模擬器驗證，最後做實體。連桿知識是因為想讓馬動起來才學。</aside>
+</section>
+
+<section class="slide" data-sec="3">
+  <div class="in">
+    <h2 class="fx">一張老照片，四條路<span class="en">One old photo, four paths</span></h2>
+    <div class="branch">
+      <svg viewBox="0 0 160 85" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="1"><path pathLength="1" style="--d:1" d="M60 30 L30 14"/><path pathLength="1" style="--d:2" d="M100 30 L130 14"/><path pathLength="1" style="--d:3" d="M60 55 L30 71"/><path pathLength="1" style="--d:4" d="M100 55 L130 71"/></svg>
+      <img src="../zhongli-shrine/img/historical.jpg" alt="An old photograph of the Zhongli Shrine">
+      <div class="lb l1 fx" style="--d:3"><b>歷史</b>這張照片是哪一年拍的？<span class="en">History: when was it taken?</span></div>
+      <div class="lb l2 fx" style="--d:4"><b>數學</b>從石燈籠和人，推算它有多高？<span class="en">Maths: how tall, judging by the lantern and people?</span></div>
+      <div class="lb l3 fx" style="--d:5"><b>科技</b>能不能重建成 3D？<span class="en">Technology: can we rebuild it in 3D?</span></div>
+      <div class="lb l4 fx" style="--d:6"><b>國文</b>寫一首給消失建築的詩。<span class="en">Chinese: a poem for a vanished building.</span></div>
+    </div>
+  </div>
+  <aside class="note">同一個生活觀察，各科都找得到自己的問題。AI 降低的是跨領域探索的門檻。</aside>
+</section>
+
+<section class="slide" data-sec="3">
+  <div class="in drizzle">
+    <h2 class="fx">給國文老師的例子：雨天的校園<span class="en">For Chinese teachers: the campus on a rainy day</span></h2>
+    <ol class="steps">
+      <li class="fx" style="--d:1"><div>先在雨中的校園走十分鐘，記下三個細節、一種聲音、一個當下的感受。<span class="en">Walk ten minutes in the rain. Note three details, one sound, one feeling.</span></div></li>
+      <li class="fx" style="--d:2"><div>再請 AI 把這些素材寫成散文、詩、小說。<span class="en">Ask AI to turn them into prose, a poem, a story.</span></div></li>
+      <li class="fx" style="--d:3"><div>最後指出：哪些優美的句子，不符合自己當時的感受？<span class="en">Then mark the beautiful lines that do not match what you felt.</span></div></li>
+    </ol>
+  </div>
+  <aside class="note">AI 不再只是代寫，而是讓學生辨識文字與真實經驗之間的關係。說的時候語氣放謙虛：這是一個想法，國文老師一定有更好的。</aside>
+</section>
+
+<section class="slide" data-sec="3">
+  <div class="in">
+    <h2 class="fx">其他做過的教材<span class="en">Other things I have made</span></h2>
+    <div class="works">
+      <a class="fx" style="--d:1" href="../horse-linkage/" target="_blank" rel="noopener"><img src="../horse-linkage/img/plate.jpg" alt="" loading="lazy"><b>壢馬連桿</b><small>Horse Linkage</small></a>
+      <a class="fx" style="--d:2" href="../linkage/" target="_blank" rel="noopener"><img src="../linkage/img/plate.jpg" alt="" loading="lazy"><b>連桿機構</b><small>Linkages</small></a>
+      <a class="fx" style="--d:3" href="../telescope/" target="_blank" rel="noopener"><img src="../telescope/img/science-fair.jpg" alt="" loading="lazy"><b>望遠鏡實境操作室</b><small>Telescope Lab · 和地科老師合作</small></a>
+      <a class="fx" style="--d:4" href="../zhongli-shrine/" target="_blank" rel="noopener"><img src="../zhongli-shrine/img/axon-core.png" alt="" loading="lazy"><b>中壢神社 古今對照</b><small>Zhongli Shrine</small></a>
+      <a class="fx" style="--d:5" href="../" target="_blank" rel="noopener"><img src="../115-1-course.png" alt="" loading="lazy" style="object-position:top"><b>教學進度與學習壢程</b><small>Course and certificates</small></a>
+      <div class="fx" style="--d:6"><div class="txt">TT 馬達透視模擬<br>TT motor cutaway</div><b>TT 馬達</b><small>未公開 · Not public</small></div>
+      <div class="fx" style="--d:7"><div class="txt">觀後測驗＋晶圓證書<br>Quiz + wafer certificate</div><b>《造山者》測驗</b><small>未公開 · Not public</small></div>
+      <a class="fx" style="--d:8" href="../dougong/" target="_blank" rel="noopener"><img src="../dougong/img/line.png" alt="" loading="lazy" style="object-fit:contain"><b>斗栱</b><small>Dougong</small></a>
+    </div>
+  </div>
+  <aside class="note">快速帶過，點開一兩個現場操作就好。強調可複製：《造山者》證書是 Google 表單＋試算表＋Apps Script。</aside>
+</section>
+
+<!-- ============ 四、現場體驗 ============ -->
+<section class="slide" data-sec="4" data-fx="sync">
+  <div class="in">
+    <h2 class="fx">你換頁，大家的畫面跟著換<span class="en">You turn the page, everyone's screen follows</span></h2>
+    <div class="sync">
+      <div class="scr" id="sy0"><span class="lb">講者 PRESENTER</span><svg viewBox="-50 -50 100 100" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M-30 -10 L0 -26 L30 -10 L30 24 L0 40 L-30 24 Z M-30 -10 L0 6 L30 -10 M0 6 L0 40"/></svg></div>
+      <div class="scr lag" id="sy1"><span class="lb">老師 A · VIEWER</span><svg viewBox="-50 -50 100 100" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M-30 -10 L0 -26 L30 -10 L30 24 L0 40 L-30 24 Z M-30 -10 L0 6 L30 -10 M0 6 L0 40"/></svg></div>
+      <div class="scr lag" id="sy2"><span class="lb">老師 B · VIEWER</span><svg viewBox="-50 -50 100 100" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M-30 -10 L0 -26 L30 -10 L30 24 L0 40 L-30 24 Z M-30 -10 L0 6 L30 -10 M0 6 L0 40"/></svg></div>
+    </div>
+    <div class="modes" id="syModes"><button class="btn" data-m="follow" aria-pressed="true">跟隨 Follow</button><button class="btn" data-m="free">自由探索 Explore</button><button class="btn" data-m="gather">集合 Regroup</button><span class="demo-tag" style="align-self:center">示意 · 第三版會真的同步 · Mock-up</span></div>
+    <p class="fx" style="--d:2;margin-top:14px">在電腦教室，它就是網頁版的廣播系統，而且學生可以接手操作。<span class="en">In a computer room it works like a broadcast system, except students can take over.</span></p>
+  </div>
+  <aside class="note">之後這一頁會換成真的同步：大家打開同一個網頁，講者轉 3D，大家跟著轉。現在先示意。</aside>
+</section>
+
+<section class="slide" data-sec="4" data-fx="quiz">
+  <div class="in">
+    <h2 class="fx">搶答：四連桿要整圈轉，最短的那根應該是？<span class="en">Quick quiz: for a full turn, the shortest bar should be…</span></h2>
+    <div class="timer fx" style="--d:1"><i id="qT"></i></div>
+    <div class="quiz fx" style="--d:2" id="quiz">
+      <button data-k="0" class="ok"><i></i><span>A　曲柄 Crank</span><em></em></button>
+      <button data-k="1"><i></i><span>B　連桿 Coupler</span><em></em></button>
+      <button data-k="2"><i></i><span>C　搖桿 Rocker</span><em></em></button>
+      <button data-k="3"><i></i><span>D　固定桿 Ground</span><em></em></button>
+    </div>
+    <div class="row fx" style="--d:3"><span class="demo-tag">介面示範 · Demo</span><button class="btn" id="qShow">公布答案</button><button class="btn" id="qAgain">重來</button></div>
+  </div>
+  <aside class="note">之後接上即時資料庫：老師們用手機作答，即時排名。現在是單機示範。</aside>
+</section>
+
+<section class="slide" data-sec="4" data-fx="cluster">
+  <div class="in">
+    <h2 class="fx">為什麼有些連桿轉到一半會卡住？<span class="en">Why do some linkages jam halfway? Open answers, sorted by AI</span></h2>
+    <div class="pool" id="pool">
+      <span class="chip" data-c="0">最短的那根不夠短</span>
+      <span class="chip" data-c="1">圖釘太緊，摩擦太大</span>
+      <span class="chip" data-c="2">因為卡住了，所以長度不合</span>
+      <span class="chip" data-c="0">轉到某個角度，兩根桿子拉成直線</span>
+      <span class="chip" data-c="1">孔打歪了</span>
+      <span class="chip" data-c="0">四根長度的組合不對</span>
+      <span class="chip" data-c="2">卡住就代表桿子太長</span>
+      <span class="chip" data-c="1">紙板太軟會彎</span>
+    </div>
+    <div class="cols">
+      <div class="col" data-c="0"><h3>長度條件<span class="en">Length condition</span></h3></div>
+      <div class="col" data-c="1"><h3>製作因素<span class="en">How it was made</span></h3></div>
+      <div class="col warn" data-c="2"><h3>因果顛倒<span class="en">Cause and effect reversed</span></h3></div>
+    </div>
+    <div class="row"><span class="demo-tag">示範答案 · Sample answers</span><button class="btn" id="clAgain">重新分類</button></div>
+  </div>
+  <aside class="note">從批改答案，變成診斷學習。老師真正要看的是右邊那一欄：迷思在哪裡。</aside>
+</section>
+
+<section class="slide" data-sec="4">
+  <div class="in">
+    <h2 class="fx">你明天不用寫程式<span class="en">You will not need to code tomorrow</span></h2>
+    <div class="flow">
+      <div class="card fx" style="--d:1"><span class="k">01</span><h3>Google 表單</h3><p>收全班的開放式回答<span class="en">Collect open answers</span></p></div>
+      <span class="arrow fx" style="--d:2">→</span>
+      <div class="card fx" style="--d:3"><span class="k">02</span><h3>貼進 AI</h3><p>請它分類、找出迷思<span class="en">Ask it to group them and find misconceptions</span></p></div>
+      <span class="arrow fx" style="--d:4">→</span>
+      <div class="card fx" style="--d:5"><span class="k">03</span><h3>看右邊那欄</h3><p>下一堂課補教這裡<span class="en">Teach to that column next lesson</span></p></div>
+    </div>
+    <p class="punch fx" style="--d:6">我展示的是我走比較遠的樣子；這三步，就是核心的大部分。<span class="en">I showed how far I went; these three steps are most of it.</span></p>
+  </div>
+  <aside class="note">這座橋一定要講，避免文科老師覺得「那是科技老師的事」。</aside>
+</section>
+
+<section class="slide" data-sec="0" data-fx="break">
+  <div class="in" style="text-align:center">
+    <h2>休息<span class="en">Break</span></h2>
+    <div class="clock" id="clock">10:00</div>
+    <p class="cap" style="margin:16px auto 0">在聊天室留一句：如果 AI 什麼都能做，你想先做什麼？ · In the chat: if AI could do anything, what would you try first?</p>
+  </div>
+  <aside class="note">休息時放倒數。</aside>
+</section>
+
+<!-- ============ 五、手搓工具 ============ -->
+<section class="slide" data-sec="5">
+  <div class="in">
+    <h2 class="fx">消除不必要的困難，保留值得經歷的困難<span class="en">Remove the needless difficulty; keep the difficulty worth living through</span></h2>
+    <div class="fric">
+      <div class="one fx" style="--d:1"><b>無效的摩擦<span class="en">Wasted friction</span></b><span>重複輸入、算錢、排版、行政程序</span><span class="act">消除 · REMOVE</span></div>
+      <div class="fx" style="--d:2"><b>認知的摩擦<span class="en">Thinking friction</span></b><span>思考、推理、發現矛盾、試錯</span><span class="act">引導 · GUIDE</span></div>
+      <div class="fx" style="--d:3"><b>生命的摩擦<span class="en">Lived friction</span></b><span>親手做失敗、和人溝通、感受自然</span><span class="act">保留 · KEEP</span></div>
+    </div>
+  </div>
+  <aside class="note">行政追求效率，教育追求成長，兩者用 AI 的邏輯不同。</aside>
+</section>
+
+<section class="slide" data-sec="5">
+  <div class="in">
+    <h2 class="fx">學校裡的無效摩擦，老師自己就做得出工具<span class="en">Wasted friction at school: teachers can now build the tools</span></h2>
+    <div class="tiles">
+      <div class="fx" style="--d:1"><b>終點計時</b><small>手機錄影＋聲音起跑 · Finish-line timing</small></div>
+      <div class="fx" style="--d:2"><b>成績公告</b><small>登入查詢、自動通知 · Grade notices</small></div>
+      <div class="fx" style="--d:3"><b>午餐訂購</b><small>點餐、加總、送餐單 · Lunch orders</small></div>
+      <div class="fx" style="--d:4"><b>座位登記</b><small>掃碼、統計 · Seat sign-up</small></div>
+      <div class="fx" style="--d:5"><b>點名</b><small>出席直接進成績 · Attendance</small></div>
+      <div class="fx" style="--d:6"><b>器材借用</b><small>逾期提醒 · Equipment loans</small></div>
+      <div class="fx" style="--d:7"><b>報修</b><small>拍照分類 · Repair reports</small></div>
+      <div class="fx" style="--d:8"><b>多語通知</b><small>給新住民家長 · Notices in other languages</small></div>
+      <div class="fx" style="--d:9"><b>會議紀錄</b><small>逐字稿、決議、待辦 · Minutes</small></div>
+      <div class="fx" style="--d:10"><b>排課需求</b><small>先收集、查衝突 · Timetable requests</small></div>
+    </div>
+    <p class="cap fx" style="--d:11;margin-top:12px">運動會的終點計時，手機 App 約 150–300 元；原理自己做得出來。 · A finish-line timing app costs about NT$150–300; the idea behind it is buildable.</p>
+  </div>
+  <aside class="note">選一兩個講故事，例如運動會終點一排老師按碼錶。</aside>
+</section>
+
+<section class="slide" data-sec="5">
+  <div class="in">
+    <div class="cards" style="--n:2">
+      <div class="card fx" style="--d:1"><span class="k">WITH AN SOP</span><h3>有 SOP 的事</h3><p>AI 就做得好。<span class="en">AI does it well.</span></p></div>
+      <div class="card fx" style="--d:2"><span class="k">WITHOUT ONE</span><h3>沒有 SOP 的事</h3><p>先把流程整理清楚，才是真正的機會；整理流程，AI 也能幫忙。<span class="en">First make the process clear; that is the real opening, and AI can help with it too.</span></p></div>
+    </div>
+    <p class="ask fx" style="--d:4">AI 省下來的時間，應該拿去減少人力，還是拿去做以前沒時間做的事？<span class="en">The time AI saves: cut staff, or do what we never had time for?</span></p>
+  </div>
+  <aside class="note">把問題丟給台下，不給答案。你回去可以這樣開始：寫下每週最重複的一件事，請 AI 先寫成 SOP。</aside>
+</section>
+
+<!-- ============ 六、界線 ============ -->
+<section class="slide" data-sec="6" data-fx="fake">
+  <div class="in">
+    <h2 class="fx">AI 算得對嗎？曲柄改成 9 cm<span class="en">Does AI get it right? A 9 cm crank</span></h2>
+    <div class="duo" id="duo">
+      <div class="fake"><h3>AI 做的動畫<span class="en">AI's animation</span></h3><svg class="link-svg" id="lk2" viewBox="-12 -19 38 30"></svg><div class="readout" id="lk2o"></div></div>
+      <div><h3>真實的幾何<span class="en">Real geometry</span></h3><svg class="link-svg" id="lk3" viewBox="-12 -19 38 30"></svg><div class="readout" id="lk3o"></div></div>
+    </div>
+    <div class="row"><button class="btn" id="fakeShow">揭曉：量連桿長度</button><span class="cap">左邊看起來能整圈轉，真的嗎？ · The left one turns all the way round. Does it really?</span></div>
+  </div>
+  <aside class="note">先讓台下找哪裡不對。揭曉：左邊轉到某些角度時，連桿被偷偷拉長縮短（7.9–12.4 cm）；真的 9 cm 曲柄轉不了整圈。我做壢馬時，這個條件也真的寫錯過一次。</aside>
+</section>
+
+<section class="slide" data-sec="6">
+  <div class="in two">
+    <p class="big fx">作品的能力</p><span class="neq">≠</span><p class="big fx" style="--d:2">作者的能力</p>
+  </div>
+  <p class="cap" style="text-align:center">The ability in the work is not the ability of its maker.</p>
+  <aside class="note">學生可以交出很漂亮的作品，但他學到了什麼？</aside>
+</section>
+
+<section class="slide" data-sec="6">
+  <div class="in">
+    <h2 class="fx">不禁止 AI，加上四種評量<span class="en">Don't ban AI; add four checks</span></h2>
+    <div class="cards" style="--n:4">
+      <div class="card fx" style="--d:1"><span class="k">01</span><h3>解釋</h3><p>能用自己的話說明作品嗎？<span class="en">Explain it in your own words?</span></p></div>
+      <div class="card fx" style="--d:2"><span class="k">02</span><h3>修改</h3><p>條件改變時，能調整嗎？<span class="en">Adapt it when conditions change?</span></p></div>
+      <div class="card fx" style="--d:3"><span class="k">03</span><h3>驗證</h3><p>能找出 AI 的錯誤嗎？<span class="en">Find where AI went wrong?</span></p></div>
+      <div class="card fx" style="--d:4"><span class="k">04</span><h3>遷移</h3><p>能用在另一個問題嗎？<span class="en">Use it on another problem?</span></p></div>
+    </div>
+    <p class="fx" style="--d:5;margin-top:18px">AI 素養：知道自己把什麼交給 AI，又把什麼留給自己。<span class="en">AI literacy: knowing what you hand to AI, and what you keep.</span></p>
+  </div>
+  <aside class="note">可以提「讀空氣」的比喻，但強調界線應該被講清楚。</aside>
+</section>
+
+<section class="slide" data-sec="6">
+  <div class="in">
+    <h2 class="fx">交給 AI，或留給人<span class="en">Hand it to AI, or keep it</span></h2>
+    <table class="tbl">
+      <thead><tr><th>交給 AI · To AI</th><th>老師與學生仍要負責 · Still ours</th></tr></thead>
+      <tbody>
+        <tr class="fx" style="--d:1"><td>整理資料、生成初稿<span class="en">Sort material, draft</span></td><td>決定什麼值得學<span class="en">Decide what is worth learning</span></td></tr>
+        <tr class="fx" style="--d:2"><td>提供不同解釋方式<span class="en">Explain in other ways</span></td><td>判斷學生真的懂了沒<span class="en">Judge whether a student understands</span></td></tr>
+        <tr class="fx" style="--d:3"><td>找出可能的錯誤<span class="en">Point out possible errors</span></td><td>驗證錯誤是否存在<span class="en">Check the error is real</span></td></tr>
+        <tr class="fx" style="--d:4"><td>產生模擬與視覺化<span class="en">Simulate and visualise</span></td><td>對照真實世界<span class="en">Compare with the real world</span></td></tr>
+        <tr class="fx" style="--d:5"><td>協助重複的行政工作<span class="en">Repeat admin work</span></td><td>做出涉及人的重要決定<span class="en">Make decisions about people</span></td></tr>
+      </tbody>
+    </table>
+    <p class="cap fx" style="--d:6;margin-top:12px">參考：教育部《高級中等以下學校人工智慧使用和學習指引》，115 年 6 月 5 日核定。 · Ref.: Ministry of Education AI use and learning guidelines for schools, approved 5 June 2026.</p>
+  </div>
+  <aside class="note">實務提醒：個資與金流用學校帳號；公開頁只放示範資料；一人手搓的系統要想好交接。</aside>
+</section>
+
+<!-- ============ 七、結尾 ============ -->
+<section class="slide" data-sec="7">
+  <div class="in">
+    <h2 class="fx">讓作業接上真實世界：找一個老師以外的使用者<span class="en">Connect assignments to the real world: find a user other than the teacher</span></h2>
+    <div class="cards">
+      <div class="card fx" style="--d:1"><span class="k">USER · 合作社與同學</span><h3>午餐訂購</h3><p>算錯錢，明天就有人來抱怨。<span class="en">Get a total wrong and someone complains tomorrow.</span></p></div>
+      <div class="card fx" style="--d:2"><span class="k">USER · 體育老師</span><h3>終點計時</h3><p>不準，比賽成績就有爭議。<span class="en">If it is off, results get disputed.</span></p></div>
+      <div class="card fx" style="--d:3"><span class="k">USER · 物理世界</span><h3>壢馬能不能走</h3><p>動畫再漂亮，紙板卡住就是卡住。<span class="en">However good the animation, a jammed card linkage is jammed.</span></p></div>
+    </div>
+    <p class="fx" style="--d:4;margin-top:18px">再加兩件事：放 AI 不知道的資料（要親自量、親自問），成果要公開給使用者看。<span class="en">Add two things: data AI cannot know (measured or asked in person), and a real audience for the result.</span></p>
+  </div>
+  <aside class="note">這就是「AI 做不了的作業」：不是禁止 AI，而是讓作業接上真實世界。</aside>
+</section>
+
+<section class="slide" data-sec="7">
+  <div class="in">
+    <h2 class="fx">如果你的科目有一半能交給 AI，剩下那一半是什麼？<span class="en">If half your subject could go to AI, what is the other half?</span></h2>
+    <div class="bubbles">
+      <span class="fx" style="--d:1"><small>國文</small>帶學生感受世界</span>
+      <span class="fx" style="--d:2"><small>數學</small>把現實寫成模型</span>
+      <span class="fx" style="--d:3"><small>英文</small>真的和另一個人溝通</span>
+      <span class="fx" style="--d:4"><small>歷史</small>判讀史料、多元觀點</span>
+      <span class="fx" style="--d:5"><small>體育</small>身體的經驗</span>
+      <span class="fx" style="--d:6"><small>音樂</small>聆聽與詮釋</span>
+      <span class="fx" style="--d:7"><small>美術</small>創作意圖與取捨</span>
+      <span class="fx" style="--d:8"><small>生科</small>做出來、驗證它</span>
+    </div>
+    <p class="row fx" style="--d:9"><span class="demo-tag">示意回答 · 現場改用聊天室的回答 · Sample answers</span></p>
+  </div>
+  <aside class="note">第六段結束前就先請大家在聊天室留言，這頁公布 AI 歸類的結果。</aside>
+</section>
+
+<section class="slide" data-sec="7">
+  <div class="in">
+    <div class="words">
+      <div class="fx" style="--d:1"><b style="--d:1">好奇力</b><span class="en">Curiosity</span><p>從習以為常的生活裡，發現值得探索的問題。</p></div>
+      <div class="fx" style="--d:2"><b style="--d:2">連結力</b><span class="en">Connection</span><p>把知識、工具、經驗串在一起。</p></div>
+      <div class="fx" style="--d:3"><b style="--d:3">判斷力</b><span class="en">Judgement</span><p>驗證、取捨，決定往哪裡走。</p></div>
+    </div>
+  </div>
+  <aside class="note">這三種能力都不是學 Prompt 就有的，需要生活經驗、實際操作、不斷犯錯與修正。</aside>
+</section>
+
+<section class="slide" data-sec="7">
+  <div class="in end">
+    <img class="fx" src="img/a.jpg" alt="The Lao Yuan bowl again">
+    <div>
+      <p class="fx slow" style="--d:1">AI 可以幫老店做海報、做點餐系統，<br>但那碗麵的故事是你的。<span class="en">AI can make the shop a poster and an ordering system, but the story of that bowl is yours.</span></p>
+      <p class="fx slow" style="--d:3">以前，我們因為知道得不夠多而做不到；<br>現在，我們可能因為想知道的不夠多，<br>而浪費了 AI 的可能。<span class="en">We used to fail because we knew too little. Now we may waste what AI offers because we want to know too little.</span></p>
+    </div>
+  </div>
+  <aside class="note">最後 3 分鐘固定留給這頁。回到老袁，再問台下：既然 AI 可以做這麼多事，學校還需要教學生什麼？</aside>
+</section>
+
+<section class="wrap" style="padding-top:clamp(28px,5vw,56px)">
+  <dl class="data">
+    <dt>Year</dt><dd>2026</dd>
+    <dt>Type</dt><dd>跨校教師分享，約兩小時，線上視訊<span>A two-hour online talk for teachers from several schools</span></dd>
+    <dt>Medium</dt><dd>HTML、CSS、JavaScript，單一網頁，可閱讀也可播放<span>One page that reads as an essay and plays as slides</span></dd>
+    <dt>Status</dt><dd>第一版：投票、搶答與同步為介面示範，之後接上即時資料<span>First version: voting, quiz and sync are mock-ups for now</span></dd>
+    <dt>Photos</dt><dd>四碗牛肉麵為作者自拍，店名已模糊<span>Noodle photos by the author, shop names blurred</span></dd>
+    <dt>Tools</dt><dd>講綱、網頁與動畫與 AI 協作製作<span>Outline, page and animations made with AI assistance</span></dd>
+  </dl>
+</section>
+</main>
+
+<div class="notes-panel" id="notesPanel"></div>
+<div class="hud" id="hud"><i class="bar"></i>
+  <span class="sec" id="hudSec"></span>
+  <span id="hudTime"></span>
+  <span id="hudNo"></span>
+  <button id="hudPrev" aria-label="Previous">‹</button><button id="hudNext" aria-label="Next">›</button>
+  <button id="hudNotes" aria-label="Notes">N</button><button id="hudExit" aria-label="Exit">✕</button>
+</div>
+
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const slides = $$('.slide');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SECS = { 0: ['休息', 'Break', 10], 1: ['開場', 'Opening', 8], 2: ['主張', 'The claim', 12], 3: ['教學現場', 'In class', 22], 4: ['現場體驗', 'Try it', 20], 5: ['手搓工具', 'Build your own', 18], 6: ['界線', 'Limits', 15], 7: ['結尾', 'Close', 15] };
+
+// slide labels
+slides.forEach((s, i) => {
+  const k = s.dataset.sec, sec = SECS[k];
+  const sn = document.createElement('div');
+  sn.className = 'sn';
+  sn.innerHTML = `<b>${String(i + 1).padStart(2, '0')} / ${slides.length}</b><span>${k === '0' ? '' : '第' + '〇一二三四五六七'[k] + '段 · '}${sec[0]} ${sec[1]}</span>`;
+  s.prepend(sn);
+  s.id = 's' + (i + 1);
+});
+
+/* ---------- Four-bar linkage ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; }
+function solve(a, b, c, d, th) {
+  const Ax = a * Math.cos(th), Ay = a * Math.sin(th);
+  const dx = d - Ax, dy = -Ay, L = Math.hypot(dx, dy);
+  if (L > b + c || L < Math.abs(b - c) || L === 0) return null;
+  const ex = dx / L, ey = dy / L, x = (b * b - c * c + L * L) / (2 * L), h = Math.sqrt(Math.max(0, b * b - x * x));
+  const Bx = Ax + ex * x - ey * h, By = Ay + ey * x + ex * h;
+  return { Ax, Ay, Bx, By };
+}
+const head = (p, b) => ({ x: p.Bx + (p.Bx - p.Ax) / b * 4, y: p.By + (p.By - p.Ay) / b * 4 });
+function feasible(a, b, c, d) {
+  const N = 720, ok = [];
+  for (let i = 0; i < N; i++) ok.push(!!solve(a, b, c, d, i / N * 2 * Math.PI));
+  if (ok.every(Boolean)) return { full: true };
+  // largest contiguous run (wrapping)
+  let start = ok.indexOf(false), best = [0, 0], run = null;
+  for (let j = 1; j <= N; j++) {
+    const i = (start + j) % N;
+    if (ok[i]) { if (!run) run = [j, j]; else run[1] = j; }
+    else if (run) { if (run[1] - run[0] > best[1] - best[0]) best = run; run = null; }
+  }
+  if (run && run[1] - run[0] > best[1] - best[0]) best = run;
+  if (best[1] === best[0]) return { full: false, none: true };
+  const toTh = (j) => ((start + j) % N) / N * 2 * Math.PI;
+  const t0 = (start + best[0]) / N * 2 * Math.PI, t1 = (start + best[1]) / N * 2 * Math.PI;
+  return { full: false, lo: t0 + 0.01, hi: t1 - 0.01 };
+}
+function makeLinkage(svg) {
+  const g = el('g', { fill: 'none', stroke: 'currentColor', 'stroke-linecap': 'round' }, svg);
+  const trace = el('path', { 'stroke-width': 1, 'stroke-dasharray': '3 3', opacity: .6 }, g);
+  const ground = el('line', { 'stroke-width': 1, opacity: .5 }, g);
+  const crank = el('line', { 'stroke-width': 3 }, g);
+  const coup = el('line', { 'stroke-width': 3 }, g);
+  const rock = el('line', { 'stroke-width': 3 }, g);
+  const ext = el('line', { 'stroke-width': 1.5, opacity: .7 }, g);
+  const pins = [0, 1, 2, 3].map(() => el('circle', { r: .35, fill: 'var(--paper)', 'stroke-width': 1.5 }, g));
+  const hd = el('circle', { r: .6, fill: 'var(--accent)', stroke: 'none' }, g);
+  ground.setAttribute('x1', 0); ground.setAttribute('y1', 0); ground.setAttribute('x2', 11); ground.setAttribute('y2', 0);
+  const L = (l, x1, y1, x2, y2) => { l.setAttribute('x1', x1); l.setAttribute('y1', -y1); l.setAttribute('x2', x2); l.setAttribute('y2', -y2); };
+  return {
+    draw(p, b, hp) {
+      L(crank, 0, 0, p.Ax, p.Ay); L(coup, p.Ax, p.Ay, p.Bx, p.By); L(rock, 11, 0, p.Bx, p.By); L(ext, p.Bx, p.By, hp.x, hp.y);
+      [[0, 0], [11, 0], [p.Ax, p.Ay], [p.Bx, p.By]].forEach(([x, y], i) => { pins[i].setAttribute('cx', x); pins[i].setAttribute('cy', -y); });
+      hd.setAttribute('cx', hp.x); hd.setAttribute('cy', -hp.y);
+    },
+    trace(pts) { trace.setAttribute('d', pts.map((q, i) => (i ? 'L' : 'M') + q.x.toFixed(2) + ' ' + (-q.y).toFixed(2)).join(' ')); },
+    coupler: coup
+  };
+}
+function realTrace(a, b, c, d, f) {
+  const pts = [];
+  const lo = f.full ? 0 : f.lo, hi = f.full ? 2 * Math.PI : f.hi;
+  for (let i = 0; i <= 240; i++) { const p = solve(a, b, c, d, lo + (hi - lo) * i / 240); if (p) pts.push(head(p, b)); }
+  return pts;
+}
+
+/* ---------- Effects: start(el) returns stop() ---------- */
+const FX = {};
+let timers = [];
+const later = (fn, ms) => { const t = setTimeout(fn, ms); timers.push(t); return t; };
+
+FX.ai = (s) => {
+  const lines = $$('.ai-line', s), punch = $('#aiPunch');
+  lines.forEach(l => { l.classList.remove('done', 'typing'); $('.t', l).textContent = ''; $('.stars', l).textContent = ''; });
+  punch.classList.remove('fx'); punch.style.opacity = 0;
+  if (reduce) { lines.forEach(l => { $('.t', l).textContent = $('.t', l).dataset.t; $('.stars', l).textContent = l.dataset.s; l.classList.add('done'); }); punch.style.opacity = 1; return; }
+  let li = 0, alive = true;
+  const typeLine = () => {
+    if (!alive || li >= lines.length) { if (alive) later(() => { punch.style.transition = 'opacity 1s'; punch.style.opacity = 1; }, 600); return; }
+    const l = lines[li], t = $('.t', l), full = t.dataset.t; let k = 0;
+    l.classList.add('typing');
+    const step = () => { if (!alive) return; t.textContent = full.slice(0, ++k); if (k < full.length) later(step, 45); else { l.classList.remove('typing'); l.classList.add('done'); $('.stars', l).textContent = l.dataset.s; li++; later(typeLine, 350); } };
+    step();
+  };
+  later(typeLine, 900);
+  return () => { alive = false; };
+};
+
+FX.reveal = (s) => { s.classList.remove('focus'); later(() => s.classList.add('focus'), 1600); return () => s.classList.remove('focus'); };
+
+FX.rain = (s) => {
+  const box = $('#rain', s); box.classList.remove('asking');
+  $$('.w', box).forEach(w => w.remove());
+  if (reduce) { box.classList.add('asking'); return; }
+  const words = ['答案', 'answer', '解答', '摘要', 'summary', '答案', '解法', 'reply', '範文', '翻譯'];
+  const iv = setInterval(() => {
+    const w = document.createElement('span'); w.className = 'w';
+    w.textContent = words[Math.floor(Math.random() * words.length)];
+    w.style.left = (Math.random() * 96) + '%'; w.style.animationDuration = (2.2 + Math.random() * 2.5) + 's';
+    w.addEventListener('animationend', () => w.remove());
+    box.appendChild(w);
+  }, 70);
+  later(() => box.classList.add('asking'), 4200);
+  return () => { clearInterval(iv); };
+};
+
+let lk1;
+FX.linkage = (s) => {
+  const svg = $('#lk1'); if (!lk1) lk1 = makeLinkage(svg);
+  const r = $('#lk1r'), out = $('#lk1o'), v = $('#lk1v');
+  let a, f, th = 0, t = 0, raf;
+  const set = () => {
+    a = +r.value; out.textContent = a.toFixed(1); f = feasible(a, 11, 8, 11);
+    lk1.trace(realTrace(a, 11, 8, 11, f));
+    if (f.full) { v.className = 'verdict'; v.innerHTML = '可以整圈轉<span class="en">Turns a full circle</span>'; }
+    else { v.className = 'verdict bad'; v.innerHTML = '轉不了整圈，會來回擺<span class="en">Cannot turn a full circle; it rocks back and forth</span>'; }
+  };
+  r.oninput = set; set();
+  const loop = () => {
+    t += reduce ? 0 : 0.016;
+    if (f.full) th = (th + (reduce ? 0 : 0.025)) % (2 * Math.PI);
+    else if (!f.none) th = (f.lo + f.hi) / 2 + (f.hi - f.lo) / 2 * Math.sin(t * 1.4);
+    const p = solve(a, 11, 8, 11, th); if (p) lk1.draw(p, 11, head(p, 11));
+    raf = requestAnimationFrame(loop);
+  };
+  loop();
+  return () => cancelAnimationFrame(raf);
+};
+
+let lk2, lk3;
+FX.fake = (s) => {
+  if (!lk2) { lk2 = makeLinkage($('#lk2')); lk3 = makeLinkage($('#lk3')); }
+  const duo = $('#duo'); duo.classList.remove('shown');
+  const a = 9, f = feasible(a, 11, 8, 11);
+  lk3.trace(realTrace(a, 11, 8, 11, f));
+  // AI's version: right wherever a real position exists, but across the dead zones it just
+  // slides the joint from one good pose to the next, so the coupler quietly stretches.
+  const N = 720, Bs = [];
+  for (let i = 0; i < N; i++) { const p = solve(a, 11, 8, 11, i / N * 2 * Math.PI); Bs.push(p ? [p.Bx, p.By] : null); }
+  for (let i = 0; i < N; i++) if (!Bs[i]) {
+    let j = i; while (!Bs[(j + N) % N]) j--; let k = i; while (!Bs[k % N]) k++;
+    const P = Bs[(j + N) % N], Q = Bs[k % N], f = (i - j) / (k - j);
+    Bs[i] = [P[0] + (Q[0] - P[0]) * f, P[1] + (Q[1] - P[1]) * f, true];
+  }
+  const fakePos = (th) => {
+    const u = ((th / (2 * Math.PI)) % 1 + 1) % 1 * N, i = Math.floor(u) % N, j = (i + 1) % N, f = u - Math.floor(u);
+    return { Ax: a * Math.cos(th), Ay: a * Math.sin(th), Bx: Bs[i][0] + (Bs[j][0] - Bs[i][0]) * f, By: Bs[i][1] + (Bs[j][1] - Bs[i][1]) * f };
+  };
+  const fpts = []; for (let i = 0; i <= 240; i++) { const p = fakePos(i / 240 * 2 * Math.PI); fpts.push(head(p, Math.hypot(p.Bx - p.Ax, p.By - p.Ay))); }
+  lk2.trace(fpts);
+  let lmin = 99, lmax = 0;
+  for (let i = 0; i < 360; i++) { const p = fakePos(i / 360 * 2 * Math.PI), l = Math.hypot(p.Bx - p.Ax, p.By - p.Ay); lmin = Math.min(lmin, l); lmax = Math.max(lmax, l); }
+  let th = 0, t = 0, raf;
+  const o2 = $('#lk2o'), o3 = $('#lk3o');
+  const loop = () => {
+    if (!reduce) { th = (th + 0.014) % (2 * Math.PI); t += 0.016; }
+    const p = fakePos(th), len = Math.hypot(p.Bx - p.Ax, p.By - p.Ay);
+    lk2.draw(p, len, head(p, len));
+    const bad = duo.classList.contains('shown') && Math.abs(len - 11) > .3;
+    o2.textContent = `連桿長度 coupler: ${len.toFixed(1)} cm（應為 11.0；這一圈在 ${lmin.toFixed(1)}–${lmax.toFixed(1)} cm 之間變動）`;
+    o2.style.color = bad ? 'var(--accent)' : '';
+    lk2.coupler.style.stroke = bad ? 'var(--accent)' : '';
+    const th3 = (f.lo + f.hi) / 2 + (f.hi - f.lo) / 2 * Math.sin(t * 1.4);
+    const q = solve(a, 11, 8, 11, th3);
+    if (q) { lk3.draw(q, 11, head(q, 11)); o3.textContent = '連桿長度 coupler: ' + Math.hypot(q.Bx - q.Ax, q.By - q.Ay).toFixed(1) + ' cm · 只能來回擺'; }
+    raf = requestAnimationFrame(loop);
+  };
+  loop();
+  return () => cancelAnimationFrame(raf);
+};
+$('#fakeShow').onclick = () => $('#duo').classList.toggle('shown');
+
+FX.sync = (s) => {
+  const scr = [$('#sy0'), $('#sy1'), $('#sy2')].map(x => $('svg', x));
+  let mode = 'follow', ang = 0;
+  const btns = $$('#syModes button');
+  const apply = () => {
+    scr[0].style.transform = `rotate(${ang}deg) scale(${1 + Math.sin(ang / 40) * .1})`;
+    if (mode === 'free') { scr[1].style.transform = `rotate(${ang * -.7 + 40}deg)`; scr[2].style.transform = `rotate(${ang * .4 - 70}deg) scale(1.15)`; }
+    else { scr[1].style.transform = scr[2].style.transform = scr[0].style.transform; }
+  };
+  btns.forEach(b => b.onclick = () => {
+    mode = b.dataset.m === 'gather' ? 'follow' : b.dataset.m;
+    btns.forEach(x => x.setAttribute('aria-pressed', x === b));
+    apply();
+  });
+  const iv = setInterval(() => { ang += 60; apply(); }, 2200); apply();
+  return () => clearInterval(iv);
+};
+
+FX.quiz = (s) => {
+  const q = $('#quiz'), bar = $('#qT'), btns = $$('button', q);
+  const reset = () => {
+    q.classList.remove('done'); btns.forEach(b => { b.classList.remove('pick'); b.style.setProperty('--w', '0%'); $('em', b).textContent = ''; });
+    bar.style.transition = 'none'; bar.style.width = '100%'; void bar.offsetWidth;
+    bar.style.transition = 'width 12s linear'; bar.style.width = '0%';
+  };
+  const show = () => {
+    q.classList.add('done'); const demo = [62, 14, 16, 8];
+    btns.forEach((b, i) => { b.style.setProperty('--w', demo[i] + '%'); $('em', b).textContent = demo[i] + '%'; });
+  };
+  btns.forEach(b => b.onclick = () => { btns.forEach(x => x.classList.toggle('pick', x === b)); });
+  $('#qShow').onclick = show; $('#qAgain').onclick = reset;
+  reset(); const t = later(show, 12500);
+  return () => clearTimeout(t);
+};
+
+FX.cluster = (s) => {
+  const pool = $('#pool'), chips = $$('.chip', s), cols = $$('.col', s);
+  const back = () => chips.forEach(c => pool.appendChild(c));
+  const sort = () => {
+    const first = new Map(chips.map(c => [c, c.getBoundingClientRect()]));
+    chips.forEach(c => cols[+c.dataset.c].appendChild(c));
+    if (reduce) return;
+    chips.forEach((c, i) => {
+      const a = first.get(c), b = c.getBoundingClientRect();
+      c.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)` }, { transform: 'none' }], { duration: 900, delay: i * 90, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'backwards' });
+    });
+  };
+  back(); later(sort, 2200);
+  $('#clAgain').onclick = () => { back(); later(sort, 700); };
+  return back;
+};
+
+FX.vote = () => {};
+FX.break = (s) => {
+  const c = $('#clock'); const end = Date.now() + 10 * 60000;
+  const tick = () => { const r = Math.max(0, end - Date.now()), m = Math.floor(r / 60000), sec = Math.floor(r / 1000) % 60; c.textContent = `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`; };
+  tick(); const iv = setInterval(tick, 500);
+  return () => clearInterval(iv);
+};
+
+// votes (local only for now)
+const votes = [0, 0, 0, 0];
+const drawVotes = () => {
+  const total = votes.reduce((x, y) => x + y, 0) || 1;
+  $$('#vote button').forEach((b, i) => { b.style.setProperty('--w', (votes[i] / total * 100) + '%'); $('.n', b).textContent = votes[i]; });
+};
+$$('#vote button').forEach((b, i) => b.onclick = () => { votes[i]++; drawVotes(); });
+$('#voteDemo').onclick = () => { [9, 4, 7, 6].forEach((n, i) => votes[i] = n); drawVotes(); };
+$('#voteReset').onclick = () => { votes.fill(0); drawVotes(); };
+$$('.flip').forEach(f => f.addEventListener('click', () => f.classList.toggle('on')));
+
+/* ---------- Run / stop a slide ---------- */
+const stops = new Map();
+function play(s) {
+  if (stops.has(s)) return;
+  s.classList.remove('run'); void s.offsetWidth; s.classList.add('run');
+  const f = FX[s.dataset.fx]; stops.set(s, (f && f(s)) || null);
+}
+function halt(s) {
+  if (!stops.has(s)) return;
+  const st = stops.get(s); st && st(); stops.delete(s);
+}
+
+/* ---------- Reading mode: play when in view ---------- */
+const io = new IntersectionObserver((ents) => {
+  if (document.body.classList.contains('present')) return;
+  ents.forEach(e => { if (e.isIntersecting) play(e.target); else if (stops.get(e.target)) halt(e.target); });
+}, { threshold: .3 });
+slides.forEach(s => io.observe(s));
+
+/* ---------- Presentation mode ---------- */
+let cur = 0, t0 = 0, secStart = {}, clockIv;
+const fmt = (ms) => { const s = Math.floor(ms / 1000); return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; };
+function show(i) {
+  i = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => { if (k !== i) { s.classList.remove('active'); halt(s); } });
+  cur = i; const s = slides[i]; s.classList.add('active'); halt(s); play(s);
+  const k = s.dataset.sec; if (!(k in secStart)) secStart[k] = Date.now();
+  history.replaceState(null, '', '#s' + (i + 1));
+  $('#notesPanel').innerHTML = ($('.note', s) || {}).innerHTML || '（這頁沒有備註）';
+  $('#hud').style.setProperty('--p', ((i + 1) / slides.length * 100) + '%');
+  hud();
+}
+function hud() {
+  const s = slides[cur], k = s.dataset.sec, sec = SECS[k];
+  const el1 = Date.now() - (secStart[k] || Date.now()), plan = sec[2] * 60000;
+  $('#hudSec').textContent = (k === '0' ? '' : '第' + '〇一二三四五六七'[k] + '段 ') + sec[0] + ' ' + sec[1];
+  $('#hudTime').innerHTML = `<span class="${el1 > plan ? 'over' : ''}">${fmt(el1)} / ${String(sec[2]).padStart(2, '0')}:00</span> · 全場 ${fmt(Date.now() - t0)} / 120:00`;
+  $('#hudNo').textContent = `${cur + 1} / ${slides.length}`;
+}
+function enter(i) {
+  document.body.classList.add('present');
+  slides.forEach(halt);
+  if (!t0) t0 = Date.now();
+  clearInterval(clockIv); clockIv = setInterval(hud, 1000);
+  show(i ?? cur);
+  document.documentElement.requestFullscreen?.().catch(() => {});
+}
+function leave() {
+  document.body.classList.remove('present');
+  slides.forEach(s => { s.classList.remove('active'); halt(s); });
+  clearInterval(clockIv);
+  if (document.fullscreenElement) document.exitFullscreen?.();
+  slides[cur].scrollIntoView();
+}
+const toggleNotes = () => document.body.classList.toggle('show-notes');
+$('#go').onclick = () => enter(0);
+$('#notesBtn').onclick = toggleNotes;
+$('#hudPrev').onclick = () => show(cur - 1);
+$('#hudNext').onclick = () => show(cur + 1);
+$('#hudNotes').onclick = toggleNotes;
+$('#hudExit').onclick = leave;
+addEventListener('keydown', (e) => {
+  if (e.target.matches('input, textarea')) return;
+  const p = document.body.classList.contains('present');
+  if (e.key === 'p' || e.key === 'P') { p ? leave() : enter(currentInView()); }
+  else if (e.key === 'n' || e.key === 'N') toggleNotes();
+  else if (!p) return;
+  else if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(cur - 1); }
+  else if (e.key === 'Home') show(0);
+  else if (e.key === 'End') show(slides.length - 1);
+  else if (e.key === 'Escape') leave();
+});
+function currentInView() {
+  let best = 0, d = Infinity;
+  slides.forEach((s, i) => { const r = s.getBoundingClientRect(); if (Math.abs(r.top) < d) { d = Math.abs(r.top); best = i; } });
+  return best;
+}
+// swipe in presentation mode
+let sx = null;
+addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; }, { passive: true });
+addEventListener('touchend', (e) => {
+  if (!document.body.classList.contains('present') || sx === null) return;
+  const dx = e.changedTouches[0].clientX - sx; sx = null;
+  if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+});
+// ?p or ?p=12 opens straight into slides
+const q = new URLSearchParams(location.search);
+if (q.has('p')) {
+  const m = location.hash.match(/^#s(\d+)/);
+  enter((+q.get('p') || (m ? +m[1] : 1)) - 1);
+}
+})();
+</script>
+</body>
+</html>
