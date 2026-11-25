@@ -81,6 +81,7 @@ h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.3 var(--serif); letter-spac
 /* Slide mode: the plate fills the screen and the active paragraph becomes a caption */
 .slidecap { display: none; }
 body.slides { overflow: hidden; }
+body.slides .stage-wrap { z-index: 60; }
 body.slides #stage { position: fixed; inset: 0; height: 100%; min-height: 0; margin: 0; z-index: 50; touch-action: pan-y; }
 body.slides .fig { padding: 52px 12px 150px; }
 body.slides .ctrl { bottom: 152px; }
@@ -94,6 +95,13 @@ body.slides .slidecap { display: grid; grid-template-columns: 1fr auto; gap: 4px
 .slidenav { display: none; }
 body.slides .slidenav { display: flex; }
 body.slides .seg.slidenav button { padding: 5px 12px; }
+
+/* slide mode only: the 3D model and the drawings as slides */
+.xs { position: absolute; inset: 0; padding: 48px 0 140px; z-index: 1; }
+.xs iframe { display: block; width: 100%; height: 100%; border: 0; }
+.dwg.dwgx { position: absolute; border: 0; overflow: hidden; background: #fff; padding: 52px 16px 150px; }
+.dwg.dwgx svg { width: 100%; height: 100%; }
+body.slides .xs ~ .slidecap { z-index: 2; }
 
 /* 3D and drawings */
 .sec { border-top: 1px solid var(--rule); padding-block: 56px 20px; }
@@ -143,6 +151,8 @@ footer.src p { margin: 0 0 1em; }
   footer.src { grid-template-columns: 1fr; }
   body.slides .fig { padding: 46px 6px 168px; }
   body.slides .ctrl { bottom: 172px; }
+  .xs { padding-bottom: 160px; }
+  .dwg.dwgx { padding: 46px 8px 170px; }
 }
 @media (prefers-reduced-motion: reduce) { .fig, .beat { transition: none; } }
 </style>
@@ -175,6 +185,8 @@ footer.src p { margin: 0 0 1em; }
           <span class="spacer"></span>
           <div class="seg" role="group" aria-label="動畫"><button id="b-play" type="button" aria-pressed="false">暫停</button><button id="b-slow" type="button" aria-pressed="false">慢速</button><button id="slidebtn" type="button" title="簡報模式（P）">簡報</button></div>
         </div>
+        <div class="xs" id="xs3d" hidden></div>
+        <div class="xs dwg dwgx" id="xsdwg" hidden></div>
         <div class="slidecap"><span class="sec" id="capsec"></span><div><h2 id="captitle"></h2><p id="captext"></p></div><span class="count" id="capcount"></span></div>
       </div>
     </div>
@@ -1884,9 +1896,42 @@ stepsEl.addEventListener('click', function (e) {
   if (i >= 0) document.getElementById('f' + String(i + 1).padStart(2, '0')).querySelector('.beat').scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 
-var idx = 0, curS = 0, curK = 0, slides = false, playing = true, slow = false;
+var EXTRA = [{ t: 'run' }].concat([1, 2, 3, 4, 5, 6, 7, 8].map(function (n) { return { t: 'build', s: n }; }), [{ t: 'dwg', n: 1 }, { t: 'dwg', n: 2 }]);
+var idx = 0, curS = 0, curK = 0, slides = false, playing = true, slow = false, xOn = false, simX = null, simReady = false, dwgDone = {};
+function total() { return beats.length + (slides ? EXTRA.length : 0); }
+function cap(sec, title, text) { $('capsec').textContent = sec; $('captitle').innerHTML = title; $('captext').textContent = text; $('capcount').textContent = (idx + 1) + ' / ' + total(); }
+function simGo(e) { if (simX && simReady) simX.contentWindow.postMessage({ type: 'tt-go', page: e.t === 'build' ? 'build' : 'run', step: e.s || 1 }, '*'); }
+function showExtra(e) {
+  figs.forEach(function (g) { g.el.classList.remove('on'); });
+  beats.forEach(function (x) { x.el.classList.remove('active'); });
+  var is3d = e.t !== 'dwg';
+  $('xs3d').hidden = !is3d; $('xsdwg').hidden = is3d;
+  if (is3d) {
+    if (!simX) { simX = document.createElement('iframe'); simX.title = 'TT 減速馬達 3D'; simX.src = 'sim.html?embed=slide&page=' + (e.t === 'build' ? 'build' : 'run') + '&step=' + (e.s || 1); $('xs3d').appendChild(simX); simX.addEventListener('load', function () { simReady = true; simGo(EXTRA[idx - beats.length] || e); }); }
+    else simGo(e);
+    if (e.t === 'run') cap('07 · In 3D', '3D 模擬：運作<small>In 3D: running</small>', '拖曳旋轉、滾輪縮放；左上切換實體、透視、爆炸，左下切換播放速度。');
+    else cap('07 · Onshape 外殼建模 · ' + e.s + ' / 8', '外殼建模　步驟 ' + e.s + '<small>Modelling the case, step ' + e.s + '</small>', '');
+  } else {
+    var host = $('xsdwg');
+    if (!dwgDone[e.n]) dwgDone[e.n] = document.querySelector('#dwg' + e.n + ' svg').cloneNode(true);
+    host.innerHTML = ''; host.appendChild(dwgDone[e.n]);
+    cap('08 · Drawings', e.n === 1 ? '工程圖 1：外觀圖<small>Drawing 1: exterior</small>' : '工程圖 2：外殼零件圖<small>Drawing 2: the case</small>', '第三角法，比例 2:1，單位 mm。括號內為參考尺寸。');
+  }
+}
+addEventListener('message', function (ev) {
+  if (!simX || ev.source !== simX.contentWindow || !ev.data) return;
+  var m = ev.data, e = EXTRA[idx - beats.length];
+  if (m.type === 'tt-step' && slides && e && e.t === 'build' && m.page === 'build' && m.step === e.s) {
+    cap('07 · Onshape 外殼建模 · ' + e.s + ' / 8', m.title + '<small>Step ' + e.s + ' / 8</small>',
+      'Onshape：' + m.tools.join('、') + '　｜　' + m.dims.map(function (d) { return d[0] + ' ' + d[1]; }).join('、'));
+  }
+  if (m.type === 'tt-key') onKey({ key: m.key, target: document.body, preventDefault: function () {} });
+});
 function activate(i) {
-  idx = Math.max(0, Math.min(beats.length - 1, i));
+  idx = Math.max(0, Math.min(total() - 1, i));
+  xOn = idx >= beats.length;
+  if (xOn) { showExtra(EXTRA[idx - beats.length]); return; }
+  $('xs3d').hidden = true; $('xsdwg').hidden = true;
   var b = beats[idx]; curS = b.s; curK = b.k;
   beats.forEach(function (x) { x.el.classList.toggle('active', x === b); });
   figs.forEach(function (g, j) {
@@ -1897,7 +1942,7 @@ function activate(i) {
   $('capsec').textContent = g.chapNo + '-' + (curS + 1) + ' · ' + CHN[g.d.ch] + ' ' + CH[g.d.ch][1].replace(/^[IVX]+ · /, '');
   $('captitle').innerHTML = g.d.zh + '<small>' + g.d.en + '</small>';
   $('captext').textContent = g.d.st[curK][0];
-  $('capcount').textContent = (idx + 1) + ' / ' + beats.length;
+  $('capcount').textContent = (idx + 1) + ' / ' + total();
 }
 var io = new IntersectionObserver(function (es) { if (slides) return; es.forEach(function (e) { if (e.isIntersecting) activate(beats.findIndex(function (b) { return b.el === e.target; })); }); },
   { rootMargin: matchMedia('(max-width: 860px)').matches ? '-62% 0px -30% 0px' : '-42% 0px -52% 0px' });
@@ -1909,8 +1954,11 @@ function setSlides(on) {
     if (on) { history.replaceState(null, '', '#slides'); var p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(function () {}); }
     else { history.replaceState(null, '', location.pathname); if (document.fullscreenElement) document.exitFullscreen(); }
   } catch (e) {}
+  var ex = !on && idx >= beats.length ? EXTRA[idx - beats.length] : null;
+  if (ex) idx = beats.length - 1;
   activate(idx);
-  if (!on) beats[idx].el.scrollIntoView({ block: 'center' });
+  if (ex) document.getElementById(ex.t === 'dwg' ? 'drawings' : 'in3d').scrollIntoView();
+  else if (!on) beats[idx].el.scrollIntoView({ block: 'center' });
 }
 $('startslides').onclick = function () { idx = 0; setSlides(true); };
 $('slidebtn').onclick = function () { setSlides(!slides); };
@@ -1920,15 +1968,16 @@ $('next').onclick = function () { activate(idx + 1); };
 $('b-play').onclick = function () { playing = !playing; this.textContent = playing ? '暫停' : '播放'; this.setAttribute('aria-pressed', String(!playing)); };
 $('b-slow').onclick = function () { slow = !slow; this.setAttribute('aria-pressed', String(slow)); };
 if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { playing = false; $('b-play').textContent = '播放'; }
-addEventListener('keydown', function (e) {
+function onKey(e) {
   if (e.target.closest && e.target.closest('input, iframe')) return;
   if (e.key === 'p' || e.key === 'P') { setSlides(!slides); return; }
   if (!slides) return;
   if (['ArrowRight', 'PageDown', ' '].indexOf(e.key) >= 0) { e.preventDefault(); activate(idx + 1); }
   if (['ArrowLeft', 'PageUp'].indexOf(e.key) >= 0) { e.preventDefault(); activate(idx - 1); }
-  if (e.key === 'Home') activate(0); if (e.key === 'End') activate(beats.length - 1);
+  if (e.key === 'Home') activate(0); if (e.key === 'End') activate(total() - 1);
   if (e.key === 'Escape') setSlides(false);
-});
+}
+addEventListener('keydown', onKey);
 document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement && slides) setSlides(false); });
 /* slide mode on a phone: swipe left / right */
 var sw = null;
@@ -1951,11 +2000,11 @@ var last = performance.now();
 function frame(now) {
   var dt = Math.min(.05, (now - last) / 1000); last = now;
   var g = figs[curS];
-  if (g && g.f && !document.hidden) g.f.update(playing ? dt * (slow ? .3 : 1) : 0, curK);
+  if (!xOn && g && g.f && !document.hidden) g.f.update(playing ? dt * (slow ? .3 : 1) : 0, curK);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__story = { go: function (i) { activate(i); }, slides: setSlides, state: function () { return { idx: idx, s: curS, k: curK, n: beats.length }; } };
+window.__story = { go: function (i) { activate(i); }, slides: setSlides, state: function () { return { idx: idx, s: curS, k: curK, n: beats.length, total: total(), cap: $('captitle').textContent + ' | ' + $('captext').textContent }; } };
 })();
 </script>
 

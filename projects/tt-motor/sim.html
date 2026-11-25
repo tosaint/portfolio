@@ -135,6 +135,10 @@ td.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 }
 @media (max-width:420px){ .seg button{padding:5px 9px} .hint{display:none} .meter .v{font-size:21px} .dimlabel{font-size:11px} }
 
+.slideemb body{padding:0!important}
+.slideemb header,.slideemb #run-panel,.slideemb #build-panel{display:none!important}
+.slideemb .app{display:block;max-width:none}
+.slideemb .stage{position:fixed;inset:0;top:0;aspect-ratio:auto;border-radius:0;max-width:none}
 .embed body{padding-block:10px 16px}
 .embed .titles{display:none}
 .embed header{justify-content:flex-end}
@@ -285,9 +289,9 @@ function model(V, T, on){
   return { n0:n0, Ts:Ts, I0:I0, Is:Is, n:n, I:I, Pout:Pout, Pin:Pin, eff: Pin>0 ? Pout/Pin : 0, stall: on && k>=1 };
 }
 
-var EMB = new URLSearchParams(location.search).get('embed'); if(EMB) document.documentElement.classList.add('embed');
+var QS = new URLSearchParams(location.search), EMB = QS.get('embed'); if(EMB === 'slide') document.documentElement.classList.add('slideemb'); if(EMB) document.documentElement.classList.add('embed');
 var state = { V:6, T:0.2, on: !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches),
-              mode:'xray', scale:0.02, page: EMB === 'build' ? 'build' : 'run', step:1, ghost:true };
+              mode:'xray', scale:0.02, page: (EMB === 'build' || QS.get('page') === 'build') ? 'build' : 'run', step: Math.min(8, Math.max(1, +QS.get('step') || 1)), ghost:true };
 var cur = model(state.V, state.T, state.on);
 
 /* ---------- build guide content ---------- */
@@ -443,7 +447,16 @@ function sync(){
   $('tab-build').setAttribute('aria-pressed', run ? 'false' : 'true');
   refresh(); refreshBuild();
   if(window.__ttApply) window.__ttApply();
+  if(EMB && window.parent !== window){ var cs = STEPS[state.step-1]; try { window.parent.postMessage({ type:'tt-step', page:state.page, step:state.step, title:cs.title, tools:cs.tools, dims:cs.dims }, '*'); } catch(e){} }
 }
+window.addEventListener('message', function(e){
+  var m = e.data; if(!m || m.type !== 'tt-go' || e.source !== window.parent) return;
+  state.page = m.page === 'build' ? 'build' : 'run'; if(m.step) state.step = Math.min(8, Math.max(1, m.step)); sync();
+});
+if(EMB === 'slide') document.addEventListener('keydown', function(e){
+  if(e.target.closest && e.target.closest('input')) return;
+  if(['ArrowRight','ArrowLeft','PageDown','PageUp',' ','Escape','Home','End','p','P'].indexOf(e.key) >= 0){ e.preventDefault(); try { window.parent.postMessage({ type:'tt-key', key:e.key }, '*'); } catch(err){} }
+});
 STEPS.forEach(function(s, i){
   var b = document.createElement('button'); b.type = 'button'; b.id = 'b-step-'+(i+1); b.textContent = String(i+1);
   b.setAttribute('aria-label', '步驟 '+(i+1)+' '+s.title);
