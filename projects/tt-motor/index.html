@@ -4,77 +4,114 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TT 減速馬達 · TT Gear Motor</title>
-<meta name="description" content="TT 減速馬達的動態簡報：馬達、齒輪組、軸與外殼逐章拆解，附 3D 模擬器、Onshape 外殼建模導覽與工程圖。An animated slide deck on the TT gear motor: motor, gear train, axles and case, with a 3D simulator, an Onshape modelling guide and engineering drawings.">
+<meta name="description" content="TT 減速馬達：捲動式圖解，依序拆解馬達、齒輪組、軸與外殼，可切換簡報模式，附 3D 模擬器、Onshape 外殼建模導覽與工程圖。A scrolling explainer of the TT gear motor, also playable as slides, with a 3D simulator, an Onshape modelling guide and engineering drawings.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
 <script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <style>
-[hidden] { display: none !important; }
-/* Layout: a slide deck that fills the window. Each slide pairs a printed plate (fixed riso paper, like the
-   Linkages series) with a bilingual text column; 3D and drawing slides run full width. Page chrome follows the theme. */
+/* Layout: the same scroll story as the Fire Station page. Text on the left, one sticky printed plate on the right
+   that follows the paragraph being read; 3D and drawings follow as their own sections. Plates are prints and keep their paper in dark mode. */
 :root {
   --paper: #f3f1ec; --ink: #2b2a27; --ink-2: #5f5b54; --ink-3: #8b877e; --rule: #d9d5cc; --mat: #faf9f5; --accent: #c8452e;
-  --plate: #ebe4d6; --plate-ink: #2b2a27;
   --serif: "Noto Serif TC", "Songti TC", Georgia, serif;
   --sans: "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
 }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --accent: #ff6b4f; color-scheme: dark;
-} }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --accent: #ff6b4f; color-scheme: dark; } }
 :root[data-theme="dark"] { --paper: #141412; --ink: #e8e5de; --ink-2: #b3aea4; --ink-3: #8e8a82; --rule: #2c2b28; --mat: #1a1a17; --accent: #ff6b4f; color-scheme: dark; }
 * { box-sizing: border-box; }
-html, body { height: 100%; }
-body { margin: 0; background: var(--paper); color: var(--ink); font: 400 15px/1.75 var(--sans); overflow: hidden; }
-button { font: inherit; color: inherit; }
+html { scroll-padding-top: 60px; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.85 var(--sans); }
 a { color: inherit; }
-:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 3px; }
+button { font: inherit; color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 3px; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
-.deck { height: 100%; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto;
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-block: 12px; border-bottom: 1px solid var(--rule); }
-.bar .home, .bar .ttl { font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; white-space: nowrap; }
-.bar .ttl { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.bar .home:hover { color: var(--ink); }
-.tools { display: flex; gap: 6px; }
-.btn { border: 1px solid var(--rule); background: transparent; border-radius: 2px; padding: 4px 10px; font: 400 11px var(--mono); letter-spacing: .1em; cursor: pointer; color: var(--ink-2); min-height: 30px; }
-.btn:hover { color: var(--ink); border-color: var(--ink-3); }
-.btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.btn[aria-pressed="true"] { color: var(--ink); border-color: var(--ink); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); border-bottom: 1px solid var(--rule); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.top .wrap { display: flex; justify-content: space-between; align-items: baseline; padding-block: 14px; }
+.top a, .top span { font: 400 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; color: var(--ink-2); }
 
-#stage { position: relative; min-height: 0; touch-action: pan-y; }
-.slide { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 44px); align-items: center; padding-block: clamp(12px, 2vh, 24px); }
-.fig { position: relative; height: 100%; min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; }
-.fig > svg.plate { width: 100%; height: 100%; max-height: 100%; display: block; }
-.txt { min-width: 0; max-height: 100%; overflow-y: auto; padding-right: 4px; }
-.eyebrow { margin: 0 0 14px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
-.txt h2 { margin: 0; font: 300 clamp(26px, 3vw, 40px)/1.3 var(--serif); letter-spacing: .12em; text-wrap: balance; }
-.txt .en { margin: 6px 0 0; font: 300 clamp(15px, 1.4vw, 19px)/1.45 var(--serif); font-style: italic; color: var(--ink-2); }
-.steps { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 14px; }
-.steps li { border-left: 1px solid var(--rule); padding-left: 14px; transition: opacity .35s, transform .35s, border-color .35s; }
-.steps li.off { opacity: 0; transform: translateY(6px); }
-.steps li.now { border-left-color: var(--accent); }
-.steps p { margin: 0; }
-.steps p.zh { font-size: 15px; }
-.steps p.e { font-size: 13px; line-height: 1.6; color: var(--ink-3); margin-top: 3px; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.note { margin-top: 18px; font: 400 11px var(--mono); letter-spacing: .08em; color: var(--ink-3); }
+.head { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 80px); align-items: end; padding-block: clamp(44px, 7vw, 88px) clamp(32px, 5vw, 56px); }
+.eyebrow { margin: 0 0 22px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+h1 { margin: 0; font: 300 clamp(34px, 4.6vw, 56px)/1.3 var(--serif); letter-spacing: .12em; text-wrap: balance; }
+.en-title { margin: 14px 0 0; font: 300 clamp(17px, 1.9vw, 22px)/1.4 var(--serif); color: var(--ink-2); }
+.lede { margin: 0; font-size: 15px; color: var(--ink-2); }
+.lede span { display: block; margin-top: 10px; color: var(--ink-3); font-size: 13px; line-height: 1.7; }
+.start { margin-top: 22px; display: inline-flex; gap: 10px; align-items: baseline; border: 1px solid var(--ink); background: none; padding: 10px 18px; cursor: pointer; font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.start:hover { background: var(--ink); color: var(--paper); }
+.start small { font: inherit; color: var(--ink-3); letter-spacing: .08em; }
 
-.cover h2 { font-size: clamp(40px, 5vw, 64px); letter-spacing: .14em; }
-.cover .en { font-size: clamp(18px, 2vw, 24px); }
+/* Story */
+.story { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(20px, 3vw, 44px); border-top: 1px solid var(--rule); }
+.steps { padding-bottom: 30vh; min-width: 0; }
+.chapter { margin: 0; padding: 56px 0 6px; font: 300 26px/1.4 var(--serif); letter-spacing: .1em; }
+.chapter small { display: block; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+.step { padding: 28px 0 10px; border-bottom: 1px solid var(--rule); }
+.step .num { margin: 0 0 6px; font: 400 11px var(--mono); letter-spacing: .16em; color: var(--ink-3); }
+.step h3 { margin: 0 0 6px; font: 500 21px/1.45 var(--serif); letter-spacing: .06em; }
+.step h3 span { display: block; font: 400 12px var(--mono); letter-spacing: .06em; color: var(--ink-3); margin-top: 4px; }
+.beat { min-height: 46vh; padding: 14px 0 14px 14px; border-left: 1px solid var(--rule); margin: 10px 0 0; opacity: .42; transition: opacity .35s, border-color .35s; }
+.beat:last-child { min-height: 58vh; }
+.beat.active { opacity: 1; border-left-color: var(--accent); }
+.beat p { margin: 0; }
+.beat .e { margin-top: 6px; font-size: 13px; line-height: 1.7; color: var(--ink-3); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chips button { border: 1px solid var(--rule); background: none; padding: 3px 10px; font: 400 12px var(--mono); cursor: pointer; color: var(--ink-2); }
+.chips button:hover { color: var(--ink); border-color: var(--ink-3); }
+.note { font-size: 13px; color: var(--ink-3); }
 
-.slide.wide { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); align-items: stretch; }
-.slide.wide .txt { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; overflow: visible; }
-.slide.wide .txt h2 { font-size: clamp(22px, 2.4vw, 30px); }
-.slide.wide .txt .en { margin: 0; }
-.slide.wide .txt .lead { flex-basis: 100%; margin: 2px 0 0; font-size: 13px; color: var(--ink-2); }
-.slide.wide .txt .lead span { color: var(--ink-3); }
-.slide.wide .fig { align-items: stretch; }
-.frame { width: 100%; height: 100%; border: 1px solid var(--rule); background: var(--mat); display: block; }
-.dwg { position: relative; width: 100%; height: 100%; overflow: auto; border: 1px solid var(--rule); background: #fff; }
-.dwg svg { display: block; width: 100%; height: 100%; }
-.dwg.zoom svg { width: 230%; height: auto; }
-.dwgbar { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; z-index: 2; }
-.dwgbar .btn, .dwgbar a.btn { background: #fff; color: #2b2a27; border-color: #cfc8bb; text-decoration: none; display: inline-flex; align-items: center; }
+.stage-wrap { position: relative; min-width: 0; }
+#stage { position: sticky; top: 58px; height: calc(100vh - 74px); min-height: 420px; margin-top: 14px; background: #ebe4d6; overflow: hidden; }
+.fig { position: absolute; inset: 0; padding: 46px 10px 10px; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity .45s, visibility .45s; }
+.fig.on { opacity: 1; visibility: visible; }
+.fig > svg.plate { width: 100%; height: 100%; display: block; }
+.bar-top { position: absolute; left: 10px; right: 10px; top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; pointer-events: none; z-index: 3; }
+.bar-top > * { pointer-events: auto; }
+.seg { display: inline-flex; gap: 1px; background: #c9c5ba; border: 1px solid #c9c5ba; }
+.seg button { border: 0; background: rgba(250,249,245,.92); color: #2b2a27; padding: 5px 10px; font: 400 12px var(--sans); cursor: pointer; white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: #2b2a27; color: #f3f1ec; }
+.spacer { flex: 1; }
+.ctrl { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: rgba(250,249,245,.94); border: 1px solid #c9c5ba;
+  padding: 6px 12px; color: #2b2a27; font: 400 12px var(--mono); white-space: nowrap; max-width: calc(100% - 16px); z-index: 2; }
+.ctrl input { width: min(200px, 36vw); accent-color: #d9643a; }
+.ctrl output { min-width: 4.2em; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Slide mode: the plate fills the screen and the active paragraph becomes a caption */
+.slidecap { display: none; }
+body.slides { overflow: hidden; }
+body.slides #stage { position: fixed; inset: 0; height: 100%; min-height: 0; margin: 0; z-index: 50; touch-action: pan-y; }
+body.slides .fig { padding: 52px 12px 150px; }
+body.slides .ctrl { bottom: 152px; }
+body.slides .slidecap { display: grid; grid-template-columns: 1fr auto; gap: 4px 24px; align-items: end; position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  padding: 18px clamp(16px, 4vw, 48px) max(20px, env(safe-area-inset-bottom, 0px)); background: linear-gradient(rgba(235,228,214,0), rgba(235,228,214,.96) 22%); color: #2b2a27; pointer-events: none; }
+.slidecap .sec { grid-column: 1 / -1; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; opacity: .65; }
+.slidecap h2 { margin: 0; font: 500 clamp(20px, 2.4vw, 30px)/1.35 var(--serif); letter-spacing: .06em; }
+.slidecap h2 small { font: 300 clamp(13px, 1.2vw, 16px) var(--serif); font-style: italic; margin-left: 10px; opacity: .7; letter-spacing: 0; }
+.slidecap p { margin: 4px 0 0; font-size: clamp(14px, 1.3vw, 17px); max-width: 70ch; }
+.slidecap .count { font: 400 12px var(--mono); opacity: .7; align-self: end; }
+.slidenav { display: none; }
+body.slides .slidenav { display: flex; }
+body.slides .seg.slidenav button { padding: 5px 12px; }
+
+/* 3D and drawings */
+.sec { border-top: 1px solid var(--rule); padding-block: 56px 20px; }
+.sec .sechead { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(20px, 3vw, 44px); align-items: end; margin-bottom: 22px; }
+.sec h2 { margin: 0; font: 300 26px/1.4 var(--serif); letter-spacing: .1em; }
+.sec h2 small { display: block; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+.sec .lead { margin: 0; font-size: 14px; color: var(--ink-2); }
+.sec .lead span { display: block; margin-top: 6px; color: var(--ink-3); font-size: 13px; }
+.simwrap { position: relative; height: min(86vh, 900px); min-height: 520px; border: 1px solid var(--rule); background: var(--mat); }
+.simwrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.simwrap.full { position: fixed; inset: 0; height: auto; min-height: 0; z-index: 60; border: 0; }
+.tools { position: absolute; right: 10px; top: 10px; display: flex; gap: 1px; z-index: 2; }
+.tools button, .tools a { border: 1px solid #c9c5ba; background: rgba(250,249,245,.94); color: #2b2a27; padding: 4px 10px; font: 400 11px var(--mono); letter-spacing: .08em; cursor: pointer; text-decoration: none; }
+.simwrap .tools { right: auto; left: 50%; top: auto; bottom: 10px; transform: translateX(-50%); }
+.dwgs { display: grid; gap: 22px; }
+.dwg { position: relative; border: 1px solid var(--rule); background: #fff; overflow: auto; }
+.dwg svg { display: block; width: 100%; height: auto; }
+.dwg.zoom svg { width: 230%; }
 .dwg text { font-family: var(--sans); fill: #000; }
 .dwg .vis { stroke: #000; stroke-width: .5; fill: none; stroke-linejoin: round; stroke-linecap: round; }
 .dwg .hid { stroke: #000; stroke-width: .25; stroke-dasharray: 2.2 1.1; fill: none; }
@@ -89,88 +126,78 @@ a { color: inherit; }
 .dwg .tb { stroke: #000; stroke-width: .5; fill: #fff; }
 .dwg .tbl { stroke: #000; stroke-width: .25; }
 
-.ctrl { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: color-mix(in srgb, var(--plate) 88%, transparent);
-  border: 1px solid #cfc5b1; border-radius: 2px; padding: 6px 12px; color: #2b2a27; font: 400 12px var(--mono); white-space: nowrap; max-width: calc(100% - 16px); }
-.ctrl input { width: min(220px, 40vw); accent-color: #d9643a; }
-.ctrl output { min-width: 4.5em; text-align: right; font-variant-numeric: tabular-nums; }
+footer.src { border-top: 1px solid var(--rule); margin-top: 40px; padding: 40px 0 70px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 64px); font-size: 13px; color: var(--ink-2); }
+footer.src h2 { margin: 0 0 10px; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+footer.src p { margin: 0 0 1em; }
 
-.refs { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; font-size: 14px; }
-.refs li span { display: block; font-size: 12px; color: var(--ink-3); }
-
-.foot { border-top: 1px solid var(--rule); padding-block: 8px 10px; padding-bottom: max(10px, env(safe-area-inset-bottom, 0px)); }
-.prog { height: 2px; background: var(--rule); margin-bottom: 8px; }
-.prog i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
-.frow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; }
-.chap { font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.nav { display: flex; align-items: center; gap: 8px; }
-.dots { display: flex; gap: 5px; }
-.dots i { width: 6px; height: 6px; border-radius: 50%; border: 1px solid var(--ink-3); }
-.dots i.on { background: var(--ink-2); border-color: var(--ink-2); }
-.rt { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
-.count { font: 400 12px var(--mono); color: var(--ink-2); font-variant-numeric: tabular-nums; margin-left: 4px; }
-
-#index { position: absolute; inset: 0; z-index: 20; background: var(--paper); overflow-y: auto; padding-block: 18px; }
-#index .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 22px 28px; }
-#index h3 { margin: 0 0 6px; font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
-#index ol { margin: 0; padding: 0; list-style: none; }
-#index button { display: grid; grid-template-columns: 2.2em 1fr; gap: 6px; width: 100%; text-align: left; border: 0; border-top: 1px solid var(--rule); background: none; padding: 7px 0; cursor: pointer; }
-#index button:hover b { text-decoration: underline; }
-#index button span { font: 400 12px var(--mono); color: var(--ink-3); }
-#index b { font: 500 14px/1.5 var(--serif); letter-spacing: .06em; }
-#index small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 400; font-family: var(--sans); letter-spacing: 0; }
-
-@media (max-width: 860px), (max-aspect-ratio: 1/1) {
-  .slide { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.15fr) minmax(0, 1fr); align-items: stretch; gap: 10px; }
-  .txt { padding-right: 0; }
-  .txt h2 { font-size: 24px; }
-  .steps { margin-top: 12px; gap: 10px; }
-  .cover h2 { font-size: 36px; }
-  .slide.wide { grid-template-rows: auto minmax(0, 1fr); }
-  .slide.wide .txt .lead { display: none; }
-  .frow { grid-template-columns: auto minmax(0, 1fr); }
-  .rt .btn { padding: 4px 7px; }
-  .bar .ttl { display: none; }
-  .chap { display: none; }
-  .nav { justify-content: flex-start; }
-  .dots { display: none; }
-  #b-full { display: none; }
+@media (max-width: 860px) {
+  .head, .sec .sechead { grid-template-columns: 1fr; }
+  .story { grid-template-columns: 1fr; }
+  .stage-wrap { order: -1; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 46px); z-index: 5; }
+  #stage { position: relative; top: 0; height: 46vh; min-height: 280px; margin-top: 0; }
+  .fig { padding: 40px 6px 6px; }
+  .beat { min-height: 30vh; }
+  .beat:last-child { min-height: 36vh; }
+  .seg button { padding: 4px 7px; font-size: 11px; }
+  .simwrap { height: 82vh; min-height: 460px; }
+  footer.src { grid-template-columns: 1fr; }
+  body.slides .fig { padding: 46px 6px 168px; }
+  body.slides .ctrl { bottom: 172px; }
 }
-@media (prefers-reduced-motion: reduce) { .steps li { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .fig, .beat { transition: none; } }
 </style>
 </head>
 <body>
 
-<div class="deck" id="deck">
-  <header class="bar">
-    <a class="home" href="https://tosaint.com/portfolio/">← tosaint</a>
-    <span class="ttl">Work 010 · TT 減速馬達 TT Gear Motor</span>
-    <div class="tools">
-      <button class="btn" id="b-index" type="button" aria-expanded="false">目錄 Index</button>
-      <button class="btn" id="b-full" type="button">全螢幕</button>
+<header class="top"><div class="wrap">
+  <a href="https://tosaint.com/portfolio/">← tosaint</a>
+  <span>Work 010 · 2026</span>
+</div></header>
+<main class="wrap">
+  <section class="head">
+    <div>
+      <p class="eyebrow">Work 010 · 機構 Mechanism · 2026</p>
+      <h1>TT 減速馬達</h1>
+      <p class="en-title">TT Gear Motor</p>
     </div>
-  </header>
-  <main id="stage" aria-live="polite">
-    <div id="index" hidden><div class="grid" id="indexgrid"></div></div>
-  </main>
-  <footer class="foot">
-    <div class="prog"><i id="prog"></i></div>
-    <div class="frow">
-      <span class="chap" id="chap"></span>
-      <div class="nav">
-        <button class="btn" id="b-prev" type="button">‹ 上一步</button>
-        <span class="dots" id="dots"></span>
-        <button class="btn primary" id="b-next" type="button">下一步 ›</button>
-      </div>
-      <div class="rt">
-        <button class="btn" id="b-play" type="button" aria-pressed="false">暫停</button>
-        <button class="btn" id="b-slow" type="button" aria-pressed="false">慢速</button>
-        <span class="count" id="count"></span>
-      </div>
+    <div>
+      <p class="lede">學校機器人常用的黃色小馬達，拆開來只有一顆 130 直流馬達、四級塑膠齒輪和兩根軸。往下捲動，右側的圖會跟著每一段拆解馬達、齒輪組、軸和外殼；最後附上 3D 模擬器、Onshape 外殼建模導覽與兩張工程圖。<span>The small yellow gear motor in school robots holds only a 130 DC motor, four stages of plastic gears and two axles. Scroll down and the plate on the right follows each paragraph through the motor, the gear train, the axles and the case, then a 3D simulator, an Onshape guide to modelling the case and two engineering drawings.</span></p>
+      <button class="start" id="startslides" type="button">簡報模式 ▶ <small>Slides · P</small></button>
     </div>
-  </footer>
-</div>
+  </section>
 
-<template id="sheet1"><svg class="dwgsvg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210"><defs></defs><rect class="frm" x="10" y="10" width="277" height="190"/>
+  <div class="story">
+    <div class="steps" id="steps"></div>
+    <div class="stage-wrap">
+      <div id="stage">
+        <div class="bar-top">
+          <div class="seg slidenav" role="group" aria-label="簡報"><button id="prev" type="button" aria-label="上一段">←</button><button id="next" type="button" aria-label="下一段">→</button><button id="exitslides" type="button">結束</button></div>
+          <span class="spacer"></span>
+          <div class="seg" role="group" aria-label="動畫"><button id="b-play" type="button" aria-pressed="false">暫停</button><button id="b-slow" type="button" aria-pressed="false">慢速</button><button id="slidebtn" type="button" title="簡報模式（P）">簡報</button></div>
+        </div>
+        <div class="slidecap"><span class="sec" id="capsec"></span><div><h2 id="captitle"></h2><p id="captext"></p></div><span class="count" id="capcount"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <section class="sec" id="in3d">
+    <div class="sechead">
+      <h2><small>07 · In 3D</small>3D 模擬與外殼建模</h2>
+      <p class="lead">拖曳旋轉，切換實體、透視、爆炸，調整電壓與負載；切到「外殼建模」，跟著八個步驟在 Onshape 畫出外殼。<span>Drag to orbit, switch solid, x-ray and exploded views, set voltage and load. Switch to the case tab to follow eight steps for modelling the case in Onshape.</span></p>
+    </div>
+    <div class="simwrap" id="simwrap">
+      <iframe id="simframe" title="TT 減速馬達 3D 模擬" loading="lazy" src="sim.html?embed=run"></iframe>
+      <div class="tools"><button id="simfull" type="button">展開 Full screen</button></div>
+    </div>
+  </section>
+
+  <section class="sec" id="drawings">
+    <div class="sechead">
+      <h2><small>08 · Drawings</small>工程圖</h2>
+      <p class="lead">第三角法，比例 2:1，單位 mm。第 1 張為外觀圖，第 2 張為外殼零件圖；剖面 A–A 中上下殼以相反方向的剖面線區分。括號內為參考尺寸。<span>Third-angle projection, scale 2:1, millimetres. Sheet 1 shows the exterior, sheet 2 the case; in section A–A the two shells are hatched in opposite directions. Bracketed values are for reference.</span></p>
+    </div>
+    <div class="dwgs">
+      <div class="dwg" id="dwg1"><div class="tools"><button type="button" data-zoom>放大 Zoom</button><a href="tt-motor-drawings.pdf" target="_blank" rel="noopener">PDF</a></div><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210"><defs></defs><rect class="frm" x="10" y="10" width="277" height="190"/>
 <rect class="tb" x="187" y="172" width="100" height="28"/>
 <line class="tbl" x1="187" y1="182" x2="287" y2="182"/>
 <line class="tbl" x1="187" y1="191" x2="287" y2="191"/>
@@ -650,8 +677,8 @@ a { color: inherit; }
 <line class="iso" x1="225.61" y1="54.57" x2="225.63" y2="54.4"/>
 <line class="iso" x1="225.63" y1="54.4" x2="225.63" y2="47.62"/>
 <polygon class="iso" style="fill:#c9c9c9" points="223.64,47.17 223.43,47.08 223.19,47.02 222.93,47 222.67,47.02 222.43,47.08 222.22,47.17 222.07,47.29 221.97,47.43 221.93,47.58 221.97,47.73 222.07,47.86 222.22,47.98 222.43,48.08 222.67,48.13 222.93,48.15 223.19,48.13 223.43,48.08 223.64,47.98 223.8,47.86 223.9,47.73 223.93,47.58 223.9,47.43 223.8,47.29"/>
-<text x="238" y="100.5" font-size="2.8" text-anchor="middle">等角圖　1 : 1</text></svg></template>
-<template id="sheet2"><svg class="dwgsvg" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210"><defs><clipPath id="h1"><polygon points="48,35.2 64.86,35.2 64.86,33.2 48,33.2"/><polygon points="75.86,35.2 90.66,35.2 90.66,33.2 75.86,33.2"/><polygon points="94.66,35.2 122.4,35.2 122.4,33.2 94.66,33.2"/><polygon points="63.96,33.2 64.86,33.2 64.86,31.6 63.96,31.6"/><polygon points="75.86,33.2 76.76,33.2 76.76,31.6 75.86,31.6"/><polygon points="120.4,45 122.4,45 122.4,35.2 120.4,35.2"/><polygon points="122.4,36.9 126.2,36.9 126.2,35.2 122.4,35.2"/><polygon points="131.8,36.9 144.4,36.9 144.4,35.2 131.8,35.2"/><polygon points="48,52 50,52 50,35.2 48,35.2"/><polygon points="38,52 40.5,52 40.5,49.5 38,49.5"/><polygon points="45.5,52 48,52 48,49.5 45.5,49.5"/><polygon points="62.76,35.2 64.86,35.2 64.86,40 62.76,40"/><polygon points="75.86,35.2 77.96,35.2 77.96,40 75.86,40"/><polygon points="88.86,35.2 90.66,35.2 90.66,38.2 88.86,38.2"/><polygon points="94.66,35.2 96.46,35.2 96.46,38.2 94.66,38.2"/></clipPath><clipPath id="h2"><polygon points="48,68.8 64.86,68.8 64.86,70.8 48,70.8"/><polygon points="75.86,68.8 90.66,68.8 90.66,70.8 75.86,70.8"/><polygon points="94.66,68.8 122.4,68.8 122.4,70.8 94.66,70.8"/><polygon points="63.96,70.8 64.86,70.8 64.86,72.4 63.96,72.4"/><polygon points="75.86,70.8 76.76,70.8 76.76,72.4 75.86,72.4"/><polygon points="120.4,59 122.4,59 122.4,68.8 120.4,68.8"/><polygon points="122.4,67.1 126.2,67.1 126.2,68.8 122.4,68.8"/><polygon points="131.8,67.1 144.4,67.1 144.4,68.8 131.8,68.8"/><polygon points="48,52 50,52 50,68.8 48,68.8"/><polygon points="38,52 40.5,52 40.5,54.5 38,54.5"/><polygon points="45.5,52 48,52 48,54.5 45.5,54.5"/></clipPath></defs><rect class="frm" x="10" y="10" width="277" height="190"/>
+<text x="238" y="100.5" font-size="2.8" text-anchor="middle">等角圖　1 : 1</text></svg></div>
+      <div class="dwg" id="dwg2"><div class="tools"><button type="button" data-zoom>放大 Zoom</button><a href="tt-motor-drawings.pdf" target="_blank" rel="noopener">PDF</a></div><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 297 210"><defs><clipPath id="h1"><polygon points="48,35.2 64.86,35.2 64.86,33.2 48,33.2"/><polygon points="75.86,35.2 90.66,35.2 90.66,33.2 75.86,33.2"/><polygon points="94.66,35.2 122.4,35.2 122.4,33.2 94.66,33.2"/><polygon points="63.96,33.2 64.86,33.2 64.86,31.6 63.96,31.6"/><polygon points="75.86,33.2 76.76,33.2 76.76,31.6 75.86,31.6"/><polygon points="120.4,45 122.4,45 122.4,35.2 120.4,35.2"/><polygon points="122.4,36.9 126.2,36.9 126.2,35.2 122.4,35.2"/><polygon points="131.8,36.9 144.4,36.9 144.4,35.2 131.8,35.2"/><polygon points="48,52 50,52 50,35.2 48,35.2"/><polygon points="38,52 40.5,52 40.5,49.5 38,49.5"/><polygon points="45.5,52 48,52 48,49.5 45.5,49.5"/><polygon points="62.76,35.2 64.86,35.2 64.86,40 62.76,40"/><polygon points="75.86,35.2 77.96,35.2 77.96,40 75.86,40"/><polygon points="88.86,35.2 90.66,35.2 90.66,38.2 88.86,38.2"/><polygon points="94.66,35.2 96.46,35.2 96.46,38.2 94.66,38.2"/></clipPath><clipPath id="h2"><polygon points="48,68.8 64.86,68.8 64.86,70.8 48,70.8"/><polygon points="75.86,68.8 90.66,68.8 90.66,70.8 75.86,70.8"/><polygon points="94.66,68.8 122.4,68.8 122.4,70.8 94.66,70.8"/><polygon points="63.96,70.8 64.86,70.8 64.86,72.4 63.96,72.4"/><polygon points="75.86,70.8 76.76,70.8 76.76,72.4 75.86,72.4"/><polygon points="120.4,59 122.4,59 122.4,68.8 120.4,68.8"/><polygon points="122.4,67.1 126.2,67.1 126.2,68.8 122.4,68.8"/><polygon points="131.8,67.1 144.4,67.1 144.4,68.8 131.8,68.8"/><polygon points="48,52 50,52 50,68.8 48,68.8"/><polygon points="38,52 40.5,52 40.5,54.5 38,54.5"/><polygon points="45.5,52 48,52 48,54.5 45.5,54.5"/></clipPath></defs><rect class="frm" x="10" y="10" width="277" height="190"/>
 <rect class="tb" x="187" y="172" width="100" height="28"/>
 <line class="tbl" x1="187" y1="182" x2="287" y2="182"/>
 <line class="tbl" x1="187" y1="191" x2="287" y2="191"/>
@@ -1098,7 +1125,22 @@ a { color: inherit; }
 <line class="iso" x1="275.89" y1="63.96" x2="275.89" y2="50.24"/>
 <polygon class="iso" style="fill:#c9c9c9" points="260.16,51.89 262.14,53.04 264.97,51.4 262.99,50.26"/>
 <polygon class="iso" style="fill:#c9c9c9" points="272.86,65.01 273.28,64.28 273.67,63.53 274.03,62.76 274.34,61.99 274.6,61.21 274.82,60.44 274.99,59.68 275.12,58.92 275.19,58.19 275.22,57.49 275.19,56.81 275.12,56.16 274.99,55.55 274.82,54.99 274.6,54.47 274.34,54 274.03,53.59 273.67,53.23 273.28,52.93 272.86,52.68 263.16,58.28 262.73,59.02 262.34,59.77 261.99,60.54 261.68,61.31 261.41,62.09 261.19,62.86 261.02,63.62 260.89,64.37 260.82,65.11 260.79,65.81 260.82,66.49 260.89,67.14 261.02,67.74 261.19,68.31 261.41,68.83 261.68,69.3 261.99,69.71 262.34,70.07 262.73,70.37 263.16,70.61"/>
-<text x="252" y="90.5" font-size="2.8" text-anchor="middle">等角圖　1 : 1</text></svg></template>
+<text x="252" y="90.5" font-size="2.8" text-anchor="middle">等角圖　1 : 1</text></svg></div>
+    </div>
+  </section>
+
+  <footer class="src">
+    <div>
+      <h2>Note · 說明</h2>
+      <p>外形尺寸為實物量測；內部細節（隔板、定位銷、圓管、凸環）依拆解照片估計，各廠牌可能不同。齒輪組合為 8 → 26/9 → 36/16 → 28/14 → 30，總減速比 48.75，標稱 1:48。馬達特性取自 Adafruit 公布的 3–6 V 實測值。</p>
+      <p>Outer dimensions are measured from a real motor; interior details are estimated from teardown photographs and may differ between makers. Motor figures follow Adafruit’s published measurements at 3–6 V.</p>
+    </div>
+    <div>
+      <h2>Credit · 製作</h2>
+      <p>余致賢 ChihHsien Yu · 2026</p>
+    </div>
+  </footer>
+</main>
 
 <script>
 (function () {
@@ -1811,121 +1853,109 @@ FIG.load = function (fig) {
   } };
 };
 
-/* ---------- build the deck ---------- */
-var stage = $('stage'), slides = [], cur = 0, step = 0, playing = true, slow = false;
-SL.forEach(function (d, i) {
-  var sec = document.createElement('section'); sec.className = 'slide' + (d.wide ? ' wide' : '') + (d.cover ? ' cover' : ''); sec.hidden = true;
-  sec.id = 's' + String(i + 1).padStart(2, '0');
-  var txtEl = document.createElement('div'); txtEl.className = 'txt';
-  var chap = CH[d.ch];
-  var h = '<p class="eyebrow">' + String(i + 1).padStart(2, '0') + ' · ' + chap[1] + '</p><h2>' + d.zh + '</h2><p class="en">' + d.en + '</p>';
-  if (d.st) h += '<ol class="steps">' + d.st.map(function (s, j) { return '<li data-i="' + j + '"><p class="zh">' + s[0] + '</p><p class="e">' + s[1] + '</p>' + (s[2] === 'chips' ? '<div class="chips"><button class="btn" data-go="3">馬達 Motor</button><button class="btn" data-go="5">齒輪組 Gears</button><button class="btn" data-go="10">軸 Axles</button><button class="btn" data-go="11">外殼 Case</button></div>' : '') + '</li>'; }).join('') + '</ol>';
-  if (d.cover) h += '<p class="note">按 → 或「下一步」開始 · Press → to begin</p>';
-  if (d.lead) h += '<p class="lead">' + d.lead[0] + ' <span>' + d.lead[1] + '</span></p>';
-  if (d.refs) h += '<ol class="refs">' +
-    '<li><a href="https://youtu.be/hh4-xwNRFY0" target="_blank" rel="noopener">諶其騮〈TT馬達拆解及減速比計算〉</a><span>YouTube, 2018 · 齒數與 48.75 的計算 · tooth counts and the 48.75 ratio</span></li>' +
-    '<li><a href="https://youtu.be/WCzpMf6vv24" target="_blank" rel="noopener">Alvin Pribadi, What’s Inside a TT Motor?</a><span>YouTube, 2026 · teardown</span></li>' +
-    '<li><a href="https://www.adafruit.com/product/3777" target="_blank" rel="noopener">Adafruit, DC Gearbox “TT Motor”, product 3777</a><span>電壓、轉速、電流實測值 · measured speed and current at 3–6 V</span></li>' +
-    '<li><a href="https://github.com/adafruit/Adafruit_CAD_Parts" target="_blank" rel="noopener">Adafruit CAD Parts, 3777 TT Motor</a><span>外形參考 · reference for the outer shape</span></li>' +
-    '</ol><p class="note">外形尺寸為實測；內部細節依本校使用的 TT 馬達照片估計，其他廠牌可能不同。<br>Outer dimensions measured; interior details estimated from photographs and may differ between makers.</p>' +
-    '<p class="note">余致賢 tosaint · 中大壢中 生活科技 · 2026</p>';
-  txtEl.innerHTML = h;
-  var fig = document.createElement('div'); fig.className = 'fig';
-  if (d.wide) { sec.appendChild(txtEl); sec.appendChild(fig); } else { sec.appendChild(fig); sec.appendChild(txtEl); }
-  stage.appendChild(sec);
-  var obj = { d: d, el: sec, fig: fig, steps: d.st ? d.st.length - 1 : 0, f: null, init: false };
-  if (d.refs) { sec.classList.add('wide'); sec.removeChild(fig); txtEl.style.overflowY = 'auto'; txtEl.style.display = 'block'; txtEl.style.maxWidth = '760px'; }
-  slides.push(obj);
-});
-stage.addEventListener('click', function (e) { var b = e.target.closest('[data-go]'); if (b) { go(+b.dataset.go - 1, 0); } });
 
-function initSlide(o) {
-  if (o.init) return; o.init = true;
-  var d = o.d;
-  if (d.fig && FIG[d.fig]) o.f = FIG[d.fig](o.fig, o.el);
-  if (d.wide === 'sim') {
-    var fr = document.createElement('iframe'); fr.className = 'frame'; fr.title = d.zh; fr.loading = 'lazy'; fr.src = d.src; o.fig.appendChild(fr);
-  }
-  if (d.wide === 'dwg') {
-    var w = document.createElement('div'); w.className = 'dwg';
-    w.innerHTML = '<div class="dwgbar"><button class="btn" type="button">放大 Zoom</button><a class="btn" href="tt-motor-drawings.pdf" target="_blank" rel="noopener">PDF</a></div>' + $(d.sheet).innerHTML;
-    w.querySelector('button').addEventListener('click', function (e) { w.classList.toggle('zoom'); e.target.textContent = w.classList.contains('zoom') ? '縮小 Fit' : '放大 Zoom'; });
-    o.fig.appendChild(w);
-  }
-}
-function render() {
-  slides.forEach(function (o, i) { o.el.hidden = i !== cur; });
-  var o = slides[cur]; initSlide(o);
-  o.el.querySelectorAll('.steps li').forEach(function (li) { var j = +li.dataset.i; li.classList.toggle('off', j > step); li.classList.toggle('now', j === step && o.steps > 0); });
-  $('count').textContent = String(cur + 1).padStart(2, '0') + ' / ' + slides.length;
-  var ch = CH[o.d.ch]; $('chap').textContent = ch[0] + ' · ' + ch[1];
-  $('prog').style.width = ((cur + (o.steps ? step / (o.steps + 1) : 0)) / (slides.length - 1) * 100).toFixed(1) + '%';
-  var dots = ''; for (var j = 0; j <= o.steps; j++) dots += '<i class="' + (j <= step ? 'on' : '') + '"></i>'; $('dots').innerHTML = o.steps ? dots : '';
-  $('b-prev').disabled = cur === 0 && step === 0; $('b-next').disabled = cur === slides.length - 1 && step === o.steps;
-  $('b-next').textContent = step < o.steps ? '下一步 ›' : '下一頁 ›';
-  try { history.replaceState(null, '', '#' + o.el.id); } catch (e) {}
-  var nowLi = o.el.querySelector('.steps li.now'); if (nowLi && step > 0) { try { nowLi.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {} }
-  if (o.f) o.f.update(0, step);
-}
-function go(i, s) { cur = Math.max(0, Math.min(slides.length - 1, i)); step = Math.max(0, Math.min(slides[cur].steps, s || 0)); closeIndex(); render(); }
-function next() { var o = slides[cur]; if (step < o.steps) { step++; render(); } else if (cur < slides.length - 1) go(cur + 1, 0); }
-function prev() { if (step > 0) { step--; render(); } else if (cur > 0) go(cur - 1, slides[cur - 1].steps); }
-$('b-next').addEventListener('click', next); $('b-prev').addEventListener('click', prev);
-document.addEventListener('keydown', function (e) {
-  if (e.target.closest && e.target.closest('input, textarea, select')) return;
-  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
-  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
-  else if (e.key === 'ArrowDown') { e.preventDefault(); go(cur + 1, 0); }
-  else if (e.key === 'ArrowUp') { e.preventDefault(); go(cur - 1, 0); }
-  else if (e.key === 'Home') go(0, 0); else if (e.key === 'End') go(slides.length - 1, 0);
-  else if (e.key === 'Escape') closeIndex();
-});
-/* swipe left / right = next / previous step, the same as the buttons; sliders, 3D and a zoomed drawing keep their own gestures */
-var sw = null;
-function swEl() { return slides[cur].el; }
-stage.addEventListener('touchstart', function (e) {
-  if (e.touches.length !== 1 || e.target.closest('input, .ctrl, iframe, .dwg.zoom, #index')) { sw = null; return; }
-  sw = { x: e.touches[0].clientX, y: e.touches[0].clientY, h: null };
-}, { passive: true });
-stage.addEventListener('touchmove', function (e) {
-  if (!sw) return;
-  var dx = e.touches[0].clientX - sw.x, dy = e.touches[0].clientY - sw.y;
-  if (sw.h === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) sw.h = Math.abs(dx) > Math.abs(dy);
-  if (sw.h) { e.preventDefault(); swEl().style.transition = 'none'; swEl().style.transform = 'translateX(' + (dx * .3).toFixed(1) + 'px)'; }
-}, { passive: false });
-stage.addEventListener('touchend', function (e) {
-  if (!sw) return;
-  var dx = e.changedTouches[0].clientX - sw.x, h = sw.h, el = swEl(); sw = null;
-  el.style.transition = 'transform .25s'; el.style.transform = '';
-  if (h && Math.abs(dx) > 50) { if (dx < 0) next(); else prev(); }
-});
-stage.addEventListener('touchcancel', function () { if (sw) { swEl().style.transform = ''; sw = null; } });
 
-/* index */
-(function () {
-  var html = '', groups = {};
-  SL.forEach(function (d, i) { (groups[d.ch] = groups[d.ch] || []).push([d, i]); });
-  Object.keys(CH).forEach(function (k) { if (!groups[k]) return;
-    html += '<div><h3>' + CH[k][0] + ' · ' + CH[k][1] + '</h3><ol>' + groups[k].map(function (p) { return '<li><button type="button" data-go="' + (p[1] + 1) + '"><span>' + String(p[1] + 1).padStart(2, '0') + '</span><b>' + p[0].zh + '<small>' + p[0].en + '</small></b></button></li>'; }).join('') + '</ol></div>'; });
-  $('indexgrid').innerHTML = html;
-})();
-function closeIndex() { $('index').hidden = true; $('b-index').setAttribute('aria-expanded', 'false'); }
-$('b-index').addEventListener('click', function () { var ix = $('index'); ix.hidden = !ix.hidden; this.setAttribute('aria-expanded', String(!ix.hidden)); });
-$('b-full').addEventListener('click', function () { var d = document.documentElement; try { if (!document.fullscreenElement) { var p = d.requestFullscreen && d.requestFullscreen(); if (p && p.catch) p.catch(function () {}); } else document.exitFullscreen(); } catch (e) {} });
-$('b-play').addEventListener('click', function () { playing = !playing; this.textContent = playing ? '暫停' : '播放'; this.setAttribute('aria-pressed', String(!playing)); });
-$('b-slow').addEventListener('click', function () { slow = !slow; this.setAttribute('aria-pressed', String(slow)); });
+/* ---------- scroll story ---------- */
+var LIST = SL.filter(function (d) { return !d.wide && !d.refs; });
+var stepsEl = $('steps'), stage = $('stage'), beats = [], figs = [], lastCh = null, chapNo = 0;
+var CHN = { p: '序', m: '馬達', g: '齒輪組', s: '軸', c: '外殼', r: '運作' };
+LIST.forEach(function (d, i) {
+  if (d.ch !== lastCh) {
+    lastCh = d.ch; chapNo++;
+    var h = document.createElement('h2'); h.className = 'chapter';
+    h.innerHTML = '<small>' + String(chapNo).padStart(2, '0') + ' · ' + CH[d.ch][1].replace(/^[IVX]+ · /, '') + '</small>' + CHN[d.ch];
+    stepsEl.appendChild(h);
+  }
+  var art = document.createElement('article'); art.className = 'step'; art.id = 'f' + String(i + 1).padStart(2, '0');
+  var html = '<p class="num">' + chapNo + '-' + (i + 1) + '</p><h3>' + d.zh + '<span>' + d.en + '</span></h3>';
+  d.st.forEach(function (s, k) {
+    html += '<div class="beat" data-s="' + i + '" data-k="' + k + '"><p>' + s[0] + '</p><p class="e">' + s[1] + '</p>' +
+      (s[2] === 'chips' ? '<div class="chips"><button type="button" data-goto="motor">馬達 Motor</button><button type="button" data-goto="pair">齒輪組 Gears</button><button type="button" data-goto="dshaft">軸 Axles</button><button type="button" data-goto="centre">外殼 Case</button></div>' : '') + '</div>';
+  });
+  if (i === 0) html += '<p class="note" style="margin:14px 0 0">往下捲動，右側的圖會跟著每一段變化；也可以按「簡報模式」全螢幕播放。</p>';
+  art.innerHTML = html; stepsEl.appendChild(art);
+  var fig = document.createElement('div'); fig.className = 'fig'; stage.insertBefore(fig, stage.querySelector('.slidecap'));
+  figs.push({ d: d, el: fig, f: null, chapNo: chapNo });
+});
+stepsEl.querySelectorAll('.beat').forEach(function (b) { beats.push({ s: +b.dataset.s, k: +b.dataset.k, el: b }); });
+stepsEl.addEventListener('click', function (e) {
+  var b = e.target.closest('[data-goto]'); if (!b) return;
+  var i = LIST.findIndex(function (d) { return d.fig === b.dataset.goto; });
+  if (i >= 0) document.getElementById('f' + String(i + 1).padStart(2, '0')).querySelector('.beat').scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
+var idx = 0, curS = 0, curK = 0, slides = false, playing = true, slow = false;
+function activate(i) {
+  idx = Math.max(0, Math.min(beats.length - 1, i));
+  var b = beats[idx]; curS = b.s; curK = b.k;
+  beats.forEach(function (x) { x.el.classList.toggle('active', x === b); });
+  figs.forEach(function (g, j) {
+    g.el.classList.toggle('on', j === curS);
+    if (j === curS && !g.f && FIG[g.d.fig]) g.f = FIG[g.d.fig](g.el, null);
+  });
+  var g = figs[curS]; if (g.f) g.f.update(0, curK);
+  $('capsec').textContent = g.chapNo + '-' + (curS + 1) + ' · ' + CHN[g.d.ch] + ' ' + CH[g.d.ch][1].replace(/^[IVX]+ · /, '');
+  $('captitle').innerHTML = g.d.zh + '<small>' + g.d.en + '</small>';
+  $('captext').textContent = g.d.st[curK][0];
+  $('capcount').textContent = (idx + 1) + ' / ' + beats.length;
+}
+var io = new IntersectionObserver(function (es) { if (slides) return; es.forEach(function (e) { if (e.isIntersecting) activate(beats.findIndex(function (b) { return b.el === e.target; })); }); },
+  { rootMargin: matchMedia('(max-width: 860px)').matches ? '-62% 0px -30% 0px' : '-42% 0px -52% 0px' });
+beats.forEach(function (b) { io.observe(b.el); });
+
+function setSlides(on) {
+  slides = on; document.body.classList.toggle('slides', on);
+  try {
+    if (on) { history.replaceState(null, '', '#slides'); var p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(function () {}); }
+    else { history.replaceState(null, '', location.pathname); if (document.fullscreenElement) document.exitFullscreen(); }
+  } catch (e) {}
+  activate(idx);
+  if (!on) beats[idx].el.scrollIntoView({ block: 'center' });
+}
+$('startslides').onclick = function () { idx = 0; setSlides(true); };
+$('slidebtn').onclick = function () { setSlides(!slides); };
+$('exitslides').onclick = function () { setSlides(false); };
+$('prev').onclick = function () { activate(idx - 1); };
+$('next').onclick = function () { activate(idx + 1); };
+$('b-play').onclick = function () { playing = !playing; this.textContent = playing ? '暫停' : '播放'; this.setAttribute('aria-pressed', String(!playing)); };
+$('b-slow').onclick = function () { slow = !slow; this.setAttribute('aria-pressed', String(slow)); };
 if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { playing = false; $('b-play').textContent = '播放'; }
+addEventListener('keydown', function (e) {
+  if (e.target.closest && e.target.closest('input, iframe')) return;
+  if (e.key === 'p' || e.key === 'P') { setSlides(!slides); return; }
+  if (!slides) return;
+  if (['ArrowRight', 'PageDown', ' '].indexOf(e.key) >= 0) { e.preventDefault(); activate(idx + 1); }
+  if (['ArrowLeft', 'PageUp'].indexOf(e.key) >= 0) { e.preventDefault(); activate(idx - 1); }
+  if (e.key === 'Home') activate(0); if (e.key === 'End') activate(beats.length - 1);
+  if (e.key === 'Escape') setSlides(false);
+});
+document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement && slides) setSlides(false); });
+/* slide mode on a phone: swipe left / right */
+var sw = null;
+stage.addEventListener('touchstart', function (e) { if (!slides || e.touches.length !== 1 || e.target.closest('input, .ctrl, button')) { sw = null; return; } sw = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }, { passive: true });
+stage.addEventListener('touchend', function (e) { if (!sw) return; var dx = e.changedTouches[0].clientX - sw.x, dy = e.changedTouches[0].clientY - sw.y; sw = null; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) activate(idx + (dx < 0 ? 1 : -1)); });
 
-var m = /^#s(\d+)$/.exec(location.hash); go(m ? +m[1] - 1 : 0, 0);
+/* 3D window and drawings */
+var sw3 = $('simwrap');
+$('simfull').onclick = function () {
+  var on = !sw3.classList.contains('full'); sw3.classList.toggle('full', on); this.textContent = on ? '收合 Close' : '展開 Full screen';
+  document.documentElement.style.overflow = on ? 'hidden' : '';
+};
+addEventListener('keydown', function (e) { if (e.key === 'Escape' && sw3.classList.contains('full')) $('simfull').click(); });
+document.querySelectorAll('[data-zoom]').forEach(function (b) {
+  b.addEventListener('click', function () { var d = b.closest('.dwg'); d.classList.toggle('zoom'); b.textContent = d.classList.contains('zoom') ? '縮小 Fit' : '放大 Zoom'; });
+});
+
+if (location.hash === '#slides') setSlides(true); else activate(0);
 var last = performance.now();
 function frame(now) {
   var dt = Math.min(.05, (now - last) / 1000); last = now;
-  var o = slides[cur];
-  if (o.f && !document.hidden) o.f.update(playing ? dt * (slow ? .3 : 1) : 0, step);
+  var g = figs[curS];
+  if (g && g.f && !document.hidden) g.f.update(playing ? dt * (slow ? .3 : 1) : 0, curK);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__deck = { go: go, next: next, state: function () { return { cur: cur, step: step }; }, freeze: function () { playing = false; } };
+window.__story = { go: function (i) { activate(i); }, slides: setSlides, state: function () { return { idx: idx, s: curS, k: curK, n: beats.length }; } };
 })();
 </script>
 
