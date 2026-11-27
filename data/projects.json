@@ -167,6 +167,18 @@
         "link": "projects/linkage/dog/",
         "image": "projects/linkage/img/ex-dog.jpg",
         "title_zh": "狗"
+      },
+      {
+        "title": "Walking",
+        "link": "projects/linkage/walking/",
+        "image": "projects/linkage/img/ex-walking.jpg",
+        "title_zh": "行走腳"
+      },
+      {
+        "title": "Ornithopter",
+        "link": "projects/linkage/ornithopter/",
+        "image": "projects/linkage/img/ex-ornithopter.jpg",
+        "title_zh": "撲翼機"
       }
     ]
   },
