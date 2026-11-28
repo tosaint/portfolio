@@ -40,3 +40,77 @@
     }
   };
 })();
+
+// ===== 手機版面：模擬器固定在上方，參數分頁放在下方（六個模式共用）=====
+(function () {
+  var css = document.createElement('style');
+  css.textContent =
+    '.rftabs{display:none}' +
+    // 直拿：模擬器黏在上半部，分頁列黏在它下面，參數在下面捲
+    'html.rf-m main{display:flex!important;flex-direction:column;align-items:stretch!important;padding-bottom:40svh}html.rf-m .stage{display:contents}' +
+    'html.rf-m .stage>*{order:5}html.rf-m .stage>.fig{order:1;position:sticky;top:0;z-index:20;height:45vh!important;height:max(240px,45svh)!important;min-height:0!important;box-shadow:0 1px 0 var(--rule)}' +
+    'html.rf-m aside{position:static!important;max-height:none!important;overflow:visible!important;border-right:0!important;padding-top:0!important}' +
+    'html.rf-m .stage>.pbar{order:4}html.rf-m main>.rftabs{order:2;position:sticky;top:45vh;top:max(240px,45svh);z-index:19}html.rf-m aside{order:3}' +
+    'html.rf-m .fig .tools,html.rf-m .fig .views,html.rf-l .fig .tools,html.rf-l .fig .views{flex-wrap:nowrap!important;max-width:calc(100% - 16px);overflow-x:auto;scrollbar-width:none}html.rf-m .fig .tools button,html.rf-m .fig .views button,html.rf-l .fig .tools button,html.rf-l .fig .views button{flex:none;min-height:34px;padding:0 9px;font-size:13px}' +
+    // 橫拿：左邊模擬器（整個高度），右邊參數自己捲
+    'html.rf-l main{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(260px,40%)!important}html.rf-l .stage{order:1}' +
+    'html.rf-l .stage>.fig{position:sticky;top:0;height:100vh!important;height:100svh!important;min-height:0!important}' +
+    'html.rf-l aside{order:2;position:sticky!important;top:0;max-height:100svh!important;overflow:auto!important;border-right:0!important;border-left:1px solid var(--rule);padding-top:0!important}' +
+    'html.rf-l aside>.pbar{margin:0 calc(-1 * max(1.5vw,14px));border:0}html.rf-l aside>.rftabs{position:sticky;top:0;z-index:5;margin:0 calc(-1 * max(1.5vw,14px)) 4px}' +
+    'html.rf-m .rftabs,html.rf-l .rftabs{display:flex;gap:4px;overflow-x:auto;padding:6px max(1.5vw,14px);background:var(--bg);border-bottom:1px solid var(--rule);scrollbar-width:none}' +
+    '.rftabs button{flex:none;font:inherit;font-size:14px;min-height:38px;padding:0 12px;border:1px solid var(--rule);border-radius:2px;background:var(--panel);color:var(--ink);white-space:nowrap;cursor:pointer}' +
+    '.rftabs button[aria-selected=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}.rftabs button:focus-visible{outline:2px solid #2f6fd0;outline-offset:2px}' +
+    'html.rf-m aside>fieldset.rfoff,html.rf-l aside>fieldset.rfoff,html.rf-m .pbar.rfoff,html.rf-l .pbar.rfoff{display:none!important}' +
+    'html.rf-m aside fieldset,html.rf-l aside fieldset{border-bottom:0}html.rf-m .legend,html.rf-l .legend{display:none}';
+  document.head.appendChild(css);
+  var mqM = matchMedia('(max-width:900px) and (orientation:portrait), (max-width:600px)'), mqL = matchMedia('(max-height:560px) and (orientation:landscape) and (pointer:coarse)');
+  var here = location.pathname.split('/').pop() || 'index';
+  function setup() {
+    var aside = document.querySelector('main>aside'), fig = document.querySelector('.stage>.fig'); if (!aside || !fig) return;
+    // 分頁：每個 fieldset 一頁；沒有標題的併到前一頁；有範例列就多一頁「範例」
+    var groups = [];
+    [].forEach.call(aside.querySelectorAll(':scope>fieldset'), function (f) {
+      var lg = f.querySelector('legend'), t = lg ? lg.textContent.replace(/（.*$/, '').trim() : '';
+      if (t && t.length > 7) t = t.slice(0, 7);
+      if (!t && groups.length) groups[groups.length - 1].els.push(f); else groups.push({ name: t || '參數', els: [f] });
+    });
+    var tabs = document.createElement('div'); tabs.className = 'rftabs'; tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', '參數分頁');
+    aside.parentNode.insertBefore(tabs, aside);
+    var PB = document.querySelector('.pbar'); function pbar() { return PB; }
+    var key = 'rf-tab-' + here, cur = null; try { cur = localStorage.getItem(key); } catch (e) {}
+    function render() {
+      var list = (pbar() ? [{ name: '範例', els: [] }] : []).concat(groups);
+      tabs.innerHTML = list.map(function (g, i) { return '<button role="tab" data-i="' + i + '">' + g.name + '</button>'; }).join('');
+      return list;
+    }
+    var list = render();
+    function show(name, scroll) {
+      var g = list.filter(function (x) { return x.name === name && x.els.every(function (f) { return f.style.display !== 'none'; }); })[0] || list[0];
+      cur = g.name; try { localStorage.setItem(key, cur); } catch (e) {}
+      groups.forEach(function (x) { x.els.forEach(function (f) { f.classList.toggle('rfoff', x !== g); }); });
+      var pb = pbar(); if (pb) pb.classList.toggle('rfoff', g.name !== '範例');
+      [].forEach.call(tabs.children, function (b) { var on = list[+b.dataset.i] === g; b.setAttribute('aria-selected', on); if (on && b.scrollIntoView) b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); });
+      if (scroll && document.documentElement.classList.contains('rf-m')) {
+        // 讓參數頁的開頭剛好在分頁列下面
+        var y = aside.getBoundingClientRect().top + scrollY - fig.offsetHeight - tabs.offsetHeight; if (scrollY > y + 2) scrollTo(0, y);
+      }
+    }
+    tabs.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) show(list[+b.dataset.i].name, true); });
+    // 頁面自己藏起來的 fieldset，分頁按鈕也藏起來
+    var sync = function () { [].forEach.call(tabs.children, function (b) { var g = list[+b.dataset.i]; b.hidden = g.els.length > 0 && g.els.every(function (f) { return f.style.display === 'none'; }); }); };
+    new MutationObserver(sync).observe(aside, { attributes: true, subtree: true, attributeFilter: ['style'] }); sync();
+    var apply = function () {
+      var m = mqM.matches && !mqL.matches, l = mqL.matches, r = document.documentElement;
+      r.classList.toggle('rf-m', m); r.classList.toggle('rf-l', l);
+      if (l) aside.insertBefore(tabs, aside.firstChild); else aside.parentNode.insertBefore(tabs, aside);
+      if (PB) { if (l) aside.insertBefore(PB, tabs.nextSibling); else if (PB.parentNode !== fig.parentNode) fig.parentNode.insertBefore(PB, fig); }
+      if (m || l) show(cur || list[0].name, false);
+      else { groups.forEach(function (x) { x.els.forEach(function (f) { f.classList.remove('rfoff'); }); }); var pb = pbar(); if (pb) pb.classList.remove('rfoff'); }
+      dispatchEvent(new Event('resize'));
+    };
+    [mqM, mqL].forEach(function (q) { q.addEventListener ? q.addEventListener('change', apply) : q.addListener(apply); }); apply();
+    // 外部要切到某一頁（例如日晷開啟後）
+    window.RF.showTab = function (name) { if (document.documentElement.classList.contains('rf-m') || document.documentElement.classList.contains('rf-l')) show(name, true); };
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setup); else setup();
+})();
