@@ -56,5 +56,29 @@ const SD = (() => {
     let n = 0; for (const d of SAMPLE_DAYS) for (let hr = 8; hr <= 16; hr++) { const p = spot(h, sun(d, hr * 60, north)); if (p && Math.abs(p[0]) <= bx && Math.abs(p[1]) <= bz) n++; }
     return n;
   }
-  return { LAT, LON, TERMS, DATE_LINES, dateOf, doy, termOf, hhmm, enu, sun, alt, spot, trace, dial, span, score, SAMPLES: SAMPLE_DAYS.length * 9 };
+  // ---- 光點拼字（數位日晷）----
+  // 5×7 點陣字型：每個字 7 列，'1' 是亮點
+  const FONT = { 0: ['01110', '10001', '10011', '10101', '11001', '10001', '01110'], 1: ['00100', '01100', '00100', '00100', '00100', '00100', '01110'], 2: ['01110', '10001', '00001', '00010', '00100', '01000', '11111'],
+    3: ['11111', '00010', '00100', '00010', '00001', '10001', '01110'], 4: ['00010', '00110', '01010', '10010', '11111', '00010', '00010'], 5: ['11111', '10000', '11110', '00001', '00001', '10001', '01110'],
+    6: ['00110', '01000', '10000', '11110', '10001', '10001', '01110'], 7: ['11111', '00001', '00010', '00100', '01000', '01000', '01000'], 8: ['01110', '10001', '10001', '01110', '10001', '10001', '01110'],
+    9: ['01110', '10001', '10001', '01111', '00001', '00010', '01100'], ':': ['0', '0', '1', '0', '1', '0', '0'] };
+  // 8:00–16:00 每半小時一組
+  const SLOTS = []; for (let t = 480; t <= 960; t += 30) SLOTS.push({ t, text: hhmm(t) });
+  // 字的亮點（以字的中心為原點，u 向右＝+x、v 向下＝+z），單位：點距
+  function pixels(text) {
+    const cols = []; [...text].forEach((ch, i) => { const g = FONT[ch]; if (!g) return; if (i) cols.push(null); for (let c = 0; c < g[0].length; c++) cols.push(g.map(r => r[c] === '1')); });
+    const out = [], W = cols.length; cols.forEach((col, c) => { if (col) col.forEach((on, r) => { if (on) out.push([c - (W - 1) / 2, r - 3]); }); });
+    return out;
+  }
+  // 時角（度）：光管只對時角有選擇性，對季節（赤緯）是一條長縫，所以一年都能用
+  const ha = (N, t) => (t + enu(N, t).eq + 4 * LON - 60 * TZ) / 4 - 180;
+  // 射線與三角形（Möller–Trumbore），回傳距離或 -1
+  function rayTri(o, d, a, b, c) {
+    const e1 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], e2 = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+    const p = [d[1] * e2[2] - d[2] * e2[1], d[2] * e2[0] - d[0] * e2[2], d[0] * e2[1] - d[1] * e2[0]], det = e1[0] * p[0] + e1[1] * p[1] + e1[2] * p[2];
+    if (Math.abs(det) < 1e-9) return -1; const inv = 1 / det, s = [o[0] - a[0], o[1] - a[1], o[2] - a[2]], u = (s[0] * p[0] + s[1] * p[1] + s[2] * p[2]) * inv; if (u < 0 || u > 1) return -1;
+    const q = [s[1] * e1[2] - s[2] * e1[1], s[2] * e1[0] - s[0] * e1[2], s[0] * e1[1] - s[1] * e1[0]], v = (d[0] * q[0] + d[1] * q[1] + d[2] * q[2]) * inv; if (v < 0 || u + v > 1) return -1;
+    const t = (e2[0] * q[0] + e2[1] * q[1] + e2[2] * q[2]) * inv; return t > 1e-6 ? t : -1;
+  }
+  return { FONT, SLOTS, pixels, ha, rayTri, LAT, LON, TERMS, DATE_LINES, dateOf, doy, termOf, hhmm, enu, sun, alt, spot, trace, dial, span, score, SAMPLES: SAMPLE_DAYS.length * 9 };
 })();
