@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>摺紙皮層</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 研究用數位實驗台，安靜、精確
+   IDEA: A3 底板上的互承網，像一張可以拉扯的編織
+   PICTURE: 大幅 3D 網面，接點以誤差著色，落柱可拖曳
+   COLOUR and TYPE: 紙白／墨色底，竹木桿件，誤差綠–黃–紅；Noto Serif TC + Noto Sans TC
+   LAYOUT: 左參數欄、右大圖、下方指標與接頭表 */
+:root{color-scheme:light dark;--bg:light-dark(#f6f6f3,#121412);--panel:light-dark(#ffffff,#1b1e1b);--ink:light-dark(#1d1f1c,#e9e9e4);--quiet:light-dark(#5d625b,#a3a89f);--rule:light-dark(#dcdcd5,#30352f);--good:#2e8b57;--mid:#d39b1f;--bad:#d0382b;--warn:#2f6fd0}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+header{padding:16px max(3vw,16px) 12px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:1px solid var(--rule)}
+h1{font:900 clamp(24px,3.2vw,36px)/1.08 "Noto Serif TC",serif;margin:0}
+.sub{color:var(--quiet);margin:4px 0 0;font-size:14px}
+.sub a{color:inherit}
+.status{display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--rule);max-width:640px}
+.lamp{width:14px;height:14px;border-radius:50%;flex:none;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 20%,transparent)}
+.status[data-s=green] .lamp{color:var(--good)}.status[data-s=amber] .lamp{color:var(--mid)}.status[data-s=red] .lamp{color:var(--bad)}
+.status span{font-size:14px}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);align-items:start}
+aside{padding:12px max(1.5vw,14px) 40px;border-right:1px solid var(--rule);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:0}
+fieldset{border:0;border-bottom:1px solid var(--rule);margin:0;padding:12px 0 14px}
+legend{font-weight:700;font-size:15px;padding:0;margin-bottom:6px}
+.row{display:grid;grid-template-columns:5.4em minmax(0,1fr) 4.4em;gap:8px;align-items:center;margin:5px 0}
+.row label{font-size:13.5px;color:var(--quiet)}
+.row output{font-variant-numeric:tabular-nums;text-align:right;font-size:13.5px;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--ink);height:28px}
+input[type=range]:disabled{opacity:.45}
+select{font:inherit;font-size:16px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;font:inherit;font-size:14px;min-height:36px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;padding:0 6px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lock{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;min-height:32px}
+.lock[aria-pressed=false]{background:transparent;border-style:dashed;color:var(--warn)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.card{border:1px solid var(--rule);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--panel)}
+.card .hd{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.note{color:var(--quiet);font-size:13px;margin:6px 0 0}
+.stage{padding:0 0 24px}
+.fig{position:relative;height:min(64vh,640px);min-height:360px;background:light-dark(#eceee8,#181b18);border-bottom:1px solid var(--rule);touch-action:none}
+.fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.views{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap}
+.views button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.views button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.legend{position:absolute;right:12px;top:12px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.7;max-width:240px}
+.hint{position:absolute;left:12px;bottom:10px;font-size:13px;color:var(--quiet);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:4px 10px;border-radius:8px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--rule)}
+.kpi{padding:12px 16px;border-right:1px solid var(--rule)}
+.kpi small{display:block;color:var(--quiet);font-size:13px}
+.kpi b{font:700 21px/1.2 "Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tables{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;padding:18px max(2vw,16px)}
+h2{font:600 19px/1.3 "Noto Serif TC",serif;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--rule)}
+th{font-weight:500;color:var(--quiet);font-size:13px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--ink);opacity:.25}
+.export{padding:4px max(2vw,16px) 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:0 20px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+.btn:disabled{opacity:.4;cursor:default}
+.notes{padding:4px max(2vw,16px) 28px}
+.notes p{margin:6px 0;max-width:80ch;color:var(--quiet);font-size:14px}
+@media(max-width:900px){main{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0;order:2}.stage{order:1}.tables{grid-template-columns:1fr}}
+@media(max-width:600px){.fig{height:56vh}.legend{display:none}.kpi b{font-size:18px}}
+
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.tools{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 270px)}
+.tools button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.tools button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tools .sep{width:1px;background:var(--rule);margin:0 2px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:4px 8px;border-radius:6px;white-space:nowrap;display:none;transform:translate(12px,-120%)}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}
+
+.big{display:flex;gap:12px;align-items:center;padding:12px max(2vw,16px);border-bottom:1px solid var(--rule)}
+.big label{font-weight:700;white-space:nowrap}.big input{flex:1}.big output{font:700 20px/1 "Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;min-width:4.5em;text-align:right;white-space:nowrap}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}
+:root{--s1:light-dark(#84b9f3,#1757ac);--s2:light-dark(#338ced,#257de0);--s3:light-dark(#1b64be,#6aabf1);--s4:light-dark(#0e3d7e,#cce3fd)}
+.day{padding:18px max(2vw,16px) 4px}.day h2{margin-bottom:2px}
+.chart{position:relative;height:300px;background:var(--panel);border:1px solid var(--rule);border-radius:10px;margin-top:10px}
+.chart svg{position:absolute;inset:0;width:100%;height:100%}
+.lg{display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px;margin-top:8px}.lg i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.tt{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--rule);border-radius:8px;padding:6px 10px;font-size:13px;line-height:1.6;display:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.tt i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+details.tv{margin-top:8px;font-size:14px}details.tv summary{cursor:pointer;color:var(--quiet)}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<header>
+  <div>
+    <h1>摺紙皮層</h1>
+    <p class="sub">外牆第二層皮 · 百葉式（Miura）與單元式（傘狀摺）兩種開合 · 一天的遮陽率 · v0.3</p>
+  </div>
+  <div class="status" id="status" data-s="green" role="status" aria-live="polite"><i class="lamp"></i><span id="statusText">計算中…</span></div>
+</header>
+<main>
+<aside>
+  <fieldset>
+    <legend>開合方式</legend>
+    <div class="seg" id="modeSeg" role="group" aria-label="開合方式"><button data-v="miura">百葉式（Miura）</button><button data-v="unit">單元式（傘狀摺）</button></div>
+    <p class="note" id="modeNote"></p>
+  </fieldset>
+  <fieldset id="fsUnit">
+    <legend>單元</legend>
+    <div class="seg" id="unitSeg" role="group" aria-label="單元形狀"><button data-v="tri">三角</button><button data-v="sq">四方</button><button data-v="hex">六角</button></div>
+    <div class="row"><label for="us">單元邊長</label><input type="range" id="us" min="20" max="90" step="1"><output id="us_o"></output></div>
+    <div class="row"><label for="ux">橫向數量</label><input type="range" id="ux" min="1" max="16" step="1"><output id="ux_o"></output></div>
+    <div class="row"><label for="uy">縱向數量</label><input type="range" id="uy" min="1" max="10" step="1"><output id="uy_o"></output></div>
+    <div class="seg" id="distSeg" role="group" aria-label="開合分佈" style="margin-top:8px"><button data-v="uni">全部一致</button><button data-v="grad">漸變</button><button data-v="wave">波浪</button></div>
+    <div class="row" id="ddirRow"><label for="ddir">分佈方向</label><input type="range" id="ddir" min="0" max="180" step="5"><output id="ddir_o"></output></div>
+    <div class="row" id="dwlRow"><label for="dwl">波長</label><input type="range" id="dwl" min="60" max="400" step="10"><output id="dwl_o"></output></div>
+    <p class="note">每個單元各自開合，所以可以讓不同位置開得不一樣。「開合」滑桿是開得最大的單元的角度。</p>
+  </fieldset>
+  <fieldset id="fsMiura">
+    <legend>摺痕單元</legend>
+    <div class="row"><label for="a">縱向邊長 a</label><input type="range" id="a" min="10" max="60" step="1"><output id="a_o"></output></div>
+    <div class="row"><label for="b">鋸齒邊長 b</label><input type="range" id="b" min="10" max="60" step="1"><output id="b_o"></output></div>
+    <div class="row"><label for="gamma">單元銳角 γ</label><input type="range" id="gamma" min="35" max="85" step="1"><output id="gamma_o"></output></div>
+    <div class="row"><label for="nx">鋸齒向格數</label><input type="range" id="nx" min="2" max="24" step="2"><output id="nx_o"></output></div>
+    <div class="row"><label for="ny">縱向格數</label><input type="range" id="ny" min="2" max="16" step="1"><output id="ny_o"></output></div>
+    <p class="note">γ 越接近 90°，收攏時越像單純的手風琴褶；γ 越小，收攏時縱向也縮得越多、立體感越強。</p>
+  </fieldset>
+  <fieldset>
+    <legend>安裝</legend>
+    <div class="seg" id="dirSeg" role="group" aria-label="收合方向"><button data-v="h">水平收合（像拉簾）</button><button data-v="v">垂直收合（像捲簾）</button></div>
+    <div class="row"><label for="off">離牆距離</label><input type="range" id="off" min="5" max="120" step="1"><output id="off_o"></output></div>
+    <p class="note" id="mountNote"></p>
+  </fieldset>
+  <fieldset>
+    <legend>日照</legend>
+    <div class="row"><label for="saz">太陽方位</label><input type="range" id="saz" min="-80" max="80" step="1"><output id="saz_o"></output></div>
+    <div class="row"><label for="sel">太陽高度角</label><input type="range" id="sel" min="5" max="85" step="1"><output id="sel_o"></output></div>
+    <p class="note">方位是相對於牆面法線：0° 正對牆面，負值偏左、正值偏右。</p>
+  </fieldset>
+  <fieldset>
+    <legend>一天的太陽</legend>
+    <div class="row"><label for="lat">緯度</label><input type="range" id="lat" min="0" max="60" step="0.5"><output id="lat_o"></output></div>
+    <div class="row"><label for="season">日期</label><select id="season" style="grid-column:span 2"><option value="80">春分（3/21）</option><option value="172">夏至（6/21）</option><option value="266">秋分（9/23）</option><option value="355">冬至（12/21）</option></select></div>
+    <div class="row"><label for="face">牆面朝向</label><select id="face" style="grid-column:span 2"><option value="0">南</option><option value="45">西南</option><option value="90">西</option><option value="135">西北</option><option value="180">北</option><option value="-135">東北</option><option value="-90">東</option><option value="-45">東南</option></select></div>
+    <div class="row"><label for="hour">時刻</label><input type="range" id="hour" min="5" max="19" step="0.25"><output id="hour_o"></output></div>
+    <label class="chk"><input type="checkbox" id="follow"> 3D 畫面的太陽跟著這個時刻</label>
+    <p class="note" id="sunNote"></p>
+  </fieldset>
+  <fieldset>
+    <legend>製作</legend>
+    <div class="seg" id="fabSeg" role="group" aria-label="製作方式"><button data-v="paper">紙卡雷切摺疊</button><button data-v="print">3D 列印活鉸鏈</button></div>
+    <div class="row" id="tpRow"><label for="tp">薄片厚度</label><input type="range" id="tp" min="0.8" max="2" step="0.1"><output id="tp_o"></output></div>
+    <div class="row" id="gwRow"><label for="gw">鉸鏈槽寬</label><input type="range" id="gw" min="0.6" max="2" step="0.1"><output id="gw_o"></output></div>
+    <p class="note" id="fabNote"></p>
+  </fieldset>
+</aside>
+<section class="stage">
+  <div class="fig" id="fig">
+    <div class="views" role="toolbar" aria-label="檢視">
+      <button data-v="persp" aria-pressed="true">透視</button><button data-v="front">正面</button><button data-v="side">側面</button><button data-v="in">從室內看</button>
+    </div>
+    <div class="legend"><div><i class="dot" style="background:#e9e4d8;border:1px solid #bbb"></i>摺紙皮層</div><div><i class="dot" style="background:#9db4c9"></i>牆面（玻璃）</div><div><i class="dot" style="background:#55594f"></i>牆上的影子＝被遮住的日照</div></div>
+  </div>
+  <div class="big"><label for="theta">開合</label><input type="range" id="theta" min="0" max="88" step="0.5"><output id="theta_o"></output></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="day">
+    <h2 id="dayTitle">一天的遮陽率</h2>
+    <p class="note" id="dayLead"></p>
+    <div class="lg" id="dayLegend"></div>
+    <div class="chart" id="chart"><svg id="daySvg" role="img" aria-label="一天中各時刻的遮陽率，比較四種開合度"></svg><div class="tt" id="tt"></div></div>
+    <details class="tv"><summary>以表格檢視</summary><div class="scroll"><table id="dayTable"></table></div></details>
+  </div>
+  <div class="tables">
+    <div>
+      <h2>摺痕圖（攤平，1:1）</h2>
+      <div id="pattern" style="background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:10px"></div>
+      <p class="note" id="patNote"></p>
+    </div>
+    <div>
+      <h2>幾何</h2>
+      <table><thead><tr><th>項目</th><th class="n">數值</th></tr></thead><tbody id="ct"></tbody></table>
+    </div>
+  </div>
+  <div class="export">
+    <button class="btn" id="dl" disabled>下載製作檔（.zip）</button>
+    <span class="note" id="dlNote"></span>
+  </div>
+  <div class="notes">
+    <p><b>怎麼算</b>：Miura 摺是剛性摺疊，整片只有一個自由度。給定面板與基準面的夾角 θ，單元的寬、長、深都有封閉公式，所以這裡不是近似模擬：每一片面板在任何開合度下都維持原本的形狀與大小（開發時驗證過邊長與對角線的變化在 10⁻¹³ mm 以下）。</p>
+    <p><b>單元式（傘狀摺）</b>：每個正多邊形單元由 2n 片三角板繞中心組成，對稱摺疊時也只有一個自由度。給定「中心到邊中點」那條摺線的傾角，其餘由面板不變形的條件解出（同樣驗證過邊長變化在 10⁻¹³ mm 以下）。完全打開時面板兩兩併成立起的鰭片；角點要沿框上的滑槽往中心滑（三角 13%、四方 29%、六角 50%），所以三角單元最容易做。三角與六角鋪排時，牆面邊緣會留下沒有單元的三角形空隙。</p><p><b>兩個指標</b>：「開口率」是從正前方看，牆面沒有被皮層遮住的比例。「遮陽率」是以目前的太陽方向，牆面被皮層的影子蓋住的比例。兩者都是把皮層投影到牆面上實際計算的。皮層摺起來後有深度，所以斜射的陽光會被擋掉更多。</p>
+    <p><b>一天的遮陽率</b>：太陽位置用緯度、日期和太陽時計算（不含時差與大氣折射）。每 15 分鐘把皮層沿陽光方向投影到牆面，算出被遮住的比例；整天的數字再以直射在牆面上的強度（入射角的餘弦）加權。只算直射光，不含天空漫射與反射，也沒有換算成熱量。</p><p><b>限制</b>：面板當成沒有厚度；不計紙或鉸鏈的彈性、重量與風；沒有驅動機構（拉繩、軌道）的設計。3D 列印的活鉸鏈是平放列印的薄片，摺痕處薄化到 0.35 mm，能摺幾次、會不會斷要看材料（PETG 或 PP 比 PLA 耐摺），還沒有實測。單元式沒有設計滑槽、驅動桿與框架本身。</p>
+  </div>
+</section>
+</main>
+<script src="core.js"></script>
+<script src="foldcore.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+{
+const $ = id => document.getElementById(id);
+const DEF = { lat: 25, season: 172, face: 90, hour: 15, follow: false, mode: 'miura', unit: 'tri', us: 44, ux: 9, uy: 5, dist: 'grad', ddir: 90, dwl: 160, a: 28, b: 28, gamma: 62, nx: 10, ny: 7, dir: 'h', off: 30, saz: 35, sel: 40, fab: 'paper', tp: 1.2, gw: 1, theta: 55 };
+let P = { ...DEF };
+try { const s = JSON.parse(localStorage.getItem('rf-fold') || 'null'); if (s && s.a) P = Object.assign(P, s); } catch (e) {}
+const mm = (f = 0) => v => `${(+v).toFixed(f)} mm`, deg = v => v + '°';
+const hh = v => { const h = Math.floor(v), m = Math.round((v - h) * 60); return h + ':' + String(m).padStart(2, '0'); };
+const FIELDS = { lat: v => (+v).toFixed(1) + '°N', hour: hh, us: mm(), ux: v => v + ' 個', uy: v => v + ' 個', ddir: deg, dwl: mm(), a: mm(), b: mm(), gamma: deg, nx: v => v + ' 格', ny: v => v + ' 格', off: mm(), saz: deg, sel: deg, tp: mm(1), gw: mm(1), theta: v => (+v).toFixed(0) + '°' };
+const SEGS = [['dirSeg', 'dir'], ['fabSeg', 'fab'], ['modeSeg', 'mode'], ['unitSeg', 'unit'], ['distSeg', 'dist']];
+function syncInputs() {
+  Object.keys(FIELDS).forEach(k => { $(k).value = P[k]; $(k + '_o').textContent = FIELDS[k](P[k]); });
+  SEGS.forEach(([id, k]) => document.querySelectorAll(`#${id} button`).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === P[k])));
+  $('season').value = P.season; $('face').value = P.face; $('follow').checked = P.follow; $('saz').disabled = $('sel').disabled = P.follow;
+  const un = P.mode === 'unit';
+  $('fsUnit').style.display = un ? '' : 'none'; $('fsMiura').style.display = un ? 'none' : ''; $('dirSeg').style.display = un ? 'none' : '';
+  $('ddirRow').style.display = un && P.dist !== 'uni' ? '' : 'none'; $('dwlRow').style.display = un && P.dist === 'wave' ? '' : 'none';
+  $('modeNote').textContent = un ? '每個多邊形單元由 2n 片三角板繞中心組成，像收傘一樣摺起：中心往外推，面板兩兩併成立起的鰭片，完全打開時從正面看幾乎沒有遮蔽。' : '整片皮層是一張 Miura 摺，只有一個自由度，摺起來時往固定的一側收攏。';
+  $('mountNote').textContent = un ? '角點留在同一個平面上，摺起時沿框上的滑槽往中心滑。牆面大小取所有單元攤平時的外接矩形。' : '皮層固定在一側，摺起來時往那一側收攏。牆面大小取皮層完全攤平時的尺寸。';
+  $('tpRow').style.display = $('gwRow').style.display = P.fab === 'print' ? '' : 'none';
+  $('fabNote').textContent = (un ? '以單一單元輸出。' : '') + (P.fab === 'paper' ? '輸出 1:1 摺痕圖 SVG：切割線加上山、谷兩種摺線，雷切時摺線用低功率淺刻。' : '輸出平放列印的薄片 STL：谷摺的槽開在上面、山摺的槽開在下面，槽底留 0.35 mm 當活鉸鏈。');
+  $('dlNote').textContent = P.fab === 'paper' ? '內含摺痕圖 SVG（1:1，附校正尺）與參數 JSON。' : '內含活鉸鏈薄片 STL、摺痕圖 SVG 與參數 JSON。';
+}
+Object.keys(FIELDS).forEach(k => $(k).addEventListener('input', e => { P[k] = +e.target.value; $(k + '_o').textContent = FIELDS[k](P[k]); update(); }));
+['season', 'face'].forEach(k => $(k).addEventListener('change', e => { P[k] = +e.target.value; update(); }));
+$('follow').addEventListener('change', e => { P.follow = e.target.checked; syncInputs(); update(); });
+SEGS.forEach(([id, k]) => $(id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; P[k] = b.dataset.v; syncInputs(); update(true); }));
+
+// ---------- 3D（世界：X 水平、Y 向上、Z 牆面法線向外）----------
+const fig = $('fig');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); fig.prepend(renderer.domElement);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, 1, 8000);
+const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8370, 1.1));
+const sun = new THREE.DirectionalLight(0xffffff, 2.4); scene.add(sun, sun.target); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.001; sun.shadow.normalBias = 0.8;
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ color: 0x9db4c9, roughness: .6, side: THREE.DoubleSide })); wall.receiveShadow = true; scene.add(wall);
+const frame = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x55594f })); scene.add(frame);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(3000, 3000), new THREE.MeshStandardMaterial({ color: 0xe6e6df, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const skin = new THREE.Mesh(new THREE.BufferGeometry(), new THREE.MeshStandardMaterial({ color: 0xe9e4d8, roughness: .9, side: THREE.DoubleSide, flatShading: true })); skin.castShadow = skin.receiveShadow = true; scene.add(skin);
+const edges = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x9a9384 })); scene.add(edges);
+let WW = 300, WH = 200, view = 'persp';
+function setView(v) {
+  view = v; document.querySelectorAll('.views [data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  const d = Math.max(WW, WH) * 1.9, cy = WH / 2 + 10;
+  if (v === 'persp') camera.position.set(d * 0.55, cy + d * 0.25, d * 0.8);
+  if (v === 'front') camera.position.set(0, cy, d * 1.05);
+  if (v === 'side') camera.position.set(d * 1.05, cy, 30);
+  if (v === 'in') camera.position.set(-d * 0.3, cy, -d * 0.85);
+  controls.target.set(0, cy, 0); controls.update();
+}
+document.querySelectorAll('.views [data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+new ResizeObserver(() => { const w = fig.clientWidth, h = fig.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }).observe(fig);
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+
+// 皮層座標 → 世界座標：固定側在左（水平）或上（垂直）
+const cv = document.createElement('canvas'); cv.width = 240; cv.height = 240; const cx = cv.getContext('2d', { willReadFrequently: true });
+function coverage(polys, dir) {   // 沿 dir（指向牆）投影到牆面 z=0，回傳牆面被遮住的比例
+  cx.clearRect(0, 0, 240, 240); cx.fillStyle = '#000';
+  const pr = p => { const t = p[2] / -dir[2]; return [(p[0] + dir[0] * t + WW / 2) / WW * 240, (1 - (p[1] + dir[1] * t - 10) / WH) * 240]; };
+  polys.forEach(q => { cx.beginPath(); q.forEach((p, n) => { const s = pr(p); n ? cx.lineTo(s[0], s[1]) : cx.moveTo(s[0], s[1]); }); cx.closePath(); cx.fill(); });
+  const d = cx.getImageData(0, 0, 240, 240).data; let c = 0; for (let i = 3; i < d.length; i += 4) if (d[i] > 127) c++; return c / (240 * 240);
+}
+const fitTxt = (w, h) => [['A3 內可雷切', (Math.min(w, h) <= 287 && Math.max(w, h) <= 410) ? '可以' : '超過 A3，需拼接'], ['18 × 20 cm 平台可列印', (Math.min(w, h) <= 180 && Math.max(w, h) <= 200) ? '可以' : '超過，需分片']];
+function buildMiura(th) {
+  const F0 = FC.verts(P, 0), F = FC.verts(P, th), hz = P.dir === 'h', m = F.m;
+  WW = hz ? F0.W : F0.Ht; WH = hz ? F0.Ht : F0.W;
+  const world = F.pts.map(p => hz ? [p[0] - WW / 2, 10 + WH - p[1], P.off + p[2]] : [p[1] - WW / 2, 10 + WH - p[0], P.off + p[2]]), polys = [];
+  for (let j = 0; j < P.ny; j++) for (let i = 0; i < P.nx; i++) polys.push([F.idx(i, j), F.idx(i + 1, j), F.idx(i + 1, j + 1), F.idx(i, j + 1)].map(k => world[k]));
+  const C = FC.creases(P).lines;
+  return { polys, kpis: [['皮層深度', m.H.toFixed(1) + ' mm'], ['收合向長度', `${F.W.toFixed(0)} / ${F0.W.toFixed(0)} mm`], ['縱向長度', `${F.Ht.toFixed(0)} / ${F0.Ht.toFixed(0)} mm`], ['面板', `${P.nx * P.ny} 片`]],
+    table: [['攤平尺寸（材料）', `${F0.W.toFixed(1)} × ${F0.Ht.toFixed(1)} mm`], ['完全收攏時的深度', `約 ${(P.a * Math.sin(P.gamma * Math.PI / 180)).toFixed(1)} mm`], ['單元（寬 2S × 長 2L）', `${(2 * m.S).toFixed(1)} × ${(2 * m.L).toFixed(1)} mm`], ['鋸齒錯位 V', m.V.toFixed(1) + ' mm'], ['摺痕', `山 ${C.filter(l => l.type === 'mountain').length} 條、谷 ${C.filter(l => l.type === 'valley').length} 條`], ...fitTxt(F0.W, F0.Ht)],
+    svg: FC.svg(P), note: '紅＝切割，藍實線＝山摺，綠虛線＝谷摺。每個內部頂點都是三條同向、一條反向（Miura 摺的規則）。' };
+}
+function buildUnit(th) {
+  const L = FC.unitLayout(P), polys = []; WW = L.W; WH = L.H;
+  const a = P.ddir * Math.PI / 180, half = (Math.abs(L.W * Math.cos(a)) + Math.abs(L.H * Math.sin(a))) / 2 || 1;
+  let zmax = 0, slide = 0, n = 3;
+  L.cells.forEach(c => {
+    const pr = (c.x - L.W / 2) * Math.cos(a) + (c.y - L.H / 2) * Math.sin(a);
+    const f = P.dist === 'uni' ? 1 : P.dist === 'grad' ? Math.min(1, Math.max(0, (pr / half + 1) / 2)) : 0.5 + 0.5 * Math.sin(2 * Math.PI * pr / P.dwl);
+    const q = FC.unitPts(c.n, c.R, th * f, c.x, c.y, c.rot), w = p => [p[0] - WW / 2, 10 + p[1], P.off + p[2]]; n = c.n;
+    zmax = Math.max(zmax, q.u.zO); slide = Math.max(slide, 1 - q.u.rA / c.R);
+    for (let k = 0; k < c.n; k++) polys.push([q.O, q.A[k], q.M[k]].map(w), [q.O, q.M[k], q.A[(k + 1) % c.n]].map(w));
+  });
+  const C = FC.unitCreases(P), R0 = L.cells[0].R;
+  return { polys, kpis: [['最大外推深度', zmax.toFixed(1) + ' mm'], ['角點最大內滑', (slide * 100).toFixed(0) + '%'], ['單元', `${L.cells.length} 個`], ['面板', `${L.cells.length * 2 * n} 片`]],
+    table: [['牆面', `${L.W.toFixed(0)} × ${L.H.toFixed(0)} mm`], ['單一單元材料', `${(2 * R0).toFixed(1)} × ${(2 * R0).toFixed(1)} mm`], ['每單元面板', `${2 * n} 片三角板`], ['摺痕（每單元）', `山 ${n} 條（中心→角點）、谷 ${n} 條（中心→邊中點）`], ['完全打開時', `角點內滑 ${(100 * (1 - Math.sin(Math.PI / n))).toFixed(0)}%、中心外推 ${(R0 * Math.cos(Math.PI / n)).toFixed(1)} mm`], ...fitTxt(2 * R0, 2 * R0)],
+    svg: FC.svgFrom(C), note: '單一單元的摺痕圖。紅＝切割，藍實線＝山摺（中心到角點），綠虛線＝谷摺（中心到邊中點），從室外側看。' };
+}
+const build = th => P.mode === 'unit' ? buildUnit(th) : buildMiura(th);
+const sunAt = h => { const s = FC.sun(P.lat, P.season, h); let rel = s.az - P.face; rel = ((rel + 540) % 360) - 180; return { alt: s.alt, rel, front: s.alt > 1 && Math.abs(rel) < 88, w: Math.max(0, Math.cos(s.alt * Math.PI / 180) * Math.cos(rel * Math.PI / 180)) }; };
+let lastSize = '';
+function update(refit) {
+  // 太陽：手動，或跟著「一天的太陽」的時刻
+  const sp = sunAt(P.hour);
+  if (P.follow) { if (sp.front) { P.saz = Math.round(-sp.rel); P.sel = Math.round(sp.alt); } ['saz', 'sel'].forEach(k => { $(k).value = P[k]; $(k + '_o').textContent = FIELDS[k](P[k]); }); }
+  $('sunNote').textContent = `${hh(P.hour)}：太陽高度角 ${sp.alt.toFixed(0)}°` + (sp.alt <= 0 ? '，還沒日出或已日落。' : sp.front ? `，相對牆面偏${sp.rel > 0 ? '左（西側）' : '右（東側）'} ${Math.abs(sp.rel).toFixed(0)}°。` : '，太陽在牆的背面，照不到這面牆。') + ' 時刻是太陽時（正午太陽在正南）。';
+  const B = build(P.theta), pos = [], ed = [];
+  B.polys.forEach(q => { for (let k = 1; k + 1 < q.length; k++) pos.push(...q[0], ...q[k], ...q[k + 1]); for (let k = 0; k < q.length; k++) ed.push(...q[k], ...q[(k + 1) % q.length]); });
+  skin.geometry.dispose(); skin.geometry = new THREE.BufferGeometry(); skin.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); skin.geometry.computeVertexNormals();
+  edges.geometry.dispose(); edges.geometry = new THREE.BufferGeometry(); edges.geometry.setAttribute('position', new THREE.Float32BufferAttribute(ed, 3));
+  wall.scale.set(WW, WH, 1); wall.position.set(0, 10 + WH / 2, 0);
+  const c = [[-WW / 2, 10], [WW / 2, 10], [WW / 2, 10 + WH], [-WW / 2, 10 + WH]], fr = []; for (let k = 0; k < 4; k++) fr.push(c[k][0], c[k][1], 0.2, c[(k + 1) % 4][0], c[(k + 1) % 4][1], 0.2);
+  frame.geometry.dispose(); frame.geometry = new THREE.BufferGeometry(); frame.geometry.setAttribute('position', new THREE.Float32BufferAttribute(fr, 3));
+  const az = P.saz * Math.PI / 180, el = P.sel * Math.PI / 180, s = [Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)], R = Math.max(WW, WH) * 3;
+  sun.position.set(s[0] * R, 10 + WH / 2 + s[1] * R, s[2] * R); sun.target.position.set(0, 10 + WH / 2, 0);
+  const ext = Math.max(WW, WH) * 1.2; Object.assign(sun.shadow.camera, { left: -ext, right: ext, top: ext, bottom: -ext, near: 1, far: R * 2.5 }); sun.shadow.camera.updateProjectionMatrix();
+  const open = 1 - coverage(B.polys, [0, 0, -1]), shade = coverage(B.polys, [-s[0], -s[1], -s[2]]);
+  const size = P.mode + WW.toFixed(0) + 'x' + WH.toFixed(0); if (refit || size !== lastSize) { lastSize = size; setView(view); }
+  $('kpis').innerHTML = [['開口率（正面）', (open * 100).toFixed(0) + '%'], ['遮陽率（目前太陽）', (shade * 100).toFixed(0) + '%'], ...B.kpis].map(([k, v]) => `<div class="kpi"><small>${k}</small><b>${v}</b></div>`).join('');
+  $('ct').innerHTML = B.table.map(([k, v]) => `<tr><td>${k}</td><td class="n" style="white-space:normal">${v}</td></tr>`).join('');
+  $('statusText').textContent = `${P.mode === 'unit' ? '單元式' : '百葉式'} · 開合 ${P.theta.toFixed(0)}° · 開口率 ${(open * 100).toFixed(0)}% · 遮陽率 ${(shade * 100).toFixed(0)}%`;
+  $('pattern').innerHTML = B.svg.replace(/width="[^"]+" height="[^"]+"/, `style="width:100%;max-width:${P.mode === 'unit' ? 320 : 9999}px;height:auto;display:block"`); $('patNote').textContent = B.note;
+  try { localStorage.setItem('rf-fold', JSON.stringify(P)); } catch (e) {}
+  clearTimeout(dayTimer); dayTimer = setTimeout(dayChart, 350);
+}
+
+// ---------- 一天的遮陽率 ----------
+let dayTimer = 0, dayData = null;
+const LV = [0, 30, 60, 88], LC = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)'];
+function dayChart() {
+  const keepW = WW, keepH = WH, times = []; for (let t = 5; t <= 19.001; t += 0.25) times.push(t);
+  const suns = times.map(sunAt), levels = [...LV, P.theta];
+  const series = levels.map(th => { const B = build(th); return suns.map(sp => { if (!sp.front) return null; const a = sp.alt * Math.PI / 180, r = -sp.rel * Math.PI / 180; return coverage(B.polys, [-Math.sin(r) * Math.cos(a), -Math.sin(a), -Math.cos(r) * Math.cos(a)]); }); });
+  WW = keepW; WH = keepH;
+  const wsum = suns.reduce((s, sp) => s + (sp.front ? sp.w : 0), 0), daily = series.map(v => wsum ? v.reduce((s, x, i) => s + (x === null ? 0 : x * suns[i].w), 0) / wsum : null);
+  const hours = suns.filter(sp => sp.front).length * 0.25;
+  dayData = { times, suns, series, daily, hours }; drawDay();
+}
+function drawDay() {
+  if (!dayData) return; const { times, suns, series, daily, hours } = dayData, svg = $('daySvg'), W = svg.clientWidth, H = svg.clientHeight; if (!W) return;
+  const narrow = W < 520, m = { l: 44, r: narrow ? 14 : 76, t: 14, b: 30 }, X = t => m.l + (t - 5) / 14 * (W - m.l - m.r), Y = v => m.t + (1 - v) * (H - m.t - m.b);
+  const faceName = $('face').selectedOptions[0].textContent, seasonName = $('season').selectedOptions[0].textContent.replace(/（.*/, '');
+  $('dayTitle').textContent = hours ? `${seasonName}、朝${faceName}的牆：開合 ${P.theta.toFixed(0)}° 時擋掉 ${(daily[4] * 100).toFixed(0)}% 的直射日照` : `${seasonName}這一天，太陽照不到朝${faceName}的牆`;
+  $('dayLead').textContent = hours ? `北緯 ${P.lat}°，這面牆一天約有 ${hours.toFixed(1)} 小時受到直射。整天的比例以「直射在牆面上的強度」加權；四條線是四種開合度在各時刻的遮陽率。` : '換一個牆面朝向或日期看看。';
+  $('dayLegend').innerHTML = LV.map((v, k) => `<span><i style="background:${LC[k]}"></i>開合 ${v}°${daily[k] === null ? '' : `（整天 ${(daily[k] * 100).toFixed(0)}%）`}</span>`).join('');
+  let g = '';
+  // 太陽照不到的時段
+  let run = null; const bands = []; suns.forEach((sp, i) => { if (!sp.front) { if (run === null) run = i; } else if (run !== null) { bands.push([run, i]); run = null; } }); if (run !== null) bands.push([run, suns.length - 1]);
+  bands.forEach(([a, b]) => { if (b <= a) return; g += `<rect x="${X(times[a]).toFixed(1)}" y="${m.t}" width="${(X(times[b]) - X(times[a])).toFixed(1)}" height="${H - m.t - m.b}" fill="var(--rule)" opacity=".35"/>`; if (X(times[b]) - X(times[a]) > 90) g += `<text x="${((X(times[a]) + X(times[b])) / 2).toFixed(1)}" y="${m.t + 16}" font-size="12" text-anchor="middle" fill="var(--quiet)">照不到這面牆</text>`; });
+  [0, .25, .5, .75, 1].forEach(v => { g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)" stroke-width="1"/><text x="${m.l - 6}" y="${Y(v) + 4}" font-size="12" text-anchor="end" fill="var(--quiet)">${v * 100}%</text>`; });
+  for (let t = 6; t <= 18; t += (narrow ? 3 : 2)) g += `<text x="${X(t)}" y="${H - 10}" font-size="12" text-anchor="middle" fill="var(--quiet)">${t}:00</text>`;
+  const ends = [];
+  LV.forEach((v, k) => { let d = '', pen = false, last = null; series[k].forEach((y, i) => { if (y === null) { pen = false; return; } d += (pen ? 'L' : 'M') + X(times[i]).toFixed(1) + ' ' + Y(y).toFixed(1); pen = true; last = [X(times[i]), Y(y)]; });
+    g += `<path d="${d}" fill="none" stroke="${LC[k]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`; if (last) ends.push({ k, x: last[0], y: last[1] }); });
+  if (!narrow) { ends.sort((a, b) => a.y - b.y); ends.forEach((e, i) => { if (i && e.y - ends[i - 1].ly < 14) e.ly = ends[i - 1].ly + 14; else e.ly = e.y; }); ends.forEach(e => { g += `<text x="${Math.min(e.x + 8, W - m.r + 8)}" y="${e.ly + 4}" font-size="12" fill="var(--ink)">${LV[e.k]}°</text>`; }); }
+  g += `<line id="nowLine" x1="${X(P.hour)}" x2="${X(P.hour)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--ink)" stroke-width="1" stroke-dasharray="3 3"/><line id="cross" y1="${m.t}" y2="${H - m.b}" stroke="var(--quiet)" stroke-width="1" visibility="hidden"/>`;
+  svg.innerHTML = g; svg._geo = { m, W, H, X };
+  const cell = v => v === null ? '—' : (v * 100).toFixed(0) + '%';
+  $('dayTable').innerHTML = `<thead><tr><th>時刻</th><th class="n">太陽高度角</th>${LV.map(v => `<th class="n">開合 ${v}°</th>`).join('')}<th class="n">目前 ${P.theta.toFixed(0)}°</th></tr></thead><tbody>` +
+    times.filter(t => t % 1 === 0).map(t => { const i = times.indexOf(t); return `<tr><td>${t}:00</td><td class="n">${suns[i].alt > 0 ? suns[i].alt.toFixed(0) + '°' : '—'}</td>${series.map(sv => `<td class="n">${cell(sv[i])}</td>`).join('')}</tr>`; }).join('') +
+    `<tr><td><b>整天（加權）</b></td><td></td>${daily.map(v => `<td class="n"><b>${cell(v)}</b></td>`).join('')}</tr></tbody>`;
+}
+new ResizeObserver(drawDay).observe($('chart'));
+$('chart').addEventListener('pointermove', e => {
+  const svg = $('daySvg'), geo = svg._geo; if (!geo || !dayData) return; const r = svg.getBoundingClientRect(), x = e.clientX - r.left;
+  const t = Math.min(19, Math.max(5, 5 + (x - geo.m.l) / (geo.W - geo.m.l - geo.m.r) * 14)), i = Math.round((t - 5) / 0.25), tt = $('tt'), c = svg.querySelector('#cross');
+  c.setAttribute('x1', geo.X(dayData.times[i])); c.setAttribute('x2', geo.X(dayData.times[i])); c.setAttribute('visibility', 'visible');
+  tt.innerHTML = `<b>${hh(dayData.times[i])}</b>` + (dayData.suns[i].front ? LV.map((v, k) => `<div><i style="background:${LC[k]}"></i>開合 ${v}°：${(dayData.series[k][i] * 100).toFixed(0)}%</div>`).join('') : '<div>太陽照不到這面牆</div>');
+  tt.style.display = 'block'; tt.style.left = Math.min(x + 14, geo.W - 150) + 'px'; tt.style.top = '18px';
+});
+$('chart').addEventListener('pointerleave', () => { $('tt').style.display = 'none'; const c = $('daySvg').querySelector('#cross'); if (c) c.setAttribute('visibility', 'hidden'); });
+
+// ---------- 匯出 ----------
+let downloads = null;
+RF.getDownloads().then(d => { downloads = d; $('dl').disabled = !d; }).catch(() => {});
+const crcT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = crcT[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = typeof f.data === 'string' ? enc.encode(f.data) : new Uint8Array(f.data), crc = crc32(data), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name); off += 30 + name.length + data.length;
+  });
+  const cs = central.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)]);
+}
+$('dl').addEventListener('click', async () => {
+  if (!downloads) return;
+  const un = P.mode === 'unit', C = un ? FC.unitCreases(P) : FC.creases(P), outline = un ? C.outline : FC.outlineOf(P);
+  const files = [{ name: 'crease_pattern.svg', data: FC.svgFrom(C) }, { name: 'params.json', data: JSON.stringify({ params: P }) }];
+  $('dl').disabled = true;
+  try {
+    if (P.fab === 'print') { $('dlNote').textContent = '產生列印實體中…'; const w = await (await import('./manifold.js')).default(); w.setup(); const s = FC.hingeFrom(w, C, outline, P.tp, P.gw); if (s.status() !== 'NoError') throw { code: 'solid' }; files.push({ name: 'hinge_sheet.stl', data: toSTL(s.getMesh(), 'miura hinge sheet') }); }
+    files.push({ name: 'README.txt', data: (un ? '摺紙皮層 單元式 v0.2（以下為單一單元，請依數量重複製作）' : '摺紙皮層 Miura v0.2') + '\r\n- crease_pattern.svg：1:1 摺痕圖，紅＝切割、藍實線＝山摺、綠虛線＝谷摺。先量校正尺是否為 50 mm。\r\n- hinge_sheet.stl（若選 3D 列印）：平放列印，谷摺槽在上、山摺槽在下，槽底 0.35 mm 為活鉸鏈；建議 PETG 或 PP。\r\n- 尚未實物驗證。\r\n' });
+    await downloads.save({ filename: un ? `unit-skin_${P.unit}.zip` : `miura-skin_${P.nx}x${P.ny}.zip`, data: zip(files) }); $('dlNote').textContent = '已下載。';
+  } catch (err) { $('dlNote').textContent = err && err.code === 'declined' ? '已取消下載。' : '下載未完成（' + (err && err.code || '未知原因') + '）。'; }
+  finally { $('dl').disabled = false; }
+});
+syncInputs(); update(true);
+}
+</script>
+<script>window.RF_PRESETS={"key": "rf-fold", "list": [{"g": "基本", "id": "base", "name": "基準", "note": "百葉式（Miura 摺）的外牆皮層，夏至下午的西向立面。", "do": []}, {"g": "基本", "id": "open", "name": "攤平", "note": "開合拉到最小 → 整片幾乎攤平蓋住立面，遮得最多。", "do": [["range", "theta", 8, "開合"]]}, {"g": "基本", "id": "closed", "name": "收攏", "note": "開合拉到最大 → 整片收攏成一疊，立面幾乎完全露出。", "do": [["range", "theta", 82, "開合"]]}, {"g": "基本", "id": "unit", "name": "單元式", "note": "開合方式改成單元式 → 每個單元像一把小傘，各自開合。", "do": [["seg", "#modeSeg", "unit"]]}, {"g": "變化", "id": "hex", "name": "六角單元", "note": "單元形狀換成六角 → 蜂巢狀的立面。", "do": [["seg", "#modeSeg", "unit"], ["seg", "#unitSeg", "hex"]]}, {"g": "變化", "id": "sq", "name": "四方單元", "note": "單元形狀換成四方。", "do": [["seg", "#modeSeg", "unit"], ["seg", "#unitSeg", "sq"]]}, {"g": "變化", "id": "wave", "name": "波浪開合", "note": "單元的開合程度改成波浪分布 → 立面出現一波一波的開口。", "do": [["seg", "#modeSeg", "unit"], ["seg", "#distSeg", "wave"]]}, {"g": "變化", "id": "sharp", "name": "銳角摺", "note": "單元銳角變小 → 鋸齒更尖，收合時疊得更緊。", "do": [["range", "gamma", 45]]}, {"g": "變化", "id": "vert", "name": "垂直收合", "note": "收合方向改成垂直 → 像捲簾往上收。", "do": [["seg", "#dirSeg", "v"]]}, {"g": "變化", "id": "winter", "name": "冬至", "note": "太陽改成跟著日期與時刻走，季節換成冬至 → 太陽低，同樣的開合遮到的面積不同。", "do": [["check", "follow", true], ["select", "season", "355"]]}, {"g": "變化", "id": "south", "name": "朝南", "note": "太陽改成跟著日期與時刻走，立面改成朝南 → 比較同一時刻不同朝向的遮陽。", "do": [["check", "follow", true], ["select", "face", "0"]]}]};</script><script src="presets.js"></script>
+</body>
+</html>

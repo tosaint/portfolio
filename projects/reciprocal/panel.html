@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拓樸互鎖面板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 研究用數位實驗台，安靜、精確
+   IDEA: A3 底板上的互承網，像一張可以拉扯的編織
+   PICTURE: 大幅 3D 網面，接點以誤差著色，落柱可拖曳
+   COLOUR and TYPE: 紙白／墨色底，竹木桿件，誤差綠–黃–紅；Noto Serif TC + Noto Sans TC
+   LAYOUT: 左參數欄、右大圖、下方指標與接頭表 */
+:root{color-scheme:light dark;--bg:light-dark(#f6f6f3,#121412);--panel:light-dark(#ffffff,#1b1e1b);--ink:light-dark(#1d1f1c,#e9e9e4);--quiet:light-dark(#5d625b,#a3a89f);--rule:light-dark(#dcdcd5,#30352f);--good:#2e8b57;--mid:#d39b1f;--bad:#d0382b;--warn:#2f6fd0}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+header{padding:16px max(3vw,16px) 12px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:1px solid var(--rule)}
+h1{font:900 clamp(24px,3.2vw,36px)/1.08 "Noto Serif TC",serif;margin:0}
+.sub{color:var(--quiet);margin:4px 0 0;font-size:14px}
+.sub a{color:inherit}
+.status{display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--rule);max-width:640px}
+.lamp{width:14px;height:14px;border-radius:50%;flex:none;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 20%,transparent)}
+.status[data-s=green] .lamp{color:var(--good)}.status[data-s=amber] .lamp{color:var(--mid)}.status[data-s=red] .lamp{color:var(--bad)}
+.status span{font-size:14px}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);align-items:start}
+aside{padding:12px max(1.5vw,14px) 40px;border-right:1px solid var(--rule);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:0}
+fieldset{border:0;border-bottom:1px solid var(--rule);margin:0;padding:12px 0 14px}
+legend{font-weight:700;font-size:15px;padding:0;margin-bottom:6px}
+.row{display:grid;grid-template-columns:5.4em minmax(0,1fr) 4.4em;gap:8px;align-items:center;margin:5px 0}
+.row label{font-size:13.5px;color:var(--quiet)}
+.row output{font-variant-numeric:tabular-nums;text-align:right;font-size:13.5px;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--ink);height:28px}
+input[type=range]:disabled{opacity:.45}
+select{font:inherit;font-size:16px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;font:inherit;font-size:14px;min-height:36px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;padding:0 6px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lock{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;min-height:32px}
+.lock[aria-pressed=false]{background:transparent;border-style:dashed;color:var(--warn)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.card{border:1px solid var(--rule);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--panel)}
+.card .hd{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.note{color:var(--quiet);font-size:13px;margin:6px 0 0}
+.stage{padding:0 0 24px}
+.fig{position:relative;height:min(64vh,640px);min-height:360px;background:light-dark(#eceee8,#181b18);border-bottom:1px solid var(--rule);touch-action:none}
+.fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.views{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap}
+.views button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.views button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.legend{position:absolute;right:12px;top:12px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.7;max-width:240px}
+.hint{position:absolute;left:12px;bottom:10px;font-size:13px;color:var(--quiet);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:4px 10px;border-radius:8px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--rule)}
+.kpi{padding:12px 16px;border-right:1px solid var(--rule)}
+.kpi small{display:block;color:var(--quiet);font-size:13px}
+.kpi b{font:700 21px/1.2 "Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tables{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;padding:18px max(2vw,16px)}
+h2{font:600 19px/1.3 "Noto Serif TC",serif;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--rule)}
+th{font-weight:500;color:var(--quiet);font-size:13px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--ink);opacity:.25}
+.export{padding:4px max(2vw,16px) 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:0 20px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+.btn:disabled{opacity:.4;cursor:default}
+.notes{padding:4px max(2vw,16px) 28px}
+.notes p{margin:6px 0;max-width:80ch;color:var(--quiet);font-size:14px}
+@media(max-width:900px){main{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0;order:2}.stage{order:1}.tables{grid-template-columns:1fr}}
+@media(max-width:600px){.fig{height:56vh}.legend{display:none}.kpi b{font-size:18px}}
+
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.tools{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 270px)}
+.tools button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.tools button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tools .sep{width:1px;background:var(--rule);margin:0 2px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:4px 8px;border-radius:6px;white-space:nowrap;display:none;transform:translate(12px,-120%)}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<header>
+  <div>
+    <h1>拓樸互鎖面板</h1>
+    <p class="sub">剛性外框＋乾式堆疊塊 · Truchet 弧邊 · 交替斜面互鎖 · 外框兩件式、可滑入組裝 · 3D 列印 · v0.3</p>
+  </div>
+  <div class="status" id="status" data-s="green" role="status" aria-live="polite"><i class="lamp"></i><span id="statusText">計算中…</span></div>
+</header>
+<main>
+<aside>
+  <fieldset>
+    <legend>面板</legend>
+    <div class="row"><label for="W">寬</label><input type="range" id="W" min="80" max="380" step="5"><output id="W_o"></output></div>
+    <div class="row"><label for="H">高</label><input type="range" id="H" min="80" max="260" step="5"><output id="H_o"></output></div>
+    <div class="row"><label for="N">欄數</label><input type="range" id="N" min="2" max="14" step="1"><output id="N_o"></output></div>
+    <div class="row"><label for="M">列數</label><input type="range" id="M" min="2" max="12" step="1"><output id="M_o"></output></div>
+    <div class="row"><label for="t">塊厚</label><input type="range" id="t" min="4" max="30" step="1"><output id="t_o"></output></div>
+    <div class="row"><label for="frame">外框寬</label><input type="range" id="frame" min="6" max="40" step="1"><output id="frame_o"></output></div>
+  </fieldset>
+  <fieldset>
+    <legend>組裝</legend>
+    <div class="seg" id="asmSeg" role="group" aria-label="組裝方式"><button data-v="1">可滑入組裝</button><button data-v="0">純造型（四邊弧）</button></div>
+    <p class="note" id="asmNote"></p>
+  </fieldset>
+  <fieldset>
+    <legend>塊形</legend>
+    <div class="seg" id="etSeg" role="group" aria-label="邊形"><button data-v="arc">弧邊</button><button data-v="straight">直邊</button></div>
+    <div class="row"><label for="bulge">弧深</label><input type="range" id="bulge" min="0.04" max="0.3" step="0.01"><output id="bulge_o"></output></div>
+    <div class="row"><label for="alpha">斜面角</label><input type="range" id="alpha" min="4" max="30" step="1"><output id="alpha_o"></output></div>
+    <div class="row"><label for="gap">間隙</label><input type="range" id="gap" min="0" max="0.8" step="0.05"><output id="gap_o"></output></div>
+    <p class="note">斜面角越大鎖得越牢，但列印時懸空越多。間隙是塊與塊之間預留的空隙，FDM 一般 0.2–0.3 mm，先印兩三塊試組再調。</p>
+  </fieldset>
+  <fieldset>
+    <legend>排列（Truchet）</legend>
+    <div class="seg" id="patSeg" role="group" aria-label="排列"><button data-v="checker">棋盤</button><button data-v="truchet">Truchet 隨機</button></div>
+    <div class="seg" style="margin-top:6px"><button id="reseed">重新隨機</button><button id="clearFlips">清除點選翻轉</button></div>
+    <label class="chk"><input type="checkbox" id="randomTilt"> 實驗：斜面方向也隨機（觀察哪些塊會鬆脫；不能列印）</label>
+    <p class="note">點任何一塊可以把它四條邊的弧翻面（凸↔凹），鄰塊的邊也跟著變。斜面維持棋盤交替，所以怎麼點都鎖得住、也印得出來。</p>
+  </fieldset>
+  <fieldset>
+    <legend>開孔（光與風）</legend>
+    <div class="seg" id="holeSeg" role="group" aria-label="開孔"><button data-v="none">無</button><button data-v="grad">漸變</button><button data-v="wave">波浪</button><button data-v="attr">吸引點</button></div>
+    <div class="row"><label for="hmax">最大孔徑</label><input type="range" id="hmax" min="1" max="20" step="0.5"><output id="hmax_o"></output></div>
+    <div class="row"><label for="hlv">孔徑級數</label><input type="range" id="hlv" min="2" max="8" step="1"><output id="hlv_o"></output></div>
+    <div class="row" id="hdirRow"><label for="hdir">方向</label><input type="range" id="hdir" min="0" max="180" step="5"><output id="hdir_o"></output></div>
+    <div class="row" id="hwlRow"><label for="hwl">波長</label><input type="range" id="hwl" min="40" max="300" step="5"><output id="hwl_o"></output></div>
+    <div class="row" id="arRow"><label for="ar">影響半徑</label><input type="range" id="ar" min="40" max="300" step="5"><output id="ar_o"></output></div>
+    <label class="chk"><input type="checkbox" id="hflip"> 反轉大小</label>
+    <p class="note">吸引點：切到「調形」後拖曳面板上的藍色球。孔徑分級越少，塊的種類越少。</p>
+  </fieldset>
+  <fieldset>
+    <legend>光線</legend>
+    <div class="row"><label for="laz">光源方位</label><input type="range" id="laz" min="0" max="360" step="5"><output id="laz_o"></output></div>
+    <div class="row"><label for="lel">光源高度角</label><input type="range" id="lel" min="5" max="85" step="1"><output id="lel_o"></output></div>
+    <label class="chk"><input type="checkbox" id="shadow"> 陰影</label>
+  </fieldset>
+</aside>
+<section class="stage">
+  <div class="fig" id="fig">
+    <div class="views" role="toolbar" aria-label="工具">
+      <button data-tool="view" aria-pressed="true">檢視</button><button data-tool="edit" aria-pressed="false">調形</button><button id="undo">復原</button>
+      <button data-v="persp" aria-pressed="true">透視</button><button data-v="top">正面</button><button data-v="side">側面</button>
+      <button data-c="lock" aria-pressed="true">依互鎖著色</button><button data-c="type" aria-pressed="false">依種類著色</button>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="hint" id="hint">點一塊翻轉它</div>
+  </div>
+  <div style="display:flex;gap:12px;align-items:center;padding:10px max(2vw,16px);border-bottom:1px solid var(--rule)" id="stepBar"><label for="step" style="font-weight:700;white-space:nowrap">組裝步驟</label><input type="range" id="step" min="0" max="7" step="1" style="flex:1"><span id="stepText" style="white-space:nowrap;font-size:14px"></span></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="tables">
+    <div>
+      <h2>塊的種類</h2>
+      <table><thead><tr><th>編號</th><th>四邊（凸凹／斜面）</th><th>孔徑</th><th class="n">數量</th></tr></thead><tbody id="jt"></tbody></table>
+    </div>
+    <div>
+      <h2>列印</h2>
+      <table><thead><tr><th>項目</th><th class="n">數值</th></tr></thead><tbody id="ct"></tbody></table>
+    </div>
+  </div>
+  <div class="export">
+    <button class="btn" id="dl" disabled>下載列印包（.zip）</button>
+    <span class="note" id="dlNote">內含每種塊的 STL（附數量）、外框 A 與 B 的 STL、組裝對照圖 SVG（每格的塊編號與旋轉）、參數 JSON。</span>
+  </div>
+  <div class="notes">
+    <p><b>互鎖原理</b>：每塊的四個側面都是斜面，方向交替：有的邊「上寬下窄」，蓋在鄰塊上方，擋住自己往下掉；有的邊「上窄下寬」，被鄰塊壓住，擋住自己往上推。一塊至少要各有一條，才會被鎖住。邊界的塊由外框的斜面夾住，所以外框必須是剛性的。這和互承的「一邊搭在別人上、一邊托住別人」是同一個上下交替的規則，只是從線、面變成了體。</p>
+    <p><b>Truchet</b>：每條邊的弧往哪一側鼓，可以獨立決定。棋盤排列時只有一種塊形（旋轉使用），Truchet 隨機時圖樣更有流動感，但塊的種類變多。</p>
+    <p><b>列印建議</b>：先印兩三塊和一小段外框試組，確認間隙與斜面角，再印全部。塊平放列印即可；斜面角超過約 30° 時懸空變多。外框超過列印平台時需要分段。作為建築外牆時，氣密與水密要靠內側另一層玻璃。</p>
+    <p><b>組裝（v0.3）</b>：互鎖塊沒辦法從上面一塊一塊放進封閉的外框，因為每一塊都有兩邊壓著別人、兩邊被別人壓著。所以外框拆成 A（ㄇ形）和 B（上邊）兩件：塊從開口一排一排平推進去，最後推上 B 鎖住。要能平推，塊的左右兩邊必須是直的，所以弧只留在上下兩邊；貼著外框左右兩側的面也不做斜面。每次重算都會用實體運算檢查「每一塊和 B 都推得進去」，結果在「列印」表裡。想看四邊都是弧的圖樣可以切到「純造型」，但那種塊做不出來。</p><p><b>已驗證</b>（v0.2）：相鄰兩塊共用同一條邊曲面，只差間隙；外框內壁由所有塊的聯集產生，與邊界塊的間隙等於塊與塊的間隙。棋盤與 Truchet 排列在測試中，塊與塊、塊與外框的實體重疊皆為 0。四塊交會的角落會有小孔，是這種塊形的正常現象。</p><p><b>限制</b>：互鎖檢查只看每塊的上下兩個方向，沒有計算旋轉與摩擦；實際鎖固程度請以試組為準。</p>
+  </div>
+</section>
+</main>
+<script src="core.js"></script>
+<script src="panelcore.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+{
+const $ = id => document.getElementById(id);
+const DEF = { W: 144, H: 144, N: 6, M: 6, t: 8, frame: 12, edgeType: 'arc', bulge: 0.16, alpha: 12, gap: 0.25, assemble: true, pattern: 'checker', seed: 3, randomTilt: false, flips: [],
+  hole: 'grad', hmax: 5, hlv: 4, hdir: 0, hwl: 120, ar: 150, ax: 0, ay: 0, hflip: false, laz: 140, lel: 30, shadow: true };
+let P = JSON.parse(JSON.stringify(DEF));
+try { const s = JSON.parse(localStorage.getItem('rf-panel3') || 'null'); if (s && s.N) P = Object.assign(P, s); } catch (e) {}
+const hist = []; const snap = () => { hist.push(JSON.stringify(P)); if (hist.length > 60) hist.shift(); };
+function undo() { if (!hist.length) return; P = JSON.parse(hist.pop()); syncInputs(); rebuild(); }
+$('undo').addEventListener('click', undo);
+addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
+const tri = (c, holes) => THREE.ShapeUtils.triangulateShape(c.map(p => new THREE.Vector2(p[0], p[1])), holes.map(h => h.map(p => new THREE.Vector2(p[0], p[1]))));
+
+// ---------- 控制項 ----------
+const mm = (f = 0) => v => `${(+v).toFixed(f)} mm`;
+const FIELDS = { W: mm(), H: mm(), N: v => v + ' 欄', M: v => v + ' 列', t: mm(), frame: mm(), bulge: v => (+v).toFixed(2), alpha: v => v + '°', gap: mm(2),
+  hmax: mm(1), hlv: v => v + ' 級', hdir: v => v + '°', hwl: mm(), ar: mm(), laz: v => v + '°', lel: v => v + '°' };
+const LIGHT = ['laz', 'lel'];
+function syncInputs() {
+  Object.keys(FIELDS).forEach(k => { $(k).value = P[k]; $(k + '_o').textContent = FIELDS[k](P[k]); });
+  [['etSeg', 'edgeType'], ['patSeg', 'pattern'], ['holeSeg', 'hole']].forEach(([id, k]) => document.querySelectorAll(`#${id} button`).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === P[k])));
+  $('randomTilt').checked = P.randomTilt; $('hflip').checked = P.hflip; $('shadow').checked = P.shadow;
+  $('hdirRow').style.display = (P.hole === 'grad' || P.hole === 'wave') ? '' : 'none'; $('hwlRow').style.display = P.hole === 'wave' ? '' : 'none'; $('arRow').style.display = P.hole === 'attr' ? '' : 'none';
+  $('bulge').disabled = P.edgeType === 'straight';
+  document.querySelectorAll('#asmSeg button').forEach(b => b.setAttribute('aria-pressed', (b.dataset.v === '1') === !!P.assemble));
+  $('asmNote').textContent = P.assemble ? '外框拆成 A（ㄇ形）與 B（上邊，鎖）兩件。塊從開口一排一排往下推入，最後推上 B。為了能滑入，弧只出現在每塊的上下兩邊，左右兩邊是直的。' : '四邊都可以是弧，圖樣最自由，但這種塊沒辦法滑入一體的外框，只能當造型參考，不提供列印檔。';
+  $('stepBar').style.display = P.assemble ? 'flex' : 'none';
+}
+Object.keys(FIELDS).forEach(k => { const el = $(k); el.addEventListener('pointerdown', snap); el.addEventListener('keydown', snap);
+  el.addEventListener('input', () => { P[k] = +el.value; $(k + '_o').textContent = FIELDS[k](P[k]); if (k === 'N' || k === 'M') P.flips = []; LIGHT.includes(k) ? applyLight() : schedule(); }); });
+[['etSeg', 'edgeType'], ['patSeg', 'pattern'], ['holeSeg', 'hole']].forEach(([id, k]) => $(id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; snap(); P[k] = b.dataset.v; syncInputs(); rebuild(); }));
+$('asmSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; snap(); P.assemble = b.dataset.v === '1'; syncInputs(); rebuild(); });
+$('step').addEventListener('input', e => { step = +e.target.value; showStep(); });
+$('reseed').addEventListener('click', () => { snap(); P.seed = (P.seed * 7 + 13) % 9973; rebuild(); });
+$('clearFlips').addEventListener('click', () => { snap(); P.flips = []; rebuild(); });
+['randomTilt', 'hflip'].forEach(k => $(k).addEventListener('change', e => { snap(); P[k] = e.target.checked; rebuild(); }));
+$('shadow').addEventListener('change', e => { P.shadow = e.target.checked; applyLight(); });
+
+// ---------- 3D ----------
+const fig = $('fig');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); fig.prepend(renderer.domElement);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, 1, 8000);
+const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8370, 1.3));
+const sun = new THREE.DirectionalLight(0xffffff, 2); scene.add(sun, sun.target);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -300, right: 300, top: 300, bottom: -300, near: 10, far: 2000 }); sun.shadow.bias = -0.002; sun.shadow.normalBias = 1.5;
+const table = new THREE.Mesh(new THREE.PlaneGeometry(1200, 1200), new THREE.MeshStandardMaterial({ color: 0x2a2c29, roughness: 1 })); table.rotation.x = -Math.PI / 2; table.receiveShadow = true; scene.add(table);
+const pan = new THREE.Group(); pan.rotation.x = -Math.PI / 2; scene.add(pan);   // 局部 z（厚度）→ 世界 y
+const handles = new THREE.Group(); pan.add(handles);
+function applyLight() {
+  const az = P.laz * Math.PI / 180, el = P.lel * Math.PI / 180, r = 700;
+  sun.position.set(r * Math.cos(el) * Math.sin(az), r * Math.sin(el), r * Math.cos(el) * Math.cos(az)); sun.target.position.set(0, 0, 0);
+  renderer.shadowMap.enabled = P.shadow; sun.castShadow = P.shadow; scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
+}
+let curView = 'persp';
+function setView(v) {
+  curView = v; document.querySelectorAll('[data-v]').forEach(b => { if (['persp', 'top', 'side'].includes(b.dataset.v)) b.setAttribute('aria-pressed', b.dataset.v === v); });
+  if (v === 'persp') camera.position.set(220, 300, 330);
+  if (v === 'top') camera.position.set(0, 620, 0.01);
+  if (v === 'side') camera.position.set(0, 60, 520);
+  controls.target.set(0, 0, 0); controls.update();
+}
+document.querySelectorAll('[data-v]').forEach(b => { if (['persp', 'top', 'side'].includes(b.dataset.v)) b.addEventListener('click', () => setView(b.dataset.v)); });
+let colorBy = 'lock';
+document.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => { colorBy = b.dataset.c; document.querySelectorAll('[data-c]').forEach(x => x.setAttribute('aria-pressed', x === b)); paint(); }));
+let tool = 'view';
+const setTool = t => { tool = t; document.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === t)); handles.visible = t === 'edit' && P.hole === 'attr'; $('hint').textContent = t === 'edit' ? (P.hole === 'attr' ? '拖曳藍色球移動吸引點' : '目前沒有可拖曳的把手（開孔選「吸引點」）') : '點一塊翻轉它'; };
+document.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => setTool(b.dataset.tool)));
+new ResizeObserver(() => { const w = fig.clientWidth, h = fig.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }).observe(fig);
+setView('persp');
+
+// ---------- 模型 ----------
+const HUES = [0xe9e4d8, 0x9db4c9, 0xd9b58a, 0xa9c49a, 0xc9a3b8, 0x8fc0bb, 0xd7c27d, 0xb3a6d6];
+let E = null, blocks = [], frameMesh = null, frameB = null, types = [], raf = 0, MF = null, frameTimer = 0, chk = null, step = 99, FS = null;
+const matB = new THREE.MeshStandardMaterial({ color: 0x2f6fd0, roughness: .8 });
+const KS = 20;
+const matFrame = new THREE.MeshStandardMaterial({ color: 0x6b5a45, roughness: .8 });
+function schedule() { cancelAnimationFrame(raf); raf = requestAnimationFrame(rebuild); }
+const cellC = (i, j) => [-P.W / 2 + (i + 0.5) * P.W / P.N, -P.H / 2 + (j + 0.5) * P.H / P.M];
+function geomFrom(mesh, zoff = 0) {
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(mesh.V, 3)); g.setIndex(new THREE.BufferAttribute(mesh.T, 1));
+  const ng = g.toNonIndexed(); g.dispose(); ng.computeVertexNormals(); ng.translate(0, 0, zoff); return ng;
+}
+function rebuild() {
+  if (P.W > 380 || P.H > 260) { P.W = Math.min(P.W, 380); P.H = Math.min(P.H, 260); }
+  E = PC.edges(P);
+  blocks.forEach(b => { pan.remove(b.mesh); b.mesh.geometry.dispose(); }); blocks = [];
+  const K = KS, z = P.t / 2, sig = new Map();
+  for (let j = 0; j < P.M; j++) for (let i = 0; i < P.N; i++) {
+    const r = PC.holeR(P, i, j), lv = Math.round(r * 2) / 2, [cx, cy] = cellC(i, j);
+    const mesh = PC.loftMesh(PC.outline(P, E, i, j, -z, K), PC.outline(P, E, i, j, z, K), -z, z, lv, cx, cy, tri);
+    const L = PC.lock(P, E, i, j), s = PC.signature(P, E, i, j, lv);
+    const m = new THREE.Mesh(geomFrom(mesh, z), new THREE.MeshStandardMaterial({ color: 0xe9e4d8, roughness: .85 }));
+    m.castShadow = m.receiveShadow = true; m.userData = { i, j }; pan.add(m);
+    if (!sig.has(s)) sig.set(s, { s, n: 0, r: lv, ex: [i, j] }); sig.get(s).n++;
+    blocks.push({ i, j, mesh: m, raw: mesh, lock: L, sig: s, r: lv });
+  }
+  types = [...sig.values()].sort((a, b) => b.n - a.n);
+  if (frameMesh) frameMesh.visible = false; if (frameB) frameB.visible = false; chk = null; $('step').max = P.M + 1; step = P.M + 1; $('step').value = step; clearTimeout(frameTimer); frameTimer = setTimeout(buildFrame, 200); paint(); stats(); drawHandles(); setTool(tool);
+  try { localStorage.setItem('rf-panel3', JSON.stringify(P)); } catch (e) {}
+}
+function manGeo(man) { const g = man.getMesh(), np = g.numProp, V = new Float32Array(g.vertProperties.length / np * 3); for (let a = 0, b = 0; a < g.vertProperties.length; a += np, b += 3) { V[b] = g.vertProperties[a]; V[b + 1] = g.vertProperties[a + 1]; V[b + 2] = g.vertProperties[a + 2]; } return geomFrom({ V, T: g.triVerts }, P.t / 2); }
+function buildFrame() {
+  [frameMesh, frameB].forEach(m => { if (m) { pan.remove(m); m.geometry.dispose(); } }); frameMesh = frameB = null;
+  if (!MF) return;
+  try {
+    FS = PC.frameSolid(MF, P, E, KS, tri);
+    frameMesh = new THREE.Mesh(manGeo(FS.A), matFrame); frameMesh.castShadow = frameMesh.receiveShadow = true; pan.add(frameMesh);
+    if (FS.B) { frameB = new THREE.Mesh(manGeo(FS.B), matB); frameB.castShadow = frameB.receiveShadow = true; pan.add(frameB); }
+    // 實體檢查
+    const sol = blocks.map(b => ({ i: b.i, j: b.j, solid: PC.toManifold(MF, b.raw) })), U = MF.Manifold.union(sol.map(b => b.solid));
+    let bb = 0; for (let a = 0; a < sol.length; a++) for (let b = a + 1; b < sol.length; b++) if (Math.abs(sol[a].i - sol[b].i) <= 1 && Math.abs(sol[a].j - sol[b].j) <= 1) bb = Math.max(bb, sol[a].solid.intersect(sol[b].solid).volume());
+    chk = { bb, fr: U.intersect(FS.A).volume() + (FS.B ? U.intersect(FS.B).volume() + FS.A.intersect(FS.B).volume() : 0), slide: FS.B ? PC.slideCheck(MF, P, sol, FS) : null };
+  } catch (err) { chk = { error: true }; console.error(err); }
+  showStep(); stats();
+}
+function showStep() {
+  const asm = !!P.assemble;
+  blocks.forEach(b => { b.mesh.visible = !asm || b.j < step; });
+  if (frameB) { frameB.position.y = step > P.M ? 0 : 22; frameB.material.transparent = step <= P.M; frameB.material.opacity = step > P.M ? 1 : .4; }
+  $('stepText').textContent = step === 0 ? '0：只有 A 框' : step <= P.M ? `${step}：推入第 ${step} 排` : `${step}：推上 B 鎖住，完成`;
+}
+function paint() {
+  blocks.forEach(b => {
+    const ok = b.lock.up && b.lock.down;
+    b.mesh.material.color.set(colorBy === 'lock' ? (ok ? 0xe9e4d8 : 0xd0382b) : HUES[types.findIndex(t => t.s === b.sig) % HUES.length]);
+  });
+  $('legend').innerHTML = colorBy === 'lock' ? '<div><i class="dot" style="background:#e9e4d8;border:1px solid #bbb"></i>鎖住</div><div><i class="dot" style="background:var(--bad)"></i>會鬆脫</div><div><i class="dot" style="background:#6b5a45"></i>外框 A</div><div><i class="dot" style="background:#2f6fd0"></i>外框 B（鎖）</div>'
+    : types.slice(0, 8).map((t, k) => `<div><i class="dot" style="background:#${HUES[k % 8].toString(16).padStart(6, '0')}"></i>B${String(k + 1).padStart(2, '0')} × ${t.n}</div>`).join('') + (types.length > 8 ? `<div>…共 ${types.length} 種</div>` : '');
+}
+let attrH = null;
+function drawHandles() {
+  handles.clear();
+  attrH = new THREE.Mesh(new THREE.SphereGeometry(7, 20, 14), new THREE.MeshStandardMaterial({ color: 0x2f6fd0, emissive: 0x0b2a5c }));
+  attrH.position.set(P.ax, P.ay, P.t + 8); handles.add(attrH);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(P.ar, 0.8, 6, 96), new THREE.MeshBasicMaterial({ color: 0x2f6fd0 })); ring.position.set(P.ax, P.ay, P.t + 1); handles.add(ring);
+}
+function stats() {
+  const loose = blocks.filter(b => !(b.lock.up && b.lock.down)).length;
+  const openA = blocks.reduce((s, b) => s + Math.PI * b.r * b.r, 0), ratio = 100 * openA / (P.W * P.H);
+  let vol = 0; blocks.forEach(b => { const w = P.W / P.N, h = P.H / P.M; vol += (w * h - Math.PI * b.r * b.r) * P.t; });
+  const fvol = ((P.W + 2 * P.frame) * (P.H + 2 * P.frame) - P.W * P.H) * P.t;
+  const st = loose ? 'red' : 'green';
+  $('status').dataset.s = st;
+  $('statusText').textContent = loose ? `${loose} 塊會鬆脫：點它們或鄰塊翻轉，或取消「斜面也隨機」` : `全部 ${blocks.length} 塊都被鎖住 · ${types.length} 種塊 · 開孔率 ${ratio.toFixed(1)}%`;
+  $('kpis').innerHTML = [['塊數', blocks.length + ' 塊'], ['塊的種類', types.length + ' 種'], ['鎖住', `${blocks.length - loose} / ${blocks.length}`], ['開孔率', ratio.toFixed(1) + '%'], ['單塊尺寸', `${(P.W / P.N).toFixed(0)} × ${(P.H / P.M).toFixed(0)} × ${P.t} mm`], ['外框外尺寸', `${(P.W + 2 * P.frame).toFixed(0)} × ${(P.H + 2 * P.frame).toFixed(0)} mm`]]
+    .map(([k, v]) => `<div class="kpi"><small>${k}</small><b>${v}</b></div>`).join('');
+  const word = c => c.split('|').map(x => { const b = +x.slice(0, x.length / 2), t = +x.slice(x.length / 2); return (b > 0 ? '凸' : b < 0 ? '凹' : '直') + (t > 0 ? '寬' : '窄'); }).join(' ');
+  $('jt').innerHTML = types.map((t, k) => `<tr><td><i class="dot" style="background:#${HUES[k % 8].toString(16).padStart(6, '0')}"></i>B${String(k + 1).padStart(2, '0')}</td><td>${word(t.s.split('#')[0])}</td><td>${t.r ? 'Ø ' + (2 * t.r).toFixed(1) + ' mm' : '—'}</td><td class="n">${t.n}</td></tr>`).join('');
+  const big = Math.max(P.W + 2 * P.frame, P.H + 2 * P.frame);
+  $('ct').innerHTML = [['塊的實心體積', `${(vol / 1000).toFixed(0)} cm³（實際用料依填充率）`], ['外框實心體積', `${(fvol / 1000).toFixed(0)} cm³`],
+    ['外框 A 外尺寸', `${big.toFixed(0)} mm · ` + (big <= 180 ? '18 × 20 cm 平台放得下' : big <= 200 ? '要沿平台 20 cm 的方向擺才放得下' : '<b style="color:var(--bad)">超過 18 × 20 cm 平台，請改小面板</b>')],
+    ['間隙／斜面角', `${P.gap} mm／${P.alpha}°`],
+    ...(chk && !chk.error ? [['塊與塊重疊', `${chk.bb.toFixed(2)} mm³ · ${chk.bb < 0.01 ? '通過' : '<b style="color:var(--bad)">未通過</b>'}`], ['塊與外框重疊', `${chk.fr.toFixed(2)} mm³ · ${chk.fr < 0.01 ? '通過' : '<b style="color:var(--bad)">未通過</b>'}`],
+      ['沿滑入方向組裝', chk.slide === null ? '不適用（純造型）' : chk.slide < 0.01 ? '通過：每一塊與 B 都推得進去' : `<b style="color:var(--bad)">未通過（${chk.slide.toFixed(2)} mm³）</b>`]] : [['實體檢查', chk && chk.error ? '<b style="color:var(--bad)">這組參數做不出有效的外框</b>' : '計算中…']])].map(([k, v]) => `<tr><td>${k}</td><td class="n" style="white-space:normal">${v}</td></tr>`).join('');
+  const okAll = chk && !chk.error && chk.bb < 0.01 && chk.fr < 0.01 && chk.slide !== null && chk.slide < 0.01 && !P.randomTilt;
+  $('dl').disabled = !MF || !downloads || !okAll;
+  if (chk && !okAll && downloads) $('dlNote').textContent = P.assemble ? '實體檢查未通過時不提供下載。' : '純造型模式不提供列印檔，請切到「可滑入組裝」。';
+}
+
+// ---------- 互動 ----------
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let downAt = null, drag = false;
+const toPtr = e => { const r = renderer.domElement.getBoundingClientRect(); ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ptr, camera); };
+renderer.domElement.addEventListener('pointerdown', e => {
+  downAt = [e.clientX, e.clientY];
+  if (tool === 'edit' && P.hole === 'attr') { toPtr(e); if (ray.intersectObject(attrH)[0]) { snap(); drag = true; controls.enabled = false; renderer.domElement.setPointerCapture(e.pointerId); } }
+});
+renderer.domElement.addEventListener('pointermove', e => {
+  if (!drag) return; toPtr(e);
+  const q = new THREE.Vector3(); if (!ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -(P.t + 8)), q)) return;
+  P.ax = Math.max(-P.W / 2 - 40, Math.min(P.W / 2 + 40, q.x)); P.ay = Math.max(-P.H / 2 - 40, Math.min(P.H / 2 + 40, -q.z)); schedule();
+});
+renderer.domElement.addEventListener('pointerup', e => {
+  if (drag) { drag = false; controls.enabled = true; return; }
+  if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 5) return;
+  toPtr(e); const hit = ray.intersectObjects(blocks.map(b => b.mesh))[0]; if (!hit) return;
+  snap(); const { i, j } = hit.object.userData, k = j * P.N + i, at = P.flips.indexOf(k);
+  if (at >= 0) P.flips.splice(at, 1); else P.flips.push(k); rebuild();
+});
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+
+// ---------- 匯出 ----------
+let downloads = null;
+import('./manifold.js').then(m => m.default()).then(w => { w.setup(); MF = w; buildFrame(); stats(); }).catch(() => { $('dlNote').textContent = '實體引擎載入失敗，無法輸出 STL。'; });
+RF.getDownloads().then(d => { downloads = d; if (!d) $('dlNote').textContent = '此檢視無法下載檔案，請在 claude.ai 開啟此頁。'; stats(); }).catch(() => {});
+const crcT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = crcT[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = typeof f.data === 'string' ? enc.encode(f.data) : new Uint8Array(f.data), crc = crc32(data), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name); off += 30 + name.length + data.length;
+  });
+  const cs = central.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)]);
+}
+function mapSVG() {
+  const s = 3, Wd = (P.W + 2 * P.frame) * 1 + 20, Hd = (P.H + 2 * P.frame) + 30;
+  let out = `<svg xmlns="http://www.w3.org/2000/svg" width="${Wd}mm" height="${Hd}mm" viewBox="${-Wd / 2} ${-Hd / 2 + 10} ${Wd} ${Hd}">`;
+  out += `<rect x="${-P.W / 2 - P.frame}" y="${-P.H / 2 - P.frame}" width="${P.W + 2 * P.frame}" height="${P.H + 2 * P.frame}" fill="none" stroke="#000" stroke-width="0.3"/>`;
+  blocks.forEach(b => {
+    const pts = PC.outline({ ...P, gap: 0 }, E, b.i, b.j, P.t / 2, KS).map(p => `${p[0].toFixed(2)},${(-p[1]).toFixed(2)}`).join(' ');
+    const [cx, cy] = cellC(b.i, b.j), k = types.findIndex(t => t.s === b.sig);
+    out += `<polygon points="${pts}" fill="none" stroke="#555" stroke-width="0.2"/><text x="${cx}" y="${-cy + 1.5}" font-size="4" text-anchor="middle">B${String(k + 1).padStart(2, '0')}</text>`;
+  });
+  return out + `<text x="${-P.W / 2 - P.frame}" y="${P.H / 2 + P.frame + 8}" font-size="4">組裝對照圖（從正面看，上方為面板的上緣）。同編號的塊形狀相同，依格子輪廓旋轉放入。</text></svg>`;
+}
+$('dl').addEventListener('click', async () => {
+  if (!MF || !downloads) return;
+  const files = [], z = P.t / 2, K = KS;
+  if (P.randomTilt) { $('dlNote').textContent = '「斜面也隨機」只是用來觀察鬆脫的實驗，塊的角落會互相干涉，不能列印。請先取消勾選。'; return; }
+  types.forEach((t, k) => {
+    const [i, j] = t.ex, [cx, cy] = cellC(i, j);
+    const mesh = PC.loftMesh(PC.outline(P, E, i, j, -z, K), PC.outline(P, E, i, j, z, K), -z, z, t.r, cx, cy, tri);
+    const man = PC.toManifold(MF, mesh).translate([-cx, -cy, z]);
+    files.push({ name: `blocks/B${String(k + 1).padStart(2, '0')}_x${t.n}.stl`, data: toSTL(man.getMesh(), 'B' + (k + 1)) });
+  });
+  if (!FS || !FS.B) return;
+  files.push({ name: 'frame_A.stl', data: toSTL(FS.A.translate([0, 0, z]).getMesh(), 'frame A') }, { name: 'frame_B_key.stl', data: toSTL(FS.B.translate([0, 0, z]).getMesh(), 'frame B') });
+  files.push({ name: 'assembly_map.svg', data: mapSVG() });
+  files.push({ name: 'params.json', data: JSON.stringify({ params: P, types: types.map((t, k) => ({ id: 'B' + (k + 1), count: t.n, holeR: t.r, code: t.s })) }) });
+  files.push({ name: 'README.txt', data: '拓樸互鎖面板 v0.1 列印包\r\n1. blocks：每種塊一個 STL，檔名 xN 為數量。平放列印，斜面朝上下。\r\n2. frame_A.stl：ㄇ形外框（下邊＋左右兩邊）；frame_B_key.stl：上邊，是鎖，兩支圓榫插進 A。若超過列印平台，請改小面板。\r\n3. assembly_map.svg：每一格放哪一種塊。\r\n4. 建議先印 2–3 塊與一小段外框試組，確認間隙與斜面角後再印全部。\r\n5. 組裝順序：A 平放，開口朝自己；從最裡面那一排開始，把塊沿著開口方向一排一排平推進去（不是從上面放）；最後把 B 推上，圓榫插進 A。\r\n' });
+  $('dl').disabled = true; $('dlNote').textContent = '打包中…';
+  try { await downloads.save({ filename: `interlock-panel_${P.N}x${P.M}.zip`, data: zip(files) }); $('dlNote').textContent = `已下載：${types.length} 種塊、外框、組裝對照圖。`; }
+  catch (err) { $('dlNote').textContent = err && err.code === 'declined' ? '已取消下載。' : '下載未完成（' + (err && err.code || '未知原因') + '）。'; }
+  finally { $('dl').disabled = false; }
+});
+
+syncInputs(); rebuild(); applyLight();
+}
+</script>
+<script>window.RF_PRESETS={"key": "rf-panel3", "list": [{"g": "基本", "id": "base", "name": "基準", "note": "弧邊、棋盤排列的互鎖面板，可滑入組裝。", "do": []}, {"g": "基本", "id": "straight", "name": "直邊", "note": "邊形改成直邊 → 只剩交替的斜面在互鎖，最容易看懂原理。", "do": [["seg", "#etSeg", "straight"]]}, {"g": "基本", "id": "steep", "name": "斜面加大", "note": "斜面角加大 → 塊與塊咬得更深。", "do": [["range", "alpha", 22]]}, {"g": "基本", "id": "fine", "name": "塊數加多", "note": "欄數與列數增加 → 塊變小變多。", "do": [["range", "N", 10], ["range", "M", 10]]}, {"g": "變化", "id": "truchet", "name": "Truchet 排列", "note": "排列改成 Truchet → 弧邊的方向交錯，圖樣變成連續的曲線。", "do": [["seg", "#patSeg", "truchet"]]}, {"g": "變化", "id": "solid", "name": "不開孔", "note": "關掉開孔 → 實心的塊，只看互鎖的幾何。", "do": [["seg", "#holeSeg", "none"]]}, {"g": "變化", "id": "wave", "name": "開孔波浪", "note": "開孔改成波浪分布、孔徑加大 → 孔的大小像水波。", "do": [["seg", "#holeSeg", "wave"], ["range", "hmax", 8]]}, {"g": "變化", "id": "deco", "name": "純造型", "note": "組裝方式改成純造型 → 四邊都可以是弧，圖樣最完整，但裝不進外框。", "do": [["seg", "#asmSeg", 0]]}, {"g": "變化", "id": "thick", "name": "塊加厚", "note": "塊厚加倍 → 斜面更長，浮雕感更強。", "do": [["range", "t", 16]]}]};</script><script src="presets.js"></script>
+</body>
+</html>

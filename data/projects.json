@@ -217,20 +217,20 @@
     "link": "projects/dougong/"
   },
   {
-    "title": "Fire Station Green Retrofit",
-    "title_zh": "消防分隊廳舍 綠建築改善前後比較",
+    "title": "Reciprocal",
+    "title_zh": "互承",
     "year": "2026",
     "status": "in-progress",
     "medium": [
       "three.js",
-      "Sun-path simulation",
-      "EEWH indicators"
+      "manifold-3d",
+      "Bamboo skewers",
+      "3D-printed joints"
     ],
-    "role": "Analysis, 3D modelling, development",
-    "summary": "A midterm study for the course Green Building Development Practice. One 3D model of a three-storey fire station near the Tropic of Cancer compares passive design (sun, planting, daylight, ventilation, shading) and active systems (walls, roof, glazing, lighting, air conditioning, rainwater) against a code-minimum baseline. It switches between colour, plain and night views, and the same page plays as a slide deck.",
-    "image": "projects/fire-station-green/img/axon.png",
-    "image_style": "line",
-    "link": "projects/fire-station-green/"
+    "role": "Concept, structural logic, direction of AI-assisted development",
+    "summary": "Six simulators that ask how far one local joint rule can decide a whole form: a woven rainbow-bridge arch, reciprocal grids, a pavilion of bamboo skewers, hand-cut boards and printed pyramids, interlocking panels and vaults, and an origami facade skin. It continues from the Dougong, where the bracket turned from a working lever into a sign. Each mode has worked examples that show which parameter changed and what it did to the form. Geometry only so far; nothing has been test-printed.",
+    "image": "projects/reciprocal/img/plate.jpg",
+    "link": "projects/reciprocal/"
   },
   {
     "title": "TT Gear Motor",
@@ -247,5 +247,21 @@
     "image": "projects/tt-motor/img/line.png",
     "image_style": "line",
     "link": "projects/tt-motor/"
+  },
+  {
+    "title": "Fire Station Green Retrofit",
+    "title_zh": "消防分隊廳舍 綠建築改善前後比較",
+    "year": "2026",
+    "status": "in-progress",
+    "medium": [
+      "three.js",
+      "Sun-path simulation",
+      "EEWH indicators"
+    ],
+    "role": "Analysis, 3D modelling, development",
+    "summary": "A midterm study for the course Green Building Development Practice. One 3D model of a three-storey fire station near the Tropic of Cancer compares passive design (sun, planting, daylight, ventilation, shading) and active systems (walls, roof, glazing, lighting, air conditioning, rainwater) against a code-minimum baseline. It switches between colour, plain and night views, and the same page plays as a slide deck.",
+    "image": "projects/fire-station-green/img/axon.png",
+    "image_style": "line",
+    "link": "projects/fire-station-green/"
   }
 ]

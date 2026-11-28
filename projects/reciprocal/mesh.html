@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>線與面互承亭</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 研究用數位實驗台，安靜、精確
+   IDEA: A3 底板上的互承網，像一張可以拉扯的編織
+   PICTURE: 大幅 3D 網面，接點以誤差著色，落柱可拖曳
+   COLOUR and TYPE: 紙白／墨色底，竹木桿件，誤差綠–黃–紅；Noto Serif TC + Noto Sans TC
+   LAYOUT: 左參數欄、右大圖、下方指標與接頭表 */
+:root{color-scheme:light dark;--bg:light-dark(#f6f6f3,#121412);--panel:light-dark(#ffffff,#1b1e1b);--ink:light-dark(#1d1f1c,#e9e9e4);--quiet:light-dark(#5d625b,#a3a89f);--rule:light-dark(#dcdcd5,#30352f);--good:#2e8b57;--mid:#d39b1f;--bad:#d0382b;--warn:#2f6fd0}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+header{padding:16px max(3vw,16px) 12px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:1px solid var(--rule)}
+h1{font:900 clamp(24px,3.2vw,36px)/1.08 "Noto Serif TC",serif;margin:0}
+.sub{color:var(--quiet);margin:4px 0 0;font-size:14px}
+.sub a{color:inherit}
+.status{display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--rule);max-width:640px}
+.lamp{width:14px;height:14px;border-radius:50%;flex:none;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 20%,transparent)}
+.status[data-s=green] .lamp{color:var(--good)}.status[data-s=amber] .lamp{color:var(--mid)}.status[data-s=red] .lamp{color:var(--bad)}
+.status span{font-size:14px}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);align-items:start}
+aside{padding:12px max(1.5vw,14px) 40px;border-right:1px solid var(--rule);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:0}
+fieldset{border:0;border-bottom:1px solid var(--rule);margin:0;padding:12px 0 14px}
+legend{font-weight:700;font-size:15px;padding:0;margin-bottom:6px}
+.row{display:grid;grid-template-columns:5.4em minmax(0,1fr) 4.4em;gap:8px;align-items:center;margin:5px 0}
+.row label{font-size:13.5px;color:var(--quiet)}
+.row output{font-variant-numeric:tabular-nums;text-align:right;font-size:13.5px;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--ink);height:28px}
+input[type=range]:disabled{opacity:.45}
+select{font:inherit;font-size:16px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;font:inherit;font-size:14px;min-height:36px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;padding:0 6px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lock{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;min-height:32px}
+.lock[aria-pressed=false]{background:transparent;border-style:dashed;color:var(--warn)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.card{border:1px solid var(--rule);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--panel)}
+.card .hd{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.note{color:var(--quiet);font-size:13px;margin:6px 0 0}
+.stage{padding:0 0 24px}
+.fig{position:relative;height:min(64vh,640px);min-height:360px;background:light-dark(#eceee8,#181b18);border-bottom:1px solid var(--rule);touch-action:none}
+.fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.views{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap}
+.views button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.views button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.legend{position:absolute;right:12px;top:12px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.7;max-width:240px}
+.hint{position:absolute;left:12px;bottom:10px;font-size:13px;color:var(--quiet);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:4px 10px;border-radius:8px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--rule)}
+.kpi{padding:12px 16px;border-right:1px solid var(--rule)}
+.kpi small{display:block;color:var(--quiet);font-size:13px}
+.kpi b{font:700 21px/1.2 "Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tables{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;padding:18px max(2vw,16px)}
+h2{font:600 19px/1.3 "Noto Serif TC",serif;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--rule)}
+th{font-weight:500;color:var(--quiet);font-size:13px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--ink);opacity:.25}
+.export{padding:4px max(2vw,16px) 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:0 20px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+.btn:disabled{opacity:.4;cursor:default}
+.notes{padding:4px max(2vw,16px) 28px}
+.notes p{margin:6px 0;max-width:80ch;color:var(--quiet);font-size:14px}
+@media(max-width:900px){main{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0;order:2}.stage{order:1}.tables{grid-template-columns:1fr}}
+@media(max-width:600px){.fig{height:56vh}.legend{display:none}.kpi b{font-size:18px}}
+
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.tools{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 270px)}
+.tools button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.tools button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tools .sep{width:1px;background:var(--rule);margin:0 2px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:4px 8px;border-radius:6px;white-space:nowrap;display:none;transform:translate(12px,-120%)}
+.pbar{padding:10px max(2vw,14px) 8px;border-bottom:1px solid var(--rule);background:var(--panel)}
+.pbar .plab{font-size:13px;color:var(--quiet);margin-right:8px}
+.pchips{display:flex;flex-direction:column;gap:6px}.prow{display:flex;gap:6px;align-items:center;overflow-x:auto;padding-bottom:2px}.prow .plab{flex:none;width:2.4em}.prow button{flex:none;white-space:nowrap}
+.pchips button{font:inherit;font-size:14px;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--rule);background:var(--bg);color:var(--ink);cursor:pointer}
+.pchips button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#pnote{margin:8px 0 0;font-size:14px;max-width:90ch}
+#pnote b{font-weight:700}
+.pdiff{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pdiff span{font-size:13px;border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent);border-radius:6px;padding:2px 8px;font-variant-numeric:tabular-nums}
+.chg{background:color-mix(in srgb,var(--warn) 12%,transparent);border-radius:6px;box-shadow:0 0 0 3px color-mix(in srgb,var(--warn) 12%,transparent)}
+.chg>label{color:var(--warn)!important;font-weight:700}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<header>
+  <div>
+    <h1>線與面：互承亭</h1>
+    <p class="sub">先有形 → 三角網格 → 互承化 → 反推接頭 · A3／A4／A5 · 逐點夾子或節點件 · v0.9</p>
+  </div>
+  <div class="status" id="status" data-s="green" role="status" aria-live="polite"><i class="lamp"></i><span id="statusText">計算中…</span></div>
+</header>
+<main>
+<aside>
+  <fieldset>
+    <legend>底板</legend>
+    <div class="seg" id="bdSeg" role="group" aria-label="底板尺寸"><button data-bd="A3">A3</button><button data-bd="A4">A4</button><button data-bd="A5">A5</button></div>
+    <p class="note">換底板時，柱位、拱高、收束跟著等比例縮放；三角邊長不縮（縮小模型時格子少一點，節點才不會擠在一起）。</p>
+  </fieldset>
+  <fieldset>
+    <legend>支承</legend>
+    <div class="seg" id="supSeg" role="group" aria-label="支承方式"><button data-sup="ground">地面</button><button data-sup="wall">牆面浮雕</button></div>
+    <p class="note" id="supNote"></p>
+  </fieldset>
+  <fieldset>
+    <legend>形</legend>
+    <div class="seg" id="layout" role="group" aria-label="柱的排列"><button data-l="rows">雙排</button><button data-l="ring">環狀</button></div>
+    <div class="seg" id="nfSeg" role="group" aria-label="柱數" style="margin-top:6px"></div>
+    <div class="seg" id="symSeg" role="group" aria-label="對稱" style="margin-top:6px"></div>
+    <p class="note" id="symNote"></p>
+    <div class="row" id="Rrow"><label for="R">柱圈半徑</label><input type="range" id="R" min="60" max="145" step="1"><output id="R_o"></output></div>
+    <div class="row" id="Wrow"><label for="W">柱距（寬）</label><input type="range" id="W" min="120" max="400" step="5"><output id="W_o"></output></div>
+    <div class="row" id="Lrow"><label for="L">柱距（深）</label><input type="range" id="L" min="100" max="280" step="5"><output id="L_o"></output></div>
+    <div class="row"><label for="crown">拱頂高</label><input type="range" id="crown" min="40" max="220" step="1"><output id="crown_o"></output></div>
+    <div class="row"><label for="liftL" id="liftLlab">寬邊拱</label><input type="range" id="liftL" min="0" max="180" step="1"><output id="liftL_o"></output></div>
+    <div class="row" id="liftSrow"><label for="liftS">深邊拱</label><input type="range" id="liftS" min="0" max="180" step="1"><output id="liftS_o"></output></div>
+    <div class="row"><label for="footH">柱高</label><input type="range" id="footH" min="0" max="80" step="1"><output id="footH_o"></output></div>
+  </fieldset>
+  <fieldset>
+    <legend>收束</legend>
+    <div class="row"><label for="pinch">收束程度</label><input type="range" id="pinch" min="0" max="0.9" step="0.01"><output id="pinch_o"></output></div>
+    <div class="row"><label for="gatherH">收束起點</label><input type="range" id="gatherH" min="10" max="150" step="1"><output id="gatherH_o"></output></div>
+    <div class="row"><label for="ringR">腳環半徑</label><input type="range" id="ringR" min="4" max="40" step="1"><output id="ringR_o"></output></div>
+    <div class="row"><label for="edgeShape">邊拱曲線</label><input type="range" id="edgeShape" min="0.4" max="2" step="0.05"><output id="edgeShape_o"></output></div>
+    <p class="note">收束程度越大，腳部越細；收束起點是從多高開始往柱子收；邊拱曲線越小，邊從腳部越陡地拱起，腳越修長。</p>
+  </fieldset>
+  <fieldset>
+    <legend>材料與網格</legend>
+    <div class="row"><label for="mat">材料</label><select id="mat" style="grid-column:span 2"><option value="0">竹籤 2 × 64 mm</option><option value="1">烤肉串 3 × 180 mm</option><option value="2">竹筷 5 × 195 mm</option></select></div>
+    <div class="row"><label for="slen">竹籤長度</label><input type="range" id="slen" min="20" max="64" step="1"><output id="slen_o"></output></div>
+    <div class="row"><label for="edge">三角邊長</label><input type="range" id="edge" min="20" max="160" step="1"><output id="edge_o"></output></div>
+    <div class="row"><label for="jitter">大小不一</label><input type="range" id="jitter" min="0" max="0.8" step="0.05"><output id="jitter_o"></output></div>
+    <div class="row"><label for="phi">扇形旋轉</label><input type="range" id="phi" min="4" max="25" step="1"><output id="phi_o"></output></div>
+    <p class="note">扇形旋轉只決定起始的搭法。求解後每個節點的搭接長度由當地的曲率與偏心決定：越彎的地方搭接越短。</p>
+  </fieldset>
+  <fieldset>
+    <legend>線與面的漸變</legend>
+    <div class="seg" id="gmode" role="group" aria-label="漸變方向"><button data-g="A">依高度</button><button data-g="B">沿長度</button></div>
+    <div class="seg" id="gstyle" role="group" aria-label="漸變方式" style="margin-top:6px"><button data-s="hole">開孔</button><button data-s="dither">網點</button><button data-s="hard">硬切</button></div>
+    <div class="row"><label for="gc">交界位置</label><input type="range" id="gc" min="0" max="1" step="0.01"><output id="gc_o"></output></div>
+    <div class="row"><label for="gw">漸變寬度</label><input type="range" id="gw" min="0.02" max="1" step="0.01"><output id="gw_o"></output></div>
+    <label class="chk"><input type="checkbox" id="gflip"> 反轉（竹籤與紙板對調）</label>
+    <div class="seg" style="margin-top:8px"><button id="clearOv">清除手動點選</button></div>
+    <p class="note" id="gnote"></p>
+    <p class="note"><span><i class="sw" style="background:#cfae72"></i>竹籤</span>　<span><i class="sw" style="background:#e9e4d8;border:1px solid #bbb"></i>板（平板可開孔，或改成三角錐）</span></p>
+  </fieldset>
+  <fieldset>
+    <legend>三角錐（3D 列印，取代平板）</legend>
+    <div class="seg" id="pyrSeg" role="group" aria-label="紙板形式"><button data-p="flat">平板</button><button data-p="pyr">三角錐</button></div>
+    <div id="pyrBox">
+    <div class="seg" id="pfSeg" role="group" aria-label="高度場" style="margin-top:6px"><button data-pf="grad">漸變</button><button data-pf="wave">波浪</button></div>
+    <div class="seg" id="pdSeg" role="group" aria-label="漸變方向" style="margin-top:6px"><button data-pd="A">依高度</button><button data-pd="B">沿長度</button></div>
+    <div class="seg" id="psSeg" role="group" aria-label="凸凹" style="margin-top:6px"><button data-ps="out">凸</button><button data-ps="in">凹</button><button data-ps="alt">凸凹交錯</button></div>
+    <div class="row"><label for="ph">最大錐高</label><input type="range" id="ph" min="0" max="24" step="0.5"><output id="ph_o"></output></div>
+    <div class="row"><label for="plv">高度級數</label><input type="range" id="plv" min="2" max="8" step="1"><output id="plv_o"></output></div>
+    <div class="row" id="pwlRow"><label for="pwl">波長</label><input type="range" id="pwl" min="40" max="320" step="5"><output id="pwl_o"></output></div>
+    <div class="row" id="pwdRow"><label for="pwd">波的方向</label><input type="range" id="pwd" min="0" max="180" step="5"><output id="pwd_o"></output></div>
+    <label class="chk"><input type="checkbox" id="pflip"> 反轉高低</label>
+    <p class="note">只用在實心的板格上。錐體是薄殼，底部有一圈 2 mm 厚的裙邊，裙邊當成板插進同樣的夾子，所以錐的高低怎麼變，接頭都不用改。每個錐是獨立的列印件。</p>
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>光線</legend>
+    <div class="row"><label for="laz">光源方位</label><input type="range" id="laz" min="0" max="360" step="5"><output id="laz_o"></output></div>
+    <div class="row"><label for="lel">光源高度角</label><input type="range" id="lel" min="5" max="85" step="1"><output id="lel_o"></output></div>
+    <label class="chk"><input type="checkbox" id="shadow"> 陰影</label>
+  </fieldset>
+  <fieldset>
+    <legend>接頭</legend>
+    <div class="seg" id="jtSeg" role="group" aria-label="接頭方式"><button data-jt="clip">逐點夾子</button><button data-jt="node">節點件</button></div>
+    <div id="nodeBox">
+      <div class="seg" id="nsSeg" role="group" aria-label="節點件造型" style="margin-top:6px"><button data-ns="ring">鏤空環</button><button data-ns="disc">實心盤</button><button data-ns="dou">斗形</button></div>
+      <div class="row"><label for="ngrow">加大</label><input type="range" id="ngrow" min="0" max="12" step="0.5"><output id="ngrow_o"></output></div>
+      <div class="row"><label for="nthick">加厚</label><input type="range" id="nthick" min="0" max="10" step="0.5"><output id="nthick_o"></output></div>
+      <div class="seg" id="ngSeg" role="group" aria-label="節點件漸變" style="margin-top:6px"><button data-ng="none">全部一樣</button><button data-ng="A">依高度</button><button data-ng="B">沿長度</button></div>
+      <label class="chk"><input type="checkbox" id="nflip"> 反轉漸變</label>
+      <p class="note">每個節點件的最小尺寸由形決定（要包住那幾根桿互相搭接的範圍），加大與加厚是在最小尺寸之上再加；選了漸變，加大與加厚只作用在一端。</p>
+    </div>
+    <label class="chk"><input type="checkbox" id="cap"> 柱頂件（把落在柱頂的桿端收在一起；柱高大於 0 時連柱身一起印）</label>
+    <p class="note" style="margin-bottom:8px">以下兩項決定桿與桿的偏心：</p>
+    <div class="seg" id="jmode" role="group" aria-label="接頭模式"><button data-m="0">桿貼桿（偏心＝桿徑）</button><button data-m="1">可墊高</button></div>
+    <div class="row" id="emaxRow"><label for="emax">墊高上限</label><input type="range" id="emax" min="1" max="8" step="0.5"><output id="emax_o"></output></div>
+    <div class="seg" id="tmSeg" role="group" aria-label="接頭種類" style="margin-top:8px"><button data-tm="auto">種類：自動</button><button data-tm="limit">限制種類數</button></div>
+    <div class="row" id="ntRow"><label for="ntypes">種類上限</label><input type="range" id="ntypes" min="3" max="40" step="1"><output id="ntypes_o"></output></div>
+    <p class="note" id="tnote"></p>
+  </fieldset>
+  <fieldset>
+    <legend>列印</legend>
+    <p class="note" style="margin-top:0">桿夾越長夾得越穩，但同一根竹籤上相鄰的兩個夾子會互相頂到，可吸收的角度差也變小。</p>
+    <div class="row"><label for="tol">槽寬公差</label><input type="range" id="tol" min="0.1" max="0.6" step="0.05"><output id="tol_o"></output></div>
+    <div class="row"><label for="clipL">桿夾長度</label><input type="range" id="clipL" min="5" max="20" step="0.5"><output id="clipL_o"></output></div>
+    <div class="row"><label for="wall">壁厚</label><input type="range" id="wall" min="0.8" max="2.4" step="0.1"><output id="wall_o"></output></div>
+  </fieldset>
+</aside>
+<section class="stage">
+  <div class="pbar"><div class="pchips" id="pchips" role="group" aria-label="範例"></div><div id="pnote" aria-live="polite"></div></div>
+  <div class="fig" id="fig">
+    <div class="tools" role="toolbar" aria-label="工具">
+      <button data-tool="view" aria-pressed="false">檢視</button><button data-tool="edit" aria-pressed="true">調形</button><button id="undo">復原</button><button id="dots" aria-pressed="true" title="顯示或隱藏接點的小球">接點</button>
+      <span class="sep"></span>
+      <button data-v="persp" aria-pressed="true">透視</button><button data-v="front">立面</button><button data-v="top">平面</button>
+    </div>
+    <div class="legend"><div><i class="dot" style="background:var(--good)"></i>接點接得上（&lt; 0.3 mm）</div><div><i class="dot" style="background:var(--mid)"></i>0.3–1 mm（靠公差或微彎）</div><div><i class="dot" style="background:var(--bad)"></i>&gt; 1 mm（幾何上有衝突）</div><div><i class="dot" style="background:#8a4fd0"></i>夾子互頂，或角度超出間隙</div><div><i class="dot" style="background:#2f6fd0"></i>調形把手</div></div>
+    <div class="hint" id="hint"></div>
+    <div class="tip" id="tip"></div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="tables">
+    <div>
+      <h2>接頭規格</h2>
+      <table><thead><tr><th>編號</th><th>種類</th><th>角度</th><th>偏心</th><th class="n">數量</th><th style="width:20%">分布</th></tr></thead><tbody id="jt"></tbody></table>
+      <h2 style="margin-top:18px">種類數比較</h2>
+      <table><thead><tr><th>接頭種類數</th><th class="n">超出間隙的接點</th><th class="n">最大超出</th></tr></thead><tbody id="cmp"></tbody></table>
+      <p class="note" id="cmpNote"></p>
+    </div>
+    <div>
+      <h2>構件</h2>
+      <table><thead><tr><th>項目</th><th class="n">數值</th></tr></thead><tbody id="ct"></tbody></table>
+    </div>
+  </div>
+  <div class="export">
+    <button class="btn" id="dl" disabled>下載製作包（.zip）</button>
+    <span class="note" id="dlNote">內含三種接頭與三角錐的 STL、板的裁切清單與 1:1 紙型、竹籤長度與接點位置、安裝位置圖、參數。</span>
+  </div>
+  <div class="notes">
+    <p><b>v0.9 新增</b>：底板可選 A3／A4／A5。接頭方式多了<b>節點件</b>：每個節點印一個小塊，照解出來的位置開斜孔，竹籤沿軸向插進去，解決同一根竹籤上夾子互頂的問題；可選鏤空環、實心盤、斗形，並調大小、厚度與漸變。<b>柱頂件</b>把落在柱頂的桿端收在一起。兩種接頭方式共用同一個求解結果，可以隨時切換比較。</p>
+    <p><b>v0.8 改了什麼</b>：竹籤、板、三角錐現在都是求解裡的實際構件。接頭有三種，全部 3D 列印，共用同一個 2 mm 板槽：<b>X</b> 桿–桿（兩條槽，夾角＋偏心＋左右手）、<b>H</b> 板–板折角夾（兩個板槽背對背，折角就是兩板的夾角）、<b>C</b> 桿–板扣（C 形環扣竹籤，另一側板槽）。板是單純的三角形，照清單的三邊長裁切即可。</p>
+    <p><b>逆向的流程</b>：① 用拉力讓構件貼近你畫的形。② 放掉拉力，同時讓桿端可以在柱頂腳環內移位，得到所有接點真正接得上的形。③ 把板邊修到與解出的竹籤平行；仍接不上的桿–桿接點改成可墊高的特製件。④ 讀出每個接點的角度，歸成接頭種類。</p>
+    <p><b>種類怎麼歸</b>：夾子的槽有公差，能吸收一點角度差（桿–桿約 ±2°，板–板約 ±6°）。「自動」是用最少的種類，讓每個接點都落在這個範圍內，這時形狀不必再變。「限制種類數」時，超出範圍的接點以紫色標出，那些地方要硬壓進去，實際的形會跟模擬不同。試過直接把角度鎖成少數幾種再重解：互承網的角度是由形決定的，鎖角會讓接點接不上或整個形跑掉幾公分，所以改用間隙來檢驗。</p>
+    <p><b>直接在畫面上調</b>：「調形」模式下拖藍色把手（拱頂、邊拱、柱位、柱高、腳環、收束、漸變）。「檢視」模式下點三角形切換竹籤格／板格，點接點看它的誤差、角度與接頭編號。復原：Ctrl+Z。</p>
+    <p><b>還沒做、要靠實測的</b>：只驗證幾何，沒有算重力、材料彈性與夾子的夾持力。H 夾與 C 扣是新零件，還沒印過，槽的鬆緊請先印一兩個試。竹籤末端跨過板角的地方可能輕微相碰。只靠一邊固定的板會晃，表格裡會列出數量。吸引點、半穹雨庇、牆角尚未加入。</p>
+  </div>
+</section>
+</main>
+<script src="core.js"></script>
+<script src="meshcore.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+{
+const $ = id => document.getElementById(id);
+const MATS = [{ name: '竹籤', d: 2, L: 64 }, { name: '烤肉串', d: 3, L: 180 }, { name: '竹筷', d: 5, L: 195 }];
+const rect = (W, L, h) => [[-W / 2, -L / 2, h], [W / 2, -L / 2, h], [-W / 2, L / 2, h], [W / 2, L / 2, h]];
+const DEF = { support: 'ground', pyr: 'pyr', pf: 'grad', pd: 'A', ps: 'out', ph: 10, plv: 4, pwl: 140, pwd: 30, pflip: false, laz: 135, lel: 32, shadow: true, layout: 'rows', nf: 4, sym: 'xz', Rr: 130, feet: MC.layoutFeet('rows', 4, 300, 230, 130, 0), crown: 130, liftL: 75, liftS: 60, edgeShape: 0.8, pinch: 0.6, gatherH: 50, ringR: 14,
+  mat: 0, edge: 42, jitter: 0.3, phi: 10, custom: 0, emax: 4, tmode: 'auto', ntypes: 12, clipL: 8, board: 'A3', slen: 64, jtype: 'clip', nshape: 'ring', ngrow: 0, nthick: 0, ngrad: 'none', nflip: false, cap: true, tol: 0.2, wall: 1.2, overhang: 5, seed: 7, pull: 0.02,
+  gmode: 'A', gstyle: 'hole', gc: 0.6, gw: 0.6, gflip: false, ov: {} };
+let P = JSON.parse(JSON.stringify(DEF));
+try { const s = JSON.parse(localStorage.getItem('rf-pav9') || 'null'); if (s && s.feet && s.layout) P = Object.assign(P, s); } catch (e) {}
+const D = () => MATS[P.mat].d, maxEdge = () => P.slen - 2 * P.overhang - 6;
+const KS = { A3: 1, A4: 297 / 420, A5: 0.5 }, K = () => KS[P.board] || 1, HK = () => 0.4 + 0.6 * K();
+const SCALED = { R: [60, 145], W: [120, 400], L: [100, 280], crown: [40, 220], liftL: [0, 180], liftS: [0, 180], footH: [0, 80], gatherH: [10, 150], ringR: [4, 40] };
+const nps = () => P.feet.length / 2;
+const W = () => P.layout === 'ring' ? 0 : (P.feet[nps() - 1][0] - P.feet[0][0] + P.feet[2 * nps() - 1][0] - P.feet[nps()][0]) / 2;
+const Ld = () => P.layout === 'ring' ? 0 : (P.feet[nps()][1] - P.feet[0][1] + P.feet[2 * nps() - 1][1] - P.feet[nps() - 1][1]) / 2;
+const relayout = (w = 300 * K(), l = 230 * K()) => { const h = P.feet[0] ? P.feet[0][2] : 0; P.feet = MC.layoutFeet(P.layout, P.nf, w, l, P.Rr, h); };
+const curWL = () => (P.layout === 'rows' && P.feet.length === P.nf && P.nf >= 4) ? [W(), Ld()] : [300 * K(), 230 * K()];
+
+// ---------- 復原 ----------
+const hist = [];
+const snap = () => { hist.push(JSON.stringify(P)); if (hist.length > 60) hist.shift(); };
+function undo() { if (!hist.length) return; P = JSON.parse(hist.pop()); syncInputs(); rebuild(); }
+$('undo').addEventListener('click', undo);
+const setDots = v => { showDots = v; $('dots').setAttribute('aria-pressed', v); if (jointMesh) jointMesh.visible = v; };
+$('dots').addEventListener('click', () => setDots(!showDots));
+addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
+
+// ---------- 控制項 ----------
+const mm = (f = 0) => v => `${(+v).toFixed(f)} mm`, num = f => v => (+v).toFixed(f);
+const FIELDS = { R: [mm(), 1], W: [mm(), 1], L: [mm(), 1], crown: [mm(), 1], liftL: [mm(), 1], liftS: [mm(), 1], footH: [mm(), 1], pinch: [num(2), 1], gatherH: [mm(), 1], ringR: [mm(), 1], edgeShape: [num(2), 1],
+  ph: [mm(1), 0], plv: [v => v + ' 級', 0], pwl: [mm(), 0], pwd: [v => v + '°', 0], laz: [v => v + '°', 2], lel: [v => v + '°', 2],
+  edge: [mm(), 1], jitter: [num(2), 1], phi: [v => v + '°', 1], emax: [mm(1), 1], ntypes: [v => v + ' 種', 0], gc: [num(2), 3], gw: [num(2), 3], tol: [mm(2), 0], wall: [mm(1), 0], clipL: [mm(1), 0], slen: [mm(), 1], ngrow: [v => '+' + (+v).toFixed(1) + ' mm', 0], nthick: [v => '+' + (+v).toFixed(1) + ' mm', 0] };
+const getF = k => k === 'R' ? P.Rr : k === 'W' ? W() : k === 'L' ? Ld() : k === 'footH' ? P.feet[0][2] : P[k];
+const setF = (k, v) => {
+  if (k === 'R') { P.Rr = v; const hs = P.feet.map(f => f[2]); P.feet = MC.layoutFeet('ring', P.nf, 0, 0, v, 0).map((f, i) => [f[0], f[1], hs[i] || 0]); }
+  else if (k === 'W' || k === 'L') { const w = k === 'W' ? v : W(), l = k === 'L' ? v : Ld(), hs = P.feet.map(f => f[2]); P.feet = MC.layoutFeet('rows', P.nf, w, l, 0, 0).map((f, i) => [f[0], f[1], hs[i] || 0]); }
+  else if (k === 'footH') P.feet.forEach(f => f[2] = v);
+  else P[k] = v;
+};
+function syncInputs() {
+  const kk = K(); Object.keys(SCALED).forEach(k => { $(k).min = Math.round(SCALED[k][0] * kk); $(k).max = Math.round(SCALED[k][1] * kk); }); $('slen').max = MATS[P.mat].L; $('edge').max = maxEdge();
+  Object.keys(FIELDS).forEach(k => { const el = $(k); el.value = getF(k); $(k + '_o').textContent = FIELDS[k][0](getF(k)); });
+  $('edge').max = maxEdge(); $('mat').value = P.mat; $('gflip').checked = P.gflip;
+  document.querySelectorAll('#jmode button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.m === P.custom));
+  document.querySelectorAll('#gmode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.g === P.gmode));
+  document.querySelectorAll('#gstyle button').forEach(b => b.setAttribute('aria-pressed', b.dataset.s === P.gstyle));
+  $('emaxRow').style.display = P.custom ? '' : 'none';
+  for (const [id, key, dk] of [['bdSeg', 'board', 'bd'], ['jtSeg', 'jtype', 'jt'], ['nsSeg', 'nshape', 'ns'], ['ngSeg', 'ngrad', 'ng']]) document.querySelectorAll('#' + id + ' button').forEach(b => b.setAttribute('aria-pressed', b.dataset[dk] === P[key]));
+  $('nodeBox').style.display = P.jtype === 'node' ? '' : 'none'; $('nflip').checked = P.nflip; $('cap').checked = P.cap;
+  document.querySelectorAll('#tmSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.tm === P.tmode)); $('ntRow').style.display = P.tmode === 'limit' ? '' : 'none';
+  const wall = P.support === 'wall';
+  document.querySelectorAll('#supSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.sup === P.support));
+  $('supNote').textContent = wall ? '牆面浮雕：錨點全在牆上，網面往外鼓；「柱高」變成離牆距離。重力與網面平行，接點不會被重力壓緊，需要綁紮或夾具。' : '地面：柱子落在 A3 底板上，重力把上層構件壓在下層上。';
+  document.querySelectorAll('#gmode button')[0].textContent = wall ? '依離牆' : '依高度';
+  document.querySelectorAll('#pdSeg button')[0].textContent = wall ? '依離牆' : '依高度';
+  document.querySelectorAll('#pyrSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === P.pyr));
+  document.querySelectorAll('#pfSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.pf === P.pf));
+  document.querySelectorAll('#pdSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.pd === P.pd));
+  document.querySelectorAll('#psSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.ps === P.ps));
+  $('pyrBox').style.display = P.pyr === 'pyr' ? '' : 'none';
+  $('pdSeg').style.display = P.pf === 'grad' ? '' : 'none'; $('pwlRow').style.display = $('pwdRow').style.display = P.pf === 'wave' ? '' : 'none';
+  $('pflip').checked = P.pflip; $('shadow').checked = P.shadow;
+  $('footH').previousElementSibling.textContent = wall ? '離牆' : '柱高';
+  const ring = P.layout === 'ring';
+  ['Rrow'].forEach(id => $(id).style.display = ring ? '' : 'none'); ['Wrow', 'Lrow', 'liftSrow'].forEach(id => $(id).style.display = ring ? 'none' : '');
+  $('liftLlab').textContent = ring ? '邊拱' : '寬邊拱';
+  document.querySelectorAll('#layout button').forEach(b => b.setAttribute('aria-pressed', b.dataset.l === P.layout));
+  const counts = ring ? [3, 4, 5, 6, 8] : [4, 6, 8];
+  $('nfSeg').innerHTML = counts.map(n => `<button data-n="${n}" aria-pressed="${n === P.nf}">${ring ? n + ' 柱' : '2×' + n / 2}</button>`).join('');
+  const syms = ring ? [['none', '自由'], ['rot', '旋轉對稱'], ['x', '左右']] : [['none', '自由'], ['x', '左右'], ['z', '前後'], ['xz', '雙向']];
+  $('symSeg').innerHTML = syms.map(([k, t]) => `<button data-sym="${k}" aria-pressed="${k === P.sym}">${t}</button>`).join('');
+  $('symNote').textContent = P.sym === 'none' ? '自由：每根柱可以各自拖動。' : '對稱：拖動一根柱，對稱位置的柱跟著動；網格也做成對稱，對稱位置的接頭相同（鏡像件把 STL 鏡像列印即可）。';
+  $('gnote').textContent = (P.gmode === 'A' ? '依高度：' : '沿長度：') + (P.gflip ? '紙板在' + (P.gmode === 'A' ? '下' : '前') + '、竹籤在' + (P.gmode === 'A' ? '上' : '後') : '竹籤在' + (P.gmode === 'A' ? '下（腳部）' : '前') + '、紙板在' + (P.gmode === 'A' ? '上（拱頂）' : '後')) + '。';
+}
+Object.keys(FIELDS).forEach(k => {
+  const el = $(k);
+  el.addEventListener('pointerdown', snap); el.addEventListener('keydown', snap);
+  el.addEventListener('input', () => { setF(k, +el.value); $(k + '_o').textContent = FIELDS[k][0](+el.value); const f = FIELDS[k][1]; f === 2 ? applyLight() : f === 1 ? schedule() : f === 3 ? remodelSoon() : (assignFaces(), refreshLook()); });
+});
+$('mat').addEventListener('change', e => { snap(); P.mat = +e.target.value; P.clipL = Math.max(8, 3 * D() + 2); P.slen = MATS[P.mat].L; P.edge = Math.round(maxEdge() * 0.85); syncInputs(); rebuild(); });
+$('gflip').addEventListener('change', e => { snap(); P.gflip = e.target.checked; syncInputs(); remodel(); });
+document.querySelectorAll('#jmode button').forEach(b => b.addEventListener('click', () => { snap(); P.custom = +b.dataset.m; syncInputs(); rebuild(); }));
+document.querySelectorAll('#gmode button').forEach(b => b.addEventListener('click', () => { snap(); P.gmode = b.dataset.g; syncInputs(); remodel(); }));
+document.querySelectorAll('#gstyle button').forEach(b => b.addEventListener('click', () => { snap(); P.gstyle = b.dataset.s; syncInputs(); remodel(); }));
+$('layout').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; snap(); P.layout = b.dataset.l; P.nf = P.layout === 'ring' ? 6 : 4; P.sym = P.layout === 'ring' ? 'rot' : 'xz'; relayout(); P.ov = {}; syncInputs(); rebuild(); });
+$('nfSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; snap(); const wl = curWL(); P.nf = +b.dataset.n; relayout(...wl); P.ov = {}; syncInputs(); rebuild(); });
+$('symSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; snap(); P.sym = b.dataset.sym; if (P.sym !== 'none') relayout(...curWL()); syncInputs(); rebuild(); });
+const segH = (id, key, after) => $(id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; snap(); P[key] = Object.values(b.dataset)[0]; syncInputs(); after(); });
+segH('supSeg', 'support', () => rebuild()); segH('tmSeg', 'tmode', () => refreshLook());
+segH('jtSeg', 'jtype', () => refreshLook()); segH('nsSeg', 'nshape', () => refreshLook()); segH('ngSeg', 'ngrad', () => refreshLook());
+$('nflip').addEventListener('change', e => { snap(); P.nflip = e.target.checked; refreshLook(); }); $('cap').addEventListener('change', e => { snap(); P.cap = e.target.checked; refreshLook(); });
+function setBoard(bdName) {
+  const r = KS[bdName] / K(); P.board = bdName;
+  P.feet.forEach(f => { f[0] *= r; f[1] *= r; f[2] *= r; }); for (const q of ['Rr', 'crown', 'liftL', 'liftS', 'gatherH', 'ringR', 'pwl']) P[q] *= r;
+  P.ringR = Math.max(4 * K(), P.ringR); P.ov = {};
+}
+$('bdSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.dataset.bd === P.board) return; snap(); setBoard(b.dataset.bd); syncInputs(); applyBoard(); setView(curView); rebuild(); });
+
+segH('pyrSeg', 'pyr', () => { assignFaces(); refreshLook(); }); segH('pfSeg', 'pf', () => { assignFaces(); refreshLook(); });
+segH('pdSeg', 'pd', () => { assignFaces(); refreshLook(); }); segH('psSeg', 'ps', () => { assignFaces(); refreshLook(); });
+$('pflip').addEventListener('change', e => { snap(); P.pflip = e.target.checked; assignFaces(); refreshLook(); });
+$('shadow').addEventListener('change', e => { P.shadow = e.target.checked; applyLight(); });
+$('clearOv').addEventListener('click', () => { snap(); P.ov = {}; remodel(); });
+
+// ---------- 3D ----------
+const fig = $('fig');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); fig.prepend(renderer.domElement);
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, 1, 8000);
+const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8370, 1.5));
+const sun = new THREE.DirectionalLight(0xffffff, 1.8); sun.position.set(200, 500, 300); scene.add(sun, sun.target);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -340, right: 340, top: 340, bottom: -340, near: 10, far: 2000 }); sun.shadow.bias = -0.002; sun.shadow.normalBias = 2;
+const rig = new THREE.Group(); scene.add(rig);
+const board = new THREE.Mesh(new THREE.BoxGeometry(420, 2, 297), new THREE.MeshStandardMaterial({ color: 0xfafaf6, roughness: 1 })); board.position.y = -1; board.receiveShadow = true;
+const bd = new THREE.Group(); bd.add(board); rig.add(bd); const applyBoard = () => bd.scale.set(K(), 1, K());
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 500), new THREE.MeshStandardMaterial({ color: 0xe8e8e2, roughness: 1 })); floor.rotation.x = -Math.PI / 2; floor.position.z = 220; floor.receiveShadow = true; floor.visible = false; scene.add(floor);
+function applyLight() {
+  const az = P.laz * Math.PI / 180, el = P.lel * Math.PI / 180, r = 700, c = rig.position;
+  sun.position.set(c.x + r * Math.cos(el) * Math.sin(az), c.y + r * Math.sin(el), c.z + r * Math.cos(el) * Math.cos(az)); sun.target.position.copy(c);
+  renderer.shadowMap.enabled = P.shadow; sun.castShadow = P.shadow; scene.traverse(o => { if (o.material) o.material.needsUpdate = true; });
+}
+{ const g = []; for (let x = -210; x <= 210; x += 20) g.push(x, 0.05, -148.5, x, 0.05, 148.5); for (let z = -140; z <= 148.5; z += 20) g.push(-210, 0.05, z, 210, 0.05, z);
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(g, 3)); bd.add(new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0xc9cbc2 }))); }
+const matRod = new THREE.MeshStandardMaterial({ color: 0xcfae72, roughness: .75 });
+const matPlate = new THREE.MeshStandardMaterial({ color: 0xe9e4d8, roughness: .9, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+const matJoint = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .5 });
+const matPost = new THREE.MeshStandardMaterial({ color: 0x2a2d28, roughness: .5 });
+const matH = new THREE.MeshStandardMaterial({ color: 0x2f6fd0, roughness: .4, emissive: 0x0b2a5c });
+const matHl = new THREE.LineDashedMaterial({ color: 0x2f6fd0, dashSize: 3, gapSize: 3 });
+const pickMat = new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide });
+let rodMesh = null, plateMesh = null, plateEdges = null, jointMesh = null, pickMesh = null;
+const matJ2 = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .5 });
+const matNode = new THREE.MeshStandardMaterial({ color: 0xf4f1e8, roughness: .6 }), matNodeHit = new THREE.MeshStandardMaterial({ color: 0xe9a39a, roughness: .6 }), nodeGroup = new THREE.Group();
+let NODES = null, CAPS = [], showDots = true;
+const posts = new THREE.Group(), handles = new THREE.Group(); rig.add(posts, handles, nodeGroup);
+const Yv = new THREE.Vector3(0, 1, 0), tM = new THREE.Matrix4(), tQ = new THREE.Quaternion(), tA = new THREE.Vector3(), tB = new THREE.Vector3(), tV = new THREE.Vector3(), tS = new THREE.Vector3(), col = new THREE.Color();
+let curView = 'persp';
+function setView(v) {
+  curView = v; document.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  if (P.support === 'wall') {
+    const y = rig.position.y, c = 0.3 + 0.7 * K();
+    if (v === 'persp') camera.position.set(330 * c, y + 150 * c, 560 * c);
+    if (v === 'front') camera.position.set(0, y, 760 * c);
+    if (v === 'top') camera.position.set(0, y + 700 * c, 160 * c);
+    controls.target.set(0, y, 50 * c);
+  } else {
+    const c = 0.3 + 0.7 * K();
+    if (v === 'persp') camera.position.set(340 * c, 320 * c, 430 * c);
+    if (v === 'front') camera.position.set(0, 90 * c, 720 * c);
+    if (v === 'top') camera.position.set(0, 760 * c, 0.01);
+    controls.target.set(0, v === 'top' ? 0 : 60 * K(), 0);
+  }
+  controls.update();
+}
+function applySupport() {
+  const wall = P.support === 'wall', was = rig.rotation.x !== 0;
+  rig.rotation.x = wall ? Math.PI / 2 : 0; rig.position.y = wall ? 185 * K() : 0; applyBoard(); floor.visible = wall; rig.updateMatrixWorld(true);
+  if (was !== wall) setView(curView);
+  applyLight();
+}
+document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+setView('persp');
+let tool = 'edit';
+const setTool = t => { tool = t; document.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool === t)); handles.visible = t === 'edit';
+  $('hint').textContent = t === 'edit' ? '拖曳藍色把手調形；空白處拖曳旋轉視角' : '點三角形切換竹籤格／板格；開啟「接點」後可點接點看數值'; };
+document.querySelectorAll('[data-tool]').forEach(b => b.addEventListener('click', () => setTool(b.dataset.tool)));
+new ResizeObserver(() => { const w = fig.clientWidth, h = fig.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }).observe(fig);
+
+// ---------- 模型 ----------
+let M = null, R = null, S = null, faceType = [], faceSolid = [], facePyr = [], frame = 0, done = false, TY = null, trim = null, markers = [], yr = [0, 1], zr = [0, 1], xmax = 0, raf = 0, raf2 = 0;
+const STAGE1 = 201, STAGE2 = 900;   // ① 用拉力貼近目標形 ② 拉力放到接近 0、腳環放寬，得到真正接得上的形 ③ 修邊、特製件、歸類
+const prm = () => ({ ...P, d: D(), custom: !!P.custom });
+function schedule() { cancelAnimationFrame(raf); raf = requestAnimationFrame(rebuild); }
+function remodelSoon() { cancelAnimationFrame(raf2); raf2 = requestAnimationFrame(remodel); }
+const hash = i => { let x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+function assignFaces() {
+  if (!M) return;
+  const cen = M.F.map(f => [0, 1, 2].map(k => (M.V[f[0]][k] + M.V[f[1]][k] + M.V[f[2]][k]) / 3));
+  const ys = cen.map(c => c[1]); yr = [Math.min(...ys), Math.max(...ys)]; const zc = cen.map(c => c[2]), zr0 = [Math.min(...zc), Math.max(...zc)];
+  faceType = []; faceSolid = []; facePyr = [];
+  M.F.forEach((f, i) => {
+    const t = P.gmode === 'A' ? (cen[i][1] - yr[0]) / (yr[1] - yr[0] + 1e-9) : (cen[i][2] - zr0[0]) / (zr0[1] - zr0[0] + 1e-9);
+    const a = P.gc - P.gw / 2, b = P.gc + P.gw / 2, x = Math.min(1, Math.max(0, (t - a) / (b - a)));
+    let s = x * x * (3 - 2 * x); if (P.gflip) s = 1 - s;
+    let type, solid = 1;
+    if (P.gstyle === 'hole') { type = s < 0.12 ? 0 : 1; solid = s; }
+    else if (P.gstyle === 'dither') type = s > hash(i) ? 1 : 0;
+    else type = s > 0.5 ? 1 : 0;
+    if (P.ov[i] !== undefined) { type = P.ov[i]; solid = 1; }
+    faceType.push(type); faceSolid.push(solid);
+    let hp = 0;
+    if (P.pyr === 'pyr' && type === 1 && solid >= 0.95) {
+      let tp;
+      if (P.pf === 'wave') { const a = P.pwd * Math.PI / 180, pr = cen[i][0] * Math.cos(a) + cen[i][2] * Math.sin(a); tp = 0.5 + 0.5 * Math.sin(2 * Math.PI * pr / P.pwl); }
+      else tp = P.pd === 'A' ? (cen[i][1] - yr[0]) / (yr[1] - yr[0] + 1e-9) : (cen[i][2] - zr0[0]) / (zr0[1] - zr0[0] + 1e-9);
+      if (P.pflip) tp = 1 - tp;
+      tp = Math.round(tp * (P.plv - 1)) / (P.plv - 1);
+      hp = tp * P.ph * (P.ps === 'in' ? -1 : P.ps === 'alt' ? (i % 2 ? 1 : -1) : 1);
+    }
+    facePyr.push(hp);
+  });
+}
+// 構件模型：竹籤格與板格一變就要重建（網格 M 不變）
+function remodel() {
+  if (!M) return;
+  assignFaces(); S = MC.build(M, R, prm(), faceType); frame = 0; done = false; trim = null; NODES = null; CAPS = []; drawNodes();
+  [rodMesh, jointMesh].forEach(o => { if (o) { rig.remove(o); o.geometry.dispose(); } });
+  rodMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(D() / 2, D() / 2, 1, 10), matRod, Math.max(1, S.ns)); rodMesh.count = S.ns; rodMesh.castShadow = rodMesh.receiveShadow = true; rig.add(rodMesh);
+  markers = S.C.map(c => ({ k: 'X', c })).concat(S.K.filter(c => c.kind !== 'SA').map(c => ({ k: c.kind === 'SP' ? 'C' : 'H', c })));
+  jointMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(Math.max(1.6, D() * 0.9), 10, 8), matJ2, Math.max(1, markers.length)); jointMesh.count = markers.length; jointMesh.visible = showDots; rig.add(jointMesh);
+  MC.solve(S, { ...prm(), pull: P.pull }, 1);
+  drawHandles(); draw(); stats();
+  try { localStorage.setItem('rf-pav9', JSON.stringify(P)); } catch (e) {}
+}
+function rebuild() {
+  P.edge = Math.min(P.edge, maxEdge()); $('edge').max = maxEdge();
+  const nf = M ? M.F.length : -1;
+  M = MC.mesh(prm()); R = MC.reciprocal(M, prm());
+  if (M.F.length !== nf && nf >= 0) P.ov = {};
+  applySupport();
+  if (pickMesh) { rig.remove(pickMesh); pickMesh.geometry.dispose(); }
+  if (!plateMesh) { plateMesh = new THREE.Mesh(new THREE.BufferGeometry(), matPlate); plateMesh.castShadow = plateMesh.receiveShadow = true; plateEdges = new THREE.LineSegments(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x9a9384 })); rig.add(plateMesh, plateEdges); }
+  const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.Float32BufferAttribute(M.F.flatMap(f => f.flatMap(v => M.V[v])), 3));
+  pickMesh = new THREE.Mesh(pg, pickMat); rig.add(pickMesh);
+  const zs = M.V.map(v => v[2]), xs = M.V.map(v => v[0]); zr = [Math.min(...zs), Math.max(...zs)]; xmax = Math.max(...xs);
+  drawPosts(); remodel();
+}
+// ③：解完後的收尾（修邊、特製件、最後一次量測）
+function finish() {
+  const p = prm();
+  if (MC.summary(S).max >= 0.3) MC.resolve(S, p);
+  trim = MC.trimPlates(S); MC.solve(S, { ...p, pull: 0.0003 }, 1); done = true; stats(); draw(); drawNodes();
+}
+
+function drawPosts() {
+  posts.traverse(o => o.geometry && o.geometry.dispose()); posts.clear();
+  P.feet.forEach(f => {
+    if (f[2] > 0.5) { const c = new THREE.Mesh(new THREE.CylinderGeometry(P.ringR * 0.9, P.ringR * 1.1, f[2], 24), matPost); c.castShadow = true; c.position.set(f[0], f[2] / 2, f[1]); posts.add(c); }
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(P.ringR, 0.8, 8, 40), matPost); ring.rotation.x = Math.PI / 2; ring.position.set(f[0], f[2] + 0.5, f[1]); posts.add(ring);
+  });
+}
+// 把手
+const H = [];
+function addH(kind, i, pos, geo) { const m = new THREE.Mesh(geo, matH); m.position.copy(pos); m.userData = { kind, i }; handles.add(m); H.push(m); return m; }
+function drawHandles() {
+  handles.traverse(o => o.geometry && o.geometry.dispose()); handles.clear(); H.length = 0;
+  const hk = HK(), kk = K(), hs = M.hs, sph = r => new THREE.SphereGeometry(r * hk, 18, 12), V3 = p => new THREE.Vector3(p[0], p[1], p[2]);
+  addH('crown', 0, V3(hs.crown).add(new THREE.Vector3(0, 8 * hk, 0)), sph(6));
+  hs.edges.forEach((ed, i) => addH(ed.kind, i, V3(ed.p), sph(5)));
+  hs.shapes.forEach((sh, i) => addH('shape', i, V3(sh.p), new THREE.TetrahedronGeometry(5 * hk)));
+  P.feet.forEach((f, i) => {
+    addH('foot', i, new THREE.Vector3(f[0], f[2], f[1]), sph(6));
+    addH('footH', i, new THREE.Vector3(f[0], f[2] + 20 * hk, f[1]), new THREE.ConeGeometry(4 * hk, 9 * hk, 16));
+    const rr = addH('ring', i, new THREE.Vector3(f[0], f[2] + 1, f[1]), new THREE.TorusGeometry(P.ringR + 4 * hk, 1.6 * hk, 8, 40)); rr.rotation.x = Math.PI / 2;
+    const gr = addH('gather', i, new THREE.Vector3(f[0], f[2] + P.gatherH, f[1]), new THREE.TorusGeometry(P.ringR + (8 + (1 - P.pinch) * 50) * kk, 1.1 * hk, 6, 48)); gr.rotation.x = Math.PI / 2;
+  });
+  const lo = Math.max(0, P.gc - P.gw / 2), hi = Math.min(1, P.gc + P.gw / 2), gx = xmax + 26 * hk;
+  const posOf = t => P.gmode === 'A' ? new THREE.Vector3(gx, yr[0] + t * (yr[1] - yr[0]), 0) : new THREE.Vector3(gx, 10, zr[0] + t * (zr[1] - zr[0]));
+  const dm = new THREE.MeshStandardMaterial({ color: 0xcfae72, emissive: 0x3a2a10 });
+  addH('gradA', 0, posOf(lo), new THREE.OctahedronGeometry(7 * hk)).material = dm; addH('gradB', 0, posOf(hi), new THREE.OctahedronGeometry(7 * hk)).material = dm;
+  const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([posOf(0), posOf(1)]), matHl); line.computeLineDistances(); handles.add(line);
+  const band = new THREE.Line(new THREE.BufferGeometry().setFromPoints([posOf(lo), posOf(hi)]), new THREE.LineBasicMaterial({ color: 0xcfae72, linewidth: 3 })); handles.add(band);
+}
+
+function draw() {
+  const X = S.X, V = MC.v3;
+  for (let k = 0; k < S.ns; k++) {
+    const o = k * 6; tA.set(X[o], X[o + 1], X[o + 2]); tB.set(X[o + 3], X[o + 4], X[o + 5]);
+    const L = tA.distanceTo(tB); tV.copy(tB).sub(tA).normalize(); tQ.setFromUnitVectors(Yv, tV); tS.set(1, L, 1);
+    tM.compose(tA.add(tB).multiplyScalar(0.5), tQ, tS); rodMesh.setMatrixAt(k, tM);
+  }
+  rodMesh.instanceMatrix.needsUpdate = true;
+  const pos = [], ed = [], quad = (o1, o2, i1, i2) => pos.push(...o1, ...o2, ...i2, ...o1, ...i2, ...i1);
+  MC.plateCorners(S).forEach((pl, pi) => {
+    const ring = plateRing(pl, faceSolid[S.plates[pi].face]), ap = pyrApex(pl, pi);
+    if (ap) for (let a = 0; a < 3; a++) { const b = (a + 1) % 3; quad(pl[a], pl[b], ap.base[a], ap.base[b]); pos.push(...ap.base[a], ...ap.base[b], ...ap.T); ed.push(...ap.base[a], ...ap.T, ...ap.base[a], ...ap.base[b]); }
+    else if (!ring.inner) pos.push(...pl[0], ...pl[1], ...pl[2]);
+    else for (let a = 0; a < 3; a++) quad(pl[a], pl[(a + 1) % 3], ring.inner[a], ring.inner[(a + 1) % 3]);
+    for (let a = 0; a < 3; a++) { ed.push(...pl[a], ...pl[(a + 1) % 3]); if (ring.inner && !ap) ed.push(...ring.inner[a], ...ring.inner[(a + 1) % 3]); }
+  });
+  plateMesh.geometry.dispose(); plateMesh.geometry = new THREE.BufferGeometry(); plateMesh.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); plateMesh.geometry.computeVertexNormals();
+  plateEdges.geometry.dispose(); plateEdges.geometry = new THREE.BufferGeometry(); plateEdges.geometry.setAttribute('position', new THREE.Float32BufferAttribute(ed, 3));
+  const lim = P.tmode === 'limit' && done;
+  markers.forEach((mk, i) => {
+    const c = mk.c;
+    if (mk.k === 'X') { const o = c.s * 6, t = c.ts, n = c.n || [0, 1, 0], e = c.e || D(); tA.set(X[o] + (X[o + 3] - X[o]) * t + n[0] * e / 2, X[o + 1] + (X[o + 4] - X[o + 1]) * t + n[1] * e / 2, X[o + 2] + (X[o + 5] - X[o + 2]) * t + n[2] * e / 2); }
+    else { const p = c.pos || [0, 0, 0]; tA.set(p[0], p[1], p[2]); }
+    tM.makeTranslation(tA.x, tA.y, tA.z); jointMesh.setMatrixAt(i, tM);
+    const m = c.err || 0, over = (lim && (mk.k === 'H' ? S.seams[c.seam].over : c.over)) || (done && c.tight && P.jtype !== 'node');
+    col.set(m >= 1 ? 0xd0382b : m >= 0.3 ? 0xd39b1f : over ? 0x8a4fd0 : 0x2e8b57); jointMesh.setColorAt(i, col);
+  });
+  jointMesh.instanceMatrix.needsUpdate = true; if (jointMesh.instanceColor) jointMesh.instanceColor.needsUpdate = true;
+}
+// 三角錐：裙邊內緣為底，尖點 = 重心 + 面法線 × 高（高度上限依內切圓半徑）
+function pyrApex(pl, pi) {
+  const V = MC.v3, plate = S.plates[pi], h0 = facePyr[plate.face] || 0; if (!h0) return null;
+  const L = plate.L, per = L[0] + L[1] + L[2], r = MC.inradius(L[0], L[1], L[2]), sw = MC.pyrSkirt(S.dims); if (r - sw < 3) return null;
+  const I = V.mul(V.add(V.add(V.mul(pl[0], L[1]), V.mul(pl[1], L[2])), V.mul(pl[2], L[0])), 1 / per), q = (r - sw) / r;
+  const h = Math.sign(h0) * Math.min(Math.abs(h0), 2 * (r - sw));
+  const n = V.mul(V.norm(V.cross(V.sub(pl[1], pl[0]), V.sub(pl[2], pl[0]))), plate.flip), g = V.mul(V.add(V.add(pl[0], pl[1]), pl[2]), 1 / 3);
+  return { T: V.add(g, V.mul(n, h)), h, base: pl.map(p => V.add(I, V.mul(V.sub(p, I), q))) };
+}
+// 開孔：內三角形以內心縮放，框寬 = 7 mm（夾子槽深 4 mm 之外還留 3 mm）到全實
+function plateRing(pl, s) {
+  const V = MC.v3, a = V.len(V.sub(pl[1], pl[2])), b = V.len(V.sub(pl[0], pl[2])), c = V.len(V.sub(pl[0], pl[1])), per = a + b + c;
+  const I = V.mul(V.add(V.add(V.mul(pl[0], a), V.mul(pl[1], b)), V.mul(pl[2], c)), 1 / per);
+  const area = V.len(V.cross(V.sub(pl[1], pl[0]), V.sub(pl[2], pl[0]))) / 2, r = 2 * area / per;
+  const frame = 7 + (r - 7) * s, q = (r - frame) / r;
+  if (s >= 0.95 || q <= 0.08 || r < 9) return { inner: null };
+  return { inner: pl.map(p => V.add(I, V.mul(V.sub(p, I), q))), q };
+}
+
+// 節點件與柱頂件（解完才畫）
+function drawNodes() {
+  nodeGroup.traverse(o => o.geometry && o.geometry.dispose()); nodeGroup.clear();
+  if (!S || !done) return;
+  CAPS.forEach(cp => { const base = Math.max(0, cp.f[2] - 1), m = new THREE.Mesh(new THREE.CylinderGeometry(cp.R, cp.R, cp.top - base, 40), matNode); m.position.set(cp.f[0], (cp.top + base) / 2, cp.f[1]); m.castShadow = m.receiveShadow = true; nodeGroup.add(m); });
+  if (!NODES) return;
+  NODES.nodes.forEach(nd => {
+    const T = nd.T, R = nd.R; let g;
+    if (P.nshape === 'dou') { g = new THREE.CylinderGeometry(R * Math.SQRT2, R * 0.7 * Math.SQRT2, T, 4); g.rotateY(Math.PI / 4); }
+    else if (P.nshape === 'ring' && nd.rin > 1.5) g = new THREE.LatheGeometry([[nd.rin, -T / 2], [R, -T / 2], [R, T / 2], [nd.rin, T / 2], [nd.rin, -T / 2]].map(p => new THREE.Vector2(p[0], p[1])), 40);
+    else g = new THREE.CylinderGeometry(R, R, T, 40);
+    if (g.type === 'LatheGeometry') { const ng = g.toNonIndexed(); g.dispose(); g = ng; g.computeVertexNormals(); }
+    const m = new THREE.Mesh(g, nd.hit ? matNodeHit : matNode); m.castShadow = m.receiveShadow = true;
+    m.quaternion.setFromUnitVectors(Yv, tV.set(nd.n[0], nd.n[1], nd.n[2])); m.position.set(nd.c[0] + nd.n[0] * nd.zc, nd.c[1] + nd.n[1] * nd.zc, nd.c[2] + nd.n[2] * nd.zc); nodeGroup.add(m);
+  });
+}
+const KN = { X: '桿–桿', H: '板–板', C: '桿–板' };
+const tname = i => { if (!TY || i == null || i < 0) return '—'; const t = TY.types[i]; if (!t) return '—'; return t.kind + String(TY.types.slice(0, i).filter(x => x.kind === t.kind).length + 1).padStart(2, '0'); };
+function stats() {
+  const d = D(), p = prm(), sm = MC.summary(S), mx = sm.max;
+  // 種類數比較（解完才算）；最後一次呼叫決定目前使用的歸類
+  let cmp = [];
+  if (done) cmp = [4, 6, 8, 12, 16, 24].map(n => { const t = MC.assignTypes(S, p, n); return { n: t.types.length, over: t.over, worst: t.worst, auto: t.auto }; }).filter((c, i, a) => c.n < c.auto && (i === 0 || c.n !== a[i - 1].n));
+  const nodeMode = P.jtype === 'node'; p.noX = nodeMode;
+  if (done) cmp = cmp.length && nodeMode ? [4, 6, 8, 12].map(n => { const t = MC.assignTypes(S, p, n); return { n: t.types.length, over: t.over, worst: t.worst, auto: t.auto }; }).filter((c, i, a) => c.n < c.auto && (i === 0 || c.n !== a[i - 1].n)) : cmp;
+  TY = MC.assignTypes(S, p, P.tmode === 'limit' ? P.ntypes : 0);
+  CAPS = done && P.cap ? MC.caps(S, p) : []; NODES = done && nodeMode ? MC.nodes(S, p, { grow: P.ngrow, thick: P.nthick, grad: P.ngrad, flip: P.nflip, caps: CAPS }) : null;
+  const NN = NODES ? NODES.nodes : [], rng = (a, f = 0) => a.length ? `${Math.min(...a).toFixed(f)}–${Math.max(...a).toFixed(f)}` : '—';
+  const st = mx < 0.3 ? 'green' : mx < 1 ? 'amber' : 'red', phase = done ? '' : frame < STAGE1 ? '① 貼近目標形… ' : '② 放開拉力、求真正接得上的形… ';
+  $('status').dataset.s = st;
+  $('statusText').textContent = phase + (st === 'green' ? '全部接得上 · ' : st === 'amber' ? '接得上（靠公差或微彎） · ' : '有接點衝突 · ') + `最大接點誤差 ${mx.toFixed(2)} mm，與目標形最大相差 ${S.dev.toFixed(1)} mm` +
+    (done ? (nodeMode ? ` · 節點件 ${NN.length} 個` + (NODES.hits ? `，${NODES.hits} 處相碰` : '') : ` · 接頭 ${TY.types.length} 種`) + (TY.over ? `，${TY.over} 個接點角度超出夾子間隙` : '') : '') + (sm.bad ? `，${sm.bad} 個接點超過 1 mm` : '');
+  const lens = S.sticks.map(s => s.len), over = lens.filter(L => L > P.slen + 0.5).length;
+  let ymax = 0; for (let i = 1; i < S.X.length; i += 3) ymax = Math.max(ymax, S.X[i]);
+  const g = P.support === 'wall' ? [0, 0, 1] : [0, -1, 0], pressed = S.C.filter(c => c.n && (c.n[0] * g[0] + c.n[1] * g[1] + c.n[2] * g[2]) < -0.25).length;
+  const PC = MC.plateCorners(S), pyr = PC.map((pl, pi) => pyrApex(pl, pi)), nPyr = pyr.filter(Boolean).length, lv = new Set(pyr.filter(Boolean).map(a => Math.abs(a.h).toFixed(1))).size;
+  const holed = PC.filter((pl, pi) => !pyr[pi] && plateRing(pl, faceSolid[S.plates[pi].face]).inner).length;
+  const nC = S.K.filter(c => c.kind === 'SP').length, nH = S.seams.reduce((a, s) => a + (s.K.length ? s.nclip : 0), 0);
+  S.C.forEach(c => { c.tight = false; }); S.K.forEach(c => { c.tight = false; }); const sp = MC.spacing(S, P.clipL);
+  const inA3 = Math.max(...P.feet.map(f => Math.abs(f[0]))) + P.ringR <= 210 * K() + 0.5 && Math.max(...P.feet.map(f => Math.abs(f[1]))) + P.ringR <= 148.5 * K() + 0.5;
+  $('kpis').innerHTML = [['竹籤', S.ns + ' 根'], ['板', `${S.np - nPyr} 片` + (nPyr ? `＋錐 ${nPyr}` : '')], ['接頭', ((nodeMode ? NN.length : S.C.length) + nC + nH + CAPS.length) + ' 個'], ['最大接點誤差', mx.toFixed(2) + ' mm'], ['與目標形差', S.dev.toFixed(1) + ' mm'], ['實際高度', ymax.toFixed(0) + ' mm'], [nodeMode ? '節點件' : '接頭種類', done ? (nodeMode ? NN.length + ' 個' : TY.types.length + ' 種') : '計算中']]
+    .map(([k, v]) => `<div class="kpi"><small>${k}</small><b>${v}</b></div>`).join('');
+  if (nodeMode) S.C.forEach(c => { c.tight = false; c.type = -1; });
+  const cnt = t => t.kind === 'H' ? S.seams.filter(s => s.K.length && s.type === TY.types.indexOf(t)).reduce((a, s) => a + s.nclip, 0) : t.n, top = Math.max(1, ...TY.types.map(cnt));
+  const nodeRows = nodeMode && done ? [...new Set(NN.map(n => n.sticks.length))].sort((a, b) => a - b).map(k => { const g = NN.filter(n => n.sticks.length === k); return `<tr><td>N（${k} 桿）</td><td>節點件</td><td>直徑 ${rng(g.map(n => 2 * n.R))} mm</td><td>厚 ${rng(g.map(n => n.T))} mm</td><td class="n">${g.length}</td><td><div class="bar" style="width:${(g.length / NN.length * 100).toFixed(0)}%"></div></td></tr>`; }).join('') : '';
+  $('jt').innerHTML = !done ? '<tr><td colspan="6">求解完成後列出。</td></tr>' : nodeRows + TY.types.map((t, i) => `<tr><td>${tname(i)}</td><td>${KN[t.kind]}</td><td>${t.kind === 'X' ? t.a + '°' + (t.a > 89 ? '' : t.chi > 0 ? ' 正' : ' 鏡') : t.kind === 'H' ? '折 ' + t.a + '°' : '傾 ' + t.a + '°'}${t.over ? `<br><small style="color:#8a4fd0">${t.over} 個超出</small>` : ''}</td><td>${t.kind === 'X' ? t.e.toFixed(1) + ' mm' : '—'}</td><td class="n">${cnt(t)}</td><td><div class="bar" style="width:${(cnt(t) / top * 100).toFixed(0)}%"></div></td></tr>`).join('');
+  $('cmp').innerHTML = !done ? '<tr><td colspan="3">求解完成後列出。</td></tr>' : cmp.map(c => `<tr><td>${c.n} 種</td><td class="n">${c.over} 個</td><td class="n">${c.worst.toFixed(1)}°</td></tr>`).join('') + `<tr><td><b>${TY.auto} 種（自動）</b></td><td class="n">0 個</td><td class="n">0°</td></tr>`;
+  $('cmpNote').textContent = `夾子間隙可吸收的角度差：桿–桿 ±${TY.play.X.toFixed(1)}°、板–板 ±${TY.play.H.toFixed(1)}°、桿–板 ±${TY.play.C.toFixed(1)}°（由槽寬公差與槽長算出，加大公差可以減少種類，但會鬆）。`;
+  $('tnote').textContent = done ? (nodeMode ? '節點件每個都不同，不用歸類。下面的種類只算板用的夾子：' : '') + (P.tmode === 'auto' ? `自動：${TY.auto} 種，所有接點的角度都在夾子間隙內。` : `限制 ${P.ntypes} 種：實際 ${TY.types.length} 種，${TY.over} 個接點超出間隙（紫色），最多超出 ${TY.worst.toFixed(1)}°。` + (P.ntypes < TY.minN ? `這個形最少要 ${TY.minN} 種（左右手、偏心、三種接頭各算一種）。` : '')) : '';
+  $('ct').innerHTML = [
+    ['竹籤', lens.length ? `${S.ns} 根，長 ${Math.min(...lens).toFixed(0)}–${Math.max(...lens).toFixed(0)} mm` + (over ? `；${over} 根超過竹籤長度 ${P.slen} mm，請縮小三角邊長` : '') : '—'],
+    ['板', `平板 ${S.np - nPyr} 片（${holed} 片開孔），厚 ${MC.BOARD} mm` + (S.demoted ? `；${S.demoted} 格太小放不下夾子，改回竹籤格` : '') + (S.dropped ? `；${S.dropped} 格無法成形` : '')],
+    ['三角錐', P.pyr === 'pyr' ? `${nPyr} 個（列印），${lv} 種高度，裙邊寬 ${MC.pyrSkirt(S.dims)} mm` : '不使用'],
+    ['接頭數量', `桿–桿 ${S.C.length}、桿–板 ${nC}、板–板 ${nH}` + (sm.special ? `；其中 ${sm.special} 個桿–桿改成墊高特製件` : '')],
+    ['板邊修邊', trim ? `最大 ${trim.shift.toFixed(1)} mm` + (trim.bad ? `；${trim.bad} 片修不了（板邊與竹籤差太多）` : '') + (trim.off ? `；${trim.off} 個夾點落在板邊外` : '') : '求解完成後進行'],
+    ['最大角度', `桿–板傾角 ${sm.tilt.toFixed(1)}°、板–板折角 ${sm.fold.toFixed(0)}°` + (sm.fold > 90 ? '（超過 90° 的 H 夾印不出來）' : '')],
+    nodeMode ? ['節點件', done ? `${NN.length} 個，每個都不同；直徑 ${rng(NN.map(n => 2 * n.R))} mm、厚 ${rng(NN.map(n => n.T))} mm` + (NODES.hits ? `；${NODES.hits} 處相碰（紅色），請減少加大量或加大三角邊長` : '；沒有相碰') + (NODES.skipped ? `；${NODES.skipped} 個靠近柱頂，併入柱頂件` : '') : '求解完成後列出'] :
+    ['同一根竹籤上夾子互頂', (sp.tight ? `${sp.tight} 處，牽涉 ${sp.joints} 個接頭` : '沒有') + (isFinite(sp.min) ? `（相鄰接點最小間距 ${sp.min.toFixed(1)} mm，桿夾長 ${P.clipL} mm` + (sp.tight ? '；這些地方夾子要修短，或改用綁紮）' : '）') : '')],
+    ['只靠一邊固定的板', sm.loose ? `${sm.loose} 片（會晃，建議把鄰格也改成板）` : '沒有'],
+    ['柱頂件', P.cap ? (done ? `${CAPS.length} 個，直徑 ${rng(CAPS.map(c => 2 * c.R))} mm，各收 ${rng(CAPS.map(c => c.ends.length))} 個桿端` : '求解完成後列出') : '不使用'],
+    ['落柱', `${P.feet.length} 根，腳環半徑 ${P.ringR} mm，${S.pins.length} 個桿端落在柱頂（位置由求解決定）`],
+    ['重力壓緊的桿–桿接點', `${Math.round(100 * pressed / Math.max(1, S.C.length))}%` + (P.support === 'wall' ? '（掛牆：其餘靠夾子）' : '')],
+    [P.board + ' 底板', inA3 ? `柱位在 ${P.board} 內` : `柱位超出 ${P.board}`]
+  ].map(([k, v]) => `<tr><td>${k}</td><td class="n" style="white-space:normal">${v}</td></tr>`).join('');
+  $('dl').disabled = !MF || !downloads || !done;
+}
+function refreshLook() { if (S) { stats(); draw(); drawNodes(); drawHandles(); } try { localStorage.setItem('rf-pav9', JSON.stringify(P)); } catch (e) {} }
+
+// ---------- 畫面互動：把手拖曳、點選三角形 ----------
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(), tip = $('tip');
+let drag = null, downAt = null;
+const toPtr = e => { const r = renderer.domElement.getBoundingClientRect(); ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ptr, camera); };
+const hitPlane = (nLocal, pLocal) => { rig.updateMatrixWorld(true); const nW = nLocal.clone().transformDirection(rig.matrixWorld), pW = rig.localToWorld(pLocal.clone()); const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(nW, pW), q = new THREE.Vector3(); return ray.ray.intersectPlane(pl, q) ? rig.worldToLocal(q) : null; };
+const vertPlaneN = () => { const d = new THREE.Vector3(); camera.getWorldDirection(d); const inv = new THREE.Matrix4().copy(rig.matrixWorld).invert(); d.transformDirection(inv); d.y = 0; if (d.lengthSq() < 1e-6) d.set(0, 0, 1); return d.normalize(); };
+const LABEL = { crown: '拱頂高', liftL: '邊拱', liftS: '深邊拱', foot: '柱位', footH: '柱高', ring: '腳環半徑', gather: '收束', shape: '邊拱曲線', gradA: '漸變起點', gradB: '漸變終點' };
+renderer.domElement.addEventListener('pointerdown', e => {
+  downAt = [e.clientX, e.clientY];
+  if (tool !== 'edit') return;
+  toPtr(e); const hit = ray.intersectObjects(H)[0]; if (!hit) return;
+  snap();
+  const { kind, i } = hit.object.userData, p0 = hit.object.position.clone();
+  const vertical = ['crown', 'liftL', 'liftS', 'footH', 'gather', 'shape'].includes(kind) || (kind.startsWith('grad') && P.gmode === 'A');
+  drag = { kind, i, p0, vertical, n: vertical ? vertPlaneN() : new THREE.Vector3(0, 1, 0), start: JSON.parse(JSON.stringify(P)), partners: (kind === 'foot' || kind === 'footH') ? MC.partners(P, i) : [] };
+  controls.enabled = false; renderer.domElement.setPointerCapture(e.pointerId);
+});
+renderer.domElement.addEventListener('pointermove', e => {
+  if (!drag) return;
+  toPtr(e); const q = hitPlane(drag.n, drag.p0); if (!q) return;
+  const st = drag.start, dy = q.y - drag.p0.y, kk = K(), clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  let val = '';
+  switch (drag.kind) {
+    case 'crown': P.crown = clamp(st.crown + dy, 30 * kk, 260 * kk); val = P.crown.toFixed(0) + ' mm'; break;
+    case 'liftL': P.liftL = clamp(st.liftL + dy, 0, 200 * kk); val = P.liftL.toFixed(0) + ' mm'; break;
+    case 'liftS': P.liftS = clamp(st.liftS + dy, 0, 200 * kk); val = P.liftS.toFixed(0) + ' mm'; break;
+    case 'footH': P.feet[drag.i][2] = clamp(st.feet[drag.i][2] + dy, 0, 120 * kk); drag.partners.forEach(([j]) => P.feet[j][2] = P.feet[drag.i][2]); val = P.feet[drag.i][2].toFixed(0) + ' mm'; break;
+    case 'gather': { const f = st.feet[drag.i], dist = Math.hypot(q.x - f[0], q.z - f[1]); P.gatherH = clamp(st.gatherH + dy, 10 * kk, 160 * kk); P.pinch = clamp(1 - (dist - P.ringR - 8 * kk) / (50 * kk), 0, 0.9); val = `起點 ${P.gatherH.toFixed(0)} mm · 程度 ${P.pinch.toFixed(2)}`; break; }
+    case 'shape': P.edgeShape = clamp(st.edgeShape * Math.exp(-dy / 50), 0.4, 2); val = P.edgeShape.toFixed(2) + (P.edgeShape < 0.8 ? '（陡）' : P.edgeShape > 1.2 ? '（緩）' : ''); break;
+    case 'foot': {
+      const nx = clamp(q.x, -205 * kk, 205 * kk), nz = clamp(q.z, -143 * kk, 143 * kk);
+      if (P.layout === 'ring' && P.sym === 'rot') { const r = Math.hypot(nx, nz), a0 = Math.atan2(nz, nx) - 2 * Math.PI * drag.i / P.nf; P.Rr = clamp(r, 40 * kk, 145 * kk); P.feet.forEach((f, j) => { const a = a0 + 2 * Math.PI * j / P.nf; f[0] = P.Rr * Math.cos(a); f[1] = P.Rr * Math.sin(a); }); }
+      else { P.feet[drag.i][0] = nx; P.feet[drag.i][1] = nz; drag.partners.forEach(([j, op]) => { const m = op([nx, nz]); P.feet[j][0] = m[0]; P.feet[j][1] = m[1]; }); }
+      val = `(${nx.toFixed(0)}, ${nz.toFixed(0)})`; break;
+    }
+    case 'ring': { const f = st.feet[drag.i]; P.ringR = clamp(Math.hypot(q.x - f[0], q.z - f[1]) - 4 * HK(), 4 * kk, 40 * kk); val = P.ringR.toFixed(0) + ' mm'; break; }
+    case 'gradA': case 'gradB': {
+      const t = clamp(P.gmode === 'A' ? (q.y - yr[0]) / (yr[1] - yr[0]) : (q.z - zr[0]) / (zr[1] - zr[0]), 0, 1);
+      let lo = Math.max(0, st.gc - st.gw / 2), hi = Math.min(1, st.gc + st.gw / 2);
+      if (drag.kind === 'gradA') lo = Math.min(t, hi - 0.02); else hi = Math.max(t, lo + 0.02);
+      P.gc = (lo + hi) / 2; P.gw = hi - lo; val = `${lo.toFixed(2)} → ${hi.toFixed(2)}`; break;
+    }
+  }
+  tip.style.display = 'block'; const r = renderer.domElement.getBoundingClientRect(); tip.style.left = (e.clientX - r.left) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; tip.textContent = `${LABEL[drag.kind]} ${val}`;
+  syncInputs();
+  if (drag.kind.startsWith('grad')) remodelSoon(); else schedule();
+});
+const endDrag = e => {
+  if (drag) { drag = null; controls.enabled = true; tip.style.display = 'none'; return; }
+  if (tool === 'view' && downAt && e && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 5) {
+    toPtr(e);
+    const jh = ray.intersectObject(jointMesh)[0];
+    if (jh && jh.instanceId !== undefined && markers[jh.instanceId]) {
+      const mk = markers[jh.instanceId], c = mk.c, sm = mk.k === 'H' ? S.seams[c.seam] : null;
+      const r = renderer.domElement.getBoundingClientRect(); tip.style.display = 'block'; tip.style.left = (e.clientX - r.left) + 'px'; tip.style.top = (e.clientY - r.top) + 'px';
+      tip.textContent = `${KN[mk.k]} ${tname(sm ? sm.type : c.type)}：誤差 ${(c.err || 0).toFixed(2)} mm · ` + (mk.k === 'X' ? `夾角 ${c.ang.toFixed(1)}° · 偏心 ${(c.e || D()).toFixed(1)} mm` + (c.special ? '（墊高特製）' : '') : mk.k === 'H' ? `折角 ${Math.abs(sm.fold).toFixed(1)}°` : `傾角 ${(c.tilt || 0).toFixed(1)}°`);
+      clearTimeout(tip._t); tip._t = setTimeout(() => tip.style.display = 'none', 3500); return;
+    }
+    const hit = ray.intersectObject(pickMesh)[0];
+    if (hit) { snap(); const i = hit.faceIndex; P.ov[i] = 1 - faceType[i]; remodel(); }
+  }
+};
+renderer.domElement.addEventListener('pointerup', endDrag); renderer.domElement.addEventListener('pointercancel', () => { drag = null; controls.enabled = true; tip.style.display = 'none'; });
+
+renderer.setAnimationLoop(() => {
+  if (S && !done) {
+    const o = prm();
+    for (let q = 0; q < 3 && frame < STAGE2; q++) { if (frame >= STAGE1) S.pinFree = true; o.pull = frame < STAGE1 ? P.pull : Math.max(P.pull * Math.pow(0.985, frame - STAGE1), 0.0003); MC.solve(S, o, 12); frame++; }
+    if (frame >= STAGE2) finish(); else { if (frame % 6 === 0) draw(); if (frame % 30 === 0) stats(); }
+  }
+  controls.update(); renderer.render(scene, camera);
+});
+
+// ---------- 匯出 ----------
+let MF = null, downloads = null;
+import('./manifold.js').then(m => m.default()).then(w => { w.setup(); MF = w.Manifold; if (S) stats(); }).catch(() => { $('dlNote').textContent = '接頭實體引擎載入失敗，無法輸出 STL。'; });
+RF.getDownloads().then(d => { downloads = d; if (!d) $('dlNote').textContent = '此檢視無法下載檔案，請在 claude.ai 開啟此頁。'; if (S) stats(); }).catch(() => {});
+const crcT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = crcT[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = typeof f.data === 'string' ? enc.encode(f.data) : new Uint8Array(f.data), crc = crc32(data), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name); off += 30 + name.length + data.length;
+  });
+  const cs = central.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)]);
+}
+const Sn = k => 'S' + String(k + 1).padStart(3, '0'), Pn = k => 'P' + String(k + 1).padStart(3, '0'), Tn = k => 'T' + String(k + 1).padStart(3, '0');
+// 板的平面形狀（由三邊長）與夾點位置
+function plateFlat(pi) {
+  const pl = S.plates[pi], [a, b, c] = pl.L, x = (a * a + c * c - b * b) / (2 * a), y = Math.sqrt(Math.max(c * c - x * x, 0)), pts = [[0, 0], [a, 0], [x, y]];
+  const clips = [];
+  S.K.forEach(k => { if (k.kind === 'SA') return; for (const [ia, w] of [[k.ia, k.wa], [k.ib, k.wb]]) { if (ia !== pl.p) continue; clips.push({ q: [0, 1].map(d => w[0] * pts[0][d] + w[1] * pts[1][d] + w[2] * pts[2][d]), name: tname(k.kind === 'PP' ? S.seams[k.seam].type : k.type), half: k.kind === 'PP' && S.seams[k.seam].nclip === 1, second: k.kind === 'PP' && S.seams[k.seam].K[1] === S.K.indexOf(k) }); } });
+  return { pts, clips };
+}
+function plateSVGs(PC, pyr) {
+  const items = [];
+  S.plates.forEach((pl, pi) => {
+    if (pyr[pi]) return;
+    const { pts, clips } = plateFlat(pi), [a, b, c] = pl.L, x = pts[2][0], y = pts[2][1], ring = plateRing(PC[pi], faceSolid[pl.face]);
+    let inner = null;
+    if (ring.inner) { const per = a + b + c, I = [(pts[0][0] * b + pts[1][0] * c + pts[2][0] * a) / per, (pts[0][1] * b + pts[1][1] * c + pts[2][1] * a) / per]; inner = pts.map(p => [I[0] + (p[0] - I[0]) * ring.q, I[1] + (p[1] - I[1]) * ring.q]); }
+    const x0 = Math.min(0, x), G = [(a + x) / 3, y / 3];
+    items.push({ id: Pn(pi), pts, inner, clips, G, w: Math.max(a, x) - x0, h: y, x0 });
+  });
+  const Wd = 410, Hd = 287, gap = 4, pages = []; let page = [], cx = 5, cy = 5, rowH = 0;
+  items.forEach(it => { if (cx + it.w > Wd) { cx = 5; cy += rowH + gap; rowH = 0; } if (cy + it.h > Hd) { pages.push(page); page = []; cx = 5; cy = 5; rowH = 0; } page.push({ ...it, ox: cx - it.x0, oy: cy }); cx += it.w + gap; rowH = Math.max(rowH, it.h); });
+  if (page.length) pages.push(page);
+  const tx = (p, it) => [(p[0] + it.ox).toFixed(2), (it.oy + it.h - p[1]).toFixed(2)], poly = (pp, it) => pp.map(p => tx(p, it).join(',')).join(' ');
+  return pages.map(pg => `<svg xmlns="http://www.w3.org/2000/svg" width="420mm" height="297mm" viewBox="0 0 420 297">` + pg.map(it => {
+    const label = it.inner ? [it.pts[0][0] * 0.75 + it.G[0] * 0.25, it.pts[0][1] * 0.75 + it.G[1] * 0.25] : it.G, lt = tx(label, it);
+    // 夾點：從板邊外的夾點往重心畫一小段，標接頭編號
+    const marks = it.clips.map(cl => { const d = [it.G[0] - cl.q[0], it.G[1] - cl.q[1]], l = Math.hypot(d[0], d[1]) || 1, p1 = tx([cl.q[0] + d[0] / l * 2, cl.q[1] + d[1] / l * 2], it), p2 = tx([cl.q[0] + d[0] / l * 5, cl.q[1] + d[1] / l * 5], it), p3 = tx([cl.q[0] + d[0] / l * 7.5, cl.q[1] + d[1] / l * 7.5], it); return `<line x1="${p1[0]}" y1="${p1[1]}" x2="${p2[0]}" y2="${p2[1]}" stroke="#0000ff" stroke-width="0.2"/>` + (cl.half && cl.second ? '' : `<text x="${p3[0]}" y="${p3[1]}" font-size="1.6" fill="#0000ff" text-anchor="middle">${cl.name}</text>`); }).join('');
+    return `<polygon points="${poly(it.pts, it)}" fill="none" stroke="#ff0000" stroke-width="0.1"/>` + (it.inner ? `<polygon points="${poly(it.inner, it)}" fill="none" stroke="#ff0000" stroke-width="0.1"/>` : '') + marks + `<text x="${lt[0]}" y="${lt[1]}" font-size="2.6" fill="#000" text-anchor="middle">${it.id}</text>`;
+  }).join('') + `<line x1="5" y1="293" x2="105" y2="293" stroke="#000" stroke-width="0.2"/><text x="107" y="294" font-size="2.6">100 mm（列印後量這條線確認 1:1）· 紅＝裁切 · 藍＝夾子位置與接頭編號</text></svg>`);
+}
+// 安裝位置圖（平面投影）
+function assemblyMap(PC, pyr) {
+  const X = S.X, sc = 3, wall = P.support === 'wall';
+  let out = `<svg xmlns="http://www.w3.org/2000/svg" width="${420 * sc}mm" height="${297 * sc}mm" viewBox="-210 -148.5 420 297"><rect x="${-210 * K()}" y="${-148.5 * K()}" width="${420 * K()}" height="${297 * K()}" fill="none" stroke="#999" stroke-width="0.2"/>`;
+  PC.forEach((pl, pi) => { const g = [(pl[0][0] + pl[1][0] + pl[2][0]) / 3, (pl[0][2] + pl[1][2] + pl[2][2]) / 3]; out += `<polygon points="${pl.map(p => p[0].toFixed(2) + ',' + p[2].toFixed(2)).join(' ')}" fill="${pyr[pi] ? '#f3ead2' : '#f1f1ee'}" stroke="#999" stroke-width="0.15"/><text x="${g[0].toFixed(1)}" y="${g[1].toFixed(1)}" font-size="1.5" fill="#666" text-anchor="middle">${pyr[pi] ? Tn(pi) : Pn(pi)}</text>`; });
+  for (let k = 0; k < S.ns; k++) { const o = k * 6; out += `<line x1="${X[o].toFixed(2)}" y1="${X[o + 2].toFixed(2)}" x2="${X[o + 3].toFixed(2)}" y2="${X[o + 5].toFixed(2)}" stroke="#8a6a2a" stroke-width="0.5"/><text x="${((X[o] + X[o + 3]) / 2).toFixed(1)}" y="${((X[o + 2] + X[o + 5]) / 2).toFixed(1)}" font-size="1.4" fill="#444" text-anchor="middle">${Sn(k)}</text>`; }
+  if (NODES) NODES.nodes.forEach(nd => { out += `<circle cx="${nd.c[0].toFixed(2)}" cy="${nd.c[2].toFixed(2)}" r="${nd.R.toFixed(2)}" fill="none" stroke="${nd.hit ? '#d0382b' : '#2f6fd0'}" stroke-width="0.3"/><text x="${nd.c[0].toFixed(1)}" y="${(nd.c[2] - nd.R - 0.6).toFixed(1)}" font-size="1.6" fill="#2f6fd0" text-anchor="middle">N${String(nd.id + 1).padStart(3, '0')}</text>`; });
+  if (!NODES) S.C.forEach(c => { const o = c.s * 6, t = c.ts, x = X[o] + (X[o + 3] - X[o]) * t, z = X[o + 2] + (X[o + 5] - X[o + 2]) * t; out += `<circle cx="${x.toFixed(2)}" cy="${z.toFixed(2)}" r="0.7" fill="${(c.err || 0) < 1 ? '#2f6fd0' : '#d0382b'}"/><text x="${(x + 0.9).toFixed(1)}" y="${(z - 0.5).toFixed(1)}" font-size="1.3" fill="#2f6fd0">${tname(c.type)}${c.special ? '*' : ''}</text>`; });
+  S.K.forEach(c => { if (c.kind === 'SA' || !c.pos) return; const h = c.kind === 'PP'; if (h && S.seams[c.seam].nclip === 1 && S.seams[c.seam].K[1] === S.K.indexOf(c)) return; out += `<rect x="${(c.pos[0] - 0.6).toFixed(2)}" y="${(c.pos[2] - 0.6).toFixed(2)}" width="1.2" height="1.2" fill="${h ? '#2e8b57' : '#b0508a'}"/><text x="${(c.pos[0] + 0.9).toFixed(1)}" y="${(c.pos[2] + 1.4).toFixed(1)}" font-size="1.2" fill="${h ? '#2e8b57' : '#b0508a'}">${tname(h ? S.seams[c.seam].type : c.type)}</text>`; });
+  P.feet.forEach((f, k) => { out += `<circle cx="${f[0]}" cy="${f[1]}" r="${P.ringR}" fill="none" stroke="#000" stroke-width="0.3"/><text x="${f[0]}" y="${f[1] + 1}" font-size="3" text-anchor="middle">${wall ? '錨' : '柱'}${k + 1}</text>`; });
+  return out + `<text x="-205" y="145" font-size="3">安裝位置圖：1:1 平面投影，放大 3 倍輸出。棕線＝竹籤；灰底＝板，黃底＝三角錐；藍點＝桿–桿（* 為墊高特製）、紫方塊＝桿–板、綠方塊＝板–板。</text></svg>`;
+}
+$('dl').addEventListener('click', async () => {
+  if (!MF || !downloads || !done) return;
+  const d = D(), files = [], Pp = { d, tol: P.tol, wall: P.wall, clipL: P.clipL }, PC = MC.plateCorners(S), pyr = PC.map((pl, pi) => pyrApex(pl, pi));
+  $('dl').disabled = true; $('dlNote').textContent = '打包中…';
+  try {
+    const Nn = k => 'N' + String(k + 1).padStart(3, '0'), nodeOf = new Map(NODES ? NODES.nodes.map(nd => [nd.v, Nn(nd.id)]) : []), jn = c => NODES ? (nodeOf.get(c.v) || 'cap') : tname(c.type);
+    if (NODES) {
+      NODES.nodes.forEach(nd => files.push({ name: `nodes/${Nn(nd.id)}_${nd.sticks.length}sticks.stl`, data: toSTL(MC.nodeSolid(MF, S, Pp, nd, P.nshape).getMesh(), Nn(nd.id)) }));
+      const mid = NODES.nodes.slice().sort((a, b) => a.R - b.R)[NODES.nodes.length >> 1]; if (mid) files.push({ name: `test_print_first/${Nn(mid.id)}_test.stl`, data: toSTL(MC.nodeSolid(MF, S, Pp, mid, P.nshape).getMesh(), 'test') });
+      files.push({ name: 'nodes.csv', data: '\ufeff' + ['node,x,y,z,diameter_mm,thickness_mm,sticks,collides'].concat(NODES.nodes.map(nd => `${Nn(nd.id)},${nd.c.map(v => v.toFixed(1)).join(',')},${(2 * nd.R).toFixed(1)},${nd.T.toFixed(1)},"${nd.sticks.map(Sn).join(' ')}",${nd.hit ? 'yes' : ''}`)).join('\n') });
+    }
+    CAPS.forEach(cp => files.push({ name: `caps/F${cp.fi + 1}_x${cp.ends.length}.stl`, data: toSTL(MC.capSolid(MF, S, { ...Pp, ringR: P.ringR }, cp).getMesh(), 'F' + (cp.fi + 1)) }));
+    TY.types.forEach((t, i) => {
+      const n = t.kind === 'H' ? S.seams.filter(s => s.K.length && s.type === i).reduce((a, s) => a + s.nclip, 0) : t.n;
+      const solid = t.kind === 'X' ? MC.uClip(MF, Pp, -t.chi * Math.max(t.a, 8), t.e) : t.kind === 'H' ? MC.hClip(MF, Pp, Math.min(t.a, 95)) : MC.cClip(MF, Pp, t.a);
+      const tag = t.kind === 'X' ? `${t.a}deg${t.a > 89 ? '' : t.chi > 0 ? '_R' : '_L'}_e${t.e.toFixed(1)}` : t.kind === 'H' ? `fold${t.a}deg` : `tilt${t.a}deg`;
+      files.push({ name: `joints/${tname(i)}_${tag}_x${n}.stl`, data: toSTL(solid.getMesh(), tname(i)) });
+    });
+    S.plates.forEach((pl, pi) => { if (pyr[pi]) files.push({ name: `pyramids/${Tn(pi)}_h${Math.abs(pyr[pi].h).toFixed(1)}${pyr[pi].h < 0 ? '_in' : ''}.stl`, data: toSTL(MC.pyramid(MF, Pp, pl.L, Math.abs(pyr[pi].h)).getMesh(), Tn(pi)) }); });
+    plateSVGs(PC, pyr).forEach((s, i) => files.push({ name: `plates_A3_sheet${i + 1}.svg`, data: s }));
+    const cut = ['plate,side_a_mm,side_b_mm,side_c_mm,hole_inset_ratio,clips'];
+    S.plates.forEach((pl, pi) => { if (pyr[pi]) return; const r = plateRing(PC[pi], faceSolid[pl.face]); cut.push(`${Pn(pi)},${pl.L.map(v => v.toFixed(1)).join(',')},${r.inner ? r.q.toFixed(2) : ''},"${plateFlat(pi).clips.map(c => c.name).join(' ')}"`); });
+    files.push({ name: 'plates_cut_list.csv', data: '﻿' + cut.join('\n') });
+    const rows = ['stick,length_mm,joints_along_stick (mm_from_end0:joint:U=this stick on top/D=below/P=plate clip)'];
+    S.sticks.forEach((s, k) => { const pos = S.C.filter(c => c.r === k || c.s === k).map(c => [(c.r === k ? c.tr : c.ts) * s.len, jn(c), c.r === k ? 'U' : 'D']).concat(S.K.filter(c => c.kind === 'SP' && c.s === k).map(c => [(c.t || 0) * s.len, tname(c.type), 'P'])).sort((a, b) => a[0] - b[0]); rows.push(`${Sn(k)},${s.len.toFixed(1)},"${pos.map(q => q[0].toFixed(1) + ':' + q[1] + ':' + q[2]).join('  ')}"`); });
+    files.push({ name: 'sticks.csv', data: '﻿' + rows.join('\n') });
+    const jr = ['no,joint,kind,member_1,mm_from_end0,member_2,mm_from_end0,angle_deg,offset_mm,residual_mm,note'];
+    S.C.forEach((c, k) => jr.push(`${k + 1},${jn(c)},${NODES ? 'node' : 'X'},${Sn(c.r)},${(c.tr * S.sticks[c.r].len).toFixed(1)},${Sn(c.s)},${(c.ts * S.sticks[c.s].len).toFixed(1)},${c.ang.toFixed(1)},${(c.e || d).toFixed(2)},${(c.err || 0).toFixed(2)},${c.special ? 'spacer' : ''}${c.over ? ' over-play' : ''}${c.tight ? ' crowded' : ''}`));
+    S.K.forEach(c => { if (c.kind === 'SP') jr.push(`${jr.length},${tname(c.type)},C,${Sn(c.s)},${((c.t || 0) * S.sticks[c.s].len).toFixed(1)},${pyr[c.plate] ? Tn(c.plate) : Pn(c.plate)},,${(c.tilt || 0).toFixed(1)},,${(c.err || 0).toFixed(2)},${c.over ? 'over-play' : ''}`); });
+    S.seams.forEach(sm => { if (sm.K.length) jr.push(`${jr.length},${tname(sm.type)},H x${sm.nclip},${pyr[sm.A] ? Tn(sm.A) : Pn(sm.A)},,${pyr[sm.B] ? Tn(sm.B) : Pn(sm.B)},,${Math.abs(sm.fold).toFixed(1)},,${Math.max(...sm.K.map(i => S.K[i].err)).toFixed(2)},${sm.over ? 'over-play' : ''}`); });
+    files.push({ name: 'joints_assembly.csv', data: '﻿' + jr.join('\n') });
+    files.push({ name: 'assembly_map.svg', data: assemblyMap(PC, pyr) });
+    files.push({ name: 'params.json', data: JSON.stringify({ params: P, material: MATS[P.mat], summary: MC.summary(S), joints: TY.types, play: TY.play, trim, feet_sockets: S.pins.map(([i]) => ({ member: Sn(i >> 1), x: +S.X[i * 3].toFixed(2), y: +S.X[i * 3 + 1].toFixed(2), z: +S.X[i * 3 + 2].toFixed(2) })) }) });
+    files.push({ name: 'README.txt', data: '線與面互承亭 v0.9 製作包\r\n0. 節點件模式：nodes 內每個節點一件（每個都不同，檔名即編號，位置見 nodes.csv 與 assembly_map）；請先印 test_print_first 裡那一個，確認斜孔插得進竹籤。caps：柱頂件。\r\n1. joints：X＝桿–桿（R／L 互為鏡像，不可混用）、H＝板–板折角夾、C＝桿–板扣（傾角正負互為鏡像）。檔名含角度與數量。全部平放列印，不需支撐。\r\n2. pyramids：三角錐，每個一件；裙邊厚 2 mm，當成板插進夾子。檔名有 _in 的是凹錐，翻面安裝。\r\n3. plates_cut_list.csv：每片板的三邊長。plates_A3_sheet*.svg：1:1 紙型，紅線裁切，藍線是夾子位置與接頭編號；列印後先量 100 mm 比例尺。\r\n4. sticks.csv：每根竹籤的長度與各接點位置（距端點 mm）。\r\n5. joints_assembly.csv、assembly_map.svg：每個接點用哪一種接頭、接哪兩個構件。\r\n6. params.json：參數、柱頂每個桿端的位置（feet_sockets）。\r\n注意：只驗證幾何；H 夾與 C 扣尚未實測，請先各印一個試鬆緊。\r\n' });
+    await downloads.save({ filename: `reciprocal-pavilion_${MATS[P.mat].name}.zip`, data: zip(files) }); $('dlNote').textContent = `已下載：${TY.types.length} 種接頭、${files.filter(f => f.name.startsWith('pyramids')).length} 個三角錐、${files.filter(f => f.name.startsWith('plates_A3')).length} 張板紙型。`;
+  } catch (err) { $('dlNote').textContent = err && err.code === 'declined' ? '已取消下載。' : '下載未完成（' + (err && (err.code || err.message) || '未知原因') + '）。'; }
+  finally { $('dl').disabled = false; }
+});
+
+// ---------- 範例 ----------
+// 每個範例只改少數幾個參數；set 以 A3 為準。view = [相機 x,y,z, 目標 x,y,z]
+const PRESETS = [
+  { g: '基本', id: 'base', name: '基準', note: '四根柱、下枝上冠：腳部是竹籤，往上漸漸變成板，最高處鼓成三角錐。其他範例都是從這裡改幾個參數。', set: {} },
+  { g: '基本', id: 'line', name: '全是線', note: '把線與面的交界拉到頂 → 整座只剩竹籤，看得到每一根怎麼壓著下一根。', set: { gstyle: 'hard', gc: 1, gw: 0.02, edge: 38 } },
+  { g: '基本', id: 'tall', name: '高拱', note: '拱頂與四邊一起加高、邊拱曲線調陡 → 整體更挺，四個開口變高，腳收得更修長。', set: { crown: 185, liftL: 120, liftS: 100, edgeShape: 0.6, edge: 34 }, view: [300, 250, 470, 0, 80, 0] },
+  { g: '基本', id: 'wave', name: '波浪錐', note: '格子放大、板往下擴大，三角錐的高低改成波浪 → 表面出現一道一道的光影。轉動「光源方位」看它流動。', set: { edge: 48, gstyle: 'hard', gc: 0.3, gw: 0.1, pf: 'wave', ph: 22, plv: 6, pwl: 150, pwd: 20, lel: 18, laz: 80 }, view: [260, 280, 420, 0, 55, 0] },
+  { g: '基本', id: 'a5', name: 'A5 節點件', note: '底板縮到 A5、接頭改成每個節點一件的斗形節點件 → 桌上就放得下，零件少，節點本身成為造型的一部分。', set: { board: 'A5', jtype: 'node', nshape: 'dou' } },
+  { g: '變化', id: 'tilt', name: '一高一低', note: '取消對稱，把一側兩根柱加高 → 整片屋面斜向一邊，弧線從低處一路揚起。', set: { sym: 'none', feetH: [0, 70, 0, 70], crown: 150, liftL: 80, liftS: 60, edge: 38 }, view: [-330, 260, 450, 0, 70, 0] },
+  { g: '變化', id: 'dip', name: '中央凹', note: '四邊的拱加高，拱頂反而壓到比四邊低 → 中央凹下去，四邊像被撐起的布。', set: { crown: 45, liftL: 130, liftS: 120, edge: 34, gc: 0.55 }, view: [330, 300, 430, 0, 55, 0] },
+  { g: '變化', id: 'petal4', name: '四瓣花', note: '柱改成環狀四根，拱頂壓低、邊拱拉高，材料換成烤肉串 → 中心低、四片花瓣往上翹，花瓣之間是拱形開口。', set: { mat: 1, slen: 180, clipL: 11, layout: 'ring', nf: 4, sym: 'rot', crown: 40, liftL: 150, pinch: 0.4, ringR: 16, edge: 46, gc: 0.55 }, view: [300, 330, 400, 0, 60, 0] },
+  { g: '變化', id: 'petal5', name: '五瓣花', note: '同樣的做法換成五根柱，板改成平板、範圍擴大 → 五片花瓣更飽滿。', set: { mat: 1, slen: 180, clipL: 11, layout: 'ring', nf: 5, sym: 'rot', crown: 30, liftL: 165, edgeShape: 1, pinch: 0.5, ringR: 14, edge: 58, gc: 0.3, gw: 0.3, pyr: 'flat' }, view: [280, 360, 380, 0, 60, 0] },
+  { g: '變化', id: 'lotus', name: '六瓣蓮', note: '六根柱、格子放到很大 → 每片花瓣只剩一塊三角板，線條最乾淨，接頭只要 13 種。', set: { mat: 1, slen: 180, clipL: 11, layout: 'ring', nf: 6, sym: 'rot', crown: 35, liftL: 150, edgeShape: 1.3, pinch: 0.55, ringR: 14, edge: 75, gstyle: 'hard', gc: 0.25, gw: 0.1, pyr: 'flat' }, view: [280, 360, 380, 0, 60, 0] },
+  { g: '變化', id: 'tunnel', name: '通道', note: '柱改成 2×3、拉長，漸變改成沿長度 → 兩個連續的拱，一端是線、另一端是面。', set: { layout: 'rows', nf: 6, sym: 'xz', W: 380, L: 170, crown: 120, liftL: 55, liftS: 95, edge: 34, gmode: 'B', gstyle: 'hole', gc: 0.5, gw: 0.9 }, view: [430, 250, 330, 0, 50, 0] },
+  { g: '變化', id: 'long', name: '八柱長亭', note: '柱增加到 2×4 → 三個連續的拱，像一段長廊。', set: { layout: 'rows', nf: 8, sym: 'xz', W: 390, L: 200, crown: 110, liftL: 45, liftS: 90, edge: 38, gc: 0.55 }, view: [430, 260, 350, 0, 45, 0] },
+  { g: '變化', id: 'low', name: '低扁殼', note: '拱頂與邊拱都壓低 → 貼著地面的扁殼，幾乎整片是板。', set: { crown: 75, liftL: 35, liftS: 28, gc: 0.45, cap: false }, view: [330, 210, 430, 0, 30, 0] },
+  { g: '變化', id: 'tent', name: '尖帳', note: '拱頂拉得很高、邊拱壓低，格子縮小才接得上 → 像一頂帳篷，竹籤數量大增。', set: { crown: 205, liftL: 25, liftS: 20, edgeShape: 1.5, pinch: 0.45, gatherH: 30, edge: 30, gc: 0.7 }, view: [330, 240, 470, 0, 80, 0] },
+  { g: '變化', id: 'tri', name: '三腳', note: '環狀三根柱 → 三個大拱撐起一個尖頂。', set: { layout: 'ring', nf: 3, sym: 'rot', crown: 150, liftL: 95, pinch: 0.5, ringR: 18, gatherH: 30, edge: 34, gc: 0.5 }, view: [300, 300, 400, 0, 65, 0] },
+  { g: '變化', id: 'dome', name: '六柱穹頂', note: '環狀六根柱，收束放鬆 → 一圈六個拱，整體接近穹頂。', set: { layout: 'ring', nf: 6, sym: 'rot', crown: 140, liftL: 70, pinch: 0.3, ringR: 22, edge: 35, gatherH: 35, gc: 0.5 }, view: [300, 330, 380, 0, 60, 0] },
+  { g: '變化', id: 'alt', name: '凸凹交錯', note: '三角錐一個凸、一個凹交錯 → 表面像摺過的紙，光影最碎。', set: { edge: 48, gstyle: 'hard', gc: 0.3, gw: 0.1, ps: 'alt', ph: 18, plv: 3, lel: 25, laz: 60 }, view: [260, 280, 420, 0, 55, 0] },
+  { g: '變化', id: 'wall', name: '牆面浮雕', note: '支承改成掛牆，拱高壓低、三角錐做成波浪 → 一片掛在牆上的浮雕。', set: { support: 'wall', crown: 90, liftL: 50, liftS: 40, edge: 48, gstyle: 'hard', gc: 0.25, gw: 0.1, pf: 'wave', ph: 20, pwl: 140, lel: 35, laz: 140 } },
+  { g: '變化', id: 'dots', name: '網點漸變', note: '漸變方式改成網點、板改成平板 → 線與面隨機交錯，像樹影。', set: { gstyle: 'dither', gc: 0.5, gw: 1, pyr: 'flat', crown: 150, liftL: 95, liftS: 80, edge: 38 }, view: [300, 250, 470, 0, 70, 0] },
+  { g: '變化', id: 'bold', name: '粗枝大葉', note: '材料換成烤肉串、格子放大，接頭用斗形節點件 → 構件少而粗，每個節點都看得清楚。', set: { mat: 1, slen: 180, edge: 115, clipL: 11, gc: 0.45, jtype: 'node', nshape: 'dou' }, view: [330, 280, 430, 0, 60, 0] }
+];
+const BOOLL = { cap: ['柱頂件', '使用', '不使用'] };
+const SEGL = { layout: ['柱的排列', { rows: '雙排', ring: '環狀' }], nf: ['柱數', {}], sym: ['對稱', { none: '自由', rot: '旋轉對稱', x: '左右', z: '前後', xz: '雙向' }], gstyle: ['漸變方式', { hole: '開孔', dither: '網點', hard: '硬切' }], gmode: ['漸變方向', { A: '依高度', B: '沿長度' }], pyr: ['板的形式', { flat: '平板', pyr: '三角錐' }], pf: ['錐高分布', { grad: '漸變', wave: '波浪' }], ps: ['凸凹', { out: '凸', in: '凹', alt: '凸凹交錯' }], jtype: ['接頭方式', { clip: '逐點夾子', node: '節點件' }], nshape: ['節點件造型', { ring: '鏤空環', disc: '實心盤', dou: '斗形' }], board: ['底板', {}], support: ['支承', { ground: '地面', wall: '牆面浮雕' }], mat: ['材料', { 0: '竹籤', 1: '烤肉串', 2: '竹筷' }] };
+const SEGID = { layout: 'layout', nf: 'nfSeg', sym: 'symSeg', gstyle: 'gstyle', gmode: 'gmode', pyr: 'pyrSeg', pf: 'pfSeg', ps: 'psSeg', jtype: 'jtSeg', nshape: 'nsSeg', board: 'bdSeg', support: 'supSeg' };
+const BASEV = { W: 300, L: 230, R: 130, footH: 0 };
+let curPreset = null;
+$('pchips').innerHTML = [...new Set(PRESETS.map(p => p.g))].map(g => `<div class="prow"><span class="plab">${g}</span>` + PRESETS.filter(p => p.g === g).map(p => `<button data-p="${p.id}" aria-pressed="false">${p.name}</button>`).join('') + '</div>').join('');
+function applyPreset(id, quiet) {
+  const pr = PRESETS.find(p => p.id === id); if (!pr) return;
+  if (!quiet) snap();
+  P = JSON.parse(JSON.stringify(DEF)); const st = pr.set;
+  if (st.layout) { P.layout = st.layout; P.nf = st.nf || (st.layout === 'ring' ? 6 : 4); P.sym = st.sym || (st.layout === 'ring' ? 'rot' : 'xz'); relayout(); }
+  for (const k in st) { if (['layout', 'nf', 'sym', 'board', 'feetH'].includes(k)) continue; if (k in BASEV) setF(k, st[k]); else P[k] = st[k]; }
+  if (st.feetH) P.feet.forEach((f, i) => { f[2] = st.feetH[i % st.feetH.length] || 0; });
+  if (st.board && st.board !== 'A3') setBoard(st.board);
+  curPreset = id; syncInputs(); applyBoard(); applySupport();
+  if (pr.view) { const c = 0.3 + 0.7 * K(); camera.position.set(pr.view[0] * c, pr.view[1] * c, pr.view[2] * c); controls.target.set(pr.view[3] * K(), pr.view[4] * K(), pr.view[5] * K()); controls.update(); document.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === 'persp')); } else setView('persp');
+  setTool('view'); setDots(false); rebuild(); applyLight(); showPreset(pr);
+}
+function showPreset(pr) {
+  document.querySelectorAll('#pchips button').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === pr.id));
+  document.querySelectorAll('.chg').forEach(e => e.classList.remove('chg'));
+  const diffs = [];
+  for (const k in pr.set) {
+    const v = pr.set[k];
+    if (FIELDS[k]) { const row = $(k).closest('.row'), f = FIELDS[k][0], b0 = k in BASEV ? BASEV[k] : DEF[k]; if (b0 === v) continue; row.classList.add('chg'); diffs.push(`${row.querySelector('label').textContent} ${f(b0)} → ${f(v)}`); }
+    else if (BOOLL[k]) { if (DEF[k] !== v) diffs.push(`${BOOLL[k][0]} ${DEF[k] ? BOOLL[k][1] : BOOLL[k][2]} → ${v ? BOOLL[k][1] : BOOLL[k][2]}`); }
+    else if (k === 'feetH') { diffs.push(`柱高 全部 0 → ${v.join('／')} mm`); const r = $('footH').closest('.row'); r.classList.add('chg'); }
+    else if (SEGL[k]) { const [lab, mp] = SEGL[k], b0 = DEF[k]; if (b0 === v) continue; if (SEGID[k]) $(SEGID[k]).classList.add('chg'); diffs.push(`${lab} ${mp[b0] ?? b0} → ${mp[v] ?? v}`); }
+  }
+  $('pnote').innerHTML = `<b>${pr.name}</b>　${pr.note}` + (diffs.length ? `<div class="pdiff">${diffs.map(d => `<span>${d}</span>`).join('')}</div>` : '');
+}
+$('pchips').addEventListener('click', e => { const b = e.target.closest('button'); if (b) applyPreset(b.dataset.p); });
+window.__rfPreset = pr => { const i = PRESETS.findIndex(p => p.id === pr.id); if (i >= 0) PRESETS[i] = pr; else PRESETS.push(pr); applyPreset(pr.id, true); };
+
+syncInputs(); setTool('edit');
+{ const m = /p=([\w-]+)/.exec(location.hash); if (m && PRESETS.some(p => p.id === m[1])) applyPreset(m[1], true); else { rebuild(); applyLight(); $('pnote').textContent = '按一個範例，看它改了哪些參數、造型怎麼跟著變。左邊被改動的參數會標出來。'; } }
+}
+</script>
+</body>
+</html>
