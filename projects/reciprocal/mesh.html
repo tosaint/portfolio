@@ -89,6 +89,10 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .chg{background:color-mix(in srgb,var(--warn) 12%,transparent);border-radius:6px;box-shadow:0 0 0 3px color-mix(in srgb,var(--warn) 12%,transparent)}
 .chg>label{color:var(--warn)!important;font-weight:700}
 .chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}
+.sdbar{position:absolute;left:8px;right:8px;bottom:8px;z-index:4;display:grid;gap:0;padding:4px 10px;background:color-mix(in srgb,var(--bg) 88%,transparent);border:1px solid var(--rule);border-radius:2px;max-width:560px}
+.sdbar[hidden]{display:none}:is(.rf-m,.rf-l) .sdbar{left:6px;right:6px;bottom:6px;padding:2px 8px}:is(.rf-m,.rf-l) .sdr input{height:26px}:is(.rf-m,.rf-l) #ovPlay{min-height:26px}.sdr{display:grid;grid-template-columns:2.8em minmax(0,1fr) 5.8em;gap:8px;align-items:center}.sdr input{height:30px}
+.sdr span{font-size:13px;color:var(--quiet)}.sdr output{font-size:13px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+#ovPlay{font:inherit;font-size:13px;min-height:30px;padding:0;border:1px solid var(--rule);border-radius:2px;background:var(--panel);color:var(--ink);cursor:pointer}
 </style>
 </head>
 <body>
@@ -229,6 +233,11 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
     <div class="legend"><div><i class="dot" style="background:var(--good)"></i>接點接得上（&lt; 0.3 mm）</div><div><i class="dot" style="background:var(--mid)"></i>0.3–1 mm（靠公差或微彎）</div><div><i class="dot" style="background:var(--bad)"></i>&gt; 1 mm（幾何上有衝突）</div><div><i class="dot" style="background:#8a4fd0"></i>夾子互頂，或角度超出間隙</div><div><i class="dot" style="background:#2f6fd0"></i>調形把手</div></div>
     <div class="hint" id="hint"></div>
     <div class="tip" id="tip"></div>
+    <div class="sdbar" id="sdbar" hidden role="group" aria-label="日晷">
+      <div class="sdr"><button id="ovPlay" aria-label="播放一天">▶</button><input type="range" id="ovT" min="300" max="1140" step="5" aria-label="時刻"><output id="ovT_o"></output></div>
+      <div class="sdr"><span>日期</span><input type="range" id="ovN" min="1" max="365" step="1" aria-label="日期"><output id="ovN_o"></output></div>
+      <div class="sdr"><span>北方</span><input type="range" id="ovNorth" min="0" max="355" step="5" aria-label="北方"><output id="ovNorth_o"></output></div>
+    </div>
   </div>
   <div class="kpis" id="kpis"></div>
   <div class="tables">
@@ -249,6 +258,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
     <span class="note" id="dlNote">內含三種接頭與三角錐的 STL、板的裁切清單與 1:1 紙型、竹籤長度與接點位置、安裝位置圖、參數。</span>
   </div>
   <div class="notes">
+    <p><b>手機</b>：模擬器固定在上半部，參數分頁放在下面，一邊調一邊看；橫拿時左右並排。日晷開啟後，模擬器下緣多一列時刻、日期、北方；可以直接拖光點改時刻，點節氣線跳到那一天。</p>
     <p><b>v0.10 新增：日晷</b>。在屋面的一片實心板（或三角錐的尖端）開一個約 3 mm 的光孔，陽光穿過去在底板上投出光點。光源換成中壢（24.96°N、121.22°E）當時的太陽：選日期與時刻，或按「現在」「播放一天」。底板上畫出這座屋頂專屬的刻度：藍線是節氣（同一條線一年經過兩次，例如立春與立冬），棕色 8 字線是整點，已含均時差與經度修正，可以直接對手錶；橘線是今天光點走的路。屋頂一變形，光孔的高度與位置改變，整張刻度跟著重算。光孔預設自動選「一年中最多時段落在底板內」的那片板，也可以自己點選。做實體模型時，製作包多一張 1:1 的日晷底板，柱子對準圓圈、箭頭指向真北、底板放水平即可。<b>之後</b>：多孔報時、數字鏤空，以及會直接顯示數字的數位日晷光孔件。</p>
     <p><b>v0.9 新增</b>：底板可選 A3／A4／A5。接頭方式多了<b>節點件</b>：每個節點印一個小塊，照解出來的位置開斜孔，竹籤沿軸向插進去，解決同一根竹籤上夾子互頂的問題；可選鏤空環、實心盤、斗形，並調大小、厚度與漸變。<b>柱頂件</b>把落在柱頂的桿端收在一起。兩種接頭方式共用同一個求解結果，可以隨時切換比較。</p>
     <p><b>v0.8 改了什麼</b>：竹籤、板、三角錐現在都是求解裡的實際構件。接頭有三種，全部 3D 列印，共用同一個 2 mm 板槽：<b>X</b> 桿–桿（兩條槽，夾角＋偏心＋左右手）、<b>H</b> 板–板折角夾（兩個板槽背對背，折角就是兩板的夾角）、<b>C</b> 桿–板扣（C 形環扣竹籤，另一側板槽）。板是單純的三角形，照清單的三邊長裁切即可。</p>
@@ -332,7 +342,7 @@ function syncInputs() {
   $('pflip').checked = P.pflip; $('shadow').checked = P.shadow;
   $('sd').checked = P.sd; $('sdLines').checked = P.sdLines; $('sdSee').checked = P.sdSee; $('sdIn').style.display = P.sd && P.support !== 'wall' ? '' : 'none'; $('sd').disabled = P.support === 'wall';
   $('sdHelp').textContent = P.support === 'wall' ? '日晷只用在「地面」支承：光點要投在水平的底板上。' : SDHELP;
-  ['laz', 'lel'].forEach(k => $(k).disabled = sdOn()); $('lightNote').style.display = sdOn() ? '' : 'none'; $('sdAuto').setAttribute('aria-pressed', P.sdFace < 0);
+  ['laz', 'lel'].forEach(k => $(k).disabled = sdOn()); $('lightNote').style.display = sdOn() ? '' : 'none'; $('sdAuto').setAttribute('aria-pressed', P.sdFace < 0); if (window.syncOv) syncOv();
   $('footH').previousElementSibling.textContent = wall ? '離牆' : '柱高';
   const ring = P.layout === 'ring';
   ['Rrow'].forEach(id => $(id).style.display = ring ? '' : 'none'); ['Wrow', 'Lrow', 'liftSrow'].forEach(id => $(id).style.display = ring ? 'none' : '');
@@ -524,7 +534,7 @@ const H = [];
 function addH(kind, i, pos, geo) { const m = new THREE.Mesh(geo, matH); m.position.copy(pos); m.userData = { kind, i }; handles.add(m); H.push(m); return m; }
 function drawHandles() {
   handles.traverse(o => o.geometry && o.geometry.dispose()); handles.clear(); H.length = 0;
-  const hk = HK(), kk = K(), hs = M.hs, sph = r => new THREE.SphereGeometry(r * hk, 18, 12), V3 = p => new THREE.Vector3(p[0], p[1], p[2]);
+  const hk = HK() * (matchMedia('(pointer: coarse)').matches ? 1.6 : 1), kk = K(), hs = M.hs, sph = r => new THREE.SphereGeometry(r * hk, 18, 12), V3 = p => new THREE.Vector3(p[0], p[1], p[2]);
   addH('crown', 0, V3(hs.crown).add(new THREE.Vector3(0, 8 * hk, 0)), sph(6));
   hs.edges.forEach((ed, i) => addH(ed.kind, i, V3(ed.p), sph(5)));
   hs.shapes.forEach((sh, i) => addH('shape', i, V3(sh.p), new THREE.TetrahedronGeometry(5 * hk)));
@@ -757,9 +767,26 @@ function updateDial(full) {
   if (inB && sdLeakV !== null) t += sdLeakV > 0.25 ? '光點周圍有漏光（編織的縫或開孔的板），實際上會看不清楚：把光孔附近的格子改成板。' : '光點周圍在屋頂的陰影裡，看得清楚。';
   note.textContent = t;
 }
-function sunChanged(k) { setSun(); updateDial(k !== 'sdT'); try { localStorage.setItem('rf-pav9', JSON.stringify(P)); } catch (e) {} }
-const setPlay = v => { playing = v; $('sdPlay').setAttribute('aria-pressed', v); $('sdPlay').textContent = v ? '暫停' : '播放一天'; };
-$('sd').addEventListener('change', e => { snap(); P.sd = e.target.checked; if (!P.sd) setPlay(false); syncInputs(); applyLight(); updateDial(true); try { localStorage.setItem('rf-pav9', JSON.stringify(P)); } catch (er) {} });
+function sunChanged(k) { setSun(); updateDial(k !== 'sdT'); syncOv(); try { localStorage.setItem('rf-pav9', JSON.stringify(P)); } catch (e) {} }
+const setPlay = v => { playing = v; $('sdPlay').setAttribute('aria-pressed', v); $('sdPlay').textContent = v ? '暫停' : '播放一天'; $('ovPlay').textContent = v ? '❚❚' : '▶'; $('ovPlay').setAttribute('aria-label', v ? '暫停' : '播放一天'); };
+// 模擬器上的日晷列：時刻、日期、北方（與左欄同步）
+const OV = [['ovT', 'sdT'], ['ovN', 'sdN'], ['ovNorth', 'sdNorth']];
+window.syncOv = () => { const on = sdOn(); $('sdbar').hidden = !on; $('hint').style.visibility = on ? 'hidden' : ''; OV.forEach(([o, k]) => { $(o).value = P[k]; $(o + '_o').textContent = FIELDS[k][0](P[k]); }); };
+OV.forEach(([o, k]) => { const el = $(o); el.addEventListener('pointerdown', snap); el.addEventListener('input', () => { P[k] = +el.value; $(k).value = P[k]; $(k + '_o').textContent = FIELDS[k][0](P[k]); sunChanged(k); }); });
+$('ovPlay').addEventListener('click', () => $('sdPlay').click());
+// 拖光點：沿著當天的軌跡找最近的時刻
+const toScreen = (x, y, z) => { const v = new THREE.Vector3(x, y, z).applyMatrix4(rig.matrixWorld).project(camera), r = renderer.domElement.getBoundingClientRect(); return [(v.x + 1) / 2 * r.width + r.left, (1 - v.y) / 2 * r.height + r.top]; };
+function sdTimeAt(q) { const H0 = sdHole(); if (!H0) return null; let best = null, bd = 1e9; for (let t = 300; t <= 1140; t += 2) { const p = SD.spot(H0.h, SD.sun(P.sdN, t, P.sdNorth)); if (!p) continue; const d = Math.hypot(p[0] - q.x, p[1] - q.z); if (d < bd) { bd = d; best = t; } } return best; }
+// 點節氣線：跳到那一天（同一條線的兩個節氣，取離目前日期近的那個）
+function sdDateAt(e) {
+  const H0 = sdHole(); if (!H0) return null; let best = null, bd = 22;
+  SD.DATE_LINES.forEach(([n, name]) => { for (let t = 300; t <= 1140; t += 6) { const p = SD.spot(H0.h, SD.sun(n, t, P.sdNorth)); if (!p || Math.abs(p[0]) > 210 * K() || Math.abs(p[1]) > 148.5 * K()) continue; const s2 = toScreen(p[0], 0.15, p[1]), d = Math.hypot(s2[0] - e.clientX, s2[1] - e.clientY); if (d < bd) { bd = d; best = name; } } });
+  if (!best) return null;
+  const days = best.split(' ').map(nm => SD.TERMS.find(t => t[0] === nm)).filter(Boolean), cd = n => Math.min(Math.abs(n - P.sdN), 365 - Math.abs(n - P.sdN));
+  return days.sort((a, b) => cd(a[1]) - cd(b[1]))[0];
+}
+let sdDrag = false;
+$('sd').addEventListener('change', e => { snap(); P.sd = e.target.checked; if (!P.sd) setPlay(false); syncInputs(); applyLight(); updateDial(true); if (P.sd && window.RF && RF.showTab) RF.showTab('日晷'); try { localStorage.setItem('rf-pav9', JSON.stringify(P)); } catch (er) {} });
 $('sdLines').addEventListener('change', e => { P.sdLines = e.target.checked; updateDial(true); });
 $('sdSee').addEventListener('change', e => { P.sdSee = e.target.checked; updateDial(false); });
 $('sdNow').addEventListener('click', () => {
@@ -795,6 +822,10 @@ const vertPlaneN = () => { const d = new THREE.Vector3(); camera.getWorldDirecti
 const LABEL = { crown: '拱頂高', liftL: '邊拱', liftS: '深邊拱', foot: '柱位', footH: '柱高', ring: '腳環半徑', gather: '收束', shape: '邊拱曲線', gradA: '漸變起點', gradB: '漸變終點' };
 renderer.domElement.addEventListener('pointerdown', e => {
   downAt = [e.clientX, e.clientY];
+  if (sdOn() && spotM.visible && !pickHole) {
+    const s2 = toScreen(spotM.position.x, spotM.position.y, spotM.position.z);
+    if (Math.hypot(s2[0] - e.clientX, s2[1] - e.clientY) < 28) { snap(); sdDrag = true; setPlay(false); controls.enabled = false; renderer.domElement.setPointerCapture(e.pointerId); return; }
+  }
   if (tool !== 'edit' || pickHole) return;
   toPtr(e); const hit = ray.intersectObjects(H)[0]; if (!hit) return;
   snap();
@@ -804,6 +835,11 @@ renderer.domElement.addEventListener('pointerdown', e => {
   controls.enabled = false; renderer.domElement.setPointerCapture(e.pointerId);
 });
 renderer.domElement.addEventListener('pointermove', e => {
+  if (sdDrag) {
+    toPtr(e); const q = hitPlane(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0)); if (!q) return; const t = sdTimeAt(q); if (t === null) return;
+    P.sdT = t; $('sdT').value = t; $('sdT_o').textContent = SD.hhmm(t); setSun(); updateDial(false); syncOv();
+    const r = renderer.domElement.getBoundingClientRect(); tip.style.display = 'block'; tip.style.left = (e.clientX - r.left) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; tip.textContent = SD.hhmm(t); return;
+  }
   if (!drag) return;
   toPtr(e); const q = hitPlane(drag.n, drag.p0); if (!q) return;
   const st = drag.start, dy = q.y - drag.p0.y, kk = K(), clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -834,6 +870,7 @@ renderer.domElement.addEventListener('pointermove', e => {
   if (drag.kind.startsWith('grad')) remodelSoon(); else schedule();
 });
 const endDrag = e => {
+  if (sdDrag) { sdDrag = false; controls.enabled = true; tip.style.display = 'none'; updateDial(true); try { localStorage.setItem('rf-pav9', JSON.stringify(P)); } catch (er) {} return; }
   if (drag) { drag = null; controls.enabled = true; tip.style.display = 'none'; return; }
   if (pickHole && downAt && e && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 5) {
     toPtr(e); const hit = ray.intersectObject(pickMesh)[0]; if (!hit || !S) return;
@@ -842,6 +879,15 @@ const endDrag = e => {
     if (ok) { snap(); P.sdFace = f; pickHole = false; $('sdPick').setAttribute('aria-pressed', false); syncInputs(); updateDial(true); tip.textContent = '光孔設在這片板上'; try { localStorage.setItem('rf-pav9', JSON.stringify(P)); } catch (er) {} }
     else tip.textContent = '這格不是實心板（竹籤格或開孔板），換一片';
     clearTimeout(tip._t); tip._t = setTimeout(() => tip.style.display = 'none', 2500); return;
+  }
+  if (sdOn() && P.sdLines && downAt && e && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 5) {
+    toPtr(e); const roof = tool === 'view' && ray.intersectObject(pickMesh)[0];
+    const day = !roof && sdDateAt(e);
+    if (day) {
+      snap(); P.sdN = day[1]; $('sdN').value = day[1]; $('sdN_o').textContent = FIELDS.sdN[0](day[1]); sunChanged('sdN');
+      const r = renderer.domElement.getBoundingClientRect(), [m, d] = SD.dateOf(day[1]); tip.style.display = 'block'; tip.style.left = (e.clientX - r.left) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; tip.textContent = `跳到 ${day[0]}（${m}/${d}）`;
+      clearTimeout(tip._t); tip._t = setTimeout(() => tip.style.display = 'none', 2000); return;
+    }
   }
   if (tool === 'view' && downAt && e && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 5) {
     toPtr(e);
@@ -856,7 +902,7 @@ const endDrag = e => {
     if (hit) { snap(); const i = hit.faceIndex; P.ov[i] = 1 - faceType[i]; remodel(); }
   }
 };
-renderer.domElement.addEventListener('pointerup', endDrag); renderer.domElement.addEventListener('pointercancel', () => { drag = null; controls.enabled = true; tip.style.display = 'none'; });
+renderer.domElement.addEventListener('pointerup', endDrag); renderer.domElement.addEventListener('pointercancel', () => { sdDrag = false; drag = null; controls.enabled = true; tip.style.display = 'none'; });
 
 renderer.setAnimationLoop(() => {
   if (S && !done) {
@@ -864,7 +910,7 @@ renderer.setAnimationLoop(() => {
     for (let q = 0; q < 3 && frame < STAGE2; q++) { if (frame >= STAGE1) S.pinFree = true; o.pull = frame < STAGE1 ? P.pull : Math.max(P.pull * Math.pow(0.985, frame - STAGE1), 0.0003); MC.solve(S, o, 12); frame++; }
     if (frame >= STAGE2) finish(); else { if (frame % 6 === 0) draw(); if (frame % 30 === 0) stats(); }
   }
-  if (playing && sdOn()) { P.sdT += 1.5; if (P.sdT > 1140) { P.sdT = 1140; setPlay(false); } $('sdT').value = P.sdT; $('sdT_o').textContent = SD.hhmm(P.sdT); setSun(); updateDial(false); }
+  if (playing && sdOn()) { P.sdT += 1.5; if (P.sdT > 1140) { P.sdT = 1140; setPlay(false); } $('sdT').value = P.sdT; $('sdT_o').textContent = SD.hhmm(P.sdT); $('ovT').value = P.sdT; $('ovT_o').textContent = SD.hhmm(P.sdT); setSun(); updateDial(false); }
   controls.update(); renderer.render(scene, camera);
 });
 
