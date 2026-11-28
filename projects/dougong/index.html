@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>斗栱 · Dougong</title>
-<meta name="description" content="A Song-style bracket set made in wood in 2002, rebuilt in 3D in 2026 and taken apart step by step. 2002 年依《營造法式》製作的斗栱木模型，2026 年以 three.js 復原並可逐步拆解。">
+<meta name="description" content="A Song-style bracket set made in wood in 2002, rebuilt in 3D in 2026 from its photographs and taken apart tier by tier. 2002 年依《營造法式》製作的斗栱木模型，2026 年依照片以 three.js 復原並逐層拆解。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;500;700&family=Noto+Sans+TC:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Yuji+Boku&family=Zhi+Mang+Xing&family=LXGW+WenKai+TC&display=swap&text=%E3%83%BB%E4%BA%92%E4%BA%94%E4%BA%A4%E4%BB%A4%E4%BD%9C%E5%87%BA%E5%88%86%E5%8D%B7%E5%96%AE%E5%BF%83%E6%96%97%E6%98%82%E6%9D%90%E6%9D%AA%E6%A0%94%E6%A0%B1%E6%AB%A8%E6%AE%BA%E8%A8%88%E8%B7%B3%E9%87%8D%E9%8B%AA">
 <script>try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <style>
+
 
 /* Same paper, ink and type as the portfolio and Work 006: Chinese on the left, English on the right. */
 :root {
@@ -183,6 +184,72 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid 
   .data { grid-template-columns: 1fr; gap: 2px; }
   .data dd { margin-bottom: 12px; }
 }
+
+
+/* Tier names that appear beside the hero model as it comes apart */
+.tn { position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none; white-space: nowrap; font: 500 15px var(--serif); letter-spacing: .14em; color: var(--ink); will-change: transform, opacity; }
+.tn::before { content: ""; display: inline-block; width: 30px; height: 1px; background: var(--ink-3); vertical-align: middle; margin-right: 10px; }
+.tn small { font: 400 10px var(--mono); letter-spacing: .1em; color: var(--ink-3); margin-left: .7em; }
+
+/* Photo against rebuild */
+.match { border-top: 1px solid var(--rule); padding-block: clamp(24px, 5vw, 56px); }
+.match .seg { grid-template-columns: repeat(4, 1fr); width: min(100%, 420px); margin: 0 0 14px; }
+.mstage { position: relative; width: min(100%, 760px); background: var(--mat); border: 1px solid var(--rule); overflow: hidden; touch-action: pan-y; user-select: none; cursor: ew-resize; --x: 50%; }
+.mstage img, .mstage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.mstage canvas { clip-path: inset(0 0 0 var(--x)); }
+.mstage.over canvas { clip-path: none; }
+.mstage .bar { position: absolute; top: 0; bottom: 0; left: var(--x); width: 1px; background: var(--accent); }
+.mstage .bar::after { content: "‹ ›"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent); color: #fff; font: 400 12px var(--mono); padding: 4px 6px; white-space: nowrap; }
+.mstage.over .bar { display: none; }
+.mstage .cap { position: absolute; bottom: 8px; font: 400 10px var(--mono); letter-spacing: .12em; padding: 3px 6px; background: color-mix(in srgb, var(--paper) 85%, transparent); color: var(--ink-2); pointer-events: none; }
+.mstage .cap.l { left: 8px; } .mstage .cap.r { right: 8px; }
+.mstage.over .cap { display: none; }
+.match-foot { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-top: 12px; font-size: 13px; color: var(--ink-2); max-width: 760px; }
+.match-foot p { margin: 0; flex: 1 1 280px; }
+.match-foot p span { display: block; color: var(--ink-3); }
+
+#mode { grid-template-columns: repeat(3, 1fr); width: 186px; }
+/* Viewer: two photos per step */
+.thumbs { right: 12px; top: 10px; display: flex; gap: 6px; width: clamp(170px, 28%, 300px); transition: width .3s; cursor: zoom-in; }
+.thumbs.big { width: min(calc(100% - 24px), 760px); cursor: zoom-out; }
+.thumbs figure { margin: 0; flex: 1; min-width: 0; }
+.thumbs img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--rule); background: var(--paper); }
+.thumbs.big img { aspect-ratio: auto; }
+.thumbs figcaption { margin-top: 3px; font: 400 10px var(--mono); letter-spacing: .04em; color: var(--ink-3); }
+.ctrl { grid-template-columns: auto auto auto 1fr; }
+.ctrl .btn { white-space: nowrap; }
+
+/* Side elevation: count the five tiers */
+.sec { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 56px); align-items: center; margin: 0; padding-block: 0 clamp(28px, 5vw, 56px); }
+.sec-fig { position: relative; aspect-ratio: 210 / 162; background: var(--mat); border: 1px solid var(--rule); }
+.sec-fig img, .sec-fig svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.sec-fig svg text { font: 400 5px var(--mono); fill: var(--ink-2); }
+.sec-fig svg path { fill: none; stroke: var(--ink-2); stroke-width: .4; }
+.sec .side { display: flex; flex-direction: column; gap: 14px; font-size: 14px; }
+.sec .side h2 { margin: 0; font: 400 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.keys { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+.keys button { all: unset; box-sizing: border-box; cursor: pointer; background: var(--paper); padding: 9px 12px; display: grid; grid-template-columns: 2em 1fr; gap: 0 10px; align-items: baseline; }
+.keys button code { font: 400 12px var(--mono); color: var(--ink-3); }
+.keys button b { font-weight: 500; }
+.keys button small { grid-column: 2; font: 400 11px var(--mono); letter-spacing: .06em; color: var(--ink-3); }
+.keys button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.keys button[aria-pressed="true"] code, .keys button[aria-pressed="true"] small { color: var(--paper); opacity: .75; }
+.keys button:focus-visible { outline: 1px solid var(--ink-2); outline-offset: 2px; }
+.sec .side p { margin: 0; color: var(--ink-2); }
+.sec .side p span { display: block; color: var(--ink-3); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .tn { font-size: 13px; } .tn::before { width: 14px; margin-right: 6px; } .tn small { display: none; }
+  .sec { grid-template-columns: 1fr; }
+  .thumbs { width: 44%; gap: 4px; }
+  .thumbs figcaption { display: none; }
+  .thumbs.big figcaption { display: block; }
+  .tl { width: 50%; }
+  .ctrl { gap: 6px 8px; padding: 8px; }
+  .ctrl .btn { padding: 4px 8px; font-size: 13px; }
+  .ctrl output { display: none; }
+  .ctrl { grid-template-columns: auto auto 1fr; }
+}
 </style>
 <script type="importmap">
 { "imports": {
@@ -206,7 +273,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid 
     <div class="ttl">
       <small>作品 捌 · WORK 008</small>
       <h1>斗栱<em>DOUGONG</em></h1>
-      <p>宋式五鋪作單杪單昂・木作復原<br><b id="hint">往下捲動拆解・游標拂過見木色</b></p>
+      <p>宋式五鋪作單杪單昂・木作復原<br><b id="hint">往下捲動拆解・游標拂過看內部</b></p>
     </div>
     <div class="meter" aria-hidden="true"><span>TIER</span><b id="meter-n">1 / 7</b><i id="meter-i"></i></div>
   </div>
@@ -216,104 +283,115 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid 
   <section class="lede-blk">
     <p>大三那年照著《營造法式》做的一組斗栱，木頭早已不在，只剩照片。二十四年後用 three.js 把它一件件搭回來，再一件件拆開。<span>A bracket set I made in wood in my third year of university, following the Yingzao Fashi. The wood is gone; only photographs remain. Twenty-four years later it is rebuilt piece by piece in three.js, and taken apart again.</span></p>
   </section>
+
   <nav class="enter" aria-label="Open the work">
-    <a href="#sim"><b>拆開看看 <i>↓</i></b><small>Take it apart</small><p>照當年的組裝順序，從櫨斗一層層疊上去；拉開爆炸圖，點任何一件看它叫什麼、做什麼。</p></a>
-    <a href="#orig"><b>原作照片 <i>↓</i></b><small>The 2002 photographs</small><p>2002 年拍下的組裝過程與完成照，3D 復原的依據。</p></a>
+    <a href="#match"><b>照片對 3D <i>↓</i></b><small>Photo against rebuild</small><p>把 3D 轉到和 2002 年照片一樣的角度，拖動分隔線，看線稿和照片怎麼接起來。</p></a>
+    <a href="#sim"><b>拆開看看 <i>↓</i></b><small>Take it apart</small><p>從完整的斗栱一層一層拆下來，再裝回去；拉開爆炸圖看開口，點任何一件看它叫什麼。</p></a>
   </nav>
 
   <section class="text">
     <div lang="zh-Hant">
       <h2>關於</h2>
-      <p>2002 年，高師大工業科技教育學系大三的「木器製造」課，在呂書榮老師指導下，我照《營造法式》的圖樣自己打樣、裁料、開口，做了這組斗栱。沒有釘子也沒有膠，每一件靠開口互相咬住，拆得開也裝得回去。</p>
-      <p>模型後來不在了，只剩一組小小的照片，也沒有比例尺。這次的復原以照片判讀為主，看不清楚的地方套回法式的標準尺寸；當年理解和法式不同的地方，照原作做，再另外註記。</p>
+      <p>2002 年，高師大工業科技教育學系大三的「木器製造」課，在呂書榮老師指導下，我照《營造法式》的圖樣自己打樣、裁料、開口，做了這組斗栱。每一件靠開口互相咬住，拆得開也裝得回去。</p>
+      <p>模型後來不在了，只剩一組小小的照片，也沒有比例尺。這次的復原完全從照片判讀：每一層有哪些構件、多長、怎麼咬合，都對著照片一件件確認；當年的做法和法式不同的地方，照原作做，再另外註記。</p>
     </div>
     <div lang="en">
       <h2>About</h2>
-      <p class="en">In 2002, in the Wood Products Manufacturing course of my third year in Industrial Technology Education at National Kaohsiung Normal University, under Prof. Lu Shu-Jung, I set out, cut and notched this bracket set from the drawings of the Yingzao Fashi. No nails and no glue: every piece locks into the next by its notches, so it comes apart and goes back together.</p>
-      <p class="en">The model itself is gone; what is left is a set of small photographs with no scale in them. This rebuild reads the proportions from the photos and falls back on the standard dimensions of the Fashi where the photos are unclear. Where my reading in 2002 differs from the Fashi, the rebuild follows the original and notes the difference.</p>
+      <p class="en">In 2002, in the Wood Products Manufacturing course of my third year in Industrial Technology Education at National Kaohsiung Normal University, taught by 呂書榮, I set out, cut and notched this bracket set from the drawings of the Yingzao Fashi. Every piece locks into the next by its notches, so it comes apart and goes back together.</p>
+      <p class="en">The model itself is gone; what is left is a set of small photographs with no scale in them. This rebuild is read entirely from those photos: which pieces sit on each tier, how long they are and how they lock were checked against the photos one by one. Where the 2002 model differs from the Fashi, the rebuild follows the original and notes the difference.</p>
     </div>
   </section>
-  <figure class="photo">
-    <img src="img/p66.jpg" width="802" height="693" alt="The finished wooden bracket set from below at an angle: light wooden arms and small blocks stacked in tiers, dark wooden beams through the middle, two bamboo purlins on top" loading="lazy">
-    <figcaption>原作，2002 · The original model, 2002</figcaption>
-  </figure>
+
+  <section class="match" id="match">
+    <div class="sim-head">
+      <h2>照片對 3D · Photo against rebuild</h2>
+      <p>左右拖動分隔線。<span>Drag the divider.</span></p>
+    </div>
+    <div class="seg" id="mviews">
+      <button type="button" data-v="p70" aria-pressed="true">側面<small>Side</small></button>
+      <button type="button" data-v="p67" aria-pressed="false">正面<small>Front</small></button>
+      <button type="button" data-v="p68" aria-pressed="false">背面<small>Back</small></button>
+      <button type="button" data-v="p71" aria-pressed="false">俯視<small>Top</small></button>
+    </div>
+    <div class="mstage" id="mstage">
+      <img id="mimg" alt="">
+      <div class="bar" aria-hidden="true"></div>
+      <span class="cap l">2002 照片 · PHOTO</span><span class="cap r">2026 線稿 · REBUILD</span>
+    </div>
+    <div class="match-foot">
+      <button class="btn" id="mover" type="button" aria-pressed="false">線稿疊在照片上</button>
+      <p>照片已轉正，3D 的鏡頭擺在和拍攝時相同的位置。線稿和照片接不起來的地方，就是復原還不準的地方。<span>The photos have been squared up, and the 3D camera stands where the photographer stood. Wherever the lines and the photo fail to meet, the rebuild is still off.</span></p>
+    </div>
+  </section>
 
   <section class="sim" id="sim">
     <div class="sim-head">
-      <h2>3D 復原 · Rebuild</h2>
+      <h2>拆開看看 · Take it apart</h2>
       <p>左右拖曳旋轉，雙指或滾輪縮放，點構件看名稱。<span>Drag sideways to turn, pinch or scroll to zoom, tap a piece.</span></p>
       <button class="btn" id="btn-full" type="button" aria-pressed="false">展開 ⤢</button>
     </div>
     <div class="stage" id="stage">
       <div class="ov tl">
-        <span class="tag" id="tag">STEP 7 / 7</span>
+        <span class="tag" id="tag"></span>
         <b id="step-zh"></b><small id="step-en"></small>
         <div class="seg" id="mode">
-          <button type="button" data-m="line" aria-pressed="true">線稿<small>Line</small></button>
+          <button type="button" data-m="auto" aria-pressed="true">自動<small>Auto</small></button>
           <button type="button" data-m="wood" aria-pressed="false">木色<small>Wood</small></button>
+          <button type="button" data-m="line" aria-pressed="false">線稿<small>Line</small></button>
         </div>
       </div>
-      <figure class="ov thumb" id="thumb" title="放大 / 縮小">
-        <img id="step-img" alt="">
-        <figcaption id="step-cap"></figcaption>
-      </figure>
+      <div class="ov thumbs" id="thumbs" title="放大 / 縮小">
+        <figure><img id="img-a" alt=""><figcaption>這一層的零件 · loose</figcaption></figure>
+        <figure><img id="img-b" alt=""><figcaption>疊上去之後 · stacked</figcaption></figure>
+      </div>
       <div class="ov info" id="info" aria-live="polite"><button class="x" id="info-x" type="button" aria-label="Close">×</button><div id="info-body"></div></div>
       <span class="ov unit">單位：分° · unit: fen</span>
       <div class="ov ctrl">
-        <button class="btn" id="prev" type="button" aria-label="Previous step">◀</button>
-        <output id="step-out">7 / 7</output>
-        <button class="btn" id="next" type="button" aria-label="Next step">▶</button>
+        <button class="btn" id="prev" type="button">▼ 拆一層</button>
+        <button class="btn" id="next" type="button">▲ 裝回去</button>
+        <output id="step-out"></output>
         <label for="explode"><div>爆炸<span>Explode</span></div><input id="explode" type="range" min="0" max="100" value="0"></label>
       </div>
     </div>
+    <p class="sub" style="max-width:70ch">每一層都照真實的順序落下：橫向的栱和方開口朝上，先放；前後向的構件開口朝下，壓上去把它們鎖住。組合著的時候是木頭；一拉開爆炸圖，木色褪成線稿，先是層與層分開，拉到底連同一層裡的構件也分開，露出開口。<br>Each tier goes on in its real order: crosswise arms and beams, notched on top, go first; the front-to-back piece, notched underneath, presses down and locks them. Whole, it is shown in wood; as the slider opens it the wood fades to a line drawing, first the tiers part, then the pieces within each tier, showing the notches.</p>
   </section>
 
   <section class="text">
     <div lang="zh-Hant">
-      <h2>材分制</h2>
-      <p>《營造法式》不直接寫尺寸，而是先定一個「材」：一根栱的斷面，高 15 分、寬 10 分。上下兩層栱之間的空隙叫「栔」，高 6 分。材加栔是「足材」，21 分。</p>
-      <p>所有構件都用分來量：栱多長、斗多大、每一跳出去多遠。建築等級高，就把一分放大；等級低，就縮小。這個 3D 模型也只用分來建，所以畫面上沒有公分。</p>
+      <h2>材分制，和五鋪作怎麼數</h2>
+      <p>《營造法式》不直接寫尺寸，而是先定一個「材」：一根栱的斷面，高 15 分、寬 10 分。上下兩層栱之間的空隙叫「栔」，高 6 分，由斗墊滿。材加栔是 21 分，就是一層的高度；每往外出一跳是 30 分。建築等級高，就把一分放大；等級低，就縮小。</p>
+      <p>「鋪作」數的是一朵斗栱疊了幾層：櫨斗、華栱、昂、耍頭、襯方頭，共五層，所以是五鋪作。往外出了兩跳，一跳是華栱（杪），一跳是昂，叫「單杪單昂」。第一跳上的橫栱疊兩層（瓜子栱上加慢栱），叫「重栱」；每一跳都有橫栱，叫「計心」。</p>
     </div>
     <div lang="en">
-      <h2>The modular unit</h2>
-      <p class="en">The Yingzao Fashi does not give sizes directly. It first fixes the cai: the cross-section of one bracket arm, 15 fen high and 10 fen wide. The gap between one tier of arms and the next is the qi, 6 fen high. Cai plus qi makes a full cai of 21 fen.</p>
-      <p class="en">Everything is measured in fen: how long an arm is, how big a block is, how far each step reaches out. A grander building simply uses a larger fen. This model is built in fen alone, so there are no centimetres on screen.</p>
+      <h2>The modular unit, and counting five tiers</h2>
+      <p class="en">The Yingzao Fashi does not give sizes directly. It first fixes the cai: the cross-section of one bracket arm, 15 fen high and 10 fen wide. The gap between one tier of arms and the next is the qi, 6 fen high and filled by a block. Cai plus qi is 21 fen, the height of one tier; each step outward is 30 fen. A grander building simply uses a larger fen.</p>
+      <p class="en">Puzuo counts the tiers of one bracket set: the main block, the projecting arm, the ang, the nose piece and the top tie — five, so this is a five-tier set. It reaches out twice, once with a projecting arm and once with an ang. The crosswise arms on the first step are doubled, and every step carries crosswise arms.</p>
     </div>
   </section>
-  <figure class="fig">
-    <svg viewBox="0 0 420 230" role="img" aria-label="Cross-section of one bracket arm: a rectangle 10 fen wide and 15 fen high, with a 6 fen gap above it; together they make a full cai of 21 fen">
-      <g fill="none" stroke="currentColor" stroke-width="1" style="color:var(--ink)">
-        <rect x="60" y="78" width="80" height="120"/>
-        <rect x="60" y="30" width="80" height="48" stroke-dasharray="4 4"/>
-        <path d="M150 198v-120M146 198h8M146 78h8M150 78v-48M146 30h8" />
-        <path d="M60 210h80M60 206v8M140 206v8"/>
-        <path d="M250 198h120v-120h-120zM250 78l120-0" />
-        <path d="M250 78h28v-48h64v48h28" stroke-dasharray="0"/>
-      </g>
-      <text x="162" y="142" font-size="12">15 分 材</text>
-      <text x="162" y="58" font-size="12">6 分 栔</text>
-      <text x="76" y="226" font-size="12">10 分</text>
-      <text x="58" y="20" font-size="11">材 cai + 栔 qi = 21 分</text>
-      <text x="250" y="226" font-size="11">斗坐在栔裡 · a block fills the qi</text>
-      <text x="283" y="62" font-size="11">斗</text>
-      <text x="294" y="146" font-size="11">栱</text>
-    </svg>
+  <figure class="sec">
+    <div class="sec-fig">
+      <img id="sec-img" alt="Side elevation of the bracket set as a line drawing: the main block at the bottom, then the projecting arm, the ang with its beak to the left, the nose piece and the top tie, with beams seen end-on and two bamboo purlins on top">
+      <svg viewBox="-105 -154 210 162" aria-hidden="true">
+        <path d="M0 4v3M-30 4v3M-60 4v3M0 5.5h-60"/>
+        <text x="-15" y="3.6" text-anchor="middle" font-size="4">30</text><text x="-45" y="3.6" text-anchor="middle" font-size="4">30</text>
+        <text x="-64" y="7" text-anchor="end" font-size="4.5" style="fill:var(--ink-3)">每跳 30 分</text>
+        <path d="M97 -33h4M97 -48h4M97 -54h4M99 -33v-21"/>
+        <text x="95" y="-38.5" text-anchor="end">材 15</text><text x="95" y="-49.5" text-anchor="end">栔 6</text>
+        <text x="-103" y="-146">外 · outside</text><text x="103" y="-146" text-anchor="end">裡 · inside</text>
+      </svg>
+    </div>
     <div class="side">
-      <p>左：一材的斷面，上面虛線是栔。<span>Left: one cai in section, the qi dashed above.</span></p>
-      <p>右：上下兩層栱之間的栔，由斗墊滿。<span>Right: between two tiers of arms, the qi is filled by a block.</span></p>
+      <h2>數數看 · Count the tiers</h2>
+      <div class="keys" id="tiers">
+        <button type="button" data-n="5" aria-pressed="false"><code>5</code><b>襯方頭</b><small>Top tie</small></button>
+        <button type="button" data-n="4" aria-pressed="false"><code>4</code><b>耍頭</b><small>Nose piece</small></button>
+        <button type="button" data-n="3" aria-pressed="false"><code>3</code><b>昂</b><small>Ang</small></button>
+        <button type="button" data-n="2" aria-pressed="false"><code>2</code><b>華栱</b><small>Projecting arm</small></button>
+        <button type="button" data-n="1" aria-pressed="false"><code>1</code><b>櫨斗</b><small>Main block</small></button>
+      </div>
+      <p>每一鋪作用它前後向的那根構件命名，同一層的橫栱、方和斗一起亮起來。<span>Each tier is named after its front-to-back piece; the arms, beams and blocks on the same tier light up with it.</span></p>
     </div>
   </figure>
-
-  <section class="text">
-    <div lang="zh-Hant">
-      <h2>五鋪作怎麼數</h2>
-      <p>「鋪作」數的是一朵斗栱疊了幾層：櫨斗一、華栱一、昂一、耍頭一、襯方頭一，共五層，所以是五鋪作。往外出了兩跳，一跳是華栱（杪），一跳是昂，叫「單杪單昂」。橫向的栱在跳頭疊兩層（瓜子栱上加慢栱），叫「重栱」；每一跳都有橫栱，叫「計心」。</p>
-    </div>
-    <div lang="en">
-      <h2>Counting five tiers</h2>
-      <p class="en">Puzuo counts the tiers of one bracket set: the main block, the projecting arm, the ang, the nose piece and the piece above it — five, so this is a five-tier set. It reaches out twice, once with a projecting arm and once with an ang: one arm, one ang. The crosswise arms are doubled at each step (a short arm with a long one on top), and every step carries crosswise arms.</p>
-    </div>
-  </section>
 
   <section class="parts">
     <h2>構件 · Pieces</h2>
@@ -328,43 +406,42 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 1px solid 
     <div lang="zh-Hant">
       <h2>和法式不一樣的地方</h2>
       <p>宋式的昂是斜的：一根長料從外往內斜斜穿過好幾層，外端的昂嘴往下垂，內端的昂尾往上壓在槫下，像槓桿一樣平衡屋簷。當年的模型把昂做成水平的一層，只在外端削出昂嘴，比較接近明清以後的「假昂」。</p>
-      <p>昂和襯方頭的內端做成雲形，耍頭兩頭都削尖，槫用真的竹子。這些都照原作保留。</p>
-      <p>令栱是否裡外都有、內側深色方與外側竹槫的確切位置，照片看不清楚，當年的細節也已不記得，目前依照片判讀。</p>
+      <p>裡外也因此不對稱。昂的內端很短，不承斗，裡側的第二跳改由耍頭的尾端承一個斗，所以裡側的令栱和上面的方，都比外側高一層。</p>
+      <p>昂和襯方頭的內端做成雲形，耍頭外端斜切、內端削尖，槫用真的竹子。這些都照原作保留。</p>
     </div>
     <div lang="en">
       <h2>Where it differs from the Fashi</h2>
       <p class="en">A Song ang is sloped: one long timber runs down and out through several tiers, its beak dipping at the eave and its tail rising inside to press under a purlin, balancing the eave like a lever. The 2002 model makes the ang a level tier with a beak cut on its outer end, closer to the false ang of later Ming and Qing work.</p>
-      <p class="en">The cloud-shaped inner ends of the ang and the top piece, the nose pieces pointed at both ends, and the real bamboo purlins all follow the original.</p>
-      <p class="en">Whether the top arms sit on both sides, and exactly where the inner dark beam and the outer bamboo purlin lie, cannot be seen clearly in the photos and are no longer remembered; they follow my best reading of the photos.</p>
+      <p class="en">That also makes the two sides unequal. The inner end of the ang is short and carries nothing, so the second step inside rests on a block seated on the tail of the nose piece, and the inner top arm and the beam above it sit one tier higher than their outer counterparts.</p>
+      <p class="en">The cloud-shaped inner ends of the ang and the top tie, the nose piece cut on a slant outside and pointed inside, and the real bamboo purlins all follow the original.</p>
     </div>
   </section>
 
   <section class="gallery" id="orig">
     <h2>原作 2002 · The original</h2>
-    <figure><img src="img/p47.jpg" alt="A single light wooden bearing block with notches cut in its top" loading="lazy"><figcaption>① 櫨斗 · Main block</figcaption></figure>
-    <figure><img src="img/p52.jpg" alt="Top view of the first tier: two arms crossing with a small block on each end" loading="lazy"><figcaption>② 第一跳 · First tier</figcaption></figure>
-    <figure><img src="img/p55.jpg" alt="Side view of the ang tier: a long piece with a down-turned beak on the left and a cloud-shaped end on the right" loading="lazy"><figcaption>③ 昂層 · Ang tier</figcaption></figure>
-    <figure><img src="img/p60.jpg" alt="Side view with the nose-piece tier added, pointed ends at both sides and a dark beam in the middle" loading="lazy"><figcaption>④ 耍頭層 · Nose-piece tier</figcaption></figure>
-    <figure><img src="img/p59.jpg" alt="Top view of the upper grid: a long spine crossed by arms with small blocks, one dark beam across the middle" loading="lazy"><figcaption>④ 耍頭層俯視 · From above</figcaption></figure>
-    <figure><img src="img/p61.jpg" alt="Top view with four parallel beams laid across the spine, one of them dark" loading="lazy"><figcaption>⑤ 方 · Beams</figcaption></figure>
-    <figure><img src="img/p62.jpg" alt="Side view of the assembled tiers with three dark beam ends stacked in the middle" loading="lazy"><figcaption>⑥ 柱頭方 · Column-line beams</figcaption></figure>
-    <figure><img src="img/p63.jpg" alt="Two bamboo purlins resting on dark and light beams and a cloud-shaped piece" loading="lazy"><figcaption>⑦ 槫 · Bamboo purlins</figcaption></figure>
-    <figure><img src="img/p50.jpg" alt="Three loose pieces on a table: a long arm with notches, a piece with a cloud end, and a block" loading="lazy"><figcaption>拆開的構件 · Loose pieces</figcaption></figure>
-    <figure><img src="img/p67.jpg" alt="Front elevation: tiers of crosswise arms widening upward under a board and two bamboo purlins" loading="lazy"><figcaption>正立面 · Front</figcaption></figure>
-    <figure><img src="img/p70.jpg" alt="Side elevation: the beak of the ang dips at the left, cloud-shaped ends at the right, bamboo purlins on top" loading="lazy"><figcaption>側立面 · Side</figcaption></figure>
-    <figure><img src="img/p71.jpg" alt="Top view of the finished set with two bamboo purlins and parallel beams" loading="lazy"><figcaption>俯視 · From above</figcaption></figure>
+    <figure><img src="img/p47.jpg" alt="A single light wooden bearing block with notches cut in its top" loading="lazy"><figcaption>櫨斗 · Main block</figcaption></figure>
+    <figure><img src="img/p52.jpg" alt="Top view of the first tier: two arms crossing with a small block on each end" loading="lazy"><figcaption>第一層 · Tier 1</figcaption></figure>
+    <figure><img src="img/p53.jpg" alt="The ang tier alone from above: a long piece with a beak, crossed by three arms with blocks on their ends" loading="lazy"><figcaption>第二層的零件 · Tier 2, loose</figcaption></figure>
+    <figure><img src="img/p55.jpg" alt="Side view of the ang tier stacked on the first: a down-turned beak on the left and a stepped end on the right" loading="lazy"><figcaption>第二層 · Tier 2</figcaption></figure>
+    <figure><img src="img/p59.jpg" alt="The nose-piece tier alone from above: a long spine crossed by three arms and one dark beam, one block on its far end" loading="lazy"><figcaption>第三層的零件 · Tier 3, loose</figcaption></figure>
+    <figure><img src="img/p60.jpg" alt="Side view with the nose-piece tier added: a slanted end on the left, a pointed end on the right, a dark beam in the middle" loading="lazy"><figcaption>第三層 · Tier 3</figcaption></figure>
+    <figure><img src="img/p61.jpg" alt="The fourth tier alone from above: four parallel beams, one dark, under a thin spine with an arm and a cloud-shaped end" loading="lazy"><figcaption>第四層的零件 · Tier 4, loose</figcaption></figure>
+    <figure><img src="img/p62.jpg" alt="Side view with the beams added, two dark beam ends stacked in the middle" loading="lazy"><figcaption>第四層 · Tier 4</figcaption></figure>
+    <figure><img src="img/p63.jpg" alt="Two bamboo purlins, a dark beam, a tall brown board and a light timber with a cloud-shaped end" loading="lazy"><figcaption>第五層與槫 · Tier 5 and purlins</figcaption></figure>
+    <figure><img src="img/p50.jpg" alt="Three loose pieces on a table: an arm with blocks on its ends, a notched arm and the main block" loading="lazy"><figcaption>拆開的構件 · Loose pieces</figcaption></figure>
+    <figure><img src="img/p64.jpg" alt="The finished set from below at an angle, three dark beam ends stacked under the middle bamboo purlin" loading="lazy"><figcaption>完成 · Finished</figcaption></figure>
+    <figure><img src="img/p66.jpg" alt="The finished set from the inner side at an angle" loading="lazy"><figcaption>完成 · Finished</figcaption></figure>
   </section>
 
   <dl class="data">
     <dt>Year</dt><dd>2002 製作 · 2026 數位復原<span>Made 2002 · rebuilt in 3D 2026</span></dd>
     <dt>Course</dt><dd>國立高雄師範大學 工業科技教育學系「木器製造」，大三<span>Wood Products Manufacturing, Industrial Technology Education, National Kaohsiung Normal University</span></dd>
-    <dt>Advisor</dt><dd>呂書榮老師<span>Prof. Lu Shu-Jung</span></dd>
-    <dt>Type</dt><dd>宋式五鋪作單杪單昂，重栱計心<span>Song-style five-tier set, one arm and one ang, doubled crosswise arms on every step</span></dd>
-    <dt>Medium</dt><dd>原作：木、竹，無釘無膠；復原：three.js<span>Original: wood and bamboo, no nails or glue · Rebuild: three.js</span></dd>
+    <dt>Advisor</dt><dd>呂書榮老師</dd>
+    <dt>Type</dt><dd>宋式五鋪作單杪單昂，重栱計心<span>Song-style five-tier set, one arm and one ang, doubled crosswise arms, every step filled</span></dd>
+    <dt>Medium</dt><dd>原作：木、竹；復原：three.js<span>Original: wood and bamboo · Rebuild: three.js</span></dd>
     <dt>Reference</dt><dd>李誡《營造法式》；梁思成《營造法式註釋》<span>Li Jie, Yingzao Fashi; Liang Sicheng, Annotated Yingzao Fashi</span></dd>
-    <dt>Tools</dt><dd>3D 復原與網頁與 AI 協作製作；比例依照片判讀，未確定處依法式標準<span>Rebuild and page made with AI assistance; proportions read from photos, standard Fashi sizes where unclear</span></dd>
+    <dt>Tools</dt><dd>3D 復原與網頁與 AI 協作製作；尺寸全部由照片判讀，以一跳 30 分換算<span>Rebuild and page made with AI assistance; all dimensions read from the photographs, scaled to a 30-fen step</span></dd>
   </dl>
-
 </main>
 
 <script type="module">
@@ -372,34 +449,34 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
-/* ---------- Piece names ---------- */
+/* ---------- Piece names (pieces without an entry are drawn but not labelled) ---------- */
 const T = {
   ludou:   { zh: '櫨斗', alt: '坐斗', en: 'Main bearing block · ludou', d: '整朵斗栱的底座，坐在柱頭上，十字開口接住第一層栱，上面所有的重量都從這裡進柱子。', de: 'The base of the whole set. It sits on the column head; its cross notch takes the first tier, and every load above passes through it into the column.' },
-  huagong: { zh: '華栱', alt: '翹', en: 'Projecting arm · huagong', d: '前後方向出跳的栱，裡外各出一跳 30 分，把重量一步步往外送。也叫「杪」。', de: 'The arm that steps out front and back, 30 fen each way, carrying the load out one step at a time.' },
-  nidao:   { zh: '泥道栱', alt: '正心瓜栱', en: 'Wall-line arm · nidao gong', d: '沿柱列方向的第一層橫栱，和華栱十字相交，一起卡在櫨斗口內。', de: 'The first crosswise arm along the column line; it crosses the projecting arm and both sit in the main block.' },
-  jiaohu:  { zh: '交互斗', alt: '十八斗', en: 'Crossing block · jiaohu dou', d: '坐在跳頭的斗，十字開口，同時接住前後與左右兩個方向的構件。', de: 'The block at the end of each step. Its cross notch holds pieces running both ways.' },
+  huagong: { zh: '華栱', alt: '翹', en: 'Projecting arm · huagong', d: '前後方向出跳的栱，裡外各出一跳，把重量一步步往外送。開口朝下，壓在泥道栱上。也叫「杪」。', de: 'The arm that steps out front and back, carrying the load out one step at a time. Its notch faces down and it presses onto the wall-line arm.' },
+  nidao:   { zh: '泥道栱', alt: '正心瓜栱', en: 'Wall-line arm · nidao gong', d: '沿柱列方向的第一層橫栱，開口朝上，先落進櫨斗，再讓華栱壓上來十字相交。', de: 'The first crosswise arm along the column line. Its notch faces up: it drops into the main block first, then the projecting arm presses down across it.' },
+  jiaohu:  { zh: '交互斗', alt: '十八斗', en: 'Crossing block · jiaohu dou', d: '坐在前後向構件端頭上的斗，十字開口，同時接住前後與左右兩個方向的構件。', de: 'The block that sits on the end of a front-to-back piece. Its cross notch holds pieces running both ways.' },
   san:     { zh: '散斗', alt: '三才升 · 升', en: 'Small block · san dou', d: '坐在橫栱兩端的小斗，一字開口，墊滿栔的高度，承接上一層的栱或方。', de: 'The small block on each end of a crosswise arm. Its single notch fills the qi and holds the arm or beam above.' },
-  ang:     { zh: '昂', alt: '昂（本作為水平的假昂形）', en: 'Ang · cantilever beak', d: '第二跳。外端削成下垂的昂嘴，內端做成雲形。宋式的昂應該斜穿數層，原作做成水平，接近假昂。', de: 'The second step. Its outer end is cut into a dipping beak, its inner end into a cloud. A Song ang should slope through several tiers; the original keeps it level, like a false ang.' },
+  ang:     { zh: '昂', alt: '昂（本作為水平的假昂形）', en: 'Ang · cantilever beak', d: '第二跳。外端削成下垂的昂嘴，上面坐一個斗；內端很短，做成階梯狀的雲頭，不承斗。宋式的昂應該斜穿數層，原作做成水平，接近假昂。', de: 'The second step. Its outer end is cut into a dipping beak with a block seated on it; its inner end is short, cut into stepped scallops, and carries nothing. A Song ang should slope through several tiers; the original keeps it level, like a false ang.' },
   mangong: { zh: '慢栱', alt: '萬栱', en: 'Long arm · man gong', d: '疊在短栱上的長栱，和下面的瓜子栱或泥道栱合成「重栱」。', de: 'The long arm laid over a short one; together they make a doubled arm.' },
   guazi:   { zh: '瓜子栱', alt: '瓜栱', en: 'Short step arm · guazi gong', d: '第一跳跳頭上的橫栱，重栱的下一層。', de: 'The crosswise arm on the first step; the lower half of a doubled arm.' },
-  linggong:{ zh: '令栱', alt: '廂栱', en: 'Top arm · ling gong', d: '最外一跳上的單層橫栱，直接托住上面的方。', de: 'The single crosswise arm on the outermost step, carrying the beam directly.' },
-  shuatou: { zh: '耍頭', alt: '螞蚱頭', en: 'Nose piece · shuatou', d: '令栱這一層前後方向的構件，兩端削尖伸出，把裡外拉在一起。', de: 'The front-to-back piece on the top-arm tier; its pointed ends stick out and tie the inner and outer sides together.' },
-  chenfang:{ zh: '襯方頭', alt: '—', en: 'Top tie · chenfangtou', d: '耍頭上面最後一層前後方向的構件，連起內外的方。原作內端做成雲形。', de: 'The last front-to-back piece, above the nose piece, linking the inner and outer beams. The original gives it a cloud-shaped inner end.' },
-  zhutou:  { zh: '柱頭方', alt: '枋', en: 'Column-line beam · zhutou fang', d: '沿柱列方向疊起的長方，把一朵朵斗栱連成一排。原作用深色木。', de: 'Long beams stacked along the column line, tying one bracket set to the next. Dark wood in the original.' },
-  luohan:  { zh: '羅漢方', alt: '枋', en: 'Intermediate beam · luohan fang', d: '第一跳上方的長方，介於柱頭方和外側的方之間。', de: 'The long beam over the first step, between the column line and the outer beam.' },
-  liaoyan: { zh: '橑檐方', alt: '挑簷枋', en: 'Eave beam · liaoyan fang', d: '最外一跳上的大方，托住屋簷的槫。', de: 'The large beam on the outermost step, under the eave purlin.' },
-  pingqi:  { zh: '平棊方', alt: '天花枋', en: 'Ceiling beam · pingqi fang', d: '內側的方，室內天花架在它上面。原作用深色木。', de: 'The beam on the inner side that a ceiling would rest on. Dark wood in the original.' },
-  tuan:    { zh: '槫', alt: '桁・檩 · 台灣稱楹', en: 'Purlin · tuan', d: '承托椽子與屋面的圓木，原作用竹子做。', de: 'The round timber that carries the rafters and roof. Bamboo in the original.' }
+  linggong:{ zh: '令栱', alt: '廂栱', en: 'Top arm · ling gong', d: '第二跳跳頭上的單層橫栱，直接托住上面的方。外側的在耍頭這一層，裡側的高一層。', de: 'The single crosswise arm on the second step, carrying the beam directly. The outer one sits on the nose-piece tier; the inner one is a tier higher.' },
+  shuatou: { zh: '耍頭', alt: '螞蚱頭', en: 'Nose piece · shuatou', d: '和外側令栱相交的前後向構件。外端斜切伸出，內端削尖，尖頭前坐一個斗，承住裡側的令栱。', de: 'The front-to-back piece that crosses the outer top arm. Its outer end is cut on a slant; its inner end is pointed, with a block seated just before the point to carry the inner top arm.' },
+  chenfang:{ zh: '襯方頭', alt: '—', en: 'Top tie · chenfangtou', d: '耍頭上面的前後向構件，把橑檐方、各道方和裡側令栱串在一起。原作內端做成雲形。', de: 'The front-to-back piece above the nose piece, threading the eave beam, the other beams and the inner top arm together. The original gives it a cloud-shaped inner end.' },
+  zhutou:  { zh: '柱頭方', alt: '枋', en: 'Column-line beam · zhutou fang', d: '沿柱列方向疊起的長方，把一朵朵斗栱連成一排。原作疊三層，用深色木。', de: 'Long beams stacked along the column line, tying one bracket set to the next. Three of them in the original, in dark wood.' },
+  luohan:  { zh: '羅漢方', alt: '枋', en: 'Intermediate beam · luohan fang', d: '第一跳上方的長方，裡外各一道。', de: 'The long beam over the first step, one outside and one inside.' },
+  liaoyan: { zh: '橑檐方', alt: '挑簷枋', en: 'Eave beam · liaoyan fang', d: '外側第二跳上的方，斷面比其他方粗，上面托住屋簷的槫。', de: 'The beam on the outer second step, stouter than the others, with the eave purlin resting on it.' },
+  tuan:    { zh: '槫', alt: '桁・檩 · 台灣稱楹', en: 'Purlin · tuan', d: '承托椽子與屋面的圓木，原作用竹子做，一根在柱頭方上，一根在橑檐方上。', de: 'The round timber that carries the rafters and roof. Bamboo in the original: one over the column line, one on the eave beam.' }
 };
 
+// One step per tier; a = photo of the loose tier, b = photo after it is stacked
 const STEPS = [
-  { zh: '櫨斗', en: 'Main block', img: 'p47' },
-  { zh: '第一跳：華栱・泥道栱', en: 'First tier: projecting arm and wall-line arm', img: 'p52' },
-  { zh: '昂層：昂・瓜子栱・慢栱', en: 'Ang tier: ang, short and long arms', img: 'p55' },
-  { zh: '耍頭層：耍頭・令栱・柱頭方', en: 'Nose-piece tier: nose piece, top arms, first beam', img: 'p60' },
-  { zh: '襯方頭與各方', en: 'Top tie and beams', img: 'p61' },
-  { zh: '第三層柱頭方', en: 'Third column-line beam', img: 'p62' },
-  { zh: '槫', en: 'Bamboo purlins', img: 'p63' }
+  { zh: '櫨斗', en: 'Main block', a: 'p47', b: 'p50' },
+  { zh: '第一層：泥道栱・華栱', en: 'Tier 1: wall-line arm, projecting arm', a: 'p52', b: 'p51' },
+  { zh: '第二層：瓜子栱・慢栱・昂', en: 'Tier 2: short and long arms, ang', a: 'p53', b: 'p55' },
+  { zh: '第三層：令栱・慢栱・柱頭方・耍頭', en: 'Tier 3: top arm, long arms, first beam, nose piece', a: 'p59', b: 'p60' },
+  { zh: '第四層：各道方・裡令栱・襯方頭', en: 'Tier 4: beams, inner top arm, top tie', a: 'p61', b: 'p62' },
+  { zh: '第五層', en: 'Tier 5', a: 'p63', b: 'p64' },
+  { zh: '槫', en: 'Bamboo purlins', a: 'p71', b: 'p70' }
 ];
 
 /* ---------- Geometry helpers (unit: fen) ---------- */
@@ -413,18 +490,17 @@ function frustum(wt, dt, wb, db, h) {
   g.computeVertexNormals();
   return g;
 }
-// A dou block: 40% sloped base (qi), 20% flat (ping), 40% ears (er). slot: 'x' | 'z' | 'cross'
-function dou(w, d, h, slot, inset, s = 10) {
+// A dou block: 40% sloped base (qi), 20% flat (ping), 40% ears (er). slot: 'x' | 'cross'; s = slot width
+function dou(w, d, h, slot, inset, s) {
   const qi = h * .4, ping = h * .2, er = h * .4, y0 = qi + ping;
   const g = [frustum(w, d, w - 2 * inset, d - 2 * inset, qi), box(w, ping, d, 0, qi, 0)];
   const ew = (w - s) / 2, ed = (d - s) / 2;
   if (slot === 'x') g.push(box(w, er, ed, 0, y0, (s + ed) / 2), box(w, er, ed, 0, y0, -(s + ed) / 2));
-  else if (slot === 'z') g.push(box(ew, er, d, (s + ew) / 2, y0, 0), box(ew, er, d, -(s + ew) / 2, y0, 0));
   else for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.push(box(ew, er, ed, sx * (s + ew) / 2, y0, sz * (s + ed) / 2));
   return mergeGeometries(g);
 }
 // 2D outline (u along the piece, v up) extruded to thickness t
-function profile(cmds, t = 10) {
+function profile(cmds, t) {
   const s = new THREE.Shape();
   for (const c of cmds) {
     if (c[0] === 'M') s.moveTo(c[1], c[2]);
@@ -434,230 +510,373 @@ function profile(cmds, t = 10) {
   s.closePath();
   return new THREE.ExtrudeGeometry(s, { depth: t, bevelEnabled: false, curveSegments: 10 }).translate(0, 0, -t / 2);
 }
-const alongZ = g => g.rotateY(-Math.PI / 2);
-// Crosswise arm: top flat, ends drop 6 fen then curve (juansha) to the bottom
-const gong = (L, k = 14) => profile([['M', -L / 2, 15], ['L', L / 2, 15], ['L', L / 2, 9], ['Q', L / 2, 0, L / 2 - k, 0], ['L', -L / 2 + k, 0], ['Q', -L / 2, 0, -L / 2, 9]]);
+const alongZ = g => g.rotateY(-Math.PI / 2);   // u → +z (outer side), thickness → x
+const TH = 12, HALF = 7.5;                      // arm thickness; half-lap depth
+// Half-lap notches. Crosswise pieces are notched on top, front-to-back pieces underneath,
+// so the front-to-back piece always presses down onto the crosswise ones.
+const nt = (u, top, w = TH, d = HALF) => [['L', u - w / 2, top], ['L', u - w / 2, top - d], ['L', u + w / 2, top - d], ['L', u + w / 2, top]];  // going +u along a top edge
+const nb = (u, w = TH) => [['L', u + w / 2, 0], ['L', u + w / 2, HALF], ['L', u - w / 2, HALF], ['L', u - w / 2, 0]];                           // going -u along a bottom edge
+// Crosswise arm: flat top with a notch, ends drop 6 fen then curve (juansha) to the bottom
+const gong = (L, k = 14) => profile([['M', -L / 2, 9], ['L', -L / 2, 15], ...nt(0, 15), ['L', L / 2, 15], ['L', L / 2, 9], ['Q', L / 2, 0, L / 2 - k, 0], ['L', -L / 2 + k, 0], ['Q', -L / 2, 0, -L / 2, 9]], TH);
+// Crosswise beam of height h and thickness t, notched on top down to the half-lap line
+const fang = (L, h, t) => profile([['M', -L / 2, 0], ['L', -L / 2, h], ...nt(0, h, TH, h - HALF), ['L', L / 2, h], ['L', L / 2, 0]], t);
+// Crosswise beam with a blind housing cut into one face (dir = +1: the face toward +z), so the other face stays clean
+function housed(L, h, t, dir, depth) {
+  const a = dir * t / 2, b = a - dir * depth, sh = new THREE.Shape();
+  [[-L / 2, a], [-TH / 2, a], [-TH / 2, b], [TH / 2, b], [TH / 2, a], [L / 2, a], [L / 2, -a], [-L / 2, -a]].forEach(([x, z], i) => i ? sh.lineTo(x, -z) : sh.moveTo(x, -z));
+  sh.closePath();
+  return new THREE.ExtrudeGeometry(sh, { depth: h, bevelEnabled: false }).rotateX(-Math.PI / 2);
+}
 function bamboo(r, L) {
   const g = [new THREE.CylinderGeometry(r, r, L, 28).rotateZ(Math.PI / 2)];
-  for (const x of [-L * .32, L * .3]) g.push(new THREE.TorusGeometry(r + .5, .9, 6, 28).rotateY(Math.PI / 2).translate(x, 0, 0));
+  for (const x of [-L * .3, L * .32]) g.push(new THREE.TorusGeometry(r + .4, .8, 6, 28).rotateY(Math.PI / 2).translate(x, 0, 0));
   return mergeGeometries(g);
 }
 
-/* ---------- The bracket set ---------- */
-const B = i => 12 + 21 * i;         // base height of tier i (top of the main block's flat = 12)
+/* ---------- The bracket set, read from the 2002 photographs ----------
+   x along the wall, y up, z front-to-back with +z the outer (eave) side.
+   ord: 0 crosswise piece, 1 its blocks, 2 front-to-back piece, 3 its blocks — the order they go on. */
+const B = i => 12 + 21 * i;           // base height of tier i+1 (top of the main block's flat = 12)
 function makePieces() {
-const pieces = [];                    // { geo, pos, type, step, wood }
-const add = (step, type, geo, x, y, z, wood = 'light') => pieces.push({ step, type, geo, pos: [x, y, z], wood });
-const sanX = (step, xs, y, z) => xs.forEach(x => add(step, 'san', dou(14, 16, 10, 'x', 2), x, y, z));
+  const pieces = [];
+  const add = (step, ord, type, geo, x, y, z, wood = 'light') => pieces.push({ step, ord, type, geo, pos: [x, y, z], wood });
+  const san = (step, xs, y, z, d = 18, s = 13) => xs.forEach(x => add(step, 1, 'san', dou(15, d, 10, 'x', 2, s), x, y, z));
+  const jiaohu = (step, y, z) => add(step, 3, 'jiaohu', dou(18, 18, 10, 'cross', 2, 12.5), 0, y, z);
 
-// 1 main block
-add(0, 'ludou', dou(32, 32, 20, 'cross', 4), 0, 0, 0);
-// 2 first tier
-add(1, 'huagong', alongZ(profile([['M', -21, 21], ['L', 21, 21], ['L', 21, 15], ['L', 36, 15], ['L', 36, 9], ['Q', 36, 0, 22, 0], ['L', -22, 0], ['Q', -36, 0, -36, 9], ['L', -36, 15], ['L', -21, 15]])), 0, B(0), 0);
-add(1, 'nidao', gong(62), 0, B(0), 0);
-for (const z of [-30, 30]) add(1, 'jiaohu', dou(16, 16, 10, 'cross', 2), 0, B(0) + 15, z);
-sanX(1, [-24, 24], B(0) + 15, 0);
-// 3 ang tier
-add(2, 'ang', alongZ(profile([['M', -50, 21], ['L', 50, 21], ['L', 50, 15], ['L', 68, 15], ['L', 96, -14], ['L', 92, -16], ['L', 70, -6], ['L', 46, 0], ['L', -60, 0], ['Q', -72, 0, -72, 5], ['Q', -79, 7, -74, 10], ['Q', -78, 15, -68, 15], ['L', -50, 15]])), 0, B(1), 0);
-add(2, 'mangong', gong(92, 16), 0, B(1), 0);
-for (const z of [-30, 30]) { add(2, 'guazi', gong(62), 0, B(1), z); sanX(2, [-24, 24], B(1) + 15, z); }
-for (const z of [-60, 60]) add(2, 'jiaohu', dou(16, 16, 10, 'cross', 2), 0, B(1) + 15, z);
-sanX(2, [-39, 39], B(1) + 15, 0);
-// 4 nose-piece tier
-add(3, 'shuatou', alongZ(profile([['M', -72, 21], ['L', 76, 21], ['L', 94, 9], ['L', 78, 0], ['L', -74, 0], ['L', -88, 11]])), 0, B(2), 0);
-for (const z of [-30, 30]) { add(3, 'mangong', gong(92, 16), 0, B(2), z); sanX(3, [-39, 39], B(2) + 15, z); }
-for (const z of [-60, 60]) { add(3, 'linggong', gong(72, 15), 0, B(2), z); sanX(3, [-29, 29], B(2) + 15, z); }
-add(3, 'zhutou', box(150, 21, 12), 0, B(2), 0, 'dark');
-// 5 top tie and beams
-add(4, 'chenfang', alongZ(profile([['M', -60, 21], ['L', 70, 21], ['L', 70, 0], ['L', -60, 0], ['Q', -71, 0, -71, 6], ['Q', -78, 8, -73, 11], ['Q', -79, 15, -72, 17], ['Q', -70, 21, -60, 21]])), 0, B(3), 0);
-for (const z of [-30, 30]) add(4, 'luohan', box(150, 21, 10), 0, B(3), z);
-add(4, 'liaoyan', box(160, 30, 12), 0, B(3), 60);
-add(4, 'pingqi', box(150, 21, 12), 0, B(3), -60, 'dark');
-add(4, 'zhutou', box(150, 21, 12), 0, B(3), 0, 'dark');
-// 6 third column-line beam
-add(5, 'zhutou', box(150, 21, 12), 0, B(4), 0, 'dark');
-// 7 purlins
-add(6, 'tuan', bamboo(16, 170), 0, B(5) + 16, 0, 'bamboo');
-add(6, 'tuan', bamboo(13, 170), 0, B(3) + 30 + 13, 58, 'bamboo');
-return pieces;
+  // Main block
+  add(0, 0, 'ludou', dou(32, 32, 20, 'cross', 3, 12.5), 0, 0, 0);
+
+  // Tier 1
+  add(1, 0, 'nidao', gong(66), 0, B(0), 0);
+  san(1, [-25, 25], B(0) + 15, 0);
+  add(1, 2, 'huagong', alongZ(profile([['M', -36, 9], ['L', -36, 15], ['L', -21, 15], ['L', -21, 21], ['L', 21, 21], ['L', 21, 15], ['L', 36, 15], ['L', 36, 9], ['Q', 36, 0, 22, 0], ...nb(0), ['L', -22, 0], ['Q', -36, 0, -36, 9]], TH)), 0, B(0), 0);
+  for (const z of [-30, 30]) jiaohu(1, B(0) + 15, z);
+
+  // Tier 2: ang with a beak outside and a short stepped tail inside
+  add(2, 0, 'mangong', gong(98, 16), 0, B(1), 0);
+  san(2, [-41, 41], B(1) + 15, 0);
+  for (const z of [-30, 30]) { add(2, 0, 'guazi', gong(66), 0, B(1), z); san(2, [-25, 25], B(1) + 15, z); }
+  add(2, 2, 'ang', alongZ(profile([['M', -56, 8], ['L', -56, 21], ['L', 50, 21], ['L', 50, 15], ['L', 69, 15], ['Q', 77, 3, 92, -3.5], ['L', 91, -6], ['Q', 64, -3.4, 36, 0], ...nb(30), ...nb(0), ...nb(-30),
+    ['L', -40, 0], ['Q', -45, 0, -45, 2.7], ['Q', -50.5, 2.7, -50.5, 5.4], ['Q', -56, 5.4, -56, 8]], TH)), 0, B(1), 0);
+  jiaohu(2, B(1) + 15, 60);
+
+  // Tier 3: nose piece; top arm outside only, one block on the tail inside
+  add(3, 0, 'linggong', gong(76, 15), 0, B(2), 60);
+  san(3, [-30, 30], B(2) + 15, 60, 21, 16.5);
+  for (const z of [-30, 30]) { add(3, 0, 'mangong', gong(98, 16), 0, B(2), z); san(3, [-41, 41], B(2) + 15, z); }
+  add(3, 0, 'zhutou', fang(130, 21, 13), 0, B(2), 0, 'dark');
+  add(3, 2, 'shuatou', alongZ(profile([['M', -77, 7], ['L', -69, 15], ['L', -51, 15], ['L', -51, 21], ['L', 85, 21], ['L', 74, 0], ...nb(60), ...nb(30), ...nb(0, 13), ...nb(-30), ['L', -69, 0]], TH)), 0, B(2), 0);
+  jiaohu(3, B(2) + 15, -60);
+
+  // Tier 4: beams, the inner top arm, and the top tie with a cloud end inside
+  add(4, 0, 'liaoyan', housed(130, 22, 16, -1, 14), 0, B(3), 60);
+  add(4, 0, 'luohan', fang(130, 21, 13), 0, B(3), 30, 'tan');
+  add(4, 0, 'zhutou', fang(130, 21, 13), 0, B(3), 0, 'dark');
+  add(4, 0, 'luohan', fang(130, 21, 13), 0, B(3), -30);
+  add(4, 0, 'linggong', gong(76, 15), 0, B(3), -60);
+  san(4, [-30, 30], B(3) + 15, -60, 20, 15.5);
+  add(4, 2, 'chenfang', alongZ(profile([['M', -74, 21], ['L', 66, 21], ['L', 66, 0], ...nb(30, 13), ...nb(0, 13), ...nb(-30, 13), ...nb(-60),
+    ['L', -74, 0], ['Q', -84, 0, -84, 6], ['Q', -92, 8, -86, 11], ['Q', -93, 15, -85, 17], ['Q', -83, 21, -74, 21]], TH)), 0, B(3), 0);
+
+  // Tier 5: third column-line beam, the tall inner board, and the top timber with a saddle for the purlin
+  add(5, 0, 'zhutou', fang(130, 21, 13), 0, B(4), 0, 'dark');
+  add(5, 0, 'board', housed(145, 32, 15, 1, 10), 0, B(4), -60, 'mid');
+  add(5, 2, 'top', alongZ(profile([['M', -62.5, 30], ['L', -13.75, 30], ['Q', 0, 12, 13.75, 30], ['L', 24, 30], ['Q', 32, 31, 34, 26], ['Q', 42, 27, 47, 22], ['Q', 45, 14.5, 51, 5.5], ['L', 56, 0],
+    ...nb(0, 13), ['L', -62.5, 0]], TH)), 0, B(4), 0);
+
+  // Purlins
+  add(6, 0, 'tuan', bamboo(15, 151), 0, B(5) + 15, 0, 'bamboo');
+  add(6, 0, 'tuan', bamboo(13.5, 140), 0, B(3) + 22 + 13.5, 60, 'bamboo');
+  return pieces;
 }
-
 
 /* ---------- Shared ---------- */
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const col = n => new THREE.Color(css(n));
-const WOOD = { light: 0xd8b27c, dark: 0x6b4a30, bamboo: 0xc8a45c };
+const WOOD = { light: 0xd8b27c, tan: 0xc09a68, mid: 0x9a6b3c, dark: 0x6b4a30, bamboo: 0xc8a45c };
 const FOV = 30, TAN = Math.tan(FOV * Math.PI / 360);
 const clamp01 = v => Math.max(0, Math.min(1, v));
 const ease = t => 1 - Math.pow(1 - t, 3);
-const SPREAD = 34;                                     // fen between tiers at full explode
-const modelH = e => 160 + e * 6 * SPREAD;              // visible height of the set
-const targetY = e => 62 + e * 3 * SPREAD;
+const SPREAD = 38;                        // fen between tiers when the tiers are fully apart
+const LIFT = [0, 5, 14, 19];              // extra lift inside a tier, by placing order
+const modelH = (e1, e2) => 150 + e1 * 6 * SPREAD + e2 * 19;
+const targetY = (e1, e2) => 66 + e1 * 3 * SPREAD + e2 * 9;
+const N = STEPS.length;
 
-// Build one copy of the set into a scene; kind: 'line' | 'wood' | 'both'
+// Build one copy of the set into a scene.
+// 'line': paper fill and ink edges. 'mix': wood, with a paper veil that fades in to turn it into a line drawing.
+// 'xray': edges only, so the pieces hidden inside show through.
+const WOOD_EDGE = new THREE.Color(0x3a2a1c);
 function buildSet(scene, kind) {
   const meshes = [];
-  const groups = STEPS.map(() => { const g = new THREE.Group(); scene.add(g); return g; });
   for (const p of makePieces()) {
-    const tint = new THREE.Color(WOOD[p.wood]).offsetHSL(0, 0, (p.pos[0] * 7 + p.pos[2] * 3 + p.step * 11) % 9 / 300 - .015);
-    const po = { polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 };
-    const mWood = new THREE.MeshStandardMaterial({ color: tint, roughness: .85, ...po });
-    const mLine = new THREE.MeshBasicMaterial({ color: 0xffffff, ...po });
-    const m = new THREE.Mesh(p.geo, kind === 'wood' ? mWood : mLine);
+    const tint = new THREE.Color(WOOD[p.wood]).offsetHSL(0, 0, (Math.abs(p.pos[0]) * 7 + (p.pos[2] + 90) * 3 + p.step * 11) % 9 / 300 - .015);
+    const mWood = new THREE.MeshStandardMaterial({ color: tint, roughness: .85, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
+    const mLine = new THREE.MeshBasicMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+    const m = new THREE.Mesh(p.geo, kind === 'mix' ? mWood : mLine);
+    if (kind === 'xray') mLine.visible = false;
     m.position.set(...p.pos);
     const edges = new THREE.LineSegments(new THREE.EdgesGeometry(p.geo, 20), new THREE.LineBasicMaterial({ color: 0, transparent: true }));
     m.add(edges);
-    m.userData = { type: p.type, step: p.step, mWood, mLine, edges, base: tint.clone(), y0: p.pos[1] };
-    groups[p.step].add(m); meshes.push(m);
+    let veil = null;
+    if (kind === 'mix') {
+      veil = new THREE.Mesh(p.geo, new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 }));
+      veil.raycast = () => {}; m.add(veil);
+    }
+    m.userData = { type: p.type, step: p.step, ord: p.ord, mWood, mLine, edges, veil, base: tint.clone(), y0: p.pos[1], anim: null };
+    scene.add(m); meshes.push(m);
   }
-  if (kind !== 'line') {
+  if (kind === 'mix') {
     scene.add(new THREE.HemisphereLight(0xffffff, 0x8a7a66, 1.6));
     const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(200, 400, 260); scene.add(sun);
   }
-  return { meshes, groups };
+  return { meshes };
 }
-function layout(set, e, now, drop) {
+// t = 0 wood, 1 line drawing
+function applyMix(set, t, paper, ink, acc, selected) {
   for (const m of set.meshes) {
-    let y = m.userData.y0 + e * m.userData.step * SPREAD;
-    const t0 = drop && drop.get(m);
-    if (t0 !== undefined) { const k = Math.min(1, (now - t0) / 450); y += (1 - ease(k)) * 60; if (k >= 1) drop.delete(m); }
+    const u = m.userData, on = selected && u.type === selected;
+    u.mWood.color.copy(on ? u.base.clone().lerp(acc, .55) : u.base);
+    u.veil.visible = t > .004; u.veil.material.opacity = t;
+    u.veil.material.color.copy(on ? paper.clone().lerp(acc, .28) : paper);
+    u.edges.material.color.copy(on ? acc : WOOD_EDGE.clone().lerp(ink, t));
+    u.edges.material.opacity = on ? 1 : .35 + .65 * t;
+  }
+}
+// e1: tiers apart, e2: pieces inside a tier apart. Pieces being placed or removed ride an extra offset.
+function layout(set, e1, e2, now) {
+  for (const m of set.meshes) {
+    const u = m.userData;
+    let y = u.y0 + e1 * u.step * SPREAD + e2 * LIFT[u.ord];
+    const a = u.anim;
+    if (a) {
+      const k = clamp01((now - a.t0) / 420);
+      if (a.dir > 0) { m.visible = now >= a.t0; y += (1 - ease(k)) * 46; }
+      else { y += ease(k) * 46; if (k >= 1) m.visible = false; }
+      if (k >= 1) u.anim = null;
+    }
     m.position.y = y;
   }
 }
-// distance that fits the set (height h, width w) in the view
 const fitDist = (h, w, aspect, pad) => Math.max(h / 2 / TAN, w / 2 / (TAN * aspect)) * pad;
 
 /* ---------- Hero ---------- */
 const pin = document.getElementById('pin'), hero = document.getElementById('hero');
 const mkRenderer = () => { const r = new THREE.WebGLRenderer({ antialias: true, alpha: true }); r.setPixelRatio(Math.min(devicePixelRatio, 2)); r.setClearColor(0, 0); return r; };
-const hLine = mkRenderer(), hWood = mkRenderer();
+const hMain = mkRenderer(), hLens = mkRenderer();
 const mqA = document.getElementById('mq-a');
-document.getElementById('mq-b').after(hLine.domElement);
-hLine.domElement.after(hWood.domElement);
-const sLine = new THREE.Scene(), sWood = new THREE.Scene();
-const setL = buildSet(sLine, 'line'), setW = buildSet(sWood, 'wood');
+document.getElementById('mq-b').after(hMain.domElement);
+hMain.domElement.after(hLens.domElement);
+const sMain = new THREE.Scene(), sLens = new THREE.Scene();
+const setM = buildSet(sMain, 'mix'), setX = buildSet(sLens, 'xray'), setXL = buildSet(sLens, 'line');   // lens: faint hidden edges under firm visible ones
 const hCam = new THREE.PerspectiveCamera(FOV, 1, 1, 5000);
-const woodCv = hWood.domElement;
+const lensCv = hLens.domElement;
 
+let heroPal = null;
 function paintHero() {
-  const paper = col('--paper'), ink = col('--ink');
-  for (const m of setL.meshes) { m.userData.mLine.color.copy(paper); m.userData.edges.material.color.copy(ink); }
-  for (const m of setW.meshes) { m.userData.edges.material.color.set(0x3a2a1c); m.userData.edges.material.opacity = .35; }
+  heroPal = { paper: col('--paper'), ink: col('--ink'), acc: col('--accent') };
+  hLens.setClearColor(heroPal.paper, 1);
+  for (const m of setX.meshes) { const e = m.userData.edges.material; e.color.copy(heroPal.ink); e.opacity = .2; e.depthTest = false; }
+  for (const m of setXL.meshes) { m.userData.mLine.colorWrite = false; m.userData.edges.material.color.copy(heroPal.ink); }
 }
+
+// Tier names beside the model; the fifth tier's pieces carry no name
+const TIER_NAMES = [['櫨斗', 'Main block'], ['華栱', 'Projecting arm'], ['昂', 'Ang'], ['耍頭', 'Nose piece'], ['襯方頭', 'Top tie'], null, ['槫', 'Purlins']];
+const TIER_Y = [8, B(0) + 10, B(1) + 10, B(2) + 10, B(3) + 10, 0, B(5) + 15];
+const tns = TIER_NAMES.map(t => {
+  if (!t) return null;
+  const el = document.createElement('div'); el.className = 'tn'; el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = `${t[0]}<small>${t[1].toUpperCase()}</small>`; pin.append(el); return el;
+});
+const v3 = new THREE.Vector3();
 
 // Marquee rows: content repeated, moved by script so scrolling can speed them up
 const ROW_A = `<span class="f3 fill" style="font-size:1.0em;transform:translateY(0em)">斗栱</span><span class="f1 fill" style="font-size:0.4em;transform:translateY(0em)">・</span><span class="f2 line" style="font-size:0.62em;transform:translateY(-0.28em)">鋪作</span><span class="f4 fill" style="font-size:0.5em;transform:translateY(0.32em)">材</span><span class="f4 fill" style="font-size:0.42em;transform:translateY(-0.1em)">分</span><span class="f1 line" style="font-size:0.8em;transform:translateY(0.12em)">出跳</span><span class="f3 fill" style="font-size:0.46em;transform:translateY(-0.42em)">栔</span><span class="f4 fill" style="font-size:1.15em;transform:translateY(0.05em)">昂</span><span class="f1 line" style="font-size:0.5em;transform:translateY(0.36em)">卷殺</span><span class="f2 fill" style="font-size:0.7em;transform:translateY(-0.18em)">櫨斗</span><span class="f1 fill" style="font-size:0.4em;transform:translateY(0em)">・</span>`, ROW_B = `<span class="f2 line" style="font-size:0.9em;transform:translateY(0em)">五鋪作</span><span class="f1 fill" style="font-size:0.56em;transform:translateY(0.3em)">單杪單昂</span><span class="f1 line" style="font-size:0.42em;transform:translateY(-0.38em)">交互斗</span><span class="f3 line" style="font-size:0.78em;transform:translateY(0.08em)">重栱計心</span><span class="f4 fill" style="font-size:0.5em;transform:translateY(-0.3em)">昂</span><span class="f3 fill" style="font-size:0.6em;transform:translateY(0.34em)">令栱</span><span class="f1 line" style="font-size:0.4em;transform:translateY(0em)">・</span>`;
 mqA.innerHTML = ROW_A.repeat(6);
 const mqB = document.getElementById('mq-b'); mqB.innerHTML = ROW_B.repeat(4);
-let xA = 0, xB = 0, speed = 1, lastY = scrollY, lastT = performance.now();
+let xA = 0, xB = 0, speed = 1, lastY = scrollY;
 
-// Reveal: wood shows through a soft circle around the pointer or finger
+// Lens: inside a circle around the pointer or finger the set turns to bare lines, hidden pieces included
 const rv = { x: -999, y: -999, r: 0, want: 0 };
-const isTouch = matchMedia('(hover: none)').matches;
-if (isTouch) document.getElementById('hint').textContent = '往下捲動拆解・手指滑過見木色';
+if (matchMedia('(hover: none)').matches) document.getElementById('hint').textContent = '往下捲動拆解・手指滑過看內部';
 const at = (cx, cy) => { const b = pin.getBoundingClientRect(); rv.x = cx - b.left; rv.y = cy - b.top; };
-pin.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { at(e.clientX, e.clientY); rv.want = 130; } });
+let mx = 0;  // mouse parallax
+pin.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { at(e.clientX, e.clientY); rv.want = 130; mx = e.clientX / innerWidth - .5; } });
 pin.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') rv.want = 0; });
 pin.addEventListener('touchstart', e => { at(e.touches[0].clientX, e.touches[0].clientY); rv.want = 110; }, { passive: true });
 pin.addEventListener('touchmove', e => { at(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
 pin.addEventListener('touchend', () => { rv.want = 0; }, { passive: true });
-let mx = 0;  // mouse parallax
-pin.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') mx = e.clientX / innerWidth - .5; });
 
 let heroOn = true;
 new IntersectionObserver(es => { heroOn = es[0].isIntersecting; }).observe(hero);
 const meterN = document.getElementById('meter-n'), meterI = document.getElementById('meter-i');
 
 function heroFrame(now, dt) {
-  const w = pin.clientWidth, h = pin.clientHeight;
-  if (hLine.domElement.width !== Math.round(w * hLine.getPixelRatio())) { hLine.setSize(w, h, false); hWood.setSize(w, h, false); }
-  // scroll progress through the pinned section
+  const w = pin.clientWidth, h = pin.clientHeight, small = w < 760;
+  if (hMain.domElement.width !== Math.round(w * hMain.getPixelRatio()) || hMain.domElement.height !== Math.round(h * hMain.getPixelRatio())) { hMain.setSize(w, h, false); hLens.setSize(w, h, false); }
   const rect = hero.getBoundingClientRect();
   const p = clamp01(-rect.top / (rect.height - h));
-  const e = ease(clamp01(p / .8));
-  layout(setL, e); layout(setW, e);
-  // camera: three-quarter view turning to the side as it comes apart
+  const e = ease(clamp01(p / .8)), e2 = .5 * e;
+  layout(setM, e, e2, now); layout(setX, e, e2, now); layout(setXL, e, e2, now);
+  // whole, it is the wooden object; taken apart, it becomes a drawing
+  applyMix(setM, clamp01(e / .45), heroPal.paper, heroPal.ink, heroPal.acc, null);
+  // camera: three-quarter view from the outer side, turning toward the side as it comes apart
   const az = (38 + 34 * e + Math.sin(now / 5000) * 5 + mx * 10) * Math.PI / 180, el = (10 - 4 * e) * Math.PI / 180;
   hCam.aspect = w / h; hCam.updateProjectionMatrix();
-  const d = fitDist(modelH(e) * 1.25, 300, w / h, w < 760 ? 1.25 : 1.55);
-  const ty = targetY(e) - (w < 760 ? 0 : 6);
+  const d = fitDist(modelH(e, e2) * 1.25, 300, w / h, small ? 1.25 : 1.55);
+  const ty = targetY(e, e2) - (small ? 0 : 6);
   hCam.position.set(Math.sin(az) * Math.cos(el) * d, ty + Math.sin(el) * d, Math.cos(az) * Math.cos(el) * d);
   hCam.lookAt(0, ty, 0);
-  hLine.render(sLine, hCam); hWood.render(sWood, hCam);
+  hMain.render(sMain, hCam);
+  if (rv.r > 1 || rv.want) hLens.render(sLens, hCam);
+  // tier names, pinned to each tier's height at a fixed distance right of the model
+  const half = TAN * d * (w / h), offX = Math.min(.5 + 96 / half * .5, small ? .97 : .9);
+  tns.forEach((el, i) => {
+    if (!el) return;
+    v3.set(0, TIER_Y[i] + e * i * SPREAD + e2 * 8, 0).project(hCam);
+    const x = small ? w - el.offsetWidth - 10 : offX * w, y = (1 - v3.y) / 2 * h - 11;
+    el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+    el.style.opacity = clamp01((e - .25) / .4).toFixed(3);
+  });
   // reveal mask
   rv.r += (rv.want - rv.r) * Math.min(1, dt / 120);
   const m = rv.r < 1 ? 'radial-gradient(circle 0px at 0 0, #000, transparent)' : `radial-gradient(circle ${rv.r.toFixed(1)}px at ${rv.x}px ${rv.y}px, #000 78%, transparent 100%)`;
-  woodCv.style.maskImage = woodCv.style.webkitMaskImage = m;
-  // marquee speeds up while scrolling
+  lensCv.style.maskImage = lensCv.style.webkitMaskImage = m;
+  // marquee speeds up while scrolling, and steps back as the set opens
   const v = Math.abs(scrollY - lastY) / Math.max(dt, 1); lastY = scrollY;
   speed += ((1 + Math.min(v * 4, 4)) - speed) * Math.min(1, dt / 300);
   xA -= .012 * dt * speed; xB += .009 * dt * speed;
   const wa = mqA.scrollWidth / 6, wb = mqB.scrollWidth / 4;
   if (wa) xA = ((xA % wa) - wa) % wa; if (wb) xB = ((xB % wb) - wb) % wb;
   mqA.style.transform = `translate3d(${xA}px,${(-e * 60).toFixed(1)}px,0)`; mqB.style.transform = `translate3d(${xB}px,${(e * 60).toFixed(1)}px,0)`;
-  mqA.style.opacity = (1 - .55 * e).toFixed(3); mqB.style.opacity = (.8 - .45 * e).toFixed(3);
-  const n = Math.min(7, 1 + Math.floor(e * 6.999));
-  meterN.textContent = `${n} / 7`; meterI.style.setProperty('--p', (p * 100).toFixed(1) + '%');
+  mqA.style.opacity = (1 - .6 * e).toFixed(3); mqB.style.opacity = (.8 - .5 * e).toFixed(3);
+  meterN.textContent = `${Math.min(7, 1 + Math.floor(e * 6.999))} / 7`; meterI.style.setProperty('--p', (p * 100).toFixed(1) + '%');
 }
 
+/* ---------- Photo against rebuild, and the side elevation ---------- */
+// Camera poses solved from landmarks in each photograph (position in fen, f and principal point as fractions of image width)
+const CAMS = {"p70": {"pos": [442.15, 107.16, -3.18], "quat": [-0.02431, 0.70669, 0.02431, 0.70669], "f": 2.1958, "cx": 0.5104, "cy": 0.4248, "ar": 1.179}, "p67": {"pos": [-7.26, 42.42, 343.11], "quat": [0.04583, -0.0, -0.0, 0.99895], "f": 1.9132, "cx": 0.4402, "cy": 0.4553, "ar": 1.0969}, "p68": {"pos": [2.16, 45.69, -613.75], "quat": [0.0, 0.99973, -0.02309, -0.0], "f": 3.5801, "cx": 0.4694, "cy": 0.4581, "ar": 1.0921}, "p71": {"pos": [63.88, 1035.35, -10.72], "quat": [0.5, -0.5, -0.5, -0.5], "f": 5.2036, "cx": 0.5447, "cy": 0.8322, "ar": 1.0914}};
+const mstage = document.getElementById('mstage'), mimg = document.getElementById('mimg');
+const oR = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+oR.setPixelRatio(Math.min(devicePixelRatio, 2));
+mimg.after(oR.domElement);
+const sO = new THREE.Scene(), setO = buildSet(sO, 'line');
+const oCam = new THREE.PerspectiveCamera(30, 1, 1, 5000);
+let mview = 'p70', mover = false;
+function paintO(tier = -1, overlay = false) {
+  const paper = col('--mat'), ink = col('--ink'), acc = col('--accent');
+  for (const m of setO.meshes) {
+    const u = m.userData, on = u.step === tier;
+    u.mLine.colorWrite = !overlay;                      // overlay: keep hidden-line removal, drop the fill
+    u.mLine.color.copy(on ? paper.clone().lerp(acc, .3) : paper);
+    u.edges.material.color.copy(overlay || on ? acc : ink);
+  }
+}
+function drawMatch() {
+  const c = CAMS[mview], w = mstage.clientWidth, h = w / c.ar;
+  if (!w) return;
+  mstage.style.aspectRatio = c.ar;
+  oR.setSize(w, h, false);
+  oCam.position.fromArray(c.pos); oCam.quaternion.fromArray(c.quat);
+  oCam.fov = 2 * Math.atan(.5 / c.ar / c.f) * 180 / Math.PI; oCam.aspect = c.ar;
+  oCam.setViewOffset(w, h, w / 2 - c.cx * w, h / 2 - c.cy * w, w, h);
+  paintO(-1, mover);
+  oR.setClearColor(col('--mat'), mover ? 0 : 1);
+  oR.render(sO, oCam);
+}
+function setView(v) {
+  mview = v;
+  mimg.src = `img/m${v.slice(1)}.jpg`;
+  mimg.alt = `Photograph of the 2002 model: ${{ p70: 'side', p67: 'front', p68: 'back', p71: 'top' }[v]} view`;
+  document.querySelectorAll('#mviews button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  drawMatch();
+}
+document.querySelectorAll('#mviews button').forEach(b => b.onclick = () => setView(b.dataset.v));
+const moverBtn = document.getElementById('mover');
+moverBtn.onclick = () => { mover = !mover; mstage.classList.toggle('over', mover); moverBtn.setAttribute('aria-pressed', mover); moverBtn.textContent = mover ? '回到左右對照' : '線稿疊在照片上'; drawMatch(); };
+let mdrag = false;
+const mmove = e => { const r = mstage.getBoundingClientRect(); mstage.style.setProperty('--x', (clamp01((e.clientX - r.left) / r.width) * 100).toFixed(1) + '%'); };
+mstage.addEventListener('pointerdown', e => { mdrag = true; mstage.setPointerCapture(e.pointerId); mmove(e); });
+mstage.addEventListener('pointermove', e => { if (mdrag) mmove(e); });
+mstage.addEventListener('pointerup', () => { mdrag = false; }); mstage.addEventListener('pointercancel', () => { mdrag = false; });
+new ResizeObserver(drawMatch).observe(mstage);
+
+// Side elevation: the same line model seen square-on from the side, drawn once per tier into images
+const secImg = document.getElementById('sec-img'), secSrc = [];
+function drawSection() {
+  const W = 1470, H = 1134, sCam = new THREE.OrthographicCamera(-105, 105, 154, -8, 1, 2000);
+  sCam.position.set(600, 0, 0); sCam.rotation.set(0, Math.PI / 2, 0);   // looking along -x: outer side on the left
+  const pr = oR.getPixelRatio(); oR.setPixelRatio(1); oR.setSize(W, H, false);
+  oR.setClearColor(col('--mat'), 1);
+  for (let t = 0; t <= 5; t++) { paintO(t - 1, false); oR.render(sO, sCam); secSrc[t] = oR.domElement.toDataURL('image/png'); }
+  oR.setPixelRatio(pr);
+  secImg.src = secSrc[secTier];
+  drawMatch();
+}
+let secTier = 0;
+document.querySelectorAll('#tiers button').forEach(b => b.onclick = () => {
+  secTier = secTier === +b.dataset.n ? 0 : +b.dataset.n;
+  document.querySelectorAll('#tiers button').forEach(x => x.setAttribute('aria-pressed', +x.dataset.n === secTier));
+  secImg.src = secSrc[secTier];
+});
+
 /* ---------- Viewer ---------- */
-const stage = document.getElementById('stage');
+const stage = document.getElementById('stage'), sim = document.getElementById('sim');
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 stage.prepend(renderer.domElement);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(FOV, 16 / 10, 1, 5000);
-camera.position.set(380, 230, 440);
+camera.position.set(400, 190, 420);
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 62, 0);
+controls.target.set(0, 66, 0);
 controls.enableDamping = true; controls.enablePan = false;
-controls.minDistance = 150; controls.maxDistance = 1400;
+controls.minDistance = 150; controls.maxDistance = 1600;
 controls.minPolarAngle = .35; controls.maxPolarAngle = 2.0;
-const setV = buildSet(scene, 'both');
-const meshes = setV.meshes, groups = setV.groups;
+const setV = buildSet(scene, 'mix'), meshes = setV.meshes;
 // one finger: sideways turns the model, up-down scrolls the page
 const touchMode = () => { renderer.domElement.style.touchAction = sim.classList.contains('full') ? 'none' : 'pan-y'; };
 
-let mode = 'line', selected = null;
+// auto: wood while whole, fading to a line drawing as it comes apart
+let mode = 'auto', selected = null, pal = null, mixNow = -1;
 function paint() {
-  const paper = col('--mat'), ink = col('--ink'), acc = col('--accent');
-  scene.background = paper;
-  for (const m of meshes) {
-    const u = m.userData, on = selected && u.type === selected;
-    m.material = mode === 'line' ? u.mLine : u.mWood;
-    u.mLine.color.copy(on ? paper.clone().lerp(acc, .28) : paper);
-    u.mWood.color.copy(on ? u.base.clone().lerp(acc, .55) : u.base);
-    u.edges.material.color.copy(on ? acc : (mode === 'line' ? ink : new THREE.Color(0x3a2a1c)));
-    u.edges.material.opacity = mode === 'line' ? 1 : (on ? .9 : .35);
-  }
+  pal = { paper: col('--mat'), ink: col('--ink'), acc: col('--accent') };
+  scene.background = pal.paper; mixNow = -1;
 }
+const mixWant = () => mode === 'wood' ? 0 : mode === 'line' ? 1 : clamp01(explode / .35);
 
-let step = STEPS.length - 1, explode = 0;
-const drop = new Map();
-function setStep(n, animate = true) {
-  const prev = step; step = Math.max(0, Math.min(STEPS.length - 1, n));
-  groups.forEach((g, i) => { g.visible = i <= step; });
-  if (animate && step > prev) groups[step].children.forEach(m => drop.set(m, performance.now()));
-  const s = STEPS[step];
-  document.getElementById('step-out').textContent = `${step + 1} / ${STEPS.length}`;
-  document.getElementById('tag').textContent = `STEP ${step + 1} / ${STEPS.length}`;
-  document.getElementById('step-zh').textContent = `${'①②③④⑤⑥⑦'[step]} ${s.zh}`;
+// level = how many steps are in place (1..N). Going up places a tier in its real order; going down lifts it off in reverse.
+let level = N, explode = 0;
+function setLevel(n, animate = true) {
+  const prev = level; level = Math.max(1, Math.min(N, n));
+  const now = performance.now();
+  for (const m of meshes) {
+    const u = m.userData, show = u.step < level, was = u.step < prev;
+    if (!animate || show === was) { if (!u.anim || !animate) { u.anim = null; m.visible = show; } continue; }
+    u.anim = show ? { dir: 1, t0: now + u.ord * 260 } : { dir: -1, t0: now + (3 - u.ord) * 140 };
+    if (show) m.visible = false;
+  }
+  const s = STEPS[level - 1];
+  document.getElementById('step-out').textContent = `${level} / ${N}`;
+  document.getElementById('tag').textContent = `${level} / ${N}`;
+  document.getElementById('step-zh').textContent = s.zh;
   document.getElementById('step-en').textContent = s.en;
-  const img = document.getElementById('step-img');
-  img.src = `img/${s.img}.jpg`; img.alt = `Photo of the 2002 model at this step: ${s.en}`;
-  document.getElementById('step-cap').textContent = `原作 · ${s.img}`;
-  document.getElementById('prev').disabled = step === 0;
-  document.getElementById('next').disabled = step === STEPS.length - 1;
+  const a = document.getElementById('img-a'), b = document.getElementById('img-b');
+  a.src = `img/${s.a}.jpg`; b.src = `img/${s.b}.jpg`;
+  a.alt = `2002 photograph for this step: ${s.en}`; b.alt = `2002 photograph after this step: ${s.en}`;
+  document.getElementById('prev').disabled = level === 1;
+  document.getElementById('next').disabled = level === N;
 }
-document.getElementById('prev').onclick = () => setStep(step - 1);
-document.getElementById('next').onclick = () => setStep(step + 1);
-document.getElementById('thumb').onclick = e => e.currentTarget.classList.toggle('big');
+document.getElementById('prev').onclick = () => setLevel(level - 1);
+document.getElementById('next').onclick = () => setLevel(level + 1);
+document.getElementById('thumbs').onclick = e => e.currentTarget.classList.toggle('big');
 
 // keep the whole set in view as it comes apart
+const ex1 = () => clamp01(explode / .6), ex2 = () => clamp01((explode - .6) / .4);
 let wantDist = null;
 function refit() {
   const a = stage.clientWidth / stage.clientHeight;
-  wantDist = fitDist(modelH(explode), 280, a, a < 1 ? 1.2 : 1.35);
+  wantDist = fitDist(modelH(ex1(), ex2()), 270, a, a < 1 ? 1.25 : 1.6);
 }
 const ex = document.getElementById('explode');
 ex.oninput = () => { explode = ex.value / 100; refit(); };
@@ -670,13 +889,13 @@ renderer.domElement.addEventListener('pointerup', e => {
   const r = renderer.domElement.getBoundingClientRect();
   ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
   ray.setFromCamera(ptr, camera);
-  const hit = ray.intersectObjects(meshes.filter(m => m.parent.visible), false)[0];
-  select(hit ? hit.object.userData.type : null);
+  const hit = ray.intersectObjects(meshes.filter(m => m.visible), false)[0];
+  select(hit && T[hit.object.userData.type] ? hit.object.userData.type : null);
 });
 const count = t => meshes.filter(m => m.userData.type === t).length;
 const info = document.getElementById('info'), infoBody = document.getElementById('info-body');
 function select(t) {
-  selected = t; paint();
+  selected = t; mixNow = -1;
   info.classList.toggle('on', !!t);
   if (!t) return;
   const d = T[t];
@@ -684,21 +903,19 @@ function select(t) {
 }
 document.getElementById('info-x').onclick = () => select(null);
 
-const order = ['ludou', 'huagong', 'nidao', 'jiaohu', 'san', 'ang', 'guazi', 'mangong', 'linggong', 'shuatou', 'chenfang', 'zhutou', 'luohan', 'liaoyan', 'pingqi', 'tuan'];
-document.querySelector('#tbl tbody').innerHTML = order.map(t => `<tr data-t="${t}"><td>${T[t].zh}</td><td>${T[t].alt}</td><td>${T[t].en}</td><td class="n">${count(t)}</td></tr>`).join('') +
-  `<tr><td>合計</td><td></td><td>Total</td><td class="n">${meshes.length}</td></tr>`;
+const order = ['ludou', 'nidao', 'huagong', 'jiaohu', 'san', 'guazi', 'mangong', 'ang', 'linggong', 'shuatou', 'chenfang', 'zhutou', 'luohan', 'liaoyan', 'tuan'];
+document.querySelector('#tbl tbody').innerHTML = order.map(t => `<tr data-t="${t}"><td>${T[t].zh}</td><td>${T[t].alt}</td><td>${T[t].en}</td><td class="n">${count(t)}</td></tr>`).join('');
 document.querySelectorAll('#tbl tr[data-t]').forEach(tr => tr.onclick = () => {
-  setStep(STEPS.length - 1, false); select(tr.dataset.t);
-  document.getElementById('sim').scrollIntoView({ behavior: 'smooth' });
+  setLevel(N, false); select(tr.dataset.t);
+  sim.scrollIntoView({ behavior: 'smooth' });
 });
 
 document.querySelectorAll('#mode button').forEach(b => b.onclick = () => {
   mode = b.dataset.m;
   document.querySelectorAll('#mode button').forEach(x => x.setAttribute('aria-pressed', x === b));
-  paint();
 });
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { paint(); paintHero(); });
-const sim = document.getElementById('sim'), fb = document.getElementById('btn-full');
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { paint(); paintHero(); drawSection(); });
+const fb = document.getElementById('btn-full');
 fb.onclick = () => {
   const on = !sim.classList.contains('full');
   sim.classList.toggle('full', on); document.documentElement.classList.toggle('noscroll', on);
@@ -721,8 +938,10 @@ function frame(now) {
   const dt = Math.min(64, now - last); last = now;
   if (heroOn) heroFrame(now, dt);
   if (simOn || sim.classList.contains('full')) {
-    layout(setV, explode, now, drop);
-    controls.target.y += (targetY(explode) - controls.target.y) * .15;
+    layout(setV, ex1(), ex2(), now);
+    const mw = mixWant(), mt = mixNow < 0 ? mw : mixNow + (mw - mixNow) * Math.min(1, dt / 160);
+    if (mixNow < 0 || Math.abs(mt - mixNow) > .0005) { mixNow = Math.abs(mw - mt) < .002 ? mw : mt; applyMix(setV, mixNow, pal.paper, pal.ink, pal.acc, selected); }
+    controls.target.y += (targetY(ex1(), ex2()) - controls.target.y) * .15;
     if (wantDist) {
       off.subVectors(camera.position, controls.target);
       const dd = off.length(), nd = dd + (wantDist - dd) * .12;
@@ -735,7 +954,7 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 controls.addEventListener('start', () => { wantDist = null; });
-touchMode(); paintHero(); paint(); setStep(STEPS.length - 1, false); resize();
+touchMode(); paintHero(); paint(); setLevel(N, false); resize(); setView('p70'); drawSection();
 requestAnimationFrame(frame);
 
 </script>
