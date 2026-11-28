@@ -127,46 +127,22 @@
     "link": "projects/linkage/",
     "sub": [
       {
-        "title": "Parallel Cranks",
-        "link": "projects/linkage/parallel/",
-        "image": "projects/linkage/img/ex-parallel.jpg",
-        "title_zh": "三曲柄平移"
-      },
-      {
         "title": "Wooden Fish",
         "link": "projects/linkage/#sim",
         "image": "projects/linkage/img/ex-fish.jpg",
         "title_zh": "敲木魚"
       },
       {
-        "title": "Horse Linkage",
-        "link": "projects/horse-linkage/",
-        "image": "projects/linkage/img/ex-horse.jpg",
-        "title_zh": "壢馬連桿"
+        "title": "Parallel Cranks",
+        "link": "projects/linkage/parallel/",
+        "image": "projects/linkage/img/ex-parallel.jpg",
+        "title_zh": "三曲柄平移"
       },
       {
-        "title": "Beast",
-        "link": "projects/linkage/beast/",
-        "image": "projects/linkage/img/ex-beast.jpg",
-        "title_zh": "仿生獸"
-      },
-      {
-        "title": "Quadruped",
-        "link": "projects/linkage/quadruped/",
-        "image": "projects/linkage/img/ex-quadruped.jpg",
-        "title_zh": "四足獸"
-      },
-      {
-        "title": "Excavator",
-        "link": "projects/linkage/excavator/",
-        "image": "projects/linkage/img/ex-excavator.jpg",
-        "title_zh": "挖土機"
-      },
-      {
-        "title": "Dog",
-        "link": "projects/linkage/dog/",
-        "image": "projects/linkage/img/ex-dog.jpg",
-        "title_zh": "狗"
+        "title": "Wave",
+        "link": "projects/linkage/wave/",
+        "image": "projects/linkage/img/ex-wave.jpg",
+        "title_zh": "波浪"
       },
       {
         "title": "Walking",
@@ -175,10 +151,52 @@
         "title_zh": "行走腳"
       },
       {
+        "title": "Quadruped",
+        "link": "projects/linkage/quadruped/",
+        "image": "projects/linkage/img/ex-quadruped.jpg",
+        "title_zh": "四足獸"
+      },
+      {
+        "title": "Dog",
+        "link": "projects/linkage/dog/",
+        "image": "projects/linkage/img/ex-dog.jpg",
+        "title_zh": "狗"
+      },
+      {
+        "title": "Beast",
+        "link": "projects/linkage/beast/",
+        "image": "projects/linkage/img/ex-beast.jpg",
+        "title_zh": "仿生獸"
+      },
+      {
+        "title": "Excavator",
+        "link": "projects/linkage/excavator/",
+        "image": "projects/linkage/img/ex-excavator.jpg",
+        "title_zh": "挖土機"
+      },
+      {
         "title": "Ornithopter",
         "link": "projects/linkage/ornithopter/",
         "image": "projects/linkage/img/ex-ornithopter.jpg",
         "title_zh": "撲翼機"
+      },
+      {
+        "title": "Iris",
+        "link": "projects/linkage/iris/",
+        "image": "projects/linkage/img/ex-iris.jpg",
+        "title_zh": "光圈"
+      },
+      {
+        "title": "Crab",
+        "link": "projects/linkage/crab/",
+        "image": "projects/linkage/img/ex-crab.jpg",
+        "title_zh": "螃蟹"
+      },
+      {
+        "title": "Horse Linkage",
+        "link": "projects/horse-linkage/",
+        "image": "projects/linkage/img/ex-horse.jpg",
+        "title_zh": "壢馬連桿"
       }
     ]
   },
