@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>編木互承接頭模擬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 研究用數位實驗台，安靜、精確，像工程圖紙
+   IDEA: 一張攤在桌上的 A3 組裝底板，上面是編木拱與它的零件表
+   PICTURE: 大幅 3D 編木拱，三色接頭家族，落柱在滑動軌上
+   COLOUR and TYPE: 紙白／墨色為底，竹木色桿件，靛、竹綠、赭三色接頭家族；Noto Serif TC 標題＋Noto Sans TC 內文
+   LAYOUT: 左側參數欄，右側大圖與狀態，下方接頭表與裁切清單 */
+:root{color-scheme:light dark;--bg:light-dark(#f6f6f3,#121412);--panel:light-dark(#ffffff,#1b1e1b);--ink:light-dark(#1d1f1c,#e9e9e4);--quiet:light-dark(#5d625b,#a3a89f);--rule:light-dark(#dcdcd5,#30352f);--wood:#c9a96e;--A:#2f5d8a;--B:#5f8f3e;--C:#c4862c;--good:#2e8b57;--warn:#2f6fd0;--bad:#d0382b}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+header{padding:20px max(3vw,16px) 12px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:1px solid var(--rule)}
+h1{font:900 clamp(24px,3.2vw,36px)/1.08 "Noto Serif TC",serif;margin:0;text-wrap:balance}
+.sub{color:var(--quiet);margin:4px 0 0;font-size:14px}
+.status{display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--rule);max-width:640px}
+.lamp{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 20%,transparent);background:currentColor}
+.status[data-s=green] .lamp{color:var(--good)}.status[data-s=blue] .lamp{color:var(--warn)}.status[data-s=red] .lamp{color:var(--bad)}
+.status span{font-size:14px}
+main{display:grid;grid-template-columns:330px minmax(0,1fr);gap:0;align-items:start}
+aside{padding:14px max(1.5vw,14px) 40px;border-right:1px solid var(--rule);max-height:calc(100vh - 90px);overflow:auto;position:sticky;top:0}
+fieldset{border:0;border-bottom:1px solid var(--rule);margin:0;padding:12px 0 14px}
+legend{font-weight:700;font-size:15px;padding:0;margin-bottom:6px}
+.row{display:grid;grid-template-columns:5.2em minmax(0,1fr) 4.6em;gap:8px;align-items:center;margin:6px 0}
+.row label{font-size:13.5px;color:var(--quiet)}
+.row output{font-variant-numeric:tabular-nums;text-align:right;font-size:13.5px;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--ink);height:28px}
+input[type=range]:disabled{opacity:.45}
+select,input[type=number]{font:inherit;font-size:16px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);width:100%}
+.lock{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;min-height:32px}
+.lock[aria-pressed=false]{background:transparent;border-style:dashed;color:var(--warn)}
+.lock:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.sub2{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px}
+.sub2 b{font-size:14px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:0}
+.seg{display:flex;gap:6px}.seg button{flex:1;font:inherit;min-height:36px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.stage{padding:0 0 24px}
+.fig{position:relative;height:min(62vh,620px);min-height:360px;background:light-dark(#eceee8,#181b18);border-bottom:1px solid var(--rule)}
+.fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.views{position:absolute;top:12px;left:12px;display:flex;gap:6px}
+.views button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.views button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.legend{position:absolute;right:12px;top:12px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.7}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0;border-bottom:1px solid var(--rule)}
+.kpi{padding:12px 18px;border-right:1px solid var(--rule)}
+.kpi small{display:block;color:var(--quiet);font-size:13px}
+.kpi b{font:700 22px/1.2 "Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi.warn b{color:var(--bad)}
+.tables{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;padding:18px max(2vw,16px)}
+h2{font:600 19px/1.3 "Noto Serif TC",serif;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule)}
+th{font-weight:500;color:var(--quiet);font-size:13px}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.export{padding:4px max(2vw,16px) 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:0 20px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn:disabled{opacity:.4;cursor:default}
+.note{color:var(--quiet);font-size:13.5px;max-width:70ch}
+.notes{padding:4px max(2vw,16px) 28px}
+.notes p{margin:6px 0;max-width:80ch;color:var(--quiet);font-size:14px}
+@media(max-width:900px){main{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0;order:2}.stage{order:1}.tables{grid-template-columns:1fr}}
+@media(max-width:600px){.fig{height:54vh}.legend{display:none}.kpi{padding:10px 12px}.kpi b{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<header>
+  <div>
+    <h1>編木互承：接頭決定曲度</h1>
+    <p class="sub">虹橋式單向拱 · 數位實驗介面 v0.1 · 單位 mm · 鋪面上限 A3（420 × 297）</p>
+  </div>
+  <div class="status" id="status" data-s="green" role="status" aria-live="polite"><i class="lamp"></i><span id="statusText">載入中…</span></div>
+</header>
+<main>
+<aside id="panel">
+  <fieldset>
+    <legend>桿件</legend>
+    <div class="row"><label for="preset">材料</label>
+      <select id="preset" style="grid-column:span 2">
+        <option value="3">烤肉串（約 3 mm）</option>
+        <option value="5">圓竹筷中段（約 5 mm）</option>
+        <option value="2">細竹籤（約 2 mm）</option>
+        <option value="c">自訂直徑</option>
+      </select></div>
+    <div class="row"><label for="d">實測直徑</label><input type="range" id="d" min="1.5" max="8" step="0.1" value="3"><output for="d" id="d_o"></output></div>
+    <p class="note" id="dNote"></p>
+  </fieldset>
+  <fieldset>
+    <legend>編織</legend>
+    <div class="row"><label for="N">橫木數</label><input type="range" id="N" min="5" max="15" step="1" value="9"><output id="N_o"></output></div>
+    <div class="row"><label for="s">交點間距</label><input type="range" id="s" min="20" max="90" step="1" value="40"><output id="s_o"></output></div>
+    <div class="row"><label for="lanes">縱桿排數</label><input type="range" id="lanes" min="2" max="12" step="1" value="6"><output id="lanes_o"></output></div>
+    <div class="row"><label for="laneGap">排距</label><input type="range" id="laneGap" min="6" max="50" step="1" value="14"><output id="laneGap_o"></output></div>
+  </fieldset>
+  <fieldset>
+    <legend>可調線（接頭家族）</legend>
+    <div class="seg" role="group" aria-label="可調線數量"><button data-k="1">1 條</button><button data-k="2">2 條</button><button data-k="3">3 條</button></div>
+    <div id="lines"></div>
+    <p class="note">每條可調線 = 一組共用偏心距的交點 = 一種接頭規格。墊高 0 表示桿件直接互相壓靠（偏心距 = 桿徑）。</p>
+  </fieldset>
+  <fieldset id="supL"></fieldset>
+  <fieldset id="supR"></fieldset>
+  <fieldset>
+    <legend>列印</legend>
+    <div class="row"><label for="tol">孔徑公差</label><input type="range" id="tol" min="0.1" max="0.6" step="0.05" value="0.3"><output id="tol_o"></output></div>
+    <div class="row"><label for="wall">壁厚</label><input type="range" id="wall" min="1.2" max="3" step="0.1" value="1.6"><output id="wall_o"></output></div>
+  </fieldset>
+</aside>
+<section class="stage">
+  <div class="fig" id="fig">
+    <div class="views" role="group" aria-label="視角">
+      <button data-v="persp" aria-pressed="true">透視</button><button data-v="front">立面</button><button data-v="top">平面</button>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="tables">
+    <div>
+      <h2>接頭規格</h2>
+      <table><thead><tr><th>編號</th><th>類型</th><th>偏心距 e</th><th>轉折角</th><th class="n">數量</th></tr></thead><tbody id="jt"></tbody></table>
+    </div>
+    <div>
+      <h2>桿件裁切清單</h2>
+      <table><thead><tr><th>桿件</th><th class="n">長度</th><th class="n">數量</th></tr></thead><tbody id="ct"></tbody></table>
+    </div>
+  </div>
+  <div class="export">
+    <button class="btn" id="dl" disabled>下載列印包（.zip）</button>
+    <span class="note" id="dlNote">內含各接頭 STL、公差測試片、裁切清單 CSV、參數 JSON。</span>
+  </div>
+  <div class="notes">
+    <p><b>模型假設</b>：每根縱桿跨越三根橫木，兩端搭在橫木上方、中段穿過橫木下方（上–下–上）。相鄰兩排錯開一格，因此每根橫木同時被一排壓住、被另一排托住，形成互承。中間交點相對兩鄰點弦線的矢高 h = e<sub>i</sub> + (e<sub>i−1</sub> + e<sub>i+1</sub>) / 2，每個交點的轉角 = 2·atan(h / 交點間距)，整條拱的形狀因此完全由接頭決定。</p>
+    <p><b>接頭類型</b>：M = 下穿（縱桿從橫木下方直穿）；E2 = 上搭轉折（兩根縱桿在橫木上方對接，夾角即轉折角）；E1 = 端部單搭。套筒端面的小圓點數代表家族（A 1 點、B 2 點、C 3 點）。</p>
+    <p><b>限制</b>：v0.1 只做幾何，不計靜力、摩擦與桿件撓曲；推力只以兩端切線角示意（越平，水平推力越大）。</p>
+  </div>
+</section>
+</main>
+
+<script src="core.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+{
+const $ = id => document.getElementById(id);
+const FAM = ['A', 'B', 'C'], FAMCOL = [0x2f5d8a, 0x5f8f3e, 0xc4862c], FAMCSS = ['var(--A)', 'var(--B)', 'var(--C)'];
+const KIND = { M: 'M 下穿', E2: 'E2 上搭轉折', E1: 'E1 端部單搭' };
+
+// ---------- 狀態 ----------
+const P = {
+  N: 9, s: 40, d: 3, k: 2, lanes: 6, laneGap: 14, overhang: 8, tol: 0.3, wall: 1.6, deltaMax: 6,
+  lines: [{ delta: 0, locked: true }, { delta: 0, locked: true }, { delta: 0, locked: true }],
+  left: { x0: 40, len: 100, y: 30, t: 0.5, locked: true },
+  right: { x0: 240, len: 160, y: 30, t: 0.5, locked: false }
+};
+try { const saved = JSON.parse(localStorage.getItem('rf-params') || 'null'); if (saved && saved.left) Object.assign(P, saved); } catch (e) {}
+
+// ---------- 介面建構 ----------
+function supHTML(side, name) {
+  return `<legend>${name}落柱與滑動軌</legend>
+  <div class="row"><label for="${side}_x0">軌道起點</label><input type="range" id="${side}_x0" min="0" max="400" step="1"><output id="${side}_x0_o"></output></div>
+  <div class="row"><label for="${side}_len">軌道長度</label><input type="range" id="${side}_len" min="0" max="300" step="1"><output id="${side}_len_o"></output></div>
+  <div class="row"><label for="${side}_y">落柱高度</label><input type="range" id="${side}_y" min="0" max="200" step="1"><output id="${side}_y_o"></output></div>
+  <div class="row"><label for="${side}_t">軌道位置</label><input type="range" id="${side}_t" min="0" max="1" step="0.005"><output id="${side}_t_o"></output></div>
+  <div class="sub2"><span class="note" id="${side}_msg"></span><button class="lock" id="${side}_lock" aria-pressed="true"></button></div>`;
+}
+$('supL').innerHTML = supHTML('L', '左');
+$('supR').innerHTML = supHTML('R', '右');
+
+function linesHTML() {
+  $('lines').innerHTML = P.lines.slice(0, P.k).map((l, i) => `
+    <div class="sub2"><b><i class="dot" style="background:${FAMCSS[i]}"></i>${FAM[i]} 線 · ${P.k === 1 ? '全部交點' : ['中央', '中段', '端部'][Math.round(i * 2 / (P.k - 1))]}</b><button class="lock" id="ln${i}_lock" aria-pressed="${l.locked}"></button></div>
+    <div class="row"><label for="ln${i}">墊高 Δ</label><input type="range" id="ln${i}" min="0" max="${P.deltaMax}" step="0.05" value="${l.delta}"><output id="ln${i}_o"></output></div>`).join('');
+  P.lines.slice(0, P.k).forEach((l, i) => {
+    $('ln' + i).addEventListener('input', ev => { l.delta = +ev.target.value; update(); });
+    $('ln' + i + '_lock').addEventListener('click', () => { l.locked = !l.locked; update(); });
+  });
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.k === P.k));
+}
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => { P.k = +b.dataset.k; linesHTML(); update(); }));
+
+const simple = ['N', 's', 'lanes', 'laneGap', 'tol', 'wall'];
+simple.forEach(id => { $(id).value = P[id]; $(id).addEventListener('input', e => { P[id] = +e.target.value; update(); }); });
+$('d').value = P.d;
+$('preset').value = ['3', '5', '2'].includes(String(P.d)) ? String(P.d) : 'c';
+$('preset').addEventListener('change', e => { if (e.target.value !== 'c') { P.d = +e.target.value; $('d').value = P.d; } update(); });
+$('d').addEventListener('input', e => { P.d = +e.target.value; $('preset').value = ['3', '5', '2'].includes(String(P.d)) ? String(P.d) : 'c'; update(); });
+[['L', 'left'], ['R', 'right']].forEach(([s, k]) => {
+  ['x0', 'len', 'y', 't'].forEach(f => { $(`${s}_${f}`).value = P[k][f]; $(`${s}_${f}`).addEventListener('input', e => { P[k][f] = +e.target.value; update(); }); });
+  $(`${s}_lock`).addEventListener('click', () => { P[k].locked = !P[k].locked; update(); });
+});
+linesHTML();
+
+// ---------- 3D ----------
+const fig = $('fig');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+fig.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 6000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8370, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(150, 400, 300); scene.add(sun);
+const world = new THREE.Group(); world.position.set(-210, 0, 0); scene.add(world);
+
+// A3 底板
+const base = new THREE.Group(); world.add(base);
+base.add(new THREE.Mesh(new THREE.BoxGeometry(420, 2, 297), new THREE.MeshStandardMaterial({ color: 0xfafaf6, roughness: 1 })).translateX(210).translateY(-1));
+{
+  const g = [];
+  for (let x = 0; x <= 420; x += 20) g.push(x, 0.05, -148.5, x, 0.05, 148.5);
+  for (let z = -140; z <= 148.5; z += 20) g.push(0, 0.05, z, 420, 0.05, z);
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(g, 3));
+  base.add(new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0xc9cbc2 })));
+}
+const dyn = new THREE.Group(); world.add(dyn);
+const matRod = new THREE.MeshStandardMaterial({ color: 0xcfae72, roughness: .75 });
+const matBar = new THREE.MeshStandardMaterial({ color: 0xa47f48, roughness: .75 });
+const matPost = new THREE.MeshStandardMaterial({ color: 0x55594f, roughness: .6 });
+const matRail = new THREE.MeshStandardMaterial({ color: 0x8b8f84, roughness: .8 });
+const matFam = FAMCOL.map(c => new THREE.MeshStandardMaterial({ color: c, roughness: .55 }));
+const matBad = new THREE.LineDashedMaterial({ color: 0xd0382b, dashSize: 4, gapSize: 3 });
+
+function cylBetween(a, b, r, mat) {
+  const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b), L = A.distanceTo(B);
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, L, 14), mat);
+  m.position.copy(A).add(B).multiplyScalar(.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), B.clone().sub(A).normalize());
+  return m;
+}
+function clear(g) { g.traverse(o => { if (o.geometry && !o.userData.keep) o.geometry.dispose(); }); g.clear(); }
+
+let view = 'persp';
+function setView(v) {
+  view = v;
+  document.querySelectorAll('.views button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  const t = new THREE.Vector3(0, 60, 0);
+  if (v === 'persp') camera.position.set(260, 300, 520);
+  if (v === 'front') camera.position.set(0, 70, 640);
+  if (v === 'top') camera.position.set(0, 760, 0.01);
+  if (v === 'front') t.set(0, 70, 0);
+  if (v === 'top') t.set(0, 0, 0);
+  controls.target.copy(t); controls.update();
+}
+document.querySelectorAll('.views button').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+setView('persp');
+
+const ro = new ResizeObserver(() => { const w = fig.clientWidth, h = fig.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); });
+ro.observe(fig);
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+
+// ---------- manifold（接頭實體） ----------
+let MF = null;
+const geoCache = new Map();
+import('./manifold.js').then(m => m.default()).then(w => { w.setup(); MF = w.Manifold; geoCache.clear(); update(); })
+  .catch(err => { $('dlNote').textContent = '接頭實體引擎載入失敗，無法輸出 STL（畫面以簡化接頭顯示）。'; console.error(err); });
+
+function clipGeo(t) {
+  const key = `${t.key}|${P.d}|${P.tol}|${P.wall}`;
+  if (geoCache.has(key)) return geoCache.get(key);
+  let geo;
+  if (MF) {
+    const mesh = clipSolid(MF, P, t).getMesh();
+    geo = new THREE.BufferGeometry();
+    const np = mesh.numProp, pos = new Float32Array(mesh.vertProperties.length / np * 3);
+    for (let i = 0, j = 0; i < mesh.vertProperties.length; i += np, j += 3) { pos[j] = mesh.vertProperties[i]; pos[j + 1] = mesh.vertProperties[i + 1]; pos[j + 2] = mesh.vertProperties[i + 2]; }
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setIndex(new THREE.BufferAttribute(mesh.triVerts, 1));
+    geo.computeVertexNormals();
+  } else {
+    geo = new THREE.BoxGeometry(P.d * 2.2, t.e + P.d * 2, P.d * 2.6);
+    geo.translate(0, (t.kind === 'M' ? -1 : 1) * t.e / 2, 0);
+  }
+  geo.userData = {}; geoCache.set(key, geo);
+  return geo;
+}
+
+// ---------- 主更新 ----------
+let last = null, raf = 0;
+function update() { cancelAnimationFrame(raf); raf = requestAnimationFrame(run); }
+function run() {
+  P.deltaMax = Math.round(P.d * 2 * 20) / 20;
+  const S = solve(P);
+  if (!P.left.locked) P.left.t = S.tL;
+  if (!P.right.locked) P.right.t = S.tR;
+  P.lines.forEach((l, i) => { if (!l.locked) l.delta = S.deltas[i]; });
+  const A = assemble(P, S);
+  last = { S, A };
+  try { localStorage.setItem('rf-params', JSON.stringify(P)); } catch (e) {}
+  syncUI(S, A);
+  draw(S, A);
+}
+
+function syncUI(S, A) {
+  const fmt = (v, u = 'mm', f = 0) => `${(+v).toFixed(f)} ${u}`;
+  $('d_o').textContent = fmt(P.d, 'mm', 1);
+  $('dNote').textContent = P.d < 2.5 ? '桿徑小於 2.5 mm：FDM 孔容易糊掉、桿件也容易彎，建議改用烤肉串以上。' : (P.d >= 5 ? '圓竹筷一頭粗一頭細，只取等徑的中段，並用卡尺實測後填入。' : '用游標卡尺量 5 根取平均後填入。');
+  $('N_o').textContent = P.N + ' 根'; $('s_o').textContent = fmt(P.s); $('lanes_o').textContent = P.lanes + ' 排';
+  $('laneGap').min = Math.ceil(P.d * 2 + 2 * P.wall + 2); if (P.laneGap < +$('laneGap').min) { P.laneGap = +$('laneGap').min; $('laneGap').value = P.laneGap; }
+  $('laneGap_o').textContent = fmt(P.laneGap);
+  $('tol_o').textContent = fmt(P.tol, 'mm', 2); $('wall_o').textContent = fmt(P.wall, 'mm', 1);
+  P.lines.slice(0, P.k).forEach((l, i) => {
+    const r = $('ln' + i); if (!r) return;
+    r.max = P.deltaMax; r.value = l.delta; r.disabled = !l.locked;
+    $('ln' + i + '_o').textContent = fmt(l.delta, 'mm', 2);
+    const b = $('ln' + i + '_lock'); b.setAttribute('aria-pressed', l.locked); b.textContent = l.locked ? '鎖定' : '自由（求解）';
+  });
+  [['L', 'left'], ['R', 'right']].forEach(([s, k]) => {
+    const T = P[k];
+    ['x0', 'len', 'y'].forEach(f => $(`${s}_${f}_o`).textContent = fmt(T[f]));
+    const tr = $(`${s}_t`); tr.value = T.t; tr.disabled = !T.locked;
+    $(`${s}_t_o`).textContent = fmt(T.x0 + T.t * T.len);
+    const b = $(`${s}_lock`); b.setAttribute('aria-pressed', T.locked); b.textContent = T.locked ? '鎖定' : '自由（沿軌滑動）';
+    $(`${s}_msg`).textContent = T.locked ? '位置由你指定' : '由求解器決定';
+  });
+  $('status').dataset.s = S.status;
+  $('statusText').textContent = { green: '剛好決定 · ', blue: '約束不足 · ', red: '無解 · ' }[S.status] + S.msg;
+
+  const xs = S.pts.map(p => p[0]), ys = S.pts.map(p => p[1]);
+  const span = Math.abs(S.pts[P.N - 1][0] - S.pts[0][0]);
+  const rise = Math.max(...ys) - Math.max(S.pts[0][1], S.pts[P.N - 1][1]);
+  const W = A.barLen;
+  const inA3 = Math.min(...xs) - P.overhang >= 0 && Math.max(...xs) + P.overhang <= 420 && W <= 297;
+  const tL = A.tan(0), tR = A.tan(P.N - 1);
+  const angL = Math.atan2(tL[1], tL[0]) * 180 / Math.PI, angR = -Math.atan2(tR[1], tR[0]) * 180 / Math.PI;
+  const nClips = A.clips.length;
+  $('kpis').innerHTML = [
+    ['跨距', fmt(span)], ['拱高', fmt(rise)], ['橫木長 × 寬', fmt(W)], ['兩端切線角', `${angL.toFixed(0)}° / ${angR.toFixed(0)}°`],
+    ['接頭種類', A.types.length + ' 種'], ['接頭總數', nClips + ' 個'], ['A3 範圍', inA3 ? '在範圍內' : '超出 A3', !inA3]
+  ].map(([k, v, w]) => `<div class="kpi${w ? ' warn' : ''}"><small>${k}</small><b>${v}</b></div>`).join('');
+
+  $('jt').innerHTML = A.types.map((t, n) => `<tr><td><i class="dot" style="background:${FAMCSS[t.fam]}"></i>J${String(n + 1).padStart(2, '0')} · ${FAM[t.fam]}</td><td>${KIND[t.kind]}</td><td>${t.e.toFixed(2)} mm</td><td>${t.kind === 'E2' ? t.kink.toFixed(1) + '°' : '—'}</td><td class="n">${t.count}</td></tr>`).join('');
+  $('ct').innerHTML = A.cut.map(([L, c], n) => `<tr><td>縱桿 R${n + 1}</td><td class="n">${L.toFixed(1)} mm</td><td class="n">${c}</td></tr>`).join('') +
+    `<tr><td>橫木</td><td class="n">${A.barLen.toFixed(1)} mm</td><td class="n">${P.N}</td></tr>`;
+  $('legend').innerHTML = P.lines.slice(0, P.k).map((l, i) => `<div><i class="dot" style="background:${FAMCSS[i]}"></i>${FAM[i]} 線 · e = ${(P.d + S.deltas[i]).toFixed(2)} mm${l.locked ? '' : '（求解）'}</div>`).join('') + '<div><i class="dot" style="background:#55594f"></i>落柱　<i class="dot" style="background:#8b8f84"></i>滑動軌</div>';
+  $('dl').disabled = !MF || S.status === 'red' || !downloads;
+}
+
+function draw(S, A) {
+  clear(dyn);
+  const r = P.d / 2, half = A.barLen / 2;
+  // 橫木
+  S.pts.forEach(p => dyn.add(cylBetween([p[0], p[1], -half], [p[0], p[1], half], r, matBar)));
+  // 縱桿
+  A.rods.forEach(rd => dyn.add(cylBetween([rd.a[0], rd.a[1], rd.z], [rd.b[0], rd.b[1], rd.z], r * 0.98, matRod)));
+  // 接頭
+  A.clips.forEach(c => {
+    const g = new THREE.Group();
+    g.position.set(c.x, c.y, c.z); g.rotation.z = c.rot;
+    const m = new THREE.Mesh(clipGeo(A.types.find(t => t.key === c.key)), matFam[c.fam]);
+    m.userData.keep = true;
+    if (c.kind === 'E1' && c.side === 'in') m.rotation.y = Math.PI;
+    g.add(m); dyn.add(g);
+  });
+  // 滑動軌與落柱
+  const zs = [-half + P.overhang * 0.4, half - P.overhang * 0.4];
+  [[P.left, 0], [P.right, P.N - 1]].forEach(([T, idx]) => {
+    zs.forEach(z => {
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(Math.max(T.len, 1), 2, 6), matRail);
+      rail.position.set(T.x0 + T.len / 2, 1, z); dyn.add(rail);
+      const p = S.pts[idx];
+      const h = Math.max(p[1] - r, 0.5);
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 4, h, 18), matPost);
+      post.position.set(p[0], h / 2 + 2, z); dyn.add(post);
+    });
+  });
+  // 無解：紅色虛線指出落差
+  if (S.status === 'red' && S.target) {
+    const q = S.target, e0 = S.pts[0], e1 = S.pts[P.N - 1];
+    const p = Math.hypot(e0[0] - q[0], e0[1] - q[1]) < Math.hypot(e1[0] - q[0], e1[1] - q[1]) ? e0 : e1;
+    const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(p[0], p[1], 0), new THREE.Vector3(q[0], q[1], 0)]);
+    const line = new THREE.Line(geo, matBad); line.computeLineDistances(); dyn.add(line);
+  }
+}
+
+// ---------- 下載 ----------
+let downloads = null;
+RF.getDownloads().then(d => { downloads = d; if (!d) $('dlNote').textContent = '此檢視無法下載檔案，請在 claude.ai 開啟此頁。'; update(); }).catch(() => {});
+
+const crcT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = crcT[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = f.data instanceof Uint8Array ? f.data : (typeof f.data === 'string' ? enc.encode(f.data) : new Uint8Array(f.data));
+    const crc = crc32(data), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+    h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true);
+    c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name);
+    off += 30 + name.length + data.length;
+  });
+  const cs = central.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)]);
+}
+
+$('dl').addEventListener('click', async () => {
+  if (!last || !MF || !downloads) return;
+  const { S, A } = last, files = [];
+  A.types.forEach((t, n) => {
+    const id = 'J' + String(n + 1).padStart(2, '0');
+    files.push({ name: `joints/${id}_${t.key}_x${t.count}.stl`, data: toSTL(clipSolid(MF, P, t).getMesh(), `${id} ${t.key}`) });
+  });
+  files.push({ name: 'tolerance_test.stl', data: toSTL(tolTest(MF, P).getMesh(), 'tolerance test d+0.1..0.5') });
+  const csv = ['part,length_mm,count', ...A.cut.map(([L, c], n) => `R${n + 1},${L.toFixed(1)},${c}`), `bar,${A.barLen.toFixed(1)},${P.N}`, '', 'joint,family,kind,e_mm,kink_deg,count',
+    ...A.types.map((t, n) => `J${String(n + 1).padStart(2, '0')},${FAM[t.fam]},${t.kind},${t.e.toFixed(2)},${t.kind === 'E2' ? t.kink.toFixed(1) : ''},${t.count}`)].join('\n');
+  files.push({ name: 'cutlist.csv', data: '﻿' + csv });
+  files.push({ name: 'params.json', data: JSON.stringify({ params: P, status: S.status, message: S.msg, supports: { left: S.pts[0], right: S.pts[P.N - 1] }, nodes: S.pts }, null, 2) });
+  files.push({ name: 'README.txt', data: `編木互承接頭模擬 v0.1 列印包\r\n\r\n1. 先印 tolerance_test.stl，孔旁 1–5 點代表孔徑 d+0.1 到 d+0.5 mm，找出最順的一孔，回介面調整公差。\r\n2. joints 資料夾內每個 STL 檔名最後的 xN 為所需數量；端面小圓點：A 1 點、B 2 點、C 3 點。\r\n3. M 下穿：縱桿從橫木下方穿過。E2 上搭轉折：兩根縱桿在橫木上方對接。E1：端部單搭。\r\n4. 依 cutlist.csv 裁切縱桿與橫木。params.json 可記錄本次實驗參數。\r\n` });
+  const btn = $('dl'); btn.disabled = true; $('dlNote').textContent = '打包中…';
+  try {
+    await downloads.save({ filename: `reciprocal-joints_N${P.N}_s${P.s}_d${P.d}.zip`, data: zip(files) });
+    $('dlNote').textContent = `已下載：${A.types.length} 種接頭、共 ${A.clips.length} 個，另含公差測試片與清單。`;
+  } catch (err) {
+    $('dlNote').textContent = err && err.code === 'declined' ? '已取消下載。' : '下載未完成（' + (err && err.code || '未知原因') + '）。';
+  } finally { btn.disabled = false; }
+});
+
+update();
+}
+</script>
+<script>window.RF_PRESETS={"key": "rf-params", "list": [{"g": "基本", "id": "base", "name": "基準", "note": "宋代虹橋式的單向編木拱。其他範例都是從這裡改一兩個參數。", "do": []}, {"g": "基本", "id": "more", "name": "橫木加多", "note": "橫木數增加 → 拱由更多段接成，繞過的角度更大。", "do": [["range", "N", 13]]}, {"g": "基本", "id": "wide", "name": "間距拉大", "note": "交點間距拉大，右側滑軌跟著加長 → 每一段變長，整座拱跟著放大。", "do": [["range", "s", 50], ["range", "R_len", 220]]}, {"g": "基本", "id": "thick", "name": "桿加粗", "note": "桿徑加粗 → 桿與桿上下交疊的偏心變大，同樣的搭法拱得更彎。", "do": [["range", "d", 4]]}, {"g": "基本", "id": "thin", "name": "桿變細", "note": "桿徑變細 → 偏心變小，拱變平。", "do": [["range", "d", 2]]}, {"g": "變化", "id": "deck", "name": "橋面加寬", "note": "縱桿排數增加 → 橋面變寬，接頭數量跟著增加。", "do": [["range", "lanes", 10]]}, {"g": "變化", "id": "three", "name": "三條可調線", "note": "橋面上的可調線增加到三條 → 可以分別拖動，做出不對稱的拱。", "do": [["seg", "[aria-label=\"可調線數量\"]", 3]]}]};</script><script src="presets.js"></script>
+</body>
+</html>

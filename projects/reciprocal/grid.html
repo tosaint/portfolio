@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>互承網格模擬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 研究用數位實驗台，安靜、精確
+   IDEA: A3 底板上的互承網，像一張可以拉扯的編織
+   PICTURE: 大幅 3D 網面，接點以誤差著色，落柱可拖曳
+   COLOUR and TYPE: 紙白／墨色底，竹木桿件，誤差綠–黃–紅；Noto Serif TC + Noto Sans TC
+   LAYOUT: 左參數欄、右大圖、下方指標與接頭表 */
+:root{color-scheme:light dark;--bg:light-dark(#f6f6f3,#121412);--panel:light-dark(#ffffff,#1b1e1b);--ink:light-dark(#1d1f1c,#e9e9e4);--quiet:light-dark(#5d625b,#a3a89f);--rule:light-dark(#dcdcd5,#30352f);--good:#2e8b57;--mid:#d39b1f;--bad:#d0382b;--warn:#2f6fd0}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+header{padding:16px max(3vw,16px) 12px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:1px solid var(--rule)}
+h1{font:900 clamp(24px,3.2vw,36px)/1.08 "Noto Serif TC",serif;margin:0}
+.sub{color:var(--quiet);margin:4px 0 0;font-size:14px}
+.sub a{color:inherit}
+.status{display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--rule);max-width:640px}
+.lamp{width:14px;height:14px;border-radius:50%;flex:none;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 20%,transparent)}
+.status[data-s=green] .lamp{color:var(--good)}.status[data-s=amber] .lamp{color:var(--mid)}.status[data-s=red] .lamp{color:var(--bad)}
+.status span{font-size:14px}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);align-items:start}
+aside{padding:12px max(1.5vw,14px) 40px;border-right:1px solid var(--rule);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:0}
+fieldset{border:0;border-bottom:1px solid var(--rule);margin:0;padding:12px 0 14px}
+legend{font-weight:700;font-size:15px;padding:0;margin-bottom:6px}
+.row{display:grid;grid-template-columns:5.4em minmax(0,1fr) 4.4em;gap:8px;align-items:center;margin:5px 0}
+.row label{font-size:13.5px;color:var(--quiet)}
+.row output{font-variant-numeric:tabular-nums;text-align:right;font-size:13.5px;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--ink);height:28px}
+input[type=range]:disabled{opacity:.45}
+select{font:inherit;font-size:16px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;font:inherit;font-size:14px;min-height:36px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;padding:0 6px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lock{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;min-height:32px}
+.lock[aria-pressed=false]{background:transparent;border-style:dashed;color:var(--warn)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.card{border:1px solid var(--rule);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--panel)}
+.card .hd{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.note{color:var(--quiet);font-size:13px;margin:6px 0 0}
+.stage{padding:0 0 24px}
+.fig{position:relative;height:min(64vh,640px);min-height:360px;background:light-dark(#eceee8,#181b18);border-bottom:1px solid var(--rule);touch-action:none}
+.fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.views{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap}
+.views button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.views button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.legend{position:absolute;right:12px;top:12px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.7;max-width:240px}
+.hint{position:absolute;left:12px;bottom:10px;font-size:13px;color:var(--quiet);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:4px 10px;border-radius:8px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--rule)}
+.kpi{padding:12px 16px;border-right:1px solid var(--rule)}
+.kpi small{display:block;color:var(--quiet);font-size:13px}
+.kpi b{font:700 21px/1.2 "Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tables{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;padding:18px max(2vw,16px)}
+h2{font:600 19px/1.3 "Noto Serif TC",serif;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--rule)}
+th{font-weight:500;color:var(--quiet);font-size:13px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--ink);opacity:.25}
+.export{padding:4px max(2vw,16px) 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:0 20px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+.btn:disabled{opacity:.4;cursor:default}
+.notes{padding:4px max(2vw,16px) 28px}
+.notes p{margin:6px 0;max-width:80ch;color:var(--quiet);font-size:14px}
+@media(max-width:900px){main{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0;order:2}.stage{order:1}.tables{grid-template-columns:1fr}}
+@media(max-width:600px){.fig{height:56vh}.legend{display:none}.kpi b{font-size:18px}}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<header>
+  <div>
+    <h1>互承網格：牽一髮動全身</h1>
+    <p class="sub">網格模式 v0.2 · 單位 mm · A3 底板</p>
+  </div>
+  <div class="status" id="status" data-s="green" role="status" aria-live="polite"><i class="lamp"></i><span id="statusText">計算中…</span></div>
+</header>
+<main>
+<aside>
+  <fieldset>
+    <legend>格型</legend>
+    <div class="seg" id="types" role="group" aria-label="格型">
+      <button data-t="tri">三角格</button><button data-t="square">四方格</button><button data-t="cairo">五角格</button><button data-t="hex">六角格</button>
+    </div>
+    <p class="note" id="typeNote"></p>
+    <div class="row"><label for="cell">格距</label><input type="range" id="cell" min="20" max="80" step="1"><output id="cell_o"></output></div>
+    <div class="row"><label for="W">範圍寬</label><input type="range" id="W" min="120" max="400" step="5"><output id="W_o"></output></div>
+    <div class="row"><label for="H">範圍深</label><input type="range" id="H" min="100" max="280" step="5"><output id="H_o"></output></div>
+    <div class="row"><label for="phi">扇形旋轉</label><input type="range" id="phi" min="6" max="30" step="1"><output id="phi_o"></output></div>
+  </fieldset>
+  <fieldset>
+    <legend>桿件與接頭</legend>
+    <div class="row"><label for="preset">材料</label><select id="preset" style="grid-column:span 2"><option value="3">烤肉串（約 3 mm）</option><option value="5">圓竹筷中段（約 5 mm）</option><option value="2">細竹籤（約 2 mm）</option><option value="c">自訂</option></select></div>
+    <div class="row"><label for="d">實測直徑</label><input type="range" id="d" min="1.5" max="8" step="0.1"><output id="d_o"></output></div>
+    <div class="row"><label for="delta">接頭墊高</label><input type="range" id="delta" min="0" max="6" step="0.1"><output id="delta_o"></output></div>
+    <div class="row"><label for="bin">角度歸類</label><input type="range" id="bin" min="1" max="15" step="1"><output id="bin_o"></output></div>
+    <p class="note">偏心距 e = 桿徑 + 墊高。角度歸類級距越大，接頭種類越少（越模數化），但每個接頭與理想角度的偏差越大。</p>
+  </fieldset>
+  <fieldset>
+    <legend>落柱與滑動軌</legend>
+    <div class="seg" id="nsup" role="group" aria-label="落柱數"><button data-n="3">3 柱</button><button data-n="4">4 柱</button><button data-n="5">5 柱</button><button data-n="6">6 柱</button></div>
+    <div id="sups"></div>
+  </fieldset>
+  <fieldset>
+    <legend>模擬</legend>
+    <div class="row"><label for="grav">重力</label><input type="range" id="grav" min="0" max="0.05" step="0.005"><output id="grav_o"></output></div>
+    <div class="seg" style="margin-top:8px"><button id="restart" aria-pressed="false">重新落定</button><button id="pause" aria-pressed="false">暫停</button></div>
+  </fieldset>
+  <fieldset>
+    <legend>列印</legend>
+    <div class="row"><label for="tol">孔徑公差</label><input type="range" id="tol" min="0.1" max="0.6" step="0.05"><output id="tol_o"></output></div>
+    <div class="row"><label for="wall">壁厚</label><input type="range" id="wall" min="1.2" max="3" step="0.1"><output id="wall_o"></output></div>
+  </fieldset>
+</aside>
+<section class="stage">
+  <div class="fig" id="fig">
+    <div class="views" role="group" aria-label="視角與著色">
+      <button data-v="persp" aria-pressed="true">透視</button><button data-v="front">立面</button><button data-v="top">平面</button>
+      <button data-c="err" aria-pressed="true">依誤差著色</button><button data-c="type" aria-pressed="false">依接頭類型</button>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="hint">拖曳黑色落柱，沿著滑動軌移動</div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="tables">
+    <div>
+      <h2>接頭規格（依角度歸類）</h2>
+      <table><thead><tr><th>編號</th><th>兩桿夾角</th><th>偏心距 e</th><th class="n">數量</th><th style="width:30%">分布</th></tr></thead><tbody id="jt"></tbody></table>
+    </div>
+    <div>
+      <h2>桿件裁切清單</h2>
+      <table><thead><tr><th>長度</th><th class="n">數量</th></tr></thead><tbody id="ct"></tbody></table>
+    </div>
+  </div>
+  <div class="export">
+    <button class="btn" id="dl" disabled>下載列印包（.zip）</button>
+    <span class="note" id="dlNote">內含各角度接頭 STL、公差測試片、裁切清單 CSV、參數與節點 JSON。</span>
+  </div>
+  <div class="notes">
+    <p><b>怎麼生成</b>：先畫一張平面鑲嵌（三角、四方、開羅五角、六角），每條邊繞自己的中點旋轉「扇形旋轉角」，於是每個頂點變成一個小風車：每根桿的端點都搭在下一根桿上，下一根再搭在下一根上。三角格的頂點是 6 桿扇，四方格 4 桿扇，五角格混合 3 與 4 桿扇，六角格 3 桿扇。</p>
+    <p><b>怎麼求解</b>：每根桿件是剛體；每個接點要求「上桿軸線 − 下桿軸線 = e × 兩桿公垂方向」；落柱被限制在各自的滑動軌上；再加上桌面與微弱重力。所有約束反覆迭代，任何一處改變都會傳遍整張網。</p>
+    <p><b>誤差的意義</b>：剛性互承網通常是「過度約束」的，接點不可能全部完美吻合。最大誤差表示最難接上的那個接點還差多少 mm；小於 0.5 mm 可以靠孔徑公差吸收，0.5–1.5 mm 要靠桿件微彎，超過 1.5 mm 實體大概組不起來。v0.2 只計幾何，不計摩擦與材料彈性。</p>
+  </div>
+</section>
+</main>
+<script src="gridcore.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+{
+const $ = id => document.getElementById(id);
+const TYPE_NOTE = { tri: '每個頂點 6 根桿件圍成六角小扇，接點最密、最剛。', square: '每個頂點 4 根桿件圍成四方小扇。', cairo: '開羅鑲嵌：五角形格子，頂點混合 3 桿扇與 4 桿扇。', hex: '每個頂點 3 根桿件圍成三角小扇，最接近經典互承屋頂。' };
+const DEF = { type: 'cairo', cell: 28, W: 300, H: 220, phi: 26, d: 3, delta: 0, bin: 5, grav: 0.01, tol: 0.3, wall: 1.6, n: 4,
+  sups: [0, 1, 2, 3, 4, 5].map(i => ({ alpha: 45 + 90 * i, trackAng: 0, len: 80, h: 0, t: 0, locked: false })) };
+let P = JSON.parse(JSON.stringify(DEF));
+try { const s = JSON.parse(localStorage.getItem('rf-grid') || 'null'); if (s && s.sups) P = Object.assign(P, s); } catch (e) {}
+const supDefaults = n => Array.from({ length: n }, (_, i) => ({ alpha: Math.round((n === 4 ? 45 : 90) + 360 * i / n), trackAng: 0, len: 80, h: 0, t: 0, locked: false }));
+
+// ---------- 控制項 ----------
+const bind = (id, key, fmt, topo) => { const el = $(id); el.value = P[key]; const o = $(id + '_o'); const show = () => o && (o.textContent = fmt(P[key])); show(); el.addEventListener('input', () => { P[key] = +el.value; show(); topo ? rebuild() : softUpdate(); }); };
+const mm = (f = 0) => v => `${(+v).toFixed(f)} mm`;
+bind('cell', 'cell', mm(), true); bind('W', 'W', mm(), true); bind('H', 'H', mm(), true); bind('phi', 'phi', v => v + '°', true);
+bind('d', 'd', mm(1), true); bind('delta', 'delta', mm(1), false); bind('bin', 'bin', v => v + '°', false);
+bind('grav', 'grav', v => (+v * 100).toFixed(1), false); bind('tol', 'tol', mm(2), false); bind('wall', 'wall', mm(1), false);
+$('preset').value = ['3', '5', '2'].includes(String(P.d)) ? String(P.d) : 'c';
+$('preset').addEventListener('change', e => { if (e.target.value !== 'c') { P.d = +e.target.value; $('d').value = P.d; $('d_o').textContent = P.d.toFixed(1) + ' mm'; rebuild(); } });
+const segs = () => {
+  document.querySelectorAll('#types button').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === P.type));
+  document.querySelectorAll('#nsup button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.n === P.n));
+  $('typeNote').textContent = TYPE_NOTE[P.type];
+};
+const CELL = { tri: 50, square: 45, cairo: 28, hex: 30 };
+document.querySelectorAll('#types button').forEach(b => b.addEventListener('click', () => { P.type = b.dataset.t; P.cell = CELL[P.type]; $('cell').value = P.cell; $('cell_o').textContent = P.cell + ' mm'; segs(); rebuild(); }));
+document.querySelectorAll('#nsup button').forEach(b => b.addEventListener('click', () => { P.n = +b.dataset.n; P.sups = supDefaults(P.n).concat(supDefaults(6)).slice(0, 6); segs(); supUI(); rebuild(); }));
+segs();
+
+function supUI() {
+  $('sups').innerHTML = P.sups.slice(0, P.n).map((s, i) => `
+  <div class="card"><div class="hd"><span>柱 ${i + 1}</span><button class="lock" id="s${i}_lock"></button></div>
+    <div class="row"><label for="s${i}_alpha">邊界位置</label><input type="range" id="s${i}_alpha" min="0" max="359" step="1" value="${s.alpha}"><output id="s${i}_alpha_o"></output></div>
+    <div class="row"><label for="s${i}_ang">軌道方向</label><input type="range" id="s${i}_ang" min="-90" max="90" step="5" value="${s.trackAng}"><output id="s${i}_ang_o"></output></div>
+    <div class="row"><label for="s${i}_len">軌道長度</label><input type="range" id="s${i}_len" min="0" max="200" step="5" value="${s.len}"><output id="s${i}_len_o"></output></div>
+    <div class="row"><label for="s${i}_h">落柱高度</label><input type="range" id="s${i}_h" min="0" max="120" step="1" value="${s.h}"><output id="s${i}_h_o"></output></div>
+    <div class="row"><label for="s${i}_t">軌道位置</label><input type="range" id="s${i}_t" min="-1" max="1" step="0.01" value="${s.t}"><output id="s${i}_t_o"></output></div>
+  </div>`).join('');
+  P.sups.slice(0, P.n).forEach((s, i) => {
+    const on = (id, key, topo) => $(`s${i}_${id}`).addEventListener('input', e => { s[key] = +e.target.value; topo ? rebuildSupports() : applySupports(); syncSupUI(); });
+    on('alpha', 'alpha', true); on('ang', 'trackAng', false); on('len', 'len', false); on('h', 'h', false); on('t', 't', false);
+    $(`s${i}_lock`).addEventListener('click', () => { s.locked = !s.locked; applySupports(); syncSupUI(); });
+  });
+  syncSupUI();
+}
+function syncSupUI() {
+  P.sups.slice(0, P.n).forEach((s, i) => {
+    if (!$(`s${i}_lock`)) return;
+    const b = $(`s${i}_lock`); b.setAttribute('aria-pressed', s.locked); b.textContent = s.locked ? '鎖定' : '自由（沿軌滑動）';
+    $(`s${i}_alpha_o`).textContent = s.alpha + '°';
+    $(`s${i}_ang_o`).textContent = s.trackAng === 0 ? '徑向' : (Math.abs(s.trackAng) === 90 ? '切向' : s.trackAng + '°');
+    $(`s${i}_len_o`).textContent = s.len + ' mm'; $(`s${i}_h_o`).textContent = s.h + ' mm';
+    const t = $(`s${i}_t`); t.disabled = !s.locked; if (!s.locked) t.value = s.t;
+    $(`s${i}_t_o`).textContent = ((s.t * s.len) / 2).toFixed(0) + ' mm';
+  });
+}
+supUI();
+
+// ---------- 3D ----------
+const fig = $('fig');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+fig.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(35, 1, 1, 8000);
+const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8370, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.5); sun.position.set(200, 500, 300); scene.add(sun);
+const world = new THREE.Group(); world.rotation.x = -Math.PI / 2; scene.add(world);   // 求解座標 z 向上
+world.add(new THREE.Mesh(new THREE.BoxGeometry(420, 297, 2), new THREE.MeshStandardMaterial({ color: 0xfafaf6, roughness: 1 })).translateZ(-1));
+{
+  const g = []; for (let x = -210; x <= 210; x += 20) g.push(x, -148.5, 0.05, x, 148.5, 0.05); for (let y = -140; y <= 148.5; y += 20) g.push(-210, y, 0.05, 210, y, 0.05);
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(g, 3));
+  world.add(new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0xc9cbc2 })));
+}
+const regionLine = new THREE.LineLoop(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({ color: 0x8b8f84, dashSize: 4, gapSize: 3 })); world.add(regionLine);
+const supGroup = new THREE.Group(); world.add(supGroup);
+const matRod = new THREE.MeshStandardMaterial({ color: 0xcfae72, roughness: .75 });
+const matClip = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .5 });
+let rodMesh = null, clipMesh = null, handles = [];
+const Y = new THREE.Vector3(0, 1, 0), tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpV = new THREE.Vector3(), tmpS = new THREE.Vector3(), tmpA = new THREE.Vector3(), tmpB = new THREE.Vector3(), col = new THREE.Color();
+const HUES = [0x2f5d8a, 0x5f8f3e, 0xc4862c, 0x8a3f6e, 0x2c8c8c, 0xa8552f, 0x5b4fa0, 0x7a7d2a];
+
+let view = 'persp', colorBy = 'err';
+function setView(v) {
+  view = v;
+  document.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  if (v === 'persp') camera.position.set(300, 340, 480);
+  if (v === 'front') camera.position.set(0, 60, 700);
+  if (v === 'top') camera.position.set(0, 720, 0.01);
+  controls.target.set(0, v === 'front' ? 50 : 20, 0); controls.update();
+}
+document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+document.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => { colorBy = b.dataset.c; document.querySelectorAll('[data-c]').forEach(x => x.setAttribute('aria-pressed', x === b)); paintClips(); }));
+setView('persp');
+const ro = new ResizeObserver(() => { const w = fig.clientWidth, h = fig.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }); ro.observe(fig);
+
+// ---------- 模擬 ----------
+let sim = null, net = null, paused = false, frame = 0, angles = [], chis = [], bins = [];
+const binKey = i => { const k = Math.round((angles[i] || 0) / P.bin); return k * 2 + ((k * P.bin >= 90 || (chis[i] || 1) > 0) ? 1 : 0); };
+const opt = () => ({ e: P.d + P.delta, iters: 24, gravity: P.grav, floor: P.d / 2 });
+function rebuild() {
+  const Lr = Math.max(7, 2.2 * P.d + 3);
+  net = G.reciprocal(G.tiling(P.type, P.cell, P.W, P.H), P.phi, Lr);
+  sim = G.makeSim(net, { W: P.W, H: P.H, dome: 40 });
+  rebuildSupports();
+  // 幾何
+  if (rodMesh) { world.remove(rodMesh); rodMesh.geometry.dispose(); }
+  if (clipMesh) { world.remove(clipMesh); clipMesh.geometry.dispose(); }
+  rodMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(P.d / 2, P.d / 2, 1, 10), matRod, Math.max(1, net.rods.length));
+  rodMesh.count = net.rods.length; world.add(rodMesh);
+  clipMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(P.d * 1.05, 12, 8), matClip, Math.max(1, net.contacts.length));
+  clipMesh.count = net.contacts.length; world.add(clipMesh);
+  const h = P.H / 2, w = P.W / 2;
+  regionLine.geometry.dispose(); regionLine.geometry = new THREE.BufferGeometry().setFromPoints([[-w, -h], [w, -h], [w, h], [-w, h]].map(([x, y]) => new THREE.Vector3(x, y, 0.2))); regionLine.computeLineDistances();
+  frame = 0; save();
+}
+function rebuildSupports() { if (!sim) return; G.supports(sim, P.sups.slice(0, P.n), P.W, P.H); drawSupports(); }
+function applySupports() {
+  if (!sim) return;
+  sim.supports.forEach((s, i) => { const sp = P.sups[i]; const ta = (sp.alpha + sp.trackAng) * Math.PI / 180; s.dir = [Math.cos(ta), Math.sin(ta), 0]; s.half = sp.len / 2; s.c[2] = sp.h; s.locked = sp.locked; if (sp.locked) s.t = sp.t; });
+  drawSupports(); save();
+}
+function softUpdate() { save(); }
+function save() { try { localStorage.setItem('rf-grid', JSON.stringify(P)); } catch (e) {} }
+
+const matRail = new THREE.MeshStandardMaterial({ color: 0x8b8f84, roughness: .8 });
+const matPost = new THREE.MeshStandardMaterial({ color: 0x2a2d28, roughness: .5 });
+function drawSupports() {
+  supGroup.traverse(o => o.geometry && o.geometry.dispose()); supGroup.clear(); handles = [];
+  sim.supports.forEach((s, i) => {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(Math.max(s.half * 2, 1), 5, 1.6), matRail);
+    rail.position.set(s.c[0], s.c[1], 0.8); rail.rotation.z = Math.atan2(s.dir[1], s.dir[0]); supGroup.add(rail);
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(3, 3.6, 1, 16), matPost); post.rotation.x = Math.PI / 2; post.userData.i = i; supGroup.add(post);
+    const knob = new THREE.Mesh(new THREE.SphereGeometry(6, 18, 12), matPost); knob.userData.i = i; supGroup.add(knob);
+    handles.push({ post, knob });
+  });
+}
+function placeSupports() {
+  sim.supports.forEach((s, i) => {
+    const h = handles[i]; if (!h) return;
+    const x = s.c[0] + s.dir[0] * s.t * s.half, y = s.c[1] + s.dir[1] * s.t * s.half, z = s.c[2];
+    h.post.position.set(x, y, z / 2); h.post.scale.set(1, Math.max(z, 0.5), 1);
+    h.knob.position.set(x, y, z);
+  });
+}
+
+function updateMeshes() {
+  const X = sim.X, A = [0, 0, 0];
+  net.rods.forEach((r, i) => {
+    const o = i * 6; tmpA.set(X[o], X[o + 1], X[o + 2]); tmpB.set(X[o + 3], X[o + 4], X[o + 5]);
+    const L = tmpA.distanceTo(tmpB); tmpV.copy(tmpB).sub(tmpA).normalize();
+    tmpQ.setFromUnitVectors(Y, tmpV); tmpS.set(1, L, 1);
+    tmpM.compose(tmpA.add(tmpB).multiplyScalar(0.5), tmpQ, tmpS); rodMesh.setMatrixAt(i, tmpM);
+  });
+  rodMesh.instanceMatrix.needsUpdate = true;
+  const e = P.d + P.delta;
+  net.contacts.forEach((c, i) => {
+    G.pt(X, c.s, c.ts, A); const n = c.n || [0, 0, 1];
+    tmpA.set(A[0] + n[0] * e / 2, A[1] + n[1] * e / 2, A[2] + n[2] * e / 2);
+    tmpM.makeTranslation(tmpA.x, tmpA.y, tmpA.z); clipMesh.setMatrixAt(i, tmpM);
+  });
+  clipMesh.instanceMatrix.needsUpdate = true;
+  placeSupports();
+}
+function paintClips() {
+  if (!clipMesh) return;
+  net.contacts.forEach((c, i) => {
+    if (colorBy === 'err') { const m = c.err || 0; col.set(m < 0.5 ? 0x2e8b57 : m < 1.5 ? 0xd39b1f : 0xd0382b); }
+    else { const b = binKey(i); const k = bins.findIndex(x => x.k === b); col.set(HUES[(k < 0 ? 0 : k) % HUES.length]); }
+    clipMesh.setColorAt(i, col);
+  });
+  if (clipMesh.instanceColor) clipMesh.instanceColor.needsUpdate = true;
+  $('legend').innerHTML = colorBy === 'err'
+    ? '<div><i class="dot" style="background:var(--good)"></i>誤差 &lt; 0.5 mm（公差可吸收）</div><div><i class="dot" style="background:var(--mid)"></i>0.5–1.5 mm（需桿件微彎）</div><div><i class="dot" style="background:var(--bad)"></i>&gt; 1.5 mm（接不上）</div><div><i class="dot" style="background:#2a2d28"></i>落柱（可拖曳）</div>'
+    : bins.slice(0, 8).map((b, k) => `<div><i class="dot" style="background:#${HUES[k % 8].toString(16).padStart(6, '0')}"></i>J${String(k + 1).padStart(2, '0')} · ${b.deg}°</div>`).join('') + (bins.length > 8 ? `<div>…共 ${bins.length} 種</div>` : '');
+}
+
+function stats() {
+  angles = G.jointAngles(sim); chis = G.jointChi(sim);
+  const m = new Map(); angles.forEach((a, i) => { const k = binKey(i); m.set(k, (m.get(k) || 0) + 1); });
+  bins = [...m.entries()].sort((a, b) => a[0] - b[0]).map(([k, c]) => ({ k, c, deg: Math.min(90, (k >> 1) * P.bin), chi: (k & 1) ? 1 : -1 }));
+  const errs = net.contacts.map(c => c.err || 0), mx = Math.max(0, ...errs), avg = errs.reduce((a, b) => a + b, 0) / Math.max(1, errs.length);
+  let zmax = 0; for (let i = 2; i < sim.X.length; i += 3) zmax = Math.max(zmax, sim.X[i]);
+  const devMax = angles.reduce((a, v) => Math.max(a, Math.abs(v - Math.min(90, Math.round(v / P.bin) * P.bin))), 0);
+  const s = mx < 0.5 ? 'green' : mx < 1.5 ? 'amber' : 'red';
+  $('status').dataset.s = s;
+  const bad = errs.filter(v => v >= 1.5).length;
+  $('statusText').textContent = (s === 'green' ? '可組裝 · ' : s === 'amber' ? '需微調 · ' : '接不上 · ') + `最大誤差 ${mx.toFixed(2)} mm，平均 ${avg.toFixed(2)} mm` + (bad ? `，${bad} 個接點超過 1.5 mm` : '');
+  $('kpis').innerHTML = [['桿件', net.rods.length + ' 根'], ['接點', net.contacts.length + ' 個'], ['最大誤差', mx.toFixed(2) + ' mm'], ['網面高度', zmax.toFixed(0) + ' mm'], ['接頭種類', bins.length + ' 種'], ['歸類後最大角度偏差', devMax.toFixed(1) + '°']]
+    .map(([k, v]) => `<div class="kpi"><small>${k}</small><b>${v}</b></div>`).join('');
+  const top = Math.max(1, ...bins.map(b => b.c));
+  $('jt').innerHTML = bins.map((b, k) => `<tr><td><i class="dot" style="background:#${HUES[k % 8].toString(16).padStart(6, '0')}"></i>J${String(k + 1).padStart(2, '0')}</td><td>${b.deg}°${b.deg >= 90 ? '' : b.chi > 0 ? ' 正' : ' 鏡'}</td><td>${(P.d + P.delta).toFixed(1)} mm</td><td class="n">${b.c}</td><td><div class="bar" style="width:${(b.c / top * 100).toFixed(0)}%"></div></td></tr>`).join('');
+  const cut = new Map(); net.rods.forEach(r => { const L = Math.round(r.len * 2) / 2; cut.set(L, (cut.get(L) || 0) + 1); });
+  $('ct').innerHTML = [...cut.entries()].sort((a, b) => b[0] - a[0]).map(([L, c]) => `<tr><td>${L.toFixed(1)} mm</td><td class="n">${c}</td></tr>`).join('');
+  syncSupUI(); paintClips();
+  $('dl').disabled = !MF || !downloads;
+}
+
+// ---------- 拖曳落柱 ----------
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+let drag = -1;
+function toPtr(ev) { const r = renderer.domElement.getBoundingClientRect(); ptr.set((ev.clientX - r.left) / r.width * 2 - 1, -(ev.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ptr, camera); }
+renderer.domElement.addEventListener('pointerdown', ev => {
+  toPtr(ev);
+  const hit = ray.intersectObjects(handles.flatMap(h => [h.knob, h.post]))[0];
+  if (hit) { drag = hit.object.userData.i; controls.enabled = false; renderer.domElement.setPointerCapture(ev.pointerId); P.sups[drag].locked = true; sim.supports[drag].locked = true; }
+});
+renderer.domElement.addEventListener('pointermove', ev => {
+  if (drag < 0) return;
+  toPtr(ev);
+  const s = sim.supports[drag], plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -s.c[2]), p = new THREE.Vector3();
+  if (!ray.ray.intersectPlane(plane, p)) return;
+  const x = p.x, y = -p.z;                                  // 世界 → 求解座標
+  let t = ((x - s.c[0]) * s.dir[0] + (y - s.c[1]) * s.dir[1]) / Math.max(s.half, 1e-6);
+  t = Math.max(-1, Math.min(1, t)); s.t = t; P.sups[drag].t = t;
+});
+const endDrag = () => { if (drag >= 0) { drag = -1; controls.enabled = true; save(); } };
+renderer.domElement.addEventListener('pointerup', endDrag); renderer.domElement.addEventListener('pointercancel', endDrag);
+
+$('restart').addEventListener('click', () => rebuild());
+$('pause').addEventListener('click', () => { paused = !paused; $('pause').setAttribute('aria-pressed', paused); $('pause').textContent = paused ? '繼續' : '暫停'; });
+
+renderer.setAnimationLoop(() => {
+  if (sim && !paused) { G.step(sim, opt()); G.step(sim, opt()); }
+  if (sim) { updateMeshes(); if (frame++ % 12 === 0) stats(); }
+  controls.update(); renderer.render(scene, camera);
+});
+
+// ---------- 匯出 ----------
+let MF = null, downloads = null;
+import('./manifold.js').then(m => m.default()).then(w => { w.setup(); MF = w.Manifold; }).catch(e => { $('dlNote').textContent = '接頭實體引擎載入失敗，無法輸出 STL。'; console.error(e); });
+RF.getDownloads().then(d => { downloads = d; if (!d) $('dlNote').textContent = '此檢視無法下載檔案，請在 claude.ai 開啟此頁。'; }).catch(() => {});
+
+const crcT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = crcT[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = typeof f.data === 'string' ? enc.encode(f.data) : new Uint8Array(f.data);
+    const crc = crc32(data), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name); off += 30 + name.length + data.length;
+  });
+  const cs = central.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)]);
+}
+$('dl').addEventListener('click', async () => {
+  if (!MF || !downloads || !sim) return;
+  stats();
+  const Pp = { d: P.d, tol: P.tol, wall: P.wall, e: P.d + P.delta }, files = [];
+  bins.forEach((b, k) => { const id = 'J' + String(k + 1).padStart(2, '0'); files.push({ name: `joints/${id}_${b.deg}deg${b.deg >= 90 ? '' : b.chi > 0 ? '_R' : '_L'}_e${Pp.e.toFixed(1)}_x${b.c}.stl`, data: toSTL(G.xClip(MF, Pp, -b.chi * Math.max(b.deg, 8), 0).getMesh(), id) }); });
+  const Rn = i => 'R' + String(i + 1).padStart(3, '0'), jr = ['joint_no,joint_type,upper_rod,upper_mm_from_end0,lower_rod,lower_mm_from_end0,angle_deg,residual_mm'];
+  net.contacts.forEach((c, i) => jr.push(`${i + 1},J${String(bins.findIndex(x => x.k === binKey(i)) + 1).padStart(2, '0')},${Rn(c.r)},${(c.tr * net.rods[c.r].len).toFixed(1)},${Rn(c.s)},${(c.ts * net.rods[c.s].len).toFixed(1)},${angles[i].toFixed(1)},${(c.err || 0).toFixed(2)}`));
+  files.push({ name: 'joints_assembly.csv', data: '\ufeff' + jr.join('\n') });
+  files.push({ name: 'rods.csv', data: '\ufeffrod,length_mm\n' + net.rods.map((r, i) => `${Rn(i)},${r.len.toFixed(1)}`).join('\n') });
+  files.push({ name: 'tolerance_test.stl', data: toSTL(tolTest(MF, P).getMesh(), 'tolerance test') });
+  const cut = new Map(); net.rods.forEach(r => { const L = Math.round(r.len * 2) / 2; cut.set(L, (cut.get(L) || 0) + 1); });
+  files.push({ name: 'cutlist.csv', data: '﻿part,length_mm,count\n' + [...cut.entries()].sort((a, b) => b[0] - a[0]).map(([L, c], i) => `R${i + 1},${L.toFixed(1)},${c}`).join('\n') + '\n\njoint,angle_deg,e_mm,count\n' + bins.map((b, k) => `J${String(k + 1).padStart(2, '0')},${b.deg},${Pp.e.toFixed(2)},${b.c}`).join('\n') });
+  const X = Array.from(sim.X, v => Math.round(v * 100) / 100);
+  files.push({ name: 'params_nodes.json', data: JSON.stringify({ params: P, rods: net.rods.map((r, i) => ({ len: r.len, p0: X.slice(i * 6, i * 6 + 3), p1: X.slice(i * 6 + 3, i * 6 + 6) })), contacts: net.contacts.map((c, i) => ({ r: c.r, s: c.s, tr: c.tr, ts: c.ts, err: c.err, angle: angles[i] })) }) });
+  files.push({ name: 'README.txt', data: '互承網格 v0.2 列印包\r\n1. 先印 tolerance_test.stl（孔旁 1–5 點 = 孔徑 d+0.1 到 d+0.5 mm）。\r\n2. joints 內為 X 形交叉接頭，檔名含兩桿夾角、手性（R／L 互為鏡像，不可混用）與數量。joints_assembly.csv 列出每個接點用哪一種接頭、裝在哪兩根桿件的什麼位置；rods.csv 為每根桿件的編號與長度。\r\n3. 依 cutlist.csv 裁切桿件；params_nodes.json 為本次實驗的參數、節點座標與每個接點誤差。\r\n' });
+  $('dl').disabled = true; $('dlNote').textContent = '打包中…';
+  try { await downloads.save({ filename: `reciprocal-grid_${P.type}_c${P.cell}_phi${P.phi}.zip`, data: zip(files) }); $('dlNote').textContent = `已下載：${bins.length} 種接頭、共 ${net.contacts.length} 個。`; }
+  catch (err) { $('dlNote').textContent = err && err.code === 'declined' ? '已取消下載。' : '下載未完成（' + (err && err.code || '未知原因') + '）。'; }
+  finally { $('dl').disabled = false; }
+});
+
+rebuild();
+}
+</script>
+<script src="core.js"></script>
+<script>window.RF_PRESETS={"key": "rf-grid", "list": [{"g": "基本", "id": "base", "name": "基準", "note": "五角格（開羅鋪磚）的互承網，四根落柱。", "do": []}, {"g": "基本", "id": "hex", "name": "六角格", "note": "格型換成六角 → 每個節點只有三根桿，網最疏，也最容易接上。", "do": [["seg", "#types", "hex"]]}, {"g": "基本", "id": "square", "name": "四方格", "note": "格型換成四方 → 每個節點四根桿，像風車。", "do": [["seg", "#types", "square"]]}, {"g": "基本", "id": "tri", "name": "三角格", "note": "格型換成三角 → 每個節點六根桿，網最密、最硬。", "do": [["seg", "#types", "tri"]]}, {"g": "變化", "id": "six", "name": "六根落柱", "note": "落柱增加到六根 → 支點變多，網面變平。", "do": [["seg", "#nsup", 6]]}, {"g": "變化", "id": "dense", "name": "格距縮小", "note": "格距縮小 → 桿件變短變多，曲面更細。", "do": [["range", "cell", 22]]}, {"g": "變化", "id": "spin", "name": "扇形旋轉縮小", "note": "扇形旋轉縮小 → 起始時節點中間的空洞變小；求解後搭接長度會自己調整到接得上。", "do": [["range", "phi", 12]]}, {"g": "變化", "id": "lift", "name": "接頭墊高", "note": "接頭墊高 → 每個節點多抬一點，累積起來整張網更鼓。", "do": [["range", "delta", 3]]}, {"g": "變化", "id": "three", "name": "三根落柱", "note": "落柱減到三根 → 網面在柱間垂得更多。", "do": [["seg", "#nsup", 3]]}]};</script><script src="presets.js"></script>
+</body>
+</html>

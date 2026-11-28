@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拓樸互鎖拱殼</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 研究用數位實驗台，安靜、精確
+   IDEA: A3 底板上的互承網，像一張可以拉扯的編織
+   PICTURE: 大幅 3D 網面，接點以誤差著色，落柱可拖曳
+   COLOUR and TYPE: 紙白／墨色底，竹木桿件，誤差綠–黃–紅；Noto Serif TC + Noto Sans TC
+   LAYOUT: 左參數欄、右大圖、下方指標與接頭表 */
+:root{color-scheme:light dark;--bg:light-dark(#f6f6f3,#121412);--panel:light-dark(#ffffff,#1b1e1b);--ink:light-dark(#1d1f1c,#e9e9e4);--quiet:light-dark(#5d625b,#a3a89f);--rule:light-dark(#dcdcd5,#30352f);--good:#2e8b57;--mid:#d39b1f;--bad:#d0382b;--warn:#2f6fd0}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+header{padding:16px max(3vw,16px) 12px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:1px solid var(--rule)}
+h1{font:900 clamp(24px,3.2vw,36px)/1.08 "Noto Serif TC",serif;margin:0}
+.sub{color:var(--quiet);margin:4px 0 0;font-size:14px}
+.sub a{color:inherit}
+.status{display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--rule);max-width:640px}
+.lamp{width:14px;height:14px;border-radius:50%;flex:none;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 20%,transparent)}
+.status[data-s=green] .lamp{color:var(--good)}.status[data-s=amber] .lamp{color:var(--mid)}.status[data-s=red] .lamp{color:var(--bad)}
+.status span{font-size:14px}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);align-items:start}
+aside{padding:12px max(1.5vw,14px) 40px;border-right:1px solid var(--rule);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:0}
+fieldset{border:0;border-bottom:1px solid var(--rule);margin:0;padding:12px 0 14px}
+legend{font-weight:700;font-size:15px;padding:0;margin-bottom:6px}
+.row{display:grid;grid-template-columns:5.4em minmax(0,1fr) 4.4em;gap:8px;align-items:center;margin:5px 0}
+.row label{font-size:13.5px;color:var(--quiet)}
+.row output{font-variant-numeric:tabular-nums;text-align:right;font-size:13.5px;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--ink);height:28px}
+input[type=range]:disabled{opacity:.45}
+select{font:inherit;font-size:16px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;font:inherit;font-size:14px;min-height:36px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;padding:0 6px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lock{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;min-height:32px}
+.lock[aria-pressed=false]{background:transparent;border-style:dashed;color:var(--warn)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.card{border:1px solid var(--rule);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--panel)}
+.card .hd{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.note{color:var(--quiet);font-size:13px;margin:6px 0 0}
+.stage{padding:0 0 24px}
+.fig{position:relative;height:min(64vh,640px);min-height:360px;background:light-dark(#eceee8,#181b18);border-bottom:1px solid var(--rule);touch-action:none}
+.fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.views{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap}
+.views button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.views button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.legend{position:absolute;right:12px;top:12px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.7;max-width:240px}
+.hint{position:absolute;left:12px;bottom:10px;font-size:13px;color:var(--quiet);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:4px 10px;border-radius:8px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--rule)}
+.kpi{padding:12px 16px;border-right:1px solid var(--rule)}
+.kpi small{display:block;color:var(--quiet);font-size:13px}
+.kpi b{font:700 21px/1.2 "Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tables{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;padding:18px max(2vw,16px)}
+h2{font:600 19px/1.3 "Noto Serif TC",serif;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--rule)}
+th{font-weight:500;color:var(--quiet);font-size:13px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--ink);opacity:.25}
+.export{padding:4px max(2vw,16px) 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:0 20px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+.btn:disabled{opacity:.4;cursor:default}
+.notes{padding:4px max(2vw,16px) 28px}
+.notes p{margin:6px 0;max-width:80ch;color:var(--quiet);font-size:14px}
+@media(max-width:900px){main{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0;order:2}.stage{order:1}.tables{grid-template-columns:1fr}}
+@media(max-width:600px){.fig{height:56vh}.legend{display:none}.kpi b{font-size:18px}}
+
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.tools{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 270px)}
+.tools button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.tools button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tools .sep{width:1px;background:var(--rule);margin:0 2px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:4px 8px;border-radius:6px;white-space:nowrap;display:none;transform:translate(12px,-120%)}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<header>
+  <div>
+    <h1>拓樸互鎖拱殼</h1>
+    <p class="sub">筒形拱 · 塊、底座、端拱、胎架全部 3D 列印 · A5 以內 · v0.1</p>
+  </div>
+  <div class="status" id="status" data-s="amber" role="status" aria-live="polite"><i class="lamp"></i><span id="statusText">載入實體引擎…</span></div>
+</header>
+<main>
+<aside>
+  <fieldset>
+    <legend>拱</legend>
+    <div class="row"><label for="span">跨距</label><input type="range" id="span" min="60" max="170" step="1"><output id="span_o"></output></div>
+    <div class="row"><label for="rise">拱高</label><input type="range" id="rise" min="12" max="70" step="1"><output id="rise_o"></output></div>
+    <div class="row"><label for="length">長度</label><input type="range" id="length" min="40" max="120" step="1"><output id="length_o"></output></div>
+    <p class="note">跨距與拱高量在殼厚的中線。拱高最多到跨距的一半（半圓）。</p>
+  </fieldset>
+  <fieldset>
+    <legend>塊</legend>
+    <div class="row"><label for="N">沿拱塊數</label><input type="range" id="N" min="3" max="12" step="1"><output id="N_o"></output></div>
+    <div class="row"><label for="M">沿長向排數</label><input type="range" id="M" min="2" max="8" step="1"><output id="M_o"></output></div>
+    <div class="row"><label for="t">殼厚</label><input type="range" id="t" min="5" max="16" step="0.5"><output id="t_o"></output></div>
+    <div class="row"><label for="alpha">斜面角</label><input type="range" id="alpha" min="6" max="25" step="1"><output id="alpha_o"></output></div>
+    <div class="row"><label for="gap">間隙</label><input type="range" id="gap" min="0.1" max="0.6" step="0.05"><output id="gap_o"></output></div>
+  </fieldset>
+  <fieldset>
+    <legend>邊框與底座</legend>
+    <div class="row"><label for="frame">邊框寬</label><input type="range" id="frame" min="5" max="14" step="0.5"><output id="frame_o"></output></div>
+    <div class="row"><label for="footH">拱腳高</label><input type="range" id="footH" min="3" max="20" step="1"><output id="footH_o"></output></div>
+    <div class="row"><label for="plate">底板厚</label><input type="range" id="plate" min="1.6" max="5" step="0.2"><output id="plate_o"></output></div>
+  </fieldset>
+  <fieldset>
+    <legend>列印平台</legend>
+    <div class="row"><label for="bedX">平台寬</label><input type="range" id="bedX" min="120" max="300" step="5"><output id="bedX_o"></output></div>
+    <div class="row"><label for="bedY">平台深</label><input type="range" id="bedY" min="120" max="300" step="5"><output id="bedY_o"></output></div>
+  </fieldset>
+  <fieldset>
+    <legend>光線</legend>
+    <div class="row"><label for="laz">光源方位</label><input type="range" id="laz" min="0" max="360" step="5"><output id="laz_o"></output></div>
+    <div class="row"><label for="lel">光源高度角</label><input type="range" id="lel" min="5" max="85" step="1"><output id="lel_o"></output></div>
+  </fieldset>
+</aside>
+<section class="stage">
+  <div class="fig" id="fig">
+    <div class="views" role="toolbar" aria-label="檢視">
+      <button data-v="persp" aria-pressed="true">透視</button><button data-v="front">斷面</button><button data-v="top">平面</button>
+      <button data-c="type" aria-pressed="true">依種類著色</button><button data-c="plain" aria-pressed="false">素色</button>
+      <button id="undo">復原</button>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="hint" style="left:12px;right:12px;display:flex;gap:10px;align-items:center"><label for="step" style="white-space:nowrap">組裝步驟</label><input type="range" id="step" min="0" max="6" step="1" style="flex:1"><span id="stepText" style="white-space:nowrap"></span></div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="tables">
+    <div>
+      <h2>列印件</h2>
+      <table><thead><tr><th>零件</th><th>列印外尺寸</th><th class="n">數量</th><th>平台</th></tr></thead><tbody id="jt"></tbody></table>
+    </div>
+    <div>
+      <h2>檢查</h2>
+      <table><thead><tr><th>項目</th><th class="n">結果</th></tr></thead><tbody id="ct"></tbody></table>
+    </div>
+  </div>
+  <div class="export">
+    <button class="btn" id="dl" disabled>下載列印包（.zip）</button>
+    <span class="note" id="dlNote">內含每種塊的 STL、底座 A、可拆端拱 B、胎架 C（都已轉成建議的列印方向）、組裝說明、參數 JSON。</span>
+  </div>
+  <div class="notes">
+    <p><b>構成</b>：<b>A 底座</b>＝底板＋兩側拱腳＋固定的一端端拱（一體列印，底板同時當拉桿，抵住拱往外推的力）。<b>B 端拱</b>＝另一端的可拆端拱，用兩支圓榫插進 A，是整座拱的「鎖」。<b>C 胎架</b>＝貼著拱腹的薄拱殼，組裝時撐住塊，完成後沿長向抽出。<b>塊</b>＝在攤平狀態做出交替斜面的互鎖塊，再彎到圓筒上，所以自然帶有拱石的上寬下窄。</p>
+    <p><b>組裝</b>：把胎架放進 A，從固定端拱那一側開始，一排一排把塊沿長向推進去（每一塊都是沿長向滑入，不是從上面放）；最後推上 B 端拱鎖住，再抽出胎架。貼著拱腳的那一面不做斜面，邊排的塊才滑得進去。下方滑桿可以逐步預覽。</p>
+    <p><b>已用實體運算驗證</b>（每次重算都會檢查，結果列在「檢查」表）：塊與塊、塊與 A／B／胎架互不重疊；每一塊都被鄰塊或邊框上下夾住。另在開發測試中確認過：每一塊、B 端拱都能沿長向滑入，胎架能沿長向抽出，過程中不碰到其他零件。</p>
+    <p><b>尚未驗證與限制</b>：沒有受力計算，也還沒有實際列印過。塊的每個面都不是平面，列印需要支撐（建議長向朝上）。間隙、斜面角請先印 2–3 塊和 B 端拱試組再決定。這一版只有直邊塊、沒有開孔與 Truchet 弧邊。</p>
+  </div>
+</section>
+</main>
+<script src="core.js"></script>
+<script src="panelcore.js"></script>
+<script src="shellcore.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+{
+const $ = id => document.getElementById(id);
+const DEF = { span: 110, rise: 35, length: 90, N: 7, M: 4, t: 8, alpha: 12, gap: 0.3, frame: 8, footH: 6, plate: 3, bedX: 180, bedY: 200, laz: 140, lel: 35 };
+let P = { ...DEF };
+try { const s = JSON.parse(localStorage.getItem('rf-shell') || 'null'); if (s && s.span) P = Object.assign(P, s); } catch (e) {}
+const hist = []; const snap = () => { hist.push(JSON.stringify(P)); if (hist.length > 60) hist.shift(); };
+$('undo').addEventListener('click', () => { if (!hist.length) return; P = JSON.parse(hist.pop()); syncInputs(); schedule(); });
+const tri = (c, holes) => THREE.ShapeUtils.triangulateShape(c.map(p => new THREE.Vector2(p[0], p[1])), holes.map(h => h.map(p => new THREE.Vector2(p[0], p[1]))));
+const mm = (f = 0) => v => `${(+v).toFixed(f)} mm`;
+const FIELDS = { span: mm(), rise: mm(), length: mm(), N: v => v + ' 塊', M: v => v + ' 排', t: mm(1), alpha: v => v + '°', gap: mm(2), frame: mm(1), footH: mm(), plate: mm(1), bedX: mm(), bedY: mm(), laz: v => v + '°', lel: v => v + '°' };
+const NOGEO = ['bedX', 'bedY', 'laz', 'lel'];
+function syncInputs() { Object.keys(FIELDS).forEach(k => { $(k).value = P[k]; $(k + '_o').textContent = FIELDS[k](P[k]); }); }
+Object.keys(FIELDS).forEach(k => { const el = $(k); el.addEventListener('pointerdown', snap); el.addEventListener('keydown', snap);
+  el.addEventListener('input', () => { P[k] = +el.value; if (k === 'span' || k === 'rise') P.rise = Math.min(P.rise, Math.floor(P.span / 2) - 1); syncInputs(); if (k === 'laz' || k === 'lel') applyLight(); else if (NOGEO.includes(k)) report(); else schedule(); }); });
+
+// ---------- 3D ----------
+const fig = $('fig');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); fig.prepend(renderer.domElement);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(35, 1, 1, 5000);
+const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8370, 1.3));
+const sun = new THREE.DirectionalLight(0xffffff, 2); scene.add(sun, sun.target);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -220, right: 220, top: 220, bottom: -220, near: 10, far: 1500 }); sun.shadow.bias = -0.002; sun.shadow.normalBias = 1;
+const table = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), new THREE.MeshStandardMaterial({ color: 0xe6e6df, roughness: 1 })); table.rotation.x = -Math.PI / 2; table.position.y = -5.2; table.receiveShadow = true; scene.add(table);
+{ const a5 = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([[-105, -74], [105, -74], [105, 74], [-105, 74]].map(([x, z]) => new THREE.Vector3(x, -5.1, z))), new THREE.LineDashedMaterial({ color: 0x8b8f84, dashSize: 4, gapSize: 3 })); a5.computeLineDistances(); scene.add(a5); }
+const group = new THREE.Group(); scene.add(group);
+function applyLight() { const az = P.laz * Math.PI / 180, el = P.lel * Math.PI / 180, r = 500; sun.position.set(r * Math.cos(el) * Math.sin(az), r * Math.sin(el), r * Math.cos(el) * Math.cos(az)); }
+function setView(v) {
+  document.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  if (v === 'persp') camera.position.set(170, 150, -240);
+  if (v === 'front') camera.position.set(0, 30, -380);
+  if (v === 'top') camera.position.set(0, 400, -0.01);
+  controls.target.set(0, 20, 0); controls.update();
+}
+document.querySelectorAll('[data-v]').forEach(b => b.addEventListener('click', () => setView(b.dataset.v)));
+let colorBy = 'type';
+document.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', () => { colorBy = b.dataset.c; document.querySelectorAll('[data-c]').forEach(x => x.setAttribute('aria-pressed', x === b)); paint(); }));
+new ResizeObserver(() => { const w = fig.clientWidth, h = fig.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }).observe(fig);
+setView('persp'); applyLight();
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+
+// ---------- 模型 ----------
+const HUES = [0xe9e4d8, 0xcfae72, 0x9db4c9, 0xa9c49a, 0xc9a3b8, 0x8fc0bb];
+let MF = null, downloads = null, S = null, parts = {}, types = [], checks = null, timer = 0, step = 0;
+const toGeo = man => { const g = man.getMesh(), np = g.numProp, V = new Float32Array(g.vertProperties.length / np * 3); for (let a = 0, b = 0; a < g.vertProperties.length; a += np, b += 3) { V[b] = g.vertProperties[a]; V[b + 1] = g.vertProperties[a + 1]; V[b + 2] = g.vertProperties[a + 2]; }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(V, 3)); geo.setIndex(new THREE.BufferAttribute(g.triVerts, 1)); const ng = geo.toNonIndexed(); geo.dispose(); ng.computeVertexNormals(); return ng; };
+const mk = (man, color, extra = {}) => { const m = new THREE.Mesh(toGeo(man), new THREE.MeshStandardMaterial({ color, roughness: .85, ...extra })); m.castShadow = m.receiveShadow = true; group.add(m); return m; };
+function schedule() { $('status').dataset.s = 'amber'; $('statusText').textContent = '計算中…'; clearTimeout(timer); timer = setTimeout(rebuild, 250); }
+function rebuild() {
+  if (!MF) return;
+  let next;
+  try { next = SC.build(MF, P, tri); } catch (err) { $('status').dataset.s = 'red'; $('statusText').textContent = '這組參數做不出有效的實體，請調整（例如加大邊框寬或拱腳高）。'; console.error(err); return; }
+  group.traverse(o => { if (o.geometry) o.geometry.dispose(); }); group.clear();
+  S = next;
+  const sig = new Map(); S.blocks.forEach(b => { if (!sig.has(b.sig)) sig.set(b.sig, { sig: b.sig, n: 0, ex: b }); sig.get(b.sig).n++; });
+  types = [...sig.values()].sort((a, b) => b.n - a.n);
+  parts = { A: mk(S.A, 0x6b5a45), B: mk(S.B, 0x2f6fd0), C: mk(S.C, 0xb9bdb4, { transparent: true, opacity: .75 }), blocks: S.blocks.map(b => { const m = mk(b.solid, 0xe9e4d8); m.userData = b; return m; }) };
+  // 檢查：重疊
+  const iv = (a, b) => a.intersect(b).volume(), U = MF.Manifold.union(S.blocks.map(b => b.solid));
+  let bb = 0; for (let a = 0; a < S.blocks.length; a++) for (let b = a + 1; b < S.blocks.length; b++) if (Math.abs(S.blocks[a].i - S.blocks[b].i) <= 1 && Math.abs(S.blocks[a].j - S.blocks[b].j) <= 1) bb = Math.max(bb, iv(S.blocks[a].solid, S.blocks[b].solid));
+  checks = { bb, frame: iv(U, S.A) + iv(U, S.B), cen: iv(U, S.C) + iv(S.A, S.C) + iv(S.B, S.C), loose: S.blocks.filter(b => !(b.lock.up && b.lock.down)).length, ok: [S.A, S.B, S.C].every(m => m.status() === 'NoError' && m.volume() > 0) };
+  $('step').max = P.M + 3; step = P.M + 3; $('step').value = step;
+  paint(); showStep(); report();
+  try { localStorage.setItem('rf-shell', JSON.stringify(P)); } catch (e) {}
+}
+function paint() {
+  if (!parts.blocks) return;
+  parts.blocks.forEach(m => m.material.color.set(colorBy === 'type' ? HUES[types.findIndex(t => t.sig === m.userData.sig) % HUES.length] : 0xe9e4d8));
+  $('legend').innerHTML = (colorBy === 'type' ? types.map((t, k) => `<div><i class="dot" style="background:#${HUES[k % 6].toString(16).padStart(6, '0')}"></i>塊 K${k + 1} × ${t.n}</div>`).join('') : '') + '<div><i class="dot" style="background:#6b5a45"></i>A 底座＋拱腳＋固定端拱</div><div><i class="dot" style="background:#2f6fd0"></i>B 可拆端拱（鎖）</div><div><i class="dot" style="background:#b9bdb4"></i>C 胎架</div>';
+}
+function showStep() {
+  if (!parts.blocks) return;
+  const M = P.M, off = 16;
+  parts.C.visible = step >= 1 && step <= M + 2; parts.C.position.z = 0;
+  parts.blocks.forEach(m => { const j = m.userData.j; m.visible = step >= j + 2; m.position.z = 0; });
+  parts.B.visible = true; parts.B.position.z = step >= M + 2 ? 0 : -off - (M + 1 - Math.min(step, M + 1)) * 2;
+  parts.B.material.transparent = step < M + 2; parts.B.material.opacity = step < M + 2 ? .35 : 1;
+  $('stepText').textContent = step === 0 ? '0：只有 A 底座' : step === 1 ? '1：放入胎架 C' : step <= M + 1 ? `${step}：沿長向推入第 ${step - 1} 排` : step === M + 2 ? `${step}：推上 B 端拱鎖住` : `${step}：抽出胎架，完成`;
+}
+$('step').addEventListener('input', e => { step = +e.target.value; showStep(); });
+
+const bx = m => { const q = m.boundingBox(); return q.max.map((v, k) => v - q.min[k]); };
+const fits = (a, b) => (a <= P.bedX && b <= P.bedY) || (a <= P.bedY && b <= P.bedX);
+function printSolids() {
+  // 轉成建議的列印方向（STL 的 Z 向上）
+  const A = S.A.rotate([90, 0, 0]), B = S.B, C = S.C;
+  const blocks = types.map(t => { const b = t.ex, th = ((b.i + 0.5) / P.N - 0.5) * 2 * S.D.beta * 180 / Math.PI; return b.solid.translate([0, S.D.c, 0]).rotate([0, 0, th]); });
+  const ground = m => { const q = m.boundingBox(); return m.translate([-(q.min[0] + q.max[0]) / 2, -(q.min[1] + q.max[1]) / 2, -q.min[2]]); };
+  return { A: ground(A), B: ground(B), C: ground(C), blocks: blocks.map(ground) };
+}
+function report() {
+  if (!S) return;
+  const D = S.D, pr = printSolids(), rows = [];
+  const row = (name, m, n) => { const d = bx(m), ok = fits(d[0], d[1]); rows.push({ name, d, n, ok }); return ok; };
+  types.forEach((t, k) => row(`塊 K${k + 1}`, pr.blocks[k], t.n));
+  const okA = row('A 底座', pr.A, 1), okB = row('B 端拱', pr.B, 1), okC = row('C 胎架', pr.C, 1);
+  $('jt').innerHTML = rows.map(r => `<tr><td>${r.name}</td><td>${r.d.map(v => v.toFixed(0)).join(' × ')} mm</td><td class="n">${r.n}</td><td>${r.ok ? '放得下' : '<b style="color:var(--bad)">超過平台</b>'}</td></tr>`).join('');
+  const dA = bx(S.A), a5 = (dA[0] <= 210 && dA[2] <= 148) || (dA[0] <= 148 && dA[2] <= 210), geomOK = checks.bb < 0.01 && checks.frame < 0.01 && checks.cen < 0.01 && checks.ok && !checks.loose, bedOK = okA && okB && okC;
+  const yes = v => v ? '通過' : '<b style="color:var(--bad)">未通過</b>';
+  $('ct').innerHTML = [['塊與塊重疊', `${checks.bb.toFixed(2)} mm³ · ${yes(checks.bb < 0.01)}`], ['塊與邊框重疊', `${checks.frame.toFixed(2)} mm³ · ${yes(checks.frame < 0.01)}`], ['胎架與其他零件重疊', `${checks.cen.toFixed(2)} mm³ · ${yes(checks.cen < 0.01)}`],
+    ['每塊都被上下夾住', checks.loose ? `<b style="color:var(--bad)">${checks.loose} 塊鬆脫</b>` : '通過'], ['A／B／C 實體封閉', yes(checks.ok)], ['整體占地', `${dA[0].toFixed(0)} × ${dA[2].toFixed(0)} mm · ${a5 ? 'A5 以內' : '<b style="color:var(--bad)">超過 A5</b>'}`], ['圓榫直徑', `${(2 * Math.min(2, D.ytop / 2 - 1.2)).toFixed(1)} mm` + (D.ytop < 7 ? '（偏細，請加高拱腳）' : '')]]
+    .map(([k, v]) => `<tr><td>${k}</td><td class="n" style="white-space:normal">${v}</td></tr>`).join('');
+  const st = !geomOK ? 'red' : (!bedOK || !a5) ? 'amber' : 'green';
+  $('status').dataset.s = st;
+  $('statusText').textContent = !geomOK ? '幾何檢查未通過，請看「檢查」表' : `幾何檢查通過 · ${S.blocks.length} 塊、${types.length} 種` + (!bedOK ? ' · 有零件超過列印平台' : !a5 ? ' · 占地超過 A5' : ' · 全部放得進平台、A5 以內');
+  $('kpis').innerHTML = [['塊數', S.blocks.length + ' 塊'], ['塊的種類', types.length + ' 種'], ['拱半徑', D.R.toFixed(0) + ' mm'], ['拱的張角', (2 * D.beta * 180 / Math.PI).toFixed(0) + '°'], ['總高', dA[1].toFixed(0) + ' mm'], ['列印件數', `${S.blocks.length + 3} 件`]].map(([k, v]) => `<div class="kpi"><small>${k}</small><b>${v}</b></div>`).join('');
+  $('dl').disabled = !downloads || !geomOK;
+  if (downloads && !geomOK) $('dlNote').textContent = '幾何檢查未通過時不提供下載。';
+}
+
+// ---------- 載入與匯出 ----------
+import('./manifold.js').then(m => m.default()).then(w => { w.setup(); MF = w; rebuild(); }).catch(e => { $('status').dataset.s = 'red'; $('statusText').textContent = '實體引擎載入失敗，這一頁無法運作。'; console.error(e); });
+RF.getDownloads().then(d => { downloads = d; if (!d) $('dlNote').textContent = '此檢視無法下載檔案，請在 claude.ai 開啟此頁。'; report(); }).catch(() => {});
+const crcT = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = 0xFFFFFFFF; for (let i = 0; i < u.length; i++) c = crcT[(c ^ u[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+function zip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  files.forEach(f => {
+    const name = enc.encode(f.name), data = typeof f.data === 'string' ? enc.encode(f.data) : new Uint8Array(f.data), crc = crc32(data), h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint32(14, crc, true); h.setUint32(18, data.length, true); h.setUint32(22, data.length, true); h.setUint16(26, name.length, true);
+    parts.push(new Uint8Array(h.buffer), name, data);
+    const c = new DataView(new ArrayBuffer(46)); c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint32(16, crc, true); c.setUint32(20, data.length, true); c.setUint32(24, data.length, true); c.setUint16(28, name.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), name); off += 30 + name.length + data.length;
+  });
+  const cs = central.reduce((a, b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, cs, true); e.setUint32(16, off, true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)]);
+}
+$('dl').addEventListener('click', async () => {
+  if (!S || !downloads) return;
+  const pr = printSolids(), files = [];
+  types.forEach((t, k) => files.push({ name: `blocks/K${k + 1}_x${t.n}.stl`, data: toSTL(pr.blocks[k].getMesh(), 'K' + (k + 1)) }));
+  files.push({ name: 'A_base.stl', data: toSTL(pr.A.getMesh(), 'A') }, { name: 'B_end_arch_key.stl', data: toSTL(pr.B.getMesh(), 'B') }, { name: 'C_centering.stl', data: toSTL(pr.C.getMesh(), 'C') });
+  const grid = []; for (let j = 0; j < P.M; j++) grid.push(S.blocks.filter(b => b.j === j).map(b => 'K' + (types.findIndex(t => t.sig === b.sig) + 1)).join(' '));
+  files.push({ name: 'README.txt', data: `拓樸互鎖拱殼 v0.1 列印包\r\n\r\n零件\r\n- A_base.stl：底板＋拱腳＋固定端拱，底板朝下列印。\r\n- B_end_arch_key.stl：可拆端拱（鎖），外側端面朝下列印，圓榫朝上。\r\n- C_centering.stl：胎架，長向朝上列印。\r\n- blocks/K*.stl：互鎖塊，檔名 xN 為數量；長向朝上列印，需要支撐。同編號的塊可旋轉 180° 使用。\r\n\r\n每一排的塊（從固定端拱往 B 端，每排由左到右）\r\n${grid.map((g, j) => `第 ${j + 1} 排：${g}`).join('\r\n')}\r\n\r\n組裝\r\n1. 胎架 C 放進 A 的兩個拱腳之間。\r\n2. 從固定端拱開始，一排一排把塊沿長向推入（不是從上方放下）。\r\n3. 最後把 B 沿長向推上，圓榫插入 A 的拱腳。\r\n4. 沿長向抽出胎架。\r\n\r\n建議先印 2–3 塊與 B 試組，確認間隙（目前 ${P.gap} mm）與斜面角（${P.alpha}°）。尚未做受力計算與實物驗證。\r\n` });
+  files.push({ name: 'params.json', data: JSON.stringify({ params: P, derived: S.D, checks, types: types.map((t, k) => ({ id: 'K' + (k + 1), count: t.n, sides: t.sig })) }) });
+  $('dl').disabled = true; $('dlNote').textContent = '打包中…';
+  try { await downloads.save({ filename: `interlock-vault_${P.N}x${P.M}.zip`, data: zip(files) }); $('dlNote').textContent = `已下載：${types.length} 種塊、A、B、C。`; }
+  catch (err) { $('dlNote').textContent = err && err.code === 'declined' ? '已取消下載。' : '下載未完成（' + (err && err.code || '未知原因') + '）。'; }
+  finally { $('dl').disabled = false; }
+});
+syncInputs();
+}
+</script>
+<script>window.RF_PRESETS={"key": "rf-shell", "list": [{"g": "基本", "id": "base", "name": "基準", "note": "筒形拱的互鎖殼：塊、底座、可拆端拱與胎架。", "do": []}, {"g": "基本", "id": "high", "name": "高拱", "note": "拱高加大 → 接近半圓，推力小。", "do": [["range", "rise", 55]]}, {"g": "基本", "id": "low", "name": "淺拱", "note": "拱高壓低 → 扁拱，兩側拱腳要頂得住往外的推力。", "do": [["range", "rise", 18]]}, {"g": "基本", "id": "many", "name": "塊數加多", "note": "沿拱與沿長向的塊數增加 → 塊變小，弧線更順。", "do": [["range", "N", 11], ["range", "M", 6]]}, {"g": "變化", "id": "thick", "name": "殼加厚", "note": "殼厚加大 → 斜面更長，鎖得更牢。", "do": [["range", "t", 14]]}, {"g": "變化", "id": "long", "name": "長筒", "note": "長度拉長、排數增加 → 一段隧道。", "do": [["range", "length", 120], ["range", "M", 6]]}, {"g": "變化", "id": "steep", "name": "斜面加大", "note": "斜面角加大 → 塊與塊咬得更深。", "do": [["range", "alpha", 22]]}, {"g": "變化", "id": "wide", "name": "大跨距", "note": "跨距與拱高一起加大 → 接近平台放得下的最大尺寸。", "do": [["range", "span", 160], ["range", "rise", 50]]}]};</script><script src="presets.js"></script>
+</body>
+</html>

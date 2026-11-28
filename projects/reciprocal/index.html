@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>互承 Reciprocal · 互承、互鎖與摺紙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 研究用數位實驗台，安靜、精確
+   IDEA: A3 底板上的互承網，像一張可以拉扯的編織
+   PICTURE: 大幅 3D 網面，接點以誤差著色，落柱可拖曳
+   COLOUR and TYPE: 紙白／墨色底，竹木桿件，誤差綠–黃–紅；Noto Serif TC + Noto Sans TC
+   LAYOUT: 左參數欄、右大圖、下方指標與接頭表 */
+:root{color-scheme:light dark;--bg:light-dark(#f6f6f3,#121412);--panel:light-dark(#ffffff,#1b1e1b);--ink:light-dark(#1d1f1c,#e9e9e4);--quiet:light-dark(#5d625b,#a3a89f);--rule:light-dark(#dcdcd5,#30352f);--good:#2e8b57;--mid:#d39b1f;--bad:#d0382b;--warn:#2f6fd0}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+header{padding:16px max(3vw,16px) 12px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:end;justify-content:space-between;border-bottom:1px solid var(--rule)}
+h1{font:900 clamp(24px,3.2vw,36px)/1.08 "Noto Serif TC",serif;margin:0}
+.sub{color:var(--quiet);margin:4px 0 0;font-size:14px}
+.sub a{color:inherit}
+.status{display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:999px;background:var(--panel);border:1px solid var(--rule);max-width:640px}
+.lamp{width:14px;height:14px;border-radius:50%;flex:none;background:currentColor;box-shadow:0 0 0 4px color-mix(in srgb,currentColor 20%,transparent)}
+.status[data-s=green] .lamp{color:var(--good)}.status[data-s=amber] .lamp{color:var(--mid)}.status[data-s=red] .lamp{color:var(--bad)}
+.status span{font-size:14px}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);align-items:start}
+aside{padding:12px max(1.5vw,14px) 40px;border-right:1px solid var(--rule);max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:0}
+fieldset{border:0;border-bottom:1px solid var(--rule);margin:0;padding:12px 0 14px}
+legend{font-weight:700;font-size:15px;padding:0;margin-bottom:6px}
+.row{display:grid;grid-template-columns:5.4em minmax(0,1fr) 4.4em;gap:8px;align-items:center;margin:5px 0}
+.row label{font-size:13.5px;color:var(--quiet)}
+.row output{font-variant-numeric:tabular-nums;text-align:right;font-size:13.5px;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--ink);height:28px}
+input[type=range]:disabled{opacity:.45}
+select{font:inherit;font-size:16px;padding:6px 8px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);width:100%}
+.seg{display:flex;gap:6px;flex-wrap:wrap}.seg button{flex:1;font:inherit;font-size:14px;min-height:36px;border:1px solid var(--rule);border-radius:8px;background:var(--panel);color:var(--ink);cursor:pointer;padding:0 6px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.lock{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 10px;cursor:pointer;min-height:32px}
+.lock[aria-pressed=false]{background:transparent;border-style:dashed;color:var(--warn)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.card{border:1px solid var(--rule);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--panel)}
+.card .hd{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:14px}
+.note{color:var(--quiet);font-size:13px;margin:6px 0 0}
+.stage{padding:0 0 24px}
+.fig{position:relative;height:min(64vh,640px);min-height:360px;background:light-dark(#eceee8,#181b18);border-bottom:1px solid var(--rule);touch-action:none}
+.fig canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.views{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap}
+.views button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.views button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.legend{position:absolute;right:12px;top:12px;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--rule);border-radius:10px;padding:8px 12px;font-size:13px;line-height:1.7;max-width:240px}
+.hint{position:absolute;left:12px;bottom:10px;font-size:13px;color:var(--quiet);background:color-mix(in srgb,var(--panel) 80%,transparent);padding:4px 10px;border-radius:8px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--rule)}
+.kpi{padding:12px 16px;border-right:1px solid var(--rule)}
+.kpi small{display:block;color:var(--quiet);font-size:13px}
+.kpi b{font:700 21px/1.2 "Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tables{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;padding:18px max(2vw,16px)}
+h2{font:600 19px/1.3 "Noto Serif TC",serif;margin:0 0 8px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--rule)}
+th{font-weight:500;color:var(--quiet);font-size:13px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--ink);opacity:.25}
+.export{padding:4px max(2vw,16px) 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:0 20px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--rule)}
+.btn:disabled{opacity:.4;cursor:default}
+.notes{padding:4px max(2vw,16px) 28px}
+.notes p{margin:6px 0;max-width:80ch;color:var(--quiet);font-size:14px}
+@media(max-width:900px){main{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0;order:2}.stage{order:1}.tables{grid-template-columns:1fr}}
+@media(max-width:600px){.fig{height:56vh}.legend{display:none}.kpi b{font-size:18px}}
+
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.tools{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 270px)}
+.tools button{font:inherit;font-size:13px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);cursor:pointer}
+.tools button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tools .sep{width:1px;background:var(--rule);margin:0 2px}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:13px;padding:4px 8px;border-radius:6px;white-space:nowrap;display:none;transform:translate(12px,-120%)}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:8px}
+
+.hero{padding:clamp(24px,4vw,48px) max(3vw,16px) 8px;max-width:1240px}
+.hero h1{font-size:clamp(30px,4.4vw,48px)}
+.hero p{max-width:68ch;font-size:16px;margin:12px 0 0}
+.grp{padding:22px max(3vw,16px) 6px;max-width:1240px}
+.gh{display:grid;grid-template-columns:minmax(0,15em) minmax(0,1fr);gap:8px 24px;align-items:baseline;border-top:2px solid var(--ink);padding-top:10px;margin-bottom:14px}
+.gh h2{margin:0;font-size:21px}.gh p{margin:0;color:var(--quiet);max-width:64ch}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:18px}
+.card{display:block;background:var(--panel);border:1px solid var(--rule);border-radius:12px;overflow:hidden;color:inherit;text-decoration:none}
+a.card:hover{border-color:var(--ink)}a.card:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+.card img,.card .ph{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:light-dark(#eceee8,#181b18)}
+.card .ph{display:grid;place-items:center;color:var(--quiet)}.card .ph svg{width:60%}
+.card.off{opacity:.8}
+.cb{padding:12px 14px 14px}.cb h3{font:600 19px/1.3 "Noto Serif TC",serif;margin:0 0 4px}.cb p{margin:0;font-size:14.5px;color:var(--quiet)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px!important}
+.tag{font-size:13px;padding:2px 9px;border-radius:999px;border:1px solid var(--rule);color:var(--ink);white-space:nowrap}
+.tag.ok{background:var(--good);border-color:var(--good);color:#fff}.tag.plan{border-style:dashed}
+.foot{padding:20px max(3vw,16px) 40px;max-width:1240px}.foot p{color:var(--quiet);font-size:14px;max-width:80ch;margin:6px 0}
+@media(max-width:600px){.gh{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<script src="nav.js"></script>
+<div class="hero">
+  <h1>互承 Reciprocal</h1>
+  <p style="margin-top:2px;font-weight:700">互承、互鎖與摺紙</p>
+  <p>一個局部的構造規則，重複之後能決定整體的形到什麼程度？這個系列從宋代虹橋的編木出發，用同一條「上下交替」的規則，依序做成線（互承桿件）、面（紙板）、體（拓樸互鎖塊），再到摺紙皮層。每個模式都是可以直接操作的模擬器。</p>
+</div>
+<a href="../dougong/" style="display:flex;gap:16px;align-items:center;margin:0 max(3vw,16px) 8px;padding:12px 16px;border:1px solid var(--rule,#dcdcd5);border-radius:2px;background:var(--panel,#fff);color:inherit;text-decoration:none;max-width:760px">
+  <img src="../dougong/img/line.png" alt="斗栱的線圖" width="96" height="96" style="flex:none;width:96px;height:96px;object-fit:contain" loading="lazy">
+  <span><b style="display:block;font-size:13px;letter-spacing:.06em;color:var(--quiet,#5d625b)">從 WORK 008 斗栱延伸</b>斗栱原本是把屋簷的重量層層傳到柱上的構件，後來漸漸變成裝飾的符號。這個系列接著問：如果把「接頭決定形」找回來，會長出什麼？<br><span style="text-decoration:underline">看斗栱 →</span></span>
+</a>
+<section class="grp"><div class="gh"><h2>線 · 互承桿件</h2><p>每根桿件一端搭在別人身上、一端托住別人。接頭的偏心距決定曲度。</p></div><div class="cards"><a class="card" href="arch.html"><img src="th_arch.jpg" alt="虹橋拱的模擬畫面" loading="lazy"><div class="cb"><h3>虹橋拱</h3><p>宋代虹橋式的單向編木拱：經緯上下交替，落柱沿滑軌自動找到落點，輸出 3D 列印接頭。</p><p class="tags"><span class="tag ok">完成</span><span class="tag">幾何已驗證</span></p></div></a><a class="card" href="grid.html"><img src="th_grid.jpg" alt="互承網格的模擬畫面" loading="lazy"><div class="cb"><h3>互承網格</h3><p>三角、四方、五角、六角格的互承網，拖一根落柱整張網一起重新平衡，接點依誤差著色。</p><p class="tags"><span class="tag ok">完成</span><span class="tag">接頭含左右手性</span></p></div></a></div></section><section class="grp"><div class="gh"><h2>線 ＋ 面 · 竹籤、板與三角錐</h2><p>先畫目標形，再切成三角網格、互承化，最後由解出的形反推每個接頭。竹籤、手裁的板、列印的三角錐，共用三種列印接頭。</p></div><div class="cards"><a class="card" href="mesh.html#p=tilt"><img src="th_mesh.jpg" alt="互承亭的模擬畫面" loading="lazy"><div class="cb"><h3>互承亭</h3><p>雙排或環狀落柱、四角收束、落地或掛牆。線到面的漸變、三角錐與光影，畫面上直接拖把手調形；底板 A3／A4／A5，接頭可選逐點夾子或每節點一件的節點件。</p><p class="tags"><span class="tag ok">完成</span><span class="tag">夾子或節點件</span><span class="tag">待試印校正</span></p></div></a></div></section><section class="grp"><div class="gh"><h2>體 · 拓樸互鎖</h2><p>沒有黏著劑，塊與塊靠交替的斜面互相夾住，邊框把整片鎖起來。全部 3D 列印。</p></div><div class="cards"><a class="card" href="panel.html"><img src="th_panel.jpg" alt="互鎖面板的模擬畫面" loading="lazy"><div class="cb"><h3>互鎖面板</h3><p>剛性外框＋乾式堆疊塊，Truchet 弧邊、開孔的漸變與吸引點，讓光和風通過。</p><p class="tags"><span class="tag ok">完成</span><span class="tag">外框兩件式、可滑入組裝</span></p></div></a><a class="card" href="shell.html"><img src="th_shell.jpg" alt="互鎖拱殼的模擬畫面" loading="lazy"><div class="cb"><h3>互鎖拱殼</h3><p>筒形拱的互鎖殼：塊、底座、可拆端拱與胎架，A5 以內，附逐步組裝預覽與重疊檢查。</p><p class="tags"><span class="tag ok">完成</span><span class="tag">待試印校正</span></p></div></a></div></section><section class="grp"><div class="gh"><h2>摺 · 摺紙皮層</h2><p>一個單元的摺痕規則，重複之後決定整片外牆皮層的形與開合。</p></div><div class="cards"><a class="card" href="fold.html"><img src="th_fold.jpg" alt="摺紙皮層的模擬畫面" loading="lazy"><div class="cb"><h3>摺紙皮層</h3><p>外牆的第二層皮：百葉式（Miura 摺整片收攏）與單元式（三角、四方、六角的傘狀摺，可漸變開合），計算開口率與日照遮陽率；紙卡雷切或 3D 列印活鉸鏈可選。</p><p class="tags"><span class="tag ok">完成</span><span class="tag">兩種開合皆為公式解</span></p></div></a></div></section>
+<div class="foot">
+  <p><b>目前的驗證範圍</b>：所有模式只驗證幾何（接不接得上、實體有沒有重疊、塊有沒有被鎖住），沒有受力計算，也還沒有實物列印的校正。</p>
+  <p><b>列印檔</b>：各模式都能產生 3D 列印或雷切檔，下載功能暫不開放，待實物驗證後再提供。</p>
+</div>
+</body>
+</html>
