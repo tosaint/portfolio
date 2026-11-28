@@ -189,8 +189,9 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
         <div class="row"><label for="sdDN">對準日期</label><input type="range" id="sdDN" min="1" max="365" step="1"><output id="sdDN_o"></output></div>
         <div class="row"><label for="sdPitch">點距</label><input type="range" id="sdPitch" min="3" max="6" step="0.5"><output id="sdPitch_o"></output></div>
         <div class="row"><label for="sdW">孔寬</label><input type="range" id="sdW" min="0.8" max="3" step="0.1"><output id="sdW_o"></output></div>
-        <div class="row"><label for="sdTube">光管長</label><input type="range" id="sdTube" min="2" max="40" step="1"><output id="sdTube_o"></output></div>
-        <p class="note">陽光穿過屋面的小孔，在亭子中央的地上拼出 5×7 點陣的時間。每個孔上有一段 3D 列印的光管，只讓那個時刻的陽光通過；光管越長、孔越小，字越不會互相重疊。光管長設成 2 mm（只有板厚），就會看到沒有光管時字疊在一起的樣子。</p>
+        <div class="row"><label for="sdSlot">縫長</label><input type="range" id="sdSlot" min="1" max="6" step="0.5"><output id="sdSlot_o"></output></div>
+        <div class="row"><label for="sdTube">板厚</label><input type="range" id="sdTube" min="2" max="40" step="1"><output id="sdTube_o"></output></div>
+        <p class="note">陽光穿過屋面，在亭子中央的地上拼出 5×7 點陣的時間（8:00–16:00，每半小時）。光要穿過的那幾片板改成 3D 列印的<b>光格板</b>：裙邊和三角錐一樣插進原來的夾子，中間加厚，每個字點一條斜的光道。孔寬管時間：越窄，相鄰兩組字越不會疊在一起。縫長管季節：越長，一組光格板能用越久。板厚兩者都收緊。對準日期＝這組季節板最準的那天。</p>
       </div>
       <div class="row"><label for="sdN">日期</label><input type="range" id="sdN" min="1" max="365" step="1"><output id="sdN_o"></output></div>
       <div class="row"><label for="sdT">時刻</label><input type="range" id="sdT" min="300" max="1140" step="5"><output id="sdT_o"></output></div>
@@ -267,7 +268,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
   </div>
   <div class="notes">
     <p><b>手機</b>：模擬器固定在上半部，參數分頁放在下面，一邊調一邊看；橫拿時左右並排。日晷開啟後，模擬器下緣多一列時刻、日期、北方；可以直接拖光點改時刻，點節氣線跳到那一天。</p>
-    <p><b>v0.11 新增：光點拼字（光點時鐘）</b>。日晷分頁選「光點拼字」：8:00 到 16:00 每半小時一組，陽光穿過屋面的小孔，在亭子中央的地上拼出 5×7 點陣的時間。反推方式：從地上字的每一點，沿那個時刻的太陽方向往上找，碰到屋面的地方就開孔；碰到竹籤格就自動改成平板。屋面只有 2 mm 厚，一個孔對整天的陽光都透光，相鄰時段的字會疊在一起，所以每個孔上要裝一段 3D 列印的<b>光管</b>（畫面上的白色細管），只讓那個時角附近的陽光通過；對季節的方向是一條長縫，所以一年都能用，字只是整片南北平移。限制：孔太靠板邊、落在板與板的縫、或被竹籤擋住的點開不了，字會缺幾點；均時差讓字出現的時刻隨季節早晚最多約 16 分鐘。</p>
+    <p><b>v0.11 新增：光點拼字（光點時鐘）</b>。日晷分頁選「光點拼字」：8:00 到 16:00 每半小時一組，陽光穿過屋面，在亭子中央的地上拼出 5×7 點陣的時間。反推方式：從地上字的每一點，沿那個時刻的太陽方向往上找，碰到屋面的地方開一條光道；碰到竹籤格就自動改成平板。屋面只有 2 mm 厚，一個孔整天都透光，字會疊在一起，所以光要穿過的板改成 3D 列印的<b>光格板</b>：裙邊和三角錐一樣插進原來的夾子，中間加厚，每個字點一條斜縫。縫在時間方向窄（孔寬），所以每組字只在那個時刻前後幾分鐘出現；在季節方向長（縫長），所以一組光格板能用一段季節，一年換幾組<b>季節板</b>。製作包裡有每片光格板的 STL。限制：太靠板邊、落在板與板的縫、或被竹籤擋住的點開不了，字會缺點；不同時段的斜縫在板內交叉處可能漏一點光；均時差讓字出現的時刻隨季節早晚最多約 16 分鐘。都還沒試印。</p>
     <p><b>v0.10 新增：日晷</b>。在屋面的一片實心板（或三角錐的尖端）開一個約 3 mm 的光孔，陽光穿過去在底板上投出光點。光源換成中壢（24.96°N、121.22°E）當時的太陽：選日期與時刻，或按「現在」「播放一天」。底板上畫出這座屋頂專屬的刻度：藍線是節氣（同一條線一年經過兩次，例如立春與立冬），棕色 8 字線是整點，已含均時差與經度修正，可以直接對手錶；橘線是今天光點走的路。屋頂一變形，光孔的高度與位置改變，整張刻度跟著重算。光孔預設自動選「一年中最多時段落在底板內」的那片板，也可以自己點選。做實體模型時，製作包多一張 1:1 的日晷底板，柱子對準圓圈、箭頭指向真北、底板放水平即可。<b>之後</b>：多孔報時、數字鏤空，以及會直接顯示數字的數位日晷光孔件。</p>
     <p><b>v0.9 新增</b>：底板可選 A3／A4／A5。接頭方式多了<b>節點件</b>：每個節點印一個小塊，照解出來的位置開斜孔，竹籤沿軸向插進去，解決同一根竹籤上夾子互頂的問題；可選鏤空環、實心盤、斗形，並調大小、厚度與漸變。<b>柱頂件</b>把落在柱頂的桿端收在一起。兩種接頭方式共用同一個求解結果，可以隨時切換比較。</p>
     <p><b>v0.8 改了什麼</b>：竹籤、板、三角錐現在都是求解裡的實際構件。接頭有三種，全部 3D 列印，共用同一個 2 mm 板槽：<b>X</b> 桿–桿（兩條槽，夾角＋偏心＋左右手）、<b>H</b> 板–板折角夾（兩個板槽背對背，折角就是兩板的夾角）、<b>C</b> 桿–板扣（C 形環扣竹籤，另一側板槽）。板是單純的三角形，照清單的三邊長裁切即可。</p>
@@ -292,7 +293,7 @@ const rect = (W, L, h) => [[-W / 2, -L / 2, h], [W / 2, -L / 2, h], [-W / 2, L /
 const DEF = { support: 'ground', pyr: 'pyr', pf: 'grad', pd: 'A', ps: 'out', ph: 10, plv: 4, pwl: 140, pwd: 30, pflip: false, laz: 135, lel: 32, shadow: true, layout: 'rows', nf: 4, sym: 'xz', Rr: 130, feet: MC.layoutFeet('rows', 4, 300, 230, 130, 0), crown: 130, liftL: 75, liftS: 60, edgeShape: 0.8, pinch: 0.6, gatherH: 50, ringR: 14,
   mat: 0, edge: 42, jitter: 0.3, phi: 10, custom: 0, emax: 4, tmode: 'auto', ntypes: 12, clipL: 8, board: 'A3', slen: 64, jtype: 'clip', nshape: 'ring', ngrow: 0, nthick: 0, ngrad: 'none', nflip: false, cap: true, tol: 0.2, wall: 1.2, overhang: 5, seed: 7, pull: 0.02,
   gmode: 'A', gstyle: 'hole', gc: 0.6, gw: 0.6, gflip: false, ov: {},
-  sd: false, sdN: SD.doy(new Date()), sdT: 720, sdNorth: 0, sdFace: -1, sdLines: true, sdSee: true, sdMode: 'spot', sdDN: SD.doy(new Date()), sdPitch: 5, sdW: 1.2, sdTube: 20 };
+  sd: false, sdN: SD.doy(new Date()), sdT: 720, sdNorth: 0, sdFace: -1, sdLines: true, sdSee: true, sdMode: 'spot', sdDN: SD.doy(new Date()), sdPitch: 5, sdW: 1.2, sdSlot: 4, sdTube: 20 };
 let P = JSON.parse(JSON.stringify(DEF));
 try { const s = JSON.parse(localStorage.getItem('rf-pav9') || 'null'); if (s && s.feet && s.layout) P = Object.assign(P, s); } catch (e) {}
 const SDHELP = $('sdHelp').textContent, sdOn = () => P.sd && P.support !== 'wall';
@@ -318,7 +319,7 @@ addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLower
 const mm = (f = 0) => v => `${(+v).toFixed(f)} mm`, num = f => v => (+v).toFixed(f);
 const FIELDS = { R: [mm(), 1], W: [mm(), 1], L: [mm(), 1], crown: [mm(), 1], liftL: [mm(), 1], liftS: [mm(), 1], footH: [mm(), 1], pinch: [num(2), 1], gatherH: [mm(), 1], ringR: [mm(), 1], edgeShape: [num(2), 1],
   ph: [mm(1), 0], plv: [v => v + ' 級', 0], pwl: [mm(), 0], pwd: [v => v + '°', 0], laz: [v => v + '°', 2], lel: [v => v + '°', 2],
-  edge: [mm(), 1], jitter: [num(2), 1], phi: [v => v + '°', 1], emax: [mm(1), 1], ntypes: [v => v + ' 種', 0], gc: [num(2), 3], gw: [num(2), 3], tol: [mm(2), 0], wall: [mm(1), 0], clipL: [mm(1), 0], slen: [mm(), 1], sdN: [v => { const [m, d] = SD.dateOf(v), t = SD.termOf(+v); return `${m}/${d}` + (t ? ' ' + t : ''); }, 4], sdT: [v => SD.hhmm(v), 4], sdNorth: [v => v + '°', 4], sdDN: [v => { const [m, d] = SD.dateOf(v), t = SD.termOf(+v); return `${m}/${d}` + (t ? ' ' + t : ''); }, 3], sdPitch: [mm(1), 3], sdW: [mm(1), 4], sdTube: [mm(), 4], ngrow: [v => '+' + (+v).toFixed(1) + ' mm', 0], nthick: [v => '+' + (+v).toFixed(1) + ' mm', 0] };
+  edge: [mm(), 1], jitter: [num(2), 1], phi: [v => v + '°', 1], emax: [mm(1), 1], ntypes: [v => v + ' 種', 0], gc: [num(2), 3], gw: [num(2), 3], tol: [mm(2), 0], wall: [mm(1), 0], clipL: [mm(1), 0], slen: [mm(), 1], sdN: [v => { const [m, d] = SD.dateOf(v), t = SD.termOf(+v); return `${m}/${d}` + (t ? ' ' + t : ''); }, 4], sdT: [v => SD.hhmm(v), 4], sdNorth: [v => v + '°', 4], sdDN: [v => { const [m, d] = SD.dateOf(v), t = SD.termOf(+v); return `${m}/${d}` + (t ? ' ' + t : ''); }, 3], sdPitch: [mm(1), 3], sdW: [mm(1), 4], sdSlot: [mm(1), 4], sdTube: [mm(), 4], ngrow: [v => '+' + (+v).toFixed(1) + ' mm', 0], nthick: [v => '+' + (+v).toFixed(1) + ' mm', 0] };
 const getF = k => k === 'R' ? P.Rr : k === 'W' ? W() : k === 'L' ? Ld() : k === 'footH' ? P.feet[0][2] : P[k];
 const setF = (k, v) => {
   if (k === 'R') { P.Rr = v; const hs = P.feet.map(f => f[2]); P.feet = MC.layoutFeet('ring', P.nf, 0, 0, v, 0).map((f, i) => [f[0], f[1], hs[i] || 0]); }
@@ -753,14 +754,16 @@ function sdLeak(sp, v) {
   return open / n;
 }
 // ---------- 光點拼字（數位日晷）----------
-// 每個時段（8:00–16:00，每半小時）一組孔：從地上中央「字的每一點」沿那個時刻的太陽方向往上找，碰到屋面的地方就開孔。
-// 屋面只有 2 mm 厚，孔對各個時刻都透光，相鄰時段的字會疊在一起；所以每個孔上裝一段 3D 列印的「光管」，
-// 光管只讓那個時角附近的陽光通過（對季節是一條長縫，一年都能用）。
+// 每個時段（8:00–16:00，每半小時）一組孔：從地上中央「字的每一點」沿那個時刻的太陽方向往上找，碰到屋面的地方開孔。
+// 屋面只有 2 mm 厚，孔對整天都透光，相鄰時段的字會疊在一起；所以光要穿過的那幾片板改成 3D 列印的「光格板」：
+// 跟三角錐一樣用 2 mm 裙邊插進原來的夾子，中間加厚，每個字點一條斜的光道。
+// 光道的斷面是一條短縫：時間方向窄（孔寬），季節方向長（縫長），所以同一組光格板能用一段季節；一年換幾組（季節板）。
 const sdDigitOn = () => sdOn() && P.sdMode === 'digit';
 const sdPitch = () => P.sdPitch * Math.sqrt(K());
 const feetC = () => [P.feet.reduce((a, f) => a + f[0], 0) / P.feet.length, P.feet.reduce((a, f) => a + f[1], 0) / P.feet.length];
+const SDR = 2;   // 字可以在中央附近平移的範圍（點距）
 let sdForceKey = '', sdForceSet = null;
-// 目標網格上，光線會穿過的面 → 全部改成平板（不做三角錐、不開漸變孔）
+// 目標網格上，光線會穿過的面 → 全部改成平板（之後做成光格板）
 function sdForced() {
   if (!sdDigitOn() || !M) return null;
   const key = [M.F.length, M.V[0] && M.V[0].join(','), P.sdNorth, P.sdDN, P.sdPitch, P.board, feetC().join(',')].join('|');
@@ -768,82 +771,114 @@ function sdForced() {
   const set = new Set(), pp = sdPitch(), [cx, cz] = feetC();
   SD.SLOTS.forEach(sl => {
     const v = SD.sun(P.sdDN, sl.t, P.sdNorth); if (v[1] < 0.1) return;
-    SD.pixels(sl.text).forEach(([u, q]) => { for (const du of [-1, 0, 1]) for (const dq of [-1, 0, 1]) { const o = [cx + (u + du) * pp, 0, cz + (q + dq) * pp]; M.F.forEach((f, i) => { if (SD.rayTri(o, v, M.V[f[0]], M.V[f[1]], M.V[f[2]]) > 0) set.add(i); }); } });
+    SD.pixels(sl.text).forEach(([u, q]) => { for (let du = -SDR; du <= SDR; du++) for (let dq = -SDR; dq <= SDR; dq++) { const o = [cx + (u + du) * pp, 0, cz + (q + dq) * pp]; M.F.forEach((f, i) => { if (SD.rayTri(o, v, M.V[f[0]], M.V[f[1]], M.V[f[2]]) > 0) set.add(i); }); } });
   });
   sdForceKey = key; sdForceSet = set; return set;
 }
 const segDist = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]], t = Math.max(0, Math.min(1, (ab[0] * ap[0] + ab[1] * ap[1] + ab[2] * ap[2]) / (ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2 || 1))); return Math.hypot(ap[0] - ab[0] * t, ap[1] - ab[1] * t, ap[2] - ab[2] * t); };
+const V = MC.v3;
+// 板的局部座標：原點＝第 0 角，z＝朝上的法向
+function plateFrame(tri) { const e1 = V.norm(V.sub(tri[1], tri[0])); let n = V.norm(V.cross(V.sub(tri[1], tri[0]), V.sub(tri[2], tri[0]))); if (n[1] < 0) n = V.mul(n, -1); return { o: tri[0], e1, e2: V.cross(n, e1), n }; }
+const toLocal = (F, p) => { const d = V.sub(p, F.o); return [V.dot(d, F.e1), V.dot(d, F.e2), V.dot(d, F.n)]; };
+// 光格板的加厚區：板三角形以內心縮進（裙邊寬），與三角錐相同
+function tileInner(tri) {
+  const a = V.len(V.sub(tri[1], tri[2])), b = V.len(V.sub(tri[0], tri[2])), c = V.len(V.sub(tri[0], tri[1])), per = a + b + c;
+  const I = V.mul(V.add(V.add(V.mul(tri[0], a), V.mul(tri[1], b)), V.mul(tri[2], c)), 1 / per), r = MC.inradius(a, b, c), sw = 2;   // 加厚區離板邊 2 mm；夾子的位置在加厚區開缺口
+  return r - sw < 3 ? null : tri.map(p => V.add(I, V.mul(V.sub(p, I), (r - sw) / r)));
+}
+// 光道的兩個斷面方向：時間方向（窄）與季節方向（長）
+function slotAxes(si) {
+  const t = SD.SLOTS[si].t, v = SD.sun(P.sdDN, t, P.sdNorth), v1 = SD.sun(Math.min(365, P.sdDN + 4), t, P.sdNorth), v0 = SD.sun(Math.max(1, P.sdDN - 4), t, P.sdNorth);
+  let dv = V.sub(v1, v0); dv = V.sub(dv, V.mul(v, V.dot(dv, v))); if (V.len(dv) < 1e-6) dv = V.cross(v, [1, 0, 0]);
+  const ad = V.norm(dv); return { v, ad, ah: V.norm(V.cross(v, ad)) };
+}
 // 解出來的板上實際開孔
 let DG = null;
 function sdHolesCalc(final) {
-  const PC = MC.plateCorners(S), pp = sdPitch(), [cx, cz] = feetC(), margin = 2.5 + P.sdW / 2, isPyr = PC.map((pl, pi) => !!pyrApex(pl, pi));
-  const tg = final ? [rodMesh, nodeGroup, posts].filter(Boolean) : null, dir = new THREE.Vector3(), org = new THREE.Vector3();
-  // 一個字點：回傳孔，或開不了的原因
+  const PC = MC.plateCorners(S), pp = sdPitch(), [cx, cz] = feetC(), isPyr = PC.map((pl, pi) => !!pyrApex(pl, pi)), inner = PC.map(tri => tileInner(tri));
+  const tg = final ? [rodMesh, nodeGroup, posts].filter(Boolean) : null, dir = new THREE.Vector3(), org = new THREE.Vector3(), mg = Math.max(P.sdW, P.sdSlot) / 2 + 0.8;
   const probe = (o, v, rods) => {
     const hits = []; PC.forEach((tri, pi) => { const d = SD.rayTri(o, v, tri[0], tri[1], tri[2]); if (d > 0) hits.push([d, pi]); });
     if (!hits.length) return 'sky'; if (hits.length > 1) return 'multi';
-    const [d, pi] = hits[0]; if (isPyr[pi]) return 'pyr';
-    const h = [o[0] + v[0] * d, o[1] + v[1] * d, o[2] + v[2] * d], tri = PC[pi];
-    if (Math.min(segDist(h, tri[0], tri[1]), segDist(h, tri[1], tri[2]), segDist(h, tri[2], tri[0])) < margin) return 'edge';
+    const [d, pi] = hits[0]; if (isPyr[pi]) return 'pyr'; const tri = inner[pi]; if (!tri) return 'edge';
+    const h = [o[0] + v[0] * d, o[1] + v[1] * d, o[2] + v[2] * d];
+    if (SD.rayTri(o, v, tri[0], tri[1], tri[2]) < 0 || Math.min(segDist(h, tri[0], tri[1]), segDist(h, tri[1], tri[2]), segDist(h, tri[2], tri[0])) < mg) return 'edge';
     if (rods) { sdRay.set(org.set(o[0], 0.2, o[2]), dir.set(v[0], v[1], v[2])); sdRay.near = 0.1; sdRay.far = d - 1.5; if (sdRay.intersectObjects(tg, true).length) return 'rod'; }
     return { pi, h, d };
   };
   const holes = [], miss = { sky: 0, multi: 0, edge: 0, pyr: 0, rod: 0 }, slots = []; let nPix = 0;
   SD.SLOTS.forEach((sl, si) => {
     const v = SD.sun(P.sdDN, sl.t, P.sdNorth), px = SD.pixels(sl.text); slots.push({ ...sl, ha: SD.ha(P.sdDN, sl.t), n: 0, px: 0, off: [0, 0] }); if (v[1] < 0.1) return;
-    // 整組字可以在中央附近平移最多一個點距，找開得了最多孔的位置（字的形不變）
+    // 整組字在中央附近平移（最多 2 個點距），找開得了最多孔的位置；字形不變
     let off = [0, 0];
-    if (final) { let best = -1; for (let du = -1; du <= 1.001; du += 0.25) for (let dq = -1; dq <= 1.001; dq += 0.25) { let n = 0; px.forEach(([u, q]) => { if (typeof probe([cx + (u + du) * pp, 0, cz + (q + dq) * pp], v, false) === 'object') n++; }); if (n > best + 1e-9 - (du === 0 && dq === 0 ? 0.5 : 0)) { best = n; off = [du, dq]; } } }
+    if (final) { let best = -1; for (let du = -SDR; du <= SDR + 1e-6; du += 0.5) for (let dq = -SDR; dq <= SDR + 1e-6; dq += 0.5) { let n = 0; px.forEach(([u, q]) => { if (typeof probe([cx + (u + du) * pp, 0, cz + (q + dq) * pp], v, false) === 'object') n++; }); const sc = n - 0.02 * Math.hypot(du, dq); if (sc > best) { best = sc; off = [du, dq]; } } }
     slots[si].off = off;
     px.forEach(([u, q]) => {
       nPix++; slots[si].px++;
-      // 開不了的點，在 ±0.3 點距內微移再試（字形幾乎不變）
       let r = probe([cx + (u + off[0]) * pp, 0, cz + (q + off[1]) * pp], v, final);
+      // 開不了的點，在 ±0.3 點距內微移再試
       if (typeof r === 'string' && final) for (const [a2, b2] of [[0.3, 0], [-0.3, 0], [0, 0.3], [0, -0.3], [0.25, 0.25], [-0.25, 0.25], [0.25, -0.25], [-0.25, -0.25]]) { const r2 = probe([cx + (u + off[0] + a2) * pp, 0, cz + (q + off[1] + b2) * pp], v, true); if (typeof r2 === 'object') { r = r2; break; } }
       if (typeof r === 'string') { miss[r]++; return; }
-      holes.push({ si, ...r }); slots[si].n++;
+      const nz = Math.abs(V.dot(plateFrame(PC[r.pi]).n, v)); holes.push({ si, ...r, L: P.sdTube / Math.max(0.2, nz) });
+      slots[si].n++;
     });
   });
-  return { holes, miss, nPix, slots };
+  const tiles = [...new Set(holes.map(h => h.pi))];
+  return { holes, miss, nPix, slots, tiles };
 }
-const dgHoleM = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 10), new THREE.MeshStandardMaterial({ color: 0xf1ede2, roughness: .55 }), 2000);
+// 光格板（加厚區）與光道
+const matTile = new THREE.MeshStandardMaterial({ color: 0xf1ede2, roughness: .55, side: THREE.DoubleSide });
+const dgTileM = new THREE.Mesh(new THREE.BufferGeometry(), matTile); dgTileM.castShadow = dgTileM.receiveShadow = true;
+const dgHoleM = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1, 1, 8), new THREE.MeshBasicMaterial({ color: 0x2a2620 }), 2000);
 const dgSpotGeo = new THREE.CircleGeometry(1, 18); dgSpotGeo.rotateX(-Math.PI / 2);
 const dgSpotM = new THREE.InstancedMesh(dgSpotGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }), 2000);
-dgHoleM.count = dgSpotM.count = 0; dgSpotM.renderOrder = 3; dgHoleM.castShadow = false; sdG.add(dgHoleM, dgSpotM);
+dgHoleM.count = dgSpotM.count = 0; dgSpotM.renderOrder = 3; sdG.add(dgTileM, dgHoleM, dgSpotM);
 const dgC0 = new THREE.Color(0x8f8b80), dgC1 = new THREE.Color(0xfff2b8), dgCol = new THREE.Color();
+// 透光量：光道對時間方向（孔寬）與季節方向（縫長）各自的遮擋
+function tubeVis(hl, v) {
+  const ax = DG.axes[hl.si], c = V.dot(v, ax.v); if (c <= 0) return 0;
+  const th = Math.abs(V.dot(v, ax.ah)) / c, td = Math.abs(V.dot(v, ax.ad)) / c;   // 偏離的正切
+  return Math.max(0, 1 - hl.L * th / P.sdW) * Math.max(0, 1 - hl.L * td / P.sdSlot);
+}
 function drawDigit(full) {
-  if (full || !DG) DG = sdHolesCalc(done);
-  const H = DG.holes, w = P.sdW, n = Math.min(H.length, 2000), Yv0 = new THREE.Vector3(0, 1, 0), q = new THREE.Quaternion(), m4 = new THREE.Matrix4(), sc = new THREE.Vector3(), pos = new THREE.Vector3();
+  if (full || !DG) { DG = sdHolesCalc(done); DG.axes = SD.SLOTS.map((s, i) => slotAxes(i)); }
+  const H = DG.holes, n = Math.min(H.length, 2000), Yv0 = new THREE.Vector3(0, 1, 0), q = new THREE.Quaternion(), m4 = new THREE.Matrix4(), sc = new THREE.Vector3(), pos = new THREE.Vector3();
   if (full) {
-    // 光管件：沿那個時段的太陽方向立在板上的短管（畫成深色細柱，長度＝光管長）
-    for (let i = 0; i < n; i++) { const hl = H[i], v = SD.sun(P.sdDN, SD.SLOTS[hl.si].t, P.sdNorth); q.setFromUnitVectors(Yv0, new THREE.Vector3(v[0], v[1], v[2])); pos.set(hl.h[0] + v[0] * P.sdTube / 2, hl.h[1] + v[1] * P.sdTube / 2, hl.h[2] + v[2] * P.sdTube / 2); m4.compose(pos, q, sc.set(w / 2 + 0.6, P.sdTube, w / 2 + 0.6)); dgHoleM.setMatrixAt(i, m4); }
+    const PC = MC.plateCorners(S), pos3 = [];
+    DG.tiles.forEach(pi => { const ib = tileInner(PC[pi]); if (!ib) return; const nn = plateFrame(PC[pi]).n, it = ib.map(p => V.add(p, V.mul(nn, P.sdTube))); pos3.push(...it[0], ...it[1], ...it[2]); for (let a = 0; a < 3; a++) { const b = (a + 1) % 3; pos3.push(...ib[a], ...ib[b], ...it[b], ...ib[a], ...it[b], ...it[a]); } });
+    dgTileM.geometry.dispose(); dgTileM.geometry = new THREE.BufferGeometry(); dgTileM.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pos3, 3)); dgTileM.geometry.computeVertexNormals();
+    // 光道：沿那個時段的太陽方向，穿過整個板厚（畫成深色細柱，從頂面看是一個個小黑點）
+    for (let i = 0; i < n; i++) { const hl = H[i], v = DG.axes[hl.si].v; q.setFromUnitVectors(Yv0, new THREE.Vector3(v[0], v[1], v[2])); pos.set(hl.h[0] + v[0] * hl.L / 2, hl.h[1] + v[1] * hl.L / 2, hl.h[2] + v[2] * hl.L / 2); m4.compose(pos, q, sc.set(P.sdW / 2, hl.L + 0.6, P.sdW / 2)); dgHoleM.setMatrixAt(i, m4); }
     dgHoleM.count = n; dgHoleM.instanceMatrix.needsUpdate = true;
   }
-  const v = SD.sun(P.sdN, P.sdT, P.sdNorth), haNow = SD.ha(P.sdN, P.sdT), al = Math.atan(w / P.sdTube) * 180 / Math.PI, bx = 210 * K(), bz = 148.5 * K();
-  let k = 0;
+  const v = SD.sun(P.sdN, P.sdT, P.sdNorth), bx = 210 * K(), bz = 148.5 * K(); let k = 0;
+  const slotVis = DG.slots.map(() => 0);
   if (v[1] > 0.05) for (let i = 0; i < n; i++) {
-    const hl = H[i], vis = 1 - Math.abs(haNow - DG.slots[hl.si].ha) / al; if (vis <= 0) continue;
+    const hl = H[i], vis = tubeVis(hl, v); if (vis <= 0.02) continue; slotVis[hl.si] = Math.max(slotVis[hl.si], vis);
     const sp = SD.spot(hl.h, v); if (!sp || Math.abs(sp[0]) > bx || Math.abs(sp[1]) > bz) continue;
-    const r = w / 2 + hl.d * 0.0047 + 0.4;
+    const r = P.sdW / 2 + hl.d * 0.0047 + 0.5;
     m4.compose(pos.set(sp[0], 0.3, sp[1]), q.identity(), sc.set(r, 1, r)); dgSpotM.setMatrixAt(k, m4); dgSpotM.setColorAt(k, dgCol.copy(dgC0).lerp(dgC1, Math.min(1, vis * 1.6))); k++;
   }
   dgSpotM.count = k; dgSpotM.instanceMatrix.needsUpdate = true; if (dgSpotM.instanceColor) dgSpotM.instanceColor.needsUpdate = true;
-  // 說明：現在地上顯示哪一組
-  const vis = DG.slots.map(s => ({ s, v: 1 - Math.abs(haNow - s.ha) / al })).filter(x => x.v > 0 && x.s.n).sort((a, b) => b.v - a.v);
-  const mins = (al * 4).toFixed(0), [m, d] = SD.dateOf(P.sdDN), mi = DG.miss, lost = mi.edge + mi.rod + mi.multi + mi.pyr + mi.sky;
-  let t = `8:00–16:00 每半小時一組字，共 ${DG.holes.length} 個孔（對準 ${m}/${d}）。孔寬 ${w} mm、光管長 ${P.sdTube} mm → 每組字在那個時刻前後約 ±${mins} 分鐘看得到`;
-  t += al >= 7.5 ? '；光管太短，相鄰兩組字會同時出現、疊在一起，請加長光管或縮小孔寬。' : '。';
-  t += v[1] <= 0.05 ? '這個時刻太陽太低。' : !vis.length ? '這個時刻在兩組字之間，地上沒有完整的字。' : `現在地上：「${vis[0].s.text}」` + (vis[0].v < 0.5 ? '（正在淡入或淡出）' : '') + (vis[1] && vis[1].v > 0.25 ? `，和「${vis[1].s.text}」疊在一起` : '') + '。';
-  if (lost) t += ` ${DG.nPix} 個字點中有 ${lost} 個開不了孔（` + [[mi.edge, '太靠板邊'], [mi.rod, '被竹籤或節點件擋住'], [mi.multi, '光要穿過兩層屋面'], [mi.sky, '上方沒有屋頂'], [mi.pyr, '落在三角錐上']].filter(x => x[0]).map(x => x[1] + ' ' + x[0]).join('、') + '），字會缺幾點。';
-  const fs = sdForceSet ? sdForceSet.size : 0; if (fs) t += ` 為了開孔，${fs} 格自動改成平板。`;
-  t += ` 換日期看季節：字會整片南北平移；均時差會讓字出現的時刻隨季節早晚最多約 16 分鐘（「光點刻度」模式的 8 字線已經修正）。`;
+  // 說明
+  const Lm = H.length ? H.reduce((a, h) => a + h.L, 0) / H.length : P.sdTube, minT = Math.atan(P.sdW / Lm) * 180 / Math.PI * 4, decW = Math.atan(0.5 * P.sdSlot / Lm) * 180 / Math.PI;
+  const dec0 = SD.enu(P.sdDN, 720).dec, ok = []; for (let N = 1; N <= 365; N++) ok.push(Math.abs(SD.enu(N, 720).dec - dec0) < decW);
+  const ranges = []; for (let N = 0; N < 365; N++) if (ok[N] && !ok[(N + 364) % 365]) { let e = N; while (ok[(e + 1) % 365] && e - N < 365) e++; ranges.push([N + 1, (e % 365) + 1]); }
+  const dt = n2 => { const [m, d] = SD.dateOf(n2); return `${m}/${d}`; }, sets = Math.ceil(46.9 / (2 * decW));
+  const order = DG.slots.map((s, i) => ({ s, v: slotVis[i] })).filter(x => x.v > 0.05).sort((a, b) => b.v - a.v), mi = DG.miss, lost = mi.edge + mi.rod + mi.multi + mi.pyr + mi.sky;
+  let t = v[1] <= 0.05 ? '這個時刻太陽太低。' : !order.length ? '現在地上沒有字（在兩組之間，或今天不在這組光格板的季節）。' : `現在地上：「${order[0].s.text}」` + (order[0].v < 0.5 ? '（淡）' : '') + (order[1] && order[1].v > 0.25 ? `，和「${order[1].s.text}」疊在一起` : '') + '。';
+  t += ` 8:00–16:00 每半小時一組，共 ${H.length} 條光道、${DG.tiles.length} 片光格板（厚 ${P.sdTube} mm，3D 列印，裙邊插進原來的夾子）。`;
+  t += `每組字在那個時刻前後約 ±${Math.round(minT / 2)} 分鐘看得到` + (minT / 2 >= 15 ? '；太寬了，相鄰兩組會疊在一起，請加厚光格板或縮小孔寬' : '') + '。';
+  t += `季節：這組光格板在 ${ranges.map(r => dt(r[0]) + '–' + dt(r[1])).join('、')} 看得清楚；一年大約要 ${sets} 組季節板輪流換。`;
+  if (lost) t += ` ${DG.nPix} 個字點有 ${lost} 個開不了（` + [[mi.edge, '太靠板邊'], [mi.sky, '落在板與板的縫'], [mi.rod, '被竹籤或節點件擋住'], [mi.multi, '要穿過兩層屋面'], [mi.pyr, '落在三角錐上']].filter(x => x[0]).map(x => x[1] + ' ' + x[0]).join('、') + '）。';
+  t += ' 均時差：同一組字出現的時刻，隨季節早晚最多約 16 分鐘。';
   $('sdNote').textContent = t;
 }
 
 function updateDial(full) {
   const on = sdOn() && !!S; sdG.visible = on;
   const see = on && P.sdSee; if (matPlate.transparent !== see) { [matPlate, matRod, matNode].forEach(m => { m.transparent = see; m.opacity = see ? (m === matPlate ? 0.38 : 0.55) : 1; m.depthWrite = !see; m.needsUpdate = true; }); }
-  const dg = on && P.sdMode === 'digit'; dgHoleM.visible = dgSpotM.visible = dg; [sdLinesG, sdLab, spotM, glowM, holeM, rayL, plumbL].forEach(o => o.visible = on && !dg);
+  const dg = on && P.sdMode === 'digit'; dgTileM.visible = dgHoleM.visible = dgSpotM.visible = dg; [sdLinesG, sdLab, spotM, glowM, holeM, rayL, plumbL].forEach(o => o.visible = on && !dg);
   if (!on) return;
   if (dg) { drawDigit(full); return; }
   if (full || sdPlate < 0 || !S.plates[sdPlate]) sdChoose();
@@ -1107,9 +1142,23 @@ $('dl').addEventListener('click', async () => {
     S.seams.forEach(sm => { if (sm.K.length) jr.push(`${jr.length},${tname(sm.type)},H x${sm.nclip},${pyr[sm.A] ? Tn(sm.A) : Pn(sm.A)},,${pyr[sm.B] ? Tn(sm.B) : Pn(sm.B)},,${Math.abs(sm.fold).toFixed(1)},,${Math.max(...sm.K.map(i => S.K[i].err)).toFixed(2)},${sm.over ? 'over-play' : ''}`); });
     files.push({ name: 'joints_assembly.csv', data: '﻿' + jr.join('\n') });
     files.push({ name: 'assembly_map.svg', data: assemblyMap(PC, pyr) });
-    if (sdOn()) { const ds = dialSVG(); if (ds) files.push({ name: `sundial_${P.board}.svg`, data: ds }); }
+    if (sdOn() && P.sdMode !== 'digit') { const ds = dialSVG(); if (ds) files.push({ name: `sundial_${P.board}.svg`, data: ds }); }
+    if (sdDigitOn() && DG) {
+      // 光格板：板三角形（2 mm 裙邊）＋加厚區，減去每條光道（時間方向窄、季節方向長的斜縫）；平放列印，底面＝板的下表面
+      const PCt = MC.plateCorners(S), rows = ['tile,plate,channels,thickness_mm,slots'];
+      DG.tiles.forEach((pi, k) => {
+        const F = plateFrame(PCt[pi]), tri = PCt[pi].map(p => toLocal(F, p)), ib = tileInner(PCt[pi]).map(p => toLocal(F, p)), T = P.sdTube;
+        let solid = MF.union([MF.hull(tri.flatMap(p => [[p[0], p[1], 0], [p[0], p[1], MC.BOARD]])), MF.hull(ib.flatMap(p => [[p[0], p[1], 0], [p[0], p[1], T]]))]);
+        const hs = DG.holes.filter(h => h.pi === pi), loc = d => [V.dot(d, F.e1), V.dot(d, F.e2), V.dot(d, F.n)];
+        const ch = hs.map(h => { const ax = DG.axes[h.si], vl = loc(ax.v), al = loc(ax.ah), dl = loc(ax.ad), hl = toLocal(F, h.h), at = z => V.add(hl, V.mul(vl, (z - hl[2]) / vl[2])); const pts = []; for (const z of [-1, T + 1]) { const c = at(z); for (const a of [-1, 1]) for (const b of [-1, 1]) pts.push(V.add(c, V.add(V.mul(al, a * P.sdW / 2), V.mul(dl, b * P.sdSlot / 2)))); } return MF.hull(pts); });
+        if (ch.length) solid = solid.subtract(MF.union(ch));
+        const nm = 'G' + String(k + 1).padStart(2, '0'); files.push({ name: `light_tiles/${nm}_${Pn(pi)}_x${hs.length}.stl`, data: toSTL(solid.getMesh(), nm) });
+        rows.push(`${nm},${Pn(pi)},${hs.length},${T},"${[...new Set(hs.map(h => SD.SLOTS[h.si].text))].join(' ')}"`);
+      });
+      const [m0, d0] = SD.dateOf(P.sdDN); files.push({ name: 'light_tiles/light_tiles.csv', data: '\ufeff' + rows.join('\n') + `\n# 對準日期 ${m0}/${d0}；孔寬 ${P.sdW} mm、縫長 ${P.sdSlot} mm、板厚 ${P.sdTube} mm；換季時整組換掉` });
+    }
     files.push({ name: 'params.json', data: JSON.stringify({ params: P, material: MATS[P.mat], summary: MC.summary(S), joints: TY.types, play: TY.play, trim, feet_sockets: S.pins.map(([i]) => ({ member: Sn(i >> 1), x: +S.X[i * 3].toFixed(2), y: +S.X[i * 3 + 1].toFixed(2), z: +S.X[i * 3 + 2].toFixed(2) })) }) });
-    files.push({ name: 'README.txt', data: '線與面互承亭 v0.9 製作包\r\n0. 節點件模式：nodes 內每個節點一件（每個都不同，檔名即編號，位置見 nodes.csv 與 assembly_map）；請先印 test_print_first 裡那一個，確認斜孔插得進竹籤。caps：柱頂件。\r\n1. joints：X＝桿–桿（R／L 互為鏡像，不可混用）、H＝板–板折角夾、C＝桿–板扣（傾角正負互為鏡像）。檔名含角度與數量。全部平放列印，不需支撐。\r\n2. pyramids：三角錐，每個一件；裙邊厚 2 mm，當成板插進夾子。檔名有 _in 的是凹錐，翻面安裝。\r\n3. plates_cut_list.csv：每片板的三邊長。plates_A3_sheet*.svg：1:1 紙型，紅線裁切，藍線是夾子位置與接頭編號；列印後先量 100 mm 比例尺。\r\n4. sticks.csv：每根竹籤的長度與各接點位置（距端點 mm）。\r\n5. joints_assembly.csv、assembly_map.svg：每個接點用哪一種接頭、接哪兩個構件。\r\n6. params.json：參數、柱頂每個桿端的位置（feet_sockets）。\r\n注意：只驗證幾何；H 夾與 C 扣尚未實測，請先各印一個試鬆緊。\r\n' });
+    files.push({ name: 'README.txt', data: '線與面互承亭 v0.9 製作包\r\n0. 節點件模式：nodes 內每個節點一件（每個都不同，檔名即編號，位置見 nodes.csv 與 assembly_map）；請先印 test_print_first 裡那一個，確認斜孔插得進竹籤。caps：柱頂件。\r\n1. joints：X＝桿–桿（R／L 互為鏡像，不可混用）、H＝板–板折角夾、C＝桿–板扣（傾角正負互為鏡像）。檔名含角度與數量。全部平放列印，不需支撐。\r\n2. pyramids：三角錐，每個一件；裙邊厚 2 mm，當成板插進夾子。檔名有 _in 的是凹錐，翻面安裝。\r\n3. plates_cut_list.csv：每片板的三邊長。plates_A3_sheet*.svg：1:1 紙型，紅線裁切，藍線是夾子位置與接頭編號；列印後先量 100 mm 比例尺。\r\n4. sticks.csv：每根竹籤的長度與各接點位置（距端點 mm）。\r\n5. joints_assembly.csv、assembly_map.svg：每個接點用哪一種接頭、接哪兩個構件。\r\n6. params.json：參數、柱頂每個桿端的位置（feet_sockets）。\r\n注意：只驗證幾何；H 夾與 C 扣尚未實測，請先各印一個試鬆緊。\r\n7. light_tiles（光點時鐘才有）：光格板，取代同編號的平板；裙邊插進夾子，夾子位置在加厚區用銼刀修出缺口。光道是斜縫，列印時底面朝下、不需支撐。\r\n' });
     await downloads.save({ filename: `reciprocal-pavilion_${MATS[P.mat].name}.zip`, data: zip(files) }); $('dlNote').textContent = `已下載：${TY.types.length} 種接頭、${files.filter(f => f.name.startsWith('pyramids')).length} 個三角錐、${files.filter(f => f.name.startsWith('plates_A3')).length} 張板紙型。`;
   } catch (err) { $('dlNote').textContent = err && err.code === 'declined' ? '已取消下載。' : '下載未完成（' + (err && (err.code || err.message) || '未知原因') + '）。'; }
   finally { $('dl').disabled = false; }
@@ -1138,7 +1187,7 @@ const PRESETS = [
   { g: '變化', id: 'wall', name: '牆面浮雕', note: '支承改成掛牆，拱高壓低、三角錐做成波浪 → 一片掛在牆上的浮雕。', set: { support: 'wall', crown: 90, liftL: 50, liftS: 40, edge: 48, gstyle: 'hard', gc: 0.25, gw: 0.1, pf: 'wave', ph: 20, pwl: 140, lel: 35, laz: 140 } },
   { g: '變化', id: 'dots', name: '網點漸變', note: '漸變方式改成網點、板改成平板 → 線與面隨機交錯，像樹影。', set: { gstyle: 'dither', gc: 0.5, gw: 1, pyr: 'flat', crown: 150, liftL: 95, liftS: 80, edge: 38 }, view: [300, 250, 470, 0, 70, 0] },
   { g: '變化', id: 'sun', name: '日晷亭', note: '開啟日晷，拱頂壓低、屋面幾乎全是板 → 屋頂越低，刻度越緊湊，冬至中午的光點也還在底板內；板多，光點周圍才夠暗。按「播放一天」看光點沿著今天的橘線走，經過棕色的整點 8 字線就是那個整點。', set: { sd: true, crown: 95, liftL: 50, liftS: 40, gc: 0.3, gw: 0.25, pyr: 'flat', edge: 38 }, view: [260, 420, 360, 0, 20, 0] },
-  { g: '變化', id: 'clock', name: '光點時鐘', note: '日晷改成光點拼字：屋面上數百個小孔，各裝一段列印光管，陽光在亭子中央的地上拼出「10:00」「10:30」這樣的點陣時間；光孔要落在板上，所以那些格子自動改成平板。按「播放一天」看字一組一組浮現。', set: { sd: true, sdMode: 'digit', sdT: 600, mat: 1, slen: 180, clipL: 11, crown: 95, liftL: 50, liftS: 40, gc: 0.3, gw: 0.25, pyr: 'flat', edge: 80 }, view: [0, 430, 300, 0, 0, 20] },
+  { g: '變化', id: 'clock', name: '光點時鐘', note: '日晷改成光點拼字：屋面上數百個小孔，各裝一段列印光管，陽光在亭子中央的地上拼出「10:00」「10:30」這樣的點陣時間；光孔要落在板上，所以那些格子自動改成平板。按「播放一天」看字一組一組浮現。', set: { sd: true, sdMode: 'digit', sdT: 600, mat: 1, slen: 180, clipL: 11, crown: 95, liftL: 50, liftS: 40, gc: 0.3, gw: 0.25, pyr: 'flat', edge: 110 }, view: [0, 430, 300, 0, 0, 20] },
   { g: '變化', id: 'bold', name: '粗枝大葉', note: '材料換成烤肉串、格子放大，接頭用斗形節點件 → 構件少而粗，每個節點都看得清楚。', set: { mat: 1, slen: 180, edge: 115, clipL: 11, gc: 0.45, jtype: 'node', nshape: 'dou' }, view: [330, 280, 430, 0, 60, 0] }
 ];
 const BOOLL = { cap: ['柱頂件', '使用', '不使用'], sd: ['日晷', '開啟', '關閉'] };
